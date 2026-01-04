@@ -5,6 +5,7 @@ import { Input, Select, Space, Typography, Divider } from 'antd';
 import type { Product } from '../EditProduct';
 import BilingualInput from '@/app/admin/components/BilingualInput';
 import BilingualRichText from '@/app/admin/components/BilingualRichText';
+import BilingualTags from '@/app/admin/components/BilingualTags';
 
 type Option = { label: string; value: string };
 
@@ -156,13 +157,13 @@ export default function InfoTab({
         placeholder="Product name"
       />
 
-      <BilingualInput
-        label="Tags (comma separated)"
-        enValue={Array.isArray(draft.translation_en?.tags) ? draft.translation_en.tags.join(', ') : ''}
-        bgValue={Array.isArray(draft.translation_bg?.tags) ? draft.translation_bg.tags.join(', ') : ''}
-        onEnChange={(val) => updateTranslationEN('tags', val.split(',').map(t => t.trim()).filter(Boolean))}
-        onBgChange={(val) => updateTranslationBG('tags', val.split(',').map(t => t.trim()).filter(Boolean))}
-        placeholder="tag1, tag2, tag3"
+      <BilingualTags
+        label="Tags"
+        enValue={draft.translation_en?.tags}
+        bgValue={draft.translation_bg?.tags}
+        onEnChange={(val) => updateTranslationEN('tags', val)}
+        onBgChange={(val) => updateTranslationBG('tags', val)}
+        placeholder="Add tags"
       />
 
       <BilingualRichText
