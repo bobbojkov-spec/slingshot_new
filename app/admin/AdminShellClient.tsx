@@ -3,19 +3,15 @@
 import {
   AppstoreOutlined,
   BarChartOutlined,
-  BookOutlined,
-  FileImageOutlined,
   FileProtectOutlined,
   HomeOutlined,
   MenuOutlined,
-  MailOutlined,
   SettingOutlined,
   ShoppingCartOutlined,
   SolutionOutlined,
   TableOutlined,
   TagsOutlined,
   TeamOutlined,
-  ToolOutlined,
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, Space, Spin, Typography } from "antd";
 import Link from "next/link";
@@ -40,29 +36,12 @@ const ADMIN_MENU: AdminMenuNode[] = [
     labelText: "Catalog",
     children: [
       { key: "catalog-products-new", icon: <TableOutlined />, labelText: "Products", href: "/admin/products" },
-      { key: "catalog-categories", icon: <TagsOutlined />, labelText: "Categories", href: "/admin/catalog/categories" },
+      { key: "catalog-categories", icon: <TagsOutlined />, labelText: "Categories", href: "/admin/categories" },
+      { key: "catalog-product-types", icon: <TagsOutlined />, labelText: "Product Types", href: "/admin/product-types" },
     ],
   },
-  {
-    key: "media",
-    icon: <FileImageOutlined />,
-    labelText: "Media",
-    children: [
-      { key: "media-library", icon: <FileImageOutlined />, labelText: "Library", href: "/admin/media/library" },
-      { key: "media-hero-sections", icon: <BarChartOutlined />, labelText: "Hero Sections", href: "/admin/media/hero-sections" },
-      { key: "media-brand-assets", icon: <BookOutlined />, labelText: "Brand Assets", href: "/admin/media/brand-assets" },
-    ],
-  },
-  { key: "pages", icon: <FileProtectOutlined />, labelText: "Pages", href: "/admin/pages" },
-  {
-    key: "shop",
-    icon: <ShoppingCartOutlined />,
-    labelText: "Shop",
-    children: [
-      { key: "shop-cart-settings", icon: <SettingOutlined />, labelText: "Cart Settings", href: "/admin/shop/cart-settings" },
-      { key: "shop-inquiries", icon: <MailOutlined />, labelText: "Inquiries", href: "/admin/shop/inquiries" },
-    ],
-  },
+  { key: "pages", icon: <FileProtectOutlined />, labelText: "Pages" },
+  { key: "shop", icon: <ShoppingCartOutlined />, labelText: "Shop" },
   {
     key: "users",
     icon: <TeamOutlined />,
@@ -72,9 +51,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "users-admins", icon: <SolutionOutlined />, labelText: "Admins", href: "/admin/users/admins" },
     ],
   },
-  { key: "newsletter", icon: <MailOutlined />, labelText: "Newsletter", href: "/admin/newsletter" },
   { key: "settings", icon: <SettingOutlined />, labelText: "Settings", href: "/admin/settings" },
-  { key: "test-image", icon: <FileImageOutlined />, labelText: "Test image", href: "/admin/test-image" },
 ];
 
 function toAntdItems(nodes: AdminMenuNode[]): any[] {
