@@ -112,7 +112,7 @@ export default function EditProduct({
           {
             key: 'variants',
             label: 'Variants',
-            children: <VariantsTab draft={draft} />,
+            children: <VariantsTab draft={draft} setDraft={setDraft} />,
           },
           {
             key: 'cometa',
