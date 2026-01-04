@@ -74,6 +74,7 @@ export default function EditProduct({
   const [draft, setDraft] = useState<Product>(() => structuredClone(product));
   const [activeTab, setActiveTab] = useState<'info' | 'variants' | 'cometa'>('info');
   const [saving, setSaving] = useState(false);
+  const [translating, setTranslating] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -95,6 +96,33 @@ export default function EditProduct({
     }
   };
 
+  const handleAITranslate = async () => {
+    setTranslating(true);
+    try {
+      const res = await fetch(`/api/admin/products/${draft.id}/translate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: draft.id }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        throw new Error(body?.error || 'Translation failed');
+      }
+      
+      // Update draft with new Bulgarian translation
+      setDraft((prev) => ({
+        ...prev,
+        translation_bg: body.translation,
+      }));
+      
+      message.success('✅ Product translated to Bulgarian! Check the Bulgarian fields.');
+    } catch (err: any) {
+      message.error(err?.message || 'Translation failed');
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   return (
     <Space
       orientation="vertical"
@@ -111,6 +139,18 @@ export default function EditProduct({
         <Button onClick={() => router.push(backUrl)}>Cancel</Button>
         <Button type="primary" loading={saving} onClick={handleSave}>
           Save
+        </Button>
+        <Button 
+          type="default" 
+          loading={translating} 
+          onClick={handleAITranslate}
+          style={{ 
+            backgroundColor: '#fffbe6', 
+            borderColor: '#fde68a',
+            color: '#000'
+          }}
+        >
+          🤖 AI Translate to Bulgarian
         </Button>
       </Space>
       <Tabs
