@@ -23,6 +23,7 @@ import {
   SaveOutlined,
   CloseOutlined,
   CopyOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 
 type Category = {
@@ -66,6 +67,9 @@ export default function CategoriesListClient({
     translation_bg: { name: '', description: '' },
   });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [categoryTranslating, setCategoryTranslating] = useState<Record<string, boolean>>(
+    {}
+  );
   const [addForm] = Form.useForm();
 
   const isEditing = (record: Category) => record.id === editingKey;
@@ -139,6 +143,65 @@ export default function CategoriesListClient({
       });
     } catch (err: any) {
       message.error(err?.message || 'Failed to update category');
+    }
+  };
+
+  const translateCategory = async (record: Category) => {
+    const englishName = record.translation_en?.name || record.name || '';
+    const englishDescription = record.translation_en?.description || record.description || '';
+    if (!englishName) {
+      message.info('Please provide an English name before translating');
+      return;
+    }
+
+    setCategoryTranslating((prev) => ({ ...prev, [record.id]: true }));
+
+    try {
+      const res = await fetch('/api/admin/categories/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          categoryId: record.id,
+          slug: record.slug,
+          translation_en: {
+            name: englishName,
+            description: englishDescription,
+          },
+        }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        throw new Error(body?.error || 'Failed to translate category');
+      }
+
+      const translated = body.translation_bg || {};
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.id === record.id
+            ? { ...cat, translation_bg: { name: translated.name, description: translated.description } }
+            : cat
+        )
+      );
+
+      if (editingKey === record.id) {
+        setEditForm((prev) => ({
+          ...prev,
+          translation_bg: {
+            name: translated.name || prev.translation_bg.name,
+            description: translated.description || prev.translation_bg.description,
+          },
+        }));
+      }
+
+      message.success('Category translated to Bulgarian');
+    } catch (err: any) {
+      message.error(err?.message || 'Translation failed');
+    } finally {
+      setCategoryTranslating((prev) => {
+        const next = { ...prev };
+        delete next[record.id];
+        return next;
+      });
     }
   };
 
@@ -426,10 +489,16 @@ export default function CategoriesListClient({
               </div>
 
               <div>
-                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    🇧🇬 Bulgarian
-                  </Typography.Text>
+              <Space
+                style={{
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  🇧🇬 Bulgarian
+                </Typography.Text>
+                <Space size={4}>
                   <Button
                     size="small"
                     icon={<CopyOutlined />}
@@ -438,7 +507,17 @@ export default function CategoriesListClient({
                   >
                     Copy from English
                   </Button>
+                  <Button
+                    size="small"
+                    icon={<RobotOutlined />}
+                    onClick={() => translateCategory(record)}
+                    loading={Boolean(categoryTranslating[record.id])}
+                    disabled={!record.translation_en?.name && !record.name}
+                  >
+                    Translate
+                  </Button>
                 </Space>
+              </Space>
                 <Input
                   value={editForm.translation_bg.name}
                   onChange={(e) =>

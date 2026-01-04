@@ -22,6 +22,7 @@ import {
   SaveOutlined,
   CloseOutlined,
   CopyOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 
 type ProductType = {
@@ -270,6 +271,64 @@ export default function ProductTypesListClient({
     void saveTranslation(updatedRecord);
   };
 
+  const translateProductType = async (record: ProductType) => {
+    if (translationSaving[record.id]) return;
+    const english = record.translation_en?.name || record.name || '';
+    if (!english) {
+      message.info('Provide an English name first');
+      return;
+    }
+
+    setTranslationSaving((prev) => ({ ...prev, [record.id]: true }));
+
+    try {
+      const res = await fetch('/api/admin/product-types/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productTypeId: record.id,
+          slug: record.slug,
+          translation_en: { name: english },
+        }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to translate product type');
+
+      const translated = body.translation_bg || {};
+      setProductTypes((prev) =>
+        prev.map((type) =>
+          type.id === record.id
+            ? {
+                ...type,
+                translation_bg: { name: translated.name || english },
+              }
+            : type
+        )
+      );
+
+      setTranslationSavedAt((prev) => {
+        const next = { ...prev, [record.id]: Date.now() };
+        setTimeout(() => {
+          setTranslationSavedAt((current) => {
+            const { [record.id]: _, ...rest } = current;
+            return rest;
+          });
+        }, 5000);
+        return next;
+      });
+
+      message.success('Product type translated to Bulgarian');
+    } catch (err: any) {
+      message.error(err?.message || 'Translation failed');
+    } finally {
+      setTranslationSaving((prev) => {
+        const next = { ...prev };
+        delete next[record.id];
+        return next;
+      });
+    }
+  };
+
   const columns = [
     {
       title: 'Status',
@@ -350,18 +409,31 @@ export default function ProductTypesListClient({
               </Typography.Text>
               <Input value={englishValue} readOnly style={{ backgroundColor: '#fff' }} />
               <div>
-                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+                <Space
+                  style={{ justifyContent: 'space-between', width: '100%' }}
+                >
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     🇧🇬 Bulgarian
                   </Typography.Text>
-                  <Button
-                    size="small"
-                    icon={<CopyOutlined />}
-                    onClick={() => copyEnglishToBulgarian(record)}
-                    disabled={!englishValue || isSaving}
-                  >
-                    Copy
-                  </Button>
+                  <Space size={4}>
+                    <Button
+                      size="small"
+                      icon={<CopyOutlined />}
+                      onClick={() => copyEnglishToBulgarian(record)}
+                      disabled={!englishValue || isSaving}
+                    >
+                      Copy
+                    </Button>
+                    <Button
+                      size="small"
+                      icon={<RobotOutlined />}
+                      onClick={() => translateProductType(record)}
+                      disabled={!englishValue || isSaving}
+                      loading={isSaving}
+                    >
+                      Translate
+                    </Button>
+                  </Space>
                 </Space>
                 <Input
                   value={bulgarianValue}
