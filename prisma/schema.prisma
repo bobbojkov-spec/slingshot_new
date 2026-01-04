@@ -1,0 +1,266 @@
+// Prisma schema (starter) for Postgres
+// ⚠️ DO NOT RUN prisma migrate in this project
+  datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Sport { 
+  KITE 
+  WING 
+  WAKE 
+  FOIL 
+  SUP 
+}
+
+enum ProductStatus { 
+  draft 
+  active 
+  archived 
+}
+
+model Product {
+  id              String   @id @default(uuid())
+  title           String
+  subtitle        String?
+  canonicalSlug   String   @unique
+  sport           Sport
+  productType     String
+  status          ProductStatus @default(active)
+  descriptionRich String?
+  seoMetaTitle    String?
+  seoMetaDescription String?
+  seoOgImageUrl   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  variants        ProductVariant[]
+  images          ProductImage[]
+  collectionLinks CollectionProduct[]
+  attributeLinks  ProductAttributeValue[]
+}
+
+model ProductVariant {
+  id               String   @id @default(uuid())
+  productId        String
+  sku              String   @unique
+  optionValues     Json     @default("{}")
+  priceEurCents    Int
+  compareAtEurCents Int?
+  weightGrams      Int?
+  barcode          String?
+  lowStockThreshold Int @default(3)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  images           ProductImage[]
+  inventoryLevels  InventoryLevel[]
+}
+
+model ProductImage {
+  id        String @id @default(uuid())
+  productId String
+  variantId String?
+  url       String
+  alt       String?
+  sortOrder Int    @default(0)
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+}
+
+model Collection {
+  id            String @id @default(uuid())
+  title         String
+  canonicalSlug String @unique
+  description   String?
+  heroImageUrl  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  products      CollectionProduct[]
+}
+
+model CollectionProduct {
+  collectionId String
+  productId    String
+  sortOrder    Int @default(0)
+  pinned       Boolean @default(false)
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, productId])
+}
+
+model Attribute {
+  id       String @id @default(uuid())
+  key      String @unique
+  label    String
+  dataType String @default("enum")
+
+  values   AttributeValue[]
+}
+
+model AttributeValue {
+  id          String @id @default(uuid())
+  attributeId String
+  value       String
+  label       String
+
+  attribute   Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  products    ProductAttributeValue[]
+
+  @@unique([attributeId, value])
+}
+
+model ProductAttributeValue {
+  productId        String
+  attributeValueId String
+
+  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeValue   AttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
+
+  @@id([productId, attributeValueId])
+}
+
+model InventoryLocation {
+  id          String @id @default(uuid())
+  name        String
+  countryCode String @default("BG")
+
+  levels      InventoryLevel[]
+}
+
+model InventoryLevel {
+  variantId   String
+  locationId  String
+  onHand      Int @default(0)
+  reserved    Int @default(0)
+
+  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  location    InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, locationId])
+}
+
+model Customer {
+  id        String @id @default(uuid())
+  email     String @unique
+  name      String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  carts     Cart[]
+  addresses Address[]
+}
+
+model Address {
+  id          String @id @default(uuid())
+  customerId  String?
+  label       String?
+  line1       String
+  line2       String?
+  city        String
+  region      String?
+  postalCode  String?
+  countryCode String @default("BG")
+  isDefault   Boolean @default(false)
+
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id        String @id @default(uuid())
+  sessionId String? @unique
+  customerId String?
+  currency  String @default("EUR")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items     CartItem[]
+}
+
+model CartItem {
+  cartId   String
+  variantId String
+  quantity Int
+  unitPriceEurCents Int
+  titleSnapshot String
+  optionsSnapshot Json @default("{}")
+
+  cart     Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant  ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@id([cartId, variantId])
+}
+
+model Order {
+  id        String @id @default(uuid())
+  orderNumber String @unique
+  status    String @default("pending")
+  currency  String @default("EUR")
+  customerEmail String
+  customerName  String?
+  customerPhone String?
+  shippingAddress Json
+  billingAddress  Json?
+  subtotalEurCents Int @default(0)
+  shippingEurCents Int @default(0)
+  taxEurCents Int @default(0)
+  discountEurCents Int @default(0)
+  totalEurCents Int @default(0)
+  paymentStatus String @default("unpaid")
+  shipmentStatus String @default("unshipped")
+  createdAt DateTime @default(now())
+
+  items     OrderItem[]
+}
+
+model OrderItem {
+  orderId  String
+  sku      String
+  variantId String?
+  quantity Int
+  unitPriceEurCents Int
+  titleSnapshot String
+  optionsSnapshot Json @default("{}")
+
+  order    Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, sku])
+}
+
+model CmsPage {
+  id            String @id @default(uuid())
+  title         String
+  canonicalSlug String @unique
+  bodyRich      String
+  seoMetaTitle  String?
+  seoMetaDescription String?
+  publishedAt   DateTime?
+}
+
+model BlogPost {
+  id            String @id @default(uuid())
+  title         String
+  canonicalSlug String @unique
+  excerpt       String?
+  bodyRich      String
+  heroImageUrl  String?
+  publishedAt   DateTime?
+}
+
+model Redirect {
+  fromPath   String @id
+  toPath     String
+  statusCode Int @default(301)
+  createdAt  DateTime @default(now())
+}
+

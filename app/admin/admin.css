@@ -1,0 +1,81 @@
+.AdminShell {
+  /* Inputs (tuned to be minimal while still readable) */
+  --admin-sider-item-padding-x: 12px;
+  --admin-sider-icon-size: 16px;
+  --admin-sider-icon-gap: 10px;
+
+  /* Provided by `AdminShellClient` */
+  --admin-sider-label-ch: 14;
+
+  /* Hard constraints */
+  --admin-sider-width: calc(
+    (var(--admin-sider-item-padding-x) * 2) +
+      var(--admin-sider-icon-size) +
+      var(--admin-sider-icon-gap) +
+      (var(--admin-sider-label-ch) * 1ch)
+  );
+  --admin-sider-collapsed-width: 56px;
+
+  /* Minimum main-content width before forcing sidebar collapse */
+  --admin-main-min-width: 960px;
+}
+
+/* Sidebar is fixed width and never flexes */
+.AdminShell > .ant-layout-sider {
+  width: var(--admin-sider-width) !important;
+  flex: 0 0 var(--admin-sider-width) !important;
+  max-width: var(--admin-sider-width) !important;
+  min-width: var(--admin-sider-width) !important;
+}
+
+/* Remove “decorative width”: keep menu padding minimal and consistent */
+.AdminShell .ant-layout-sider .ant-menu-item,
+.AdminShell .ant-layout-sider .ant-menu-submenu-title {
+  padding-inline: var(--admin-sider-item-padding-x) !important;
+}
+
+/* Never wrap labels (single line) */
+.AdminShell .ant-layout-sider .ant-menu-title-content {
+  white-space: nowrap !important;
+}
+
+/* Content must be allowed to shrink without clipping (critical flex rule) */
+.AdminShell > .ant-layout,
+.AdminShell .ant-layout-content {
+  min-width: 0;
+}
+
+/* Only inner content may scroll horizontally (tables, editors, etc.) */
+.AdminShell .ant-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Collapse rule: if sidebar + minimum content cannot fit, collapse sidebar */
+@media (max-width: calc(var(--admin-sider-width) + var(--admin-main-min-width))) {
+  .AdminShell > .ant-layout-sider {
+    width: var(--admin-sider-collapsed-width) !important;
+    flex: 0 0 var(--admin-sider-collapsed-width) !important;
+    max-width: var(--admin-sider-collapsed-width) !important;
+    min-width: var(--admin-sider-collapsed-width) !important;
+  }
+
+  .AdminShell .AdminHamburger {
+    display: inline-flex !important;
+  }
+
+  /* Icon-only collapsed state */
+  .AdminShell .ant-layout-sider .ant-menu-title-content {
+    display: none !important;
+  }
+
+  .AdminShell .AdminLogoText {
+    display: none !important;
+  }
+}
+
+/* Hamburger is hidden by default; only shown in collapse media query */
+.AdminShell .AdminHamburger {
+  display: none;
+}
+
+
