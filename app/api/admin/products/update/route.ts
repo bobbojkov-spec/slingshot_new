@@ -39,8 +39,16 @@ export async function POST(req: Request) {
           specs_html = $11,
           package_includes = $12,
           category_id = $13,
+          meta_keywords = $14,
+          og_title = $15,
+          og_description = $16,
+          og_image_url = $17,
+          canonical_url = $18,
+          meta_robots = $19,
+          seo_score = $20,
+          seo_generated_at = $21,
           updated_at = NOW()
-        WHERE id = $14
+        WHERE id = $22
       `,
       [
         info.title ?? null,
@@ -56,6 +64,14 @@ export async function POST(req: Request) {
         info.specs_html ?? null,
         info.package_includes ?? null,
         info.categoryId ?? null,
+        info.meta_keywords ?? null,
+        info.og_title ?? null,
+        info.og_description ?? null,
+        info.og_image_url ?? null,
+        info.canonical_url ?? null,
+        info.meta_robots ?? null,
+        info.seo_score ?? null,
+        info.seo_generated_at ?? null,
         product.id,
       ]
     );

@@ -26,6 +26,14 @@ type ProductInfo = {
   package_includes?: string;
   seo_title?: string;
   seo_description?: string;
+  meta_keywords?: string;
+  og_title?: string;
+  og_description?: string;
+  og_image_url?: string;
+  canonical_url?: string;
+  meta_robots?: string;
+  seo_score?: number;
+  seo_generated_at?: string;
 };
 
 export type Product = {
@@ -108,8 +116,8 @@ export default function EditProduct({
           },
           {
             key: 'cometa',
-            label: 'CO Meta',
-            children: <CoMetaTab />,
+            label: 'SEO Meta',
+            children: <CoMetaTab draft={draft} setDraft={setDraft} />,
           },
         ]}
       />

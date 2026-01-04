@@ -71,6 +71,14 @@ async function fetchProduct(id: string) {
         package_includes: data.package_includes ?? '',
         seo_title: data.seo_title ?? '',
         seo_description: data.seo_description ?? '',
+        meta_keywords: data.meta_keywords ?? '',
+        og_title: data.og_title ?? '',
+        og_description: data.og_description ?? '',
+        og_image_url: data.og_image_url ?? '',
+        canonical_url: data.canonical_url ?? '',
+        meta_robots: data.meta_robots ?? 'index, follow',
+        seo_score: data.seo_score ?? undefined,
+        seo_generated_at: data.seo_generated_at ?? undefined,
       },
     };
   } catch (error) {

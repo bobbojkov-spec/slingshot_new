@@ -210,33 +210,6 @@ export default function InfoTab({
           }
         />
       </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>SEO title</Typography.Text>
-        <Input
-          value={draft.info?.seo_title ?? ''}
-          style={{ width: '100%', maxWidth: '80vw' }}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, seo_title: e.target.value },
-            }))
-          }
-        />
-      </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>SEO description</Typography.Text>
-        <Input.TextArea
-          rows={3}
-          value={draft.info?.seo_description ?? ''}
-          style={{ width: '100%', maxWidth: '80vw' }}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, seo_description: e.target.value },
-            }))
-          }
-        />
-      </div>
     </Space>
   );
 }
