@@ -22,6 +22,7 @@ export async function POST(req: Request) {
         : null;
     const normalizedTags = parsedTags && parsedTags.length > 0 ? parsedTags : null;
 
+    // Update main product table
     await query(
       `
         UPDATE products
@@ -75,6 +76,82 @@ export async function POST(req: Request) {
         product.id,
       ]
     );
+
+    // Update or insert English translation
+    if (product.translation_en) {
+      const enTrans = product.translation_en;
+      const enTags = Array.isArray(enTrans.tags) ? enTrans.tags : [];
+      
+      await query(
+        `
+          INSERT INTO product_translations (
+            product_id, language_code, title, description_html, description_html2,
+            specs_html, package_includes, tags, seo_title, seo_description, updated_at
+          )
+          VALUES ($1, 'en', $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+          ON CONFLICT (product_id, language_code)
+          DO UPDATE SET
+            title = EXCLUDED.title,
+            description_html = EXCLUDED.description_html,
+            description_html2 = EXCLUDED.description_html2,
+            specs_html = EXCLUDED.specs_html,
+            package_includes = EXCLUDED.package_includes,
+            tags = EXCLUDED.tags,
+            seo_title = EXCLUDED.seo_title,
+            seo_description = EXCLUDED.seo_description,
+            updated_at = NOW()
+        `,
+        [
+          product.id,
+          enTrans.title || null,
+          enTrans.description_html || null,
+          enTrans.description_html2 || null,
+          enTrans.specs_html || null,
+          enTrans.package_includes || null,
+          enTags.length > 0 ? enTags : null,
+          enTrans.seo_title || null,
+          enTrans.seo_description || null,
+        ]
+      );
+    }
+
+    // Update or insert Bulgarian translation
+    if (product.translation_bg) {
+      const bgTrans = product.translation_bg;
+      const bgTags = Array.isArray(bgTrans.tags) ? bgTrans.tags : [];
+      
+      await query(
+        `
+          INSERT INTO product_translations (
+            product_id, language_code, title, description_html, description_html2,
+            specs_html, package_includes, tags, seo_title, seo_description, updated_at
+          )
+          VALUES ($1, 'bg', $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+          ON CONFLICT (product_id, language_code)
+          DO UPDATE SET
+            title = EXCLUDED.title,
+            description_html = EXCLUDED.description_html,
+            description_html2 = EXCLUDED.description_html2,
+            specs_html = EXCLUDED.specs_html,
+            package_includes = EXCLUDED.package_includes,
+            tags = EXCLUDED.tags,
+            seo_title = EXCLUDED.seo_title,
+            seo_description = EXCLUDED.seo_description,
+            updated_at = NOW()
+        `,
+        [
+          product.id,
+          bgTrans.title || null,
+          bgTrans.description_html || null,
+          bgTrans.description_html2 || null,
+          bgTrans.specs_html || null,
+          bgTrans.package_includes || null,
+          bgTags.length > 0 ? bgTags : null,
+          bgTrans.seo_title || null,
+          bgTrans.seo_description || null,
+        ]
+      );
+    }
 
     return NextResponse.json({ success: true, message: 'Product updated successfully' });
   } catch (error: any) {

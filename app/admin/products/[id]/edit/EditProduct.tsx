@@ -8,6 +8,17 @@ import InfoTab from './tabs/InfoTab';
 import VariantsTab from './tabs/VariantsTab';
 import CoMetaTab from './tabs/CoMetaTab';
 
+type ProductTranslation = {
+  title?: string;
+  description_html?: string;
+  description_html2?: string;
+  specs_html?: string;
+  package_includes?: string;
+  tags?: string[];
+  seo_title?: string;
+  seo_description?: string;
+};
+
 type ProductInfo = {
   title?: string;
   name?: string;
@@ -41,6 +52,8 @@ export type Product = {
   info: ProductInfo;
   variants?: any[];
   images?: any[];
+  translation_en?: ProductTranslation;
+  translation_bg?: ProductTranslation;
 };
 
 export default function EditProduct({

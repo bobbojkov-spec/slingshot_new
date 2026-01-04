@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { Input, Select, Space, Typography } from 'antd';
-import { useQuill } from 'react-quilljs';
+import { useMemo } from 'react';
+import { Input, Select, Space, Typography, Divider } from 'antd';
 import type { Product } from '../EditProduct';
+import BilingualInput from '@/app/admin/components/BilingualInput';
+import BilingualRichText from '@/app/admin/components/BilingualRichText';
 
 type Option = { label: string; value: string };
 
@@ -18,7 +19,9 @@ export default function InfoTab({
   categories: { id: string; name: string }[];
   productTypes: string[];
 }) {
-  const tagsValue = Array.isArray(draft.info?.tags) ? draft.info?.tags?.join(', ') : draft.info?.tags || '';
+  // Debug: Check what we're receiving
+  console.log('[InfoTab] draft.translation_en:', draft.translation_en);
+  console.log('[InfoTab] draft.translation_bg:', draft.translation_bg);
 
   const categoryOptions = useMemo<Option[]>(
     () => (categories || []).map((c) => ({ label: c.name, value: c.id })),
@@ -30,58 +33,35 @@ export default function InfoTab({
     [productTypes]
   );
 
-  const { quill, quillRef } = useQuill();
-  const { quill: quill2, quillRef: quillRef2 } = useQuill();
+  // Helper to update EN translation
+  const updateTranslationEN = (field: string, value: any) => {
+    setDraft((prev) => ({
+      ...prev,
+      translation_en: {
+        ...prev.translation_en,
+        [field]: value,
+      },
+    }));
+  };
 
-  useEffect(() => {
-    if (quill) {
-      quill.clipboard.dangerouslyPasteHTML(draft.info?.description_html || '');
-      const handler = () =>
-        setDraft((prev) => ({
-          ...prev,
-          info: { ...prev.info, description_html: quill.root.innerHTML },
-        }));
-      quill.on('text-change', handler);
-      return () => {
-        quill.off('text-change', handler);
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quill, setDraft]);
-
-  useEffect(() => {
-    if (quill2) {
-      quill2.clipboard.dangerouslyPasteHTML(draft.info?.description_html2 || '');
-      const handler = () =>
-        setDraft((prev) => ({
-          ...prev,
-          info: { ...prev.info, description_html2: quill2.root.innerHTML },
-        }));
-      quill2.on('text-change', handler);
-      return () => {
-        quill2.off('text-change', handler);
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quill2, setDraft]);
+  // Helper to update BG translation
+  const updateTranslationBG = (field: string, value: any) => {
+    setDraft((prev) => ({
+      ...prev,
+      translation_bg: {
+        ...prev.translation_bg,
+        [field]: value,
+      },
+    }));
+  };
 
   return (
-    <Space orientation="vertical" size={12} style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
+    <Space orientation="vertical" size={24} style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
+      {/* NON-TRANSLATABLE FIELDS */}
+      <Typography.Title level={5} style={{ marginBottom: 0 }}>General Information</Typography.Title>
+      
       <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Name / Title</Typography.Text>
-        <Input
-          value={draft.info?.title ?? ''}
-          style={{ width: '100%', maxWidth: '80vw' }}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, title: e.target.value, name: e.target.value },
-            }))
-          }
-        />
-      </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Handle</Typography.Text>
+        <Typography.Text strong>Handle (URL slug)</Typography.Text>
         <Input
           value={draft.info?.handle ?? ''}
           style={{ width: '100%', maxWidth: '80vw' }}
@@ -91,8 +71,10 @@ export default function InfoTab({
               info: { ...prev.info, handle: e.target.value },
             }))
           }
+          placeholder="product-url-slug"
         />
       </div>
+
       <div style={{ width: '100%', maxWidth: '80vw' }}>
         <Typography.Text strong>Category</Typography.Text>
         <Select
@@ -109,6 +91,7 @@ export default function InfoTab({
           placeholder="Select category"
         />
       </div>
+
       <div style={{ width: '100%', maxWidth: '80vw' }}>
         <Typography.Text strong>Brand</Typography.Text>
         <Input
@@ -118,8 +101,9 @@ export default function InfoTab({
           placeholder="Brand is read-only (no column in products table)"
         />
       </div>
+
       <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Product type</Typography.Text>
+        <Typography.Text strong>Product Type</Typography.Text>
         <Select
           style={{ width: '100%', maxWidth: '80vw' }}
           options={productTypeOptions}
@@ -135,22 +119,7 @@ export default function InfoTab({
           }
         />
       </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Tags (comma separated)</Typography.Text>
-        <Select
-          mode="tags"
-          style={{ width: '100%', maxWidth: '80vw' }}
-          value={Array.isArray(draft.info?.tags) ? draft.info?.tags : tagsValue ? tagsValue.split(',').map((t) => t.trim()).filter(Boolean) : []}
-          onChange={(vals) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, tags: vals },
-            }))
-          }
-          tokenSeparators={[',']}
-          placeholder="Add tags"
-        />
-      </div>
+
       <div style={{ width: '100%', maxWidth: '80vw' }}>
         <Typography.Text strong>Status</Typography.Text>
         <Select
@@ -170,47 +139,90 @@ export default function InfoTab({
           placeholder="Select status"
         />
       </div>
-      <div>
-        <Typography.Text strong>Description HTML</Typography.Text>
-        <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, width: '100%', maxWidth: '80vw' }}>
-          <div ref={quillRef} />
-        </div>
-      </div>
-      <div>
-        <Typography.Text strong>Description HTML 2</Typography.Text>
-        <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, width: '100%', maxWidth: '80vw' }}>
-          <div ref={quillRef2} />
-        </div>
-      </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Specs HTML</Typography.Text>
-        <Input.TextArea
-          rows={3}
-          value={draft.info?.specs_html ?? ''}
-          style={{ width: '100%', maxWidth: '80vw' }}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, specs_html: e.target.value },
-            }))
-          }
-        />
-      </div>
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Package includes</Typography.Text>
-        <Input.TextArea
-          rows={3}
-          value={draft.info?.package_includes ?? ''}
-          style={{ width: '100%', maxWidth: '80vw' }}
-          onChange={(e) =>
-            setDraft((prev) => ({
-              ...prev,
-              info: { ...prev.info, package_includes: e.target.value },
-            }))
-          }
-        />
-      </div>
+
+      <Divider />
+
+      {/* TRANSLATABLE FIELDS */}
+      <Typography.Title level={5} style={{ marginBottom: 0 }}>
+        🌐 Multilingual Content (EN 🇬🇧 / BG 🇧🇬)
+      </Typography.Title>
+
+      <BilingualInput
+        label="Product Title"
+        enValue={draft.translation_en?.title}
+        bgValue={draft.translation_bg?.title}
+        onEnChange={(val) => updateTranslationEN('title', val)}
+        onBgChange={(val) => updateTranslationBG('title', val)}
+        placeholder="Product name"
+      />
+
+      <BilingualInput
+        label="Tags (comma separated)"
+        enValue={Array.isArray(draft.translation_en?.tags) ? draft.translation_en.tags.join(', ') : ''}
+        bgValue={Array.isArray(draft.translation_bg?.tags) ? draft.translation_bg.tags.join(', ') : ''}
+        onEnChange={(val) => updateTranslationEN('tags', val.split(',').map(t => t.trim()).filter(Boolean))}
+        onBgChange={(val) => updateTranslationBG('tags', val.split(',').map(t => t.trim()).filter(Boolean))}
+        placeholder="tag1, tag2, tag3"
+      />
+
+      <BilingualRichText
+        label="Description HTML"
+        enValue={draft.translation_en?.description_html}
+        bgValue={draft.translation_bg?.description_html}
+        onEnChange={(val) => updateTranslationEN('description_html', val)}
+        onBgChange={(val) => updateTranslationBG('description_html', val)}
+      />
+
+      <BilingualRichText
+        label="Description HTML 2"
+        enValue={draft.translation_en?.description_html2}
+        bgValue={draft.translation_bg?.description_html2}
+        onEnChange={(val) => updateTranslationEN('description_html2', val)}
+        onBgChange={(val) => updateTranslationBG('description_html2', val)}
+      />
+
+      <BilingualInput
+        label="Specs HTML"
+        enValue={draft.translation_en?.specs_html}
+        bgValue={draft.translation_bg?.specs_html}
+        onEnChange={(val) => updateTranslationEN('specs_html', val)}
+        onBgChange={(val) => updateTranslationBG('specs_html', val)}
+        placeholder="Technical specifications"
+        rows={3}
+      />
+
+      <BilingualInput
+        label="Package Includes"
+        enValue={draft.translation_en?.package_includes}
+        bgValue={draft.translation_bg?.package_includes}
+        onEnChange={(val) => updateTranslationEN('package_includes', val)}
+        onBgChange={(val) => updateTranslationBG('package_includes', val)}
+        placeholder="What's included in the box"
+        rows={3}
+      />
+
+      <Divider />
+
+      <Typography.Title level={5} style={{ marginBottom: 0 }}>SEO (Multilingual)</Typography.Title>
+
+      <BilingualInput
+        label="SEO Title"
+        enValue={draft.translation_en?.seo_title}
+        bgValue={draft.translation_bg?.seo_title}
+        onEnChange={(val) => updateTranslationEN('seo_title', val)}
+        onBgChange={(val) => updateTranslationBG('seo_title', val)}
+        placeholder="SEO page title"
+      />
+
+      <BilingualInput
+        label="SEO Description"
+        enValue={draft.translation_en?.seo_description}
+        bgValue={draft.translation_bg?.seo_description}
+        onEnChange={(val) => updateTranslationEN('seo_description', val)}
+        onBgChange={(val) => updateTranslationBG('seo_description', val)}
+        placeholder="SEO meta description"
+        rows={2}
+      />
     </Space>
   );
 }
-

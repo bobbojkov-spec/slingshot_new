@@ -38,6 +38,8 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       { rows: descRows = [] },
       { rows: specsRows = [] },
       { rows: packageRows = [] },
+      { rows: translationsEN = [] },
+      { rows: translationsBG = [] },
     ] = await Promise.all([
       query(
         `
@@ -52,11 +54,15 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       query('SELECT * FROM product_descriptions WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_specs WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_packages WHERE product_id = $1 LIMIT 1', [productId]),
+      query('SELECT * FROM product_translations WHERE product_id = $1 AND language_code = $2 LIMIT 1', [productId, 'en']),
+      query('SELECT * FROM product_translations WHERE product_id = $1 AND language_code = $2 LIMIT 1', [productId, 'bg']),
     ]);
 
     const descriptions = descRows[0] || {};
     const specs = specsRows[0] || {};
     const pkg = packageRows[0] || {};
+    const translationEN = translationsEN[0] || {};
+    const translationBG = translationsBG[0] || {};
 
     const { category_info, ...rest } = product;
 
@@ -66,6 +72,7 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
         category: category_info || null,
         images: imageRows,
         variants: variantRows,
+        // Legacy fallback fields
         description_html: rest.description_html ?? descriptions.description_html ?? null,
         description_html2: rest.description_html2 ?? descriptions.description_html2 ?? null,
         specs_html: rest.specs_html ?? specs.specs_html ?? specs.specs ?? specs.content ?? null,
@@ -76,6 +83,27 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
           pkg.content ??
           pkg.description ??
           null,
+        // Translation objects
+        translation_en: {
+          title: translationEN.title || rest.title || rest.name || '',
+          description_html: translationEN.description_html || rest.description_html || '',
+          description_html2: translationEN.description_html2 || rest.description_html2 || '',
+          specs_html: translationEN.specs_html || rest.specs_html || '',
+          package_includes: translationEN.package_includes || rest.package_includes || '',
+          tags: translationEN.tags || rest.tags || [],
+          seo_title: translationEN.seo_title || rest.seo_title || '',
+          seo_description: translationEN.seo_description || rest.seo_description || '',
+        },
+        translation_bg: {
+          title: translationBG.title || '',
+          description_html: translationBG.description_html || '',
+          description_html2: translationBG.description_html2 || '',
+          specs_html: translationBG.specs_html || '',
+          package_includes: translationBG.package_includes || '',
+          tags: translationBG.tags || [],
+          seo_title: translationBG.seo_title || '',
+          seo_description: translationBG.seo_description || '',
+        },
       },
     });
   } catch (error: any) {

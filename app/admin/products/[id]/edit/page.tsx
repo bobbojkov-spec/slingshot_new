@@ -32,6 +32,8 @@ async function fetchProduct(id: string) {
     }
     
     console.log('[EDIT PAGE] Product loaded:', data.title || data.name);
+    console.log('[EDIT PAGE] translation_en:', data.translation_en);
+    console.log('[EDIT PAGE] translation_bg:', data.translation_bg);
 
     const images = (data.images || [])
       .slice()
@@ -79,6 +81,26 @@ async function fetchProduct(id: string) {
         meta_robots: data.meta_robots ?? 'index, follow',
         seo_score: data.seo_score ?? undefined,
         seo_generated_at: data.seo_generated_at ?? undefined,
+      },
+      translation_en: data.translation_en || {
+        title: '',
+        description_html: '',
+        description_html2: '',
+        specs_html: '',
+        package_includes: '',
+        tags: [],
+        seo_title: '',
+        seo_description: '',
+      },
+      translation_bg: data.translation_bg || {
+        title: '',
+        description_html: '',
+        description_html2: '',
+        specs_html: '',
+        package_includes: '',
+        tags: [],
+        seo_title: '',
+        seo_description: '',
       },
     };
   } catch (error) {
