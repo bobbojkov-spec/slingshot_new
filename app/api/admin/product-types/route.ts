@@ -11,7 +11,7 @@ export async function GET() {
       FROM product_types pt
       LEFT JOIN products p ON p.product_type = pt.name
       GROUP BY pt.id
-      ORDER BY pt.sort_order ASC, pt.name ASC
+      ORDER BY pt.name ASC
     `);
 
     return NextResponse.json({ productTypes: rows });

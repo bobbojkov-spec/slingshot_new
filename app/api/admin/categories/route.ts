@@ -11,7 +11,7 @@ export async function GET() {
       FROM categories c
       LEFT JOIN products p ON p.category_id = c.id
       GROUP BY c.id
-      ORDER BY c.sort_order ASC, c.name ASC
+      ORDER BY c.name ASC
     `);
 
     return NextResponse.json({ categories: rows });

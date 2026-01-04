@@ -238,24 +238,6 @@ export default function ProductTypesListClient({
       },
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      width: 300,
-      render: (_: any, record: ProductType) => {
-        const editing = isEditing(record);
-        return editing ? (
-          <Input.TextArea
-            value={editForm.description}
-            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-            rows={2}
-          />
-        ) : (
-          <Typography.Text>{record.description || '—'}</Typography.Text>
-        );
-      },
-    },
-    {
       title: 'Sort Order',
       dataIndex: 'sort_order',
       key: 'sort_order',
@@ -347,7 +329,7 @@ export default function ProductTypesListClient({
 
   return (
     <Card>
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={16} style={{ width: '100%' }}>
         <Space style={{ justifyContent: 'space-between', width: '100%' }}>
           <div>
             <Typography.Title level={4} style={{ margin: 0 }}>
@@ -392,10 +374,6 @@ export default function ProductTypesListClient({
 
           <Form.Item name="slug" label="Slug" extra="Leave empty to auto-generate from name">
             <Input />
-          </Form.Item>
-
-          <Form.Item name="description" label="Description">
-            <Input.TextArea rows={3} />
           </Form.Item>
 
           <Form.Item name="sort_order" label="Sort Order" initialValue={0}>
