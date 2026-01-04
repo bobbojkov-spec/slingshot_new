@@ -14,6 +14,7 @@ import {
   Form,
   InputNumber,
   Card,
+  Divider,
 } from 'antd';
 import {
   PlusOutlined,
@@ -21,6 +22,7 @@ import {
   DeleteOutlined,
   SaveOutlined,
   CloseOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
 
 type Category = {
@@ -36,6 +38,14 @@ type Category = {
   product_count?: number;
   created_at?: string;
   updated_at?: string;
+  translation_en?: {
+    name?: string;
+    description?: string;
+  };
+  translation_bg?: {
+    name?: string;
+    description?: string;
+  };
 };
 
 export default function CategoriesListClient({
@@ -45,7 +55,16 @@ export default function CategoriesListClient({
 }) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [editingKey, setEditingKey] = useState<string>('');
-  const [editForm, setEditForm] = useState<Partial<Category>>({});
+  const [editForm, setEditForm] = useState<{
+    slug?: string;
+    sort_order?: number;
+    image_url?: string;
+    translation_en: { name: string; description: string };
+    translation_bg: { name: string; description: string };
+  }>({
+    translation_en: { name: '', description: '' },
+    translation_bg: { name: '', description: '' },
+  });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [addForm] = Form.useForm();
 
@@ -53,12 +72,28 @@ export default function CategoriesListClient({
 
   const startEdit = (record: Category) => {
     setEditingKey(record.id);
-    setEditForm({ ...record });
+    console.log('🔍 Editing category:', JSON.stringify(record, null, 2));
+    setEditForm({
+      slug: record.slug,
+      sort_order: record.sort_order,
+      image_url: record.image_url,
+      translation_en: {
+        name: record.translation_en?.name || record.name || '',
+        description: record.translation_en?.description || record.description || '',
+      },
+      translation_bg: {
+        name: record.translation_bg?.name || '',
+        description: record.translation_bg?.description || '',
+      },
+    });
   };
 
   const cancelEdit = () => {
     setEditingKey('');
-    setEditForm({});
+    setEditForm({
+      translation_en: { name: '', description: '' },
+      translation_bg: { name: '', description: '' },
+    });
   };
 
   const saveEdit = async (id: string) => {
@@ -68,7 +103,13 @@ export default function CategoriesListClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           categoryId: id,
-          data: editForm,
+          data: {
+            slug: editForm.slug,
+            sort_order: editForm.sort_order,
+            image_url: editForm.image_url,
+          },
+          translation_en: editForm.translation_en,
+          translation_bg: editForm.translation_bg,
         }),
       });
 
@@ -76,12 +117,26 @@ export default function CategoriesListClient({
       if (!res.ok) throw new Error(body?.error || 'Failed to update category');
 
       setCategories((prev) =>
-        prev.map((cat) => (cat.id === id ? { ...cat, ...editForm } : cat))
+        prev.map((cat) =>
+          cat.id === id
+            ? {
+                ...cat,
+                slug: editForm.slug,
+                sort_order: editForm.sort_order,
+                image_url: editForm.image_url,
+                translation_en: editForm.translation_en,
+                translation_bg: editForm.translation_bg,
+              }
+            : cat
+        )
       );
 
       message.success('Category updated');
       setEditingKey('');
-      setEditForm({});
+      setEditForm({
+        translation_en: { name: '', description: '' },
+        translation_bg: { name: '', description: '' },
+      });
     } catch (err: any) {
       message.error(err?.message || 'Failed to update category');
     }
@@ -175,6 +230,16 @@ export default function CategoriesListClient({
     }
   };
 
+  const copyToBulgarian = (field: 'name' | 'description') => {
+    setEditForm({
+      ...editForm,
+      translation_bg: {
+        ...editForm.translation_bg,
+        [field]: editForm.translation_en[field],
+      },
+    });
+  };
+
   const columns = [
     {
       title: 'Status',
@@ -209,15 +274,7 @@ export default function CategoriesListClient({
       dataIndex: 'name',
       key: 'name',
       render: (_: any, record: Category) => {
-        if (isEditing(record)) {
-          return (
-            <Input
-              value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-            />
-          );
-        }
-        return <Typography.Text strong>{record.name}</Typography.Text>;
+        return <Typography.Text strong>{record.translation_en?.name || record.name}</Typography.Text>;
       },
     },
     {
@@ -241,18 +298,9 @@ export default function CategoriesListClient({
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
-      width: 300,
+      width: 250,
       render: (_: any, record: Category) => {
-        if (isEditing(record)) {
-          return (
-            <Input.TextArea
-              value={editForm.description}
-              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-              rows={2}
-            />
-          );
-        }
-        return record.description || '—';
+        return record.translation_en?.description || record.description || '—';
       },
     },
     {
@@ -318,6 +366,7 @@ export default function CategoriesListClient({
               size="small"
               icon={<EditOutlined />}
               onClick={() => startEdit(record)}
+              title="Edit"
             />
             {record.status !== 'active' && (record.product_count || 0) === 0 && (
               <Popconfirm
@@ -347,6 +396,120 @@ export default function CategoriesListClient({
     },
   ];
 
+  const expandedRowRender = (record: Category) => {
+    if (!isEditing(record)) return null;
+
+    return (
+      <div style={{ padding: '16px 24px', backgroundColor: '#fafafa' }}>
+        <Space orientation="vertical" size={16} style={{ width: '100%' }}>
+          <Divider orientation="left">Multilingual Content</Divider>
+
+          <div>
+            <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+              <Typography.Text strong>Category Name</Typography.Text>
+              
+              <div>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  🇬🇧 English
+                </Typography.Text>
+                <Input
+                  value={editForm.translation_en.name}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      translation_en: { ...editForm.translation_en, name: e.target.value },
+                    })
+                  }
+                  placeholder="Category name in English"
+                  style={{ backgroundColor: '#fff' }}
+                />
+              </div>
+
+              <div>
+                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    🇧🇬 Bulgarian
+                  </Typography.Text>
+                  <Button
+                    size="small"
+                    icon={<CopyOutlined />}
+                    onClick={() => copyToBulgarian('name')}
+                    disabled={!editForm.translation_en.name}
+                  >
+                    Copy from English
+                  </Button>
+                </Space>
+                <Input
+                  value={editForm.translation_bg.name}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      translation_bg: { ...editForm.translation_bg, name: e.target.value },
+                    })
+                  }
+                  placeholder="Category name in Bulgarian"
+                  style={{ backgroundColor: '#fffbe6' }}
+                />
+              </div>
+            </Space>
+          </div>
+
+          <div>
+            <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+              <Typography.Text strong>Description</Typography.Text>
+              
+              <div>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  🇬🇧 English
+                </Typography.Text>
+                <Input.TextArea
+                  value={editForm.translation_en.description}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      translation_en: { ...editForm.translation_en, description: e.target.value },
+                    })
+                  }
+                  placeholder="Description in English"
+                  rows={3}
+                  style={{ backgroundColor: '#fff' }}
+                />
+              </div>
+
+              <div>
+                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    🇧🇬 Bulgarian
+                  </Typography.Text>
+                  <Button
+                    size="small"
+                    icon={<CopyOutlined />}
+                    onClick={() => copyToBulgarian('description')}
+                    disabled={!editForm.translation_en.description}
+                  >
+                    Copy from English
+                  </Button>
+                </Space>
+                <Input.TextArea
+                  value={editForm.translation_bg.description}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      translation_bg: { ...editForm.translation_bg, description: e.target.value },
+                    })
+                  }
+                  placeholder="Description in Bulgarian"
+                  rows={3}
+                  style={{ backgroundColor: '#fffbe6' }}
+                />
+              </div>
+            </Space>
+          </div>
+        </Space>
+      </div>
+    );
+  };
+
   return (
     <div style={{ padding: 24 }}>
       <Card
@@ -367,7 +530,7 @@ export default function CategoriesListClient({
         }
       >
         <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-          Manage product categories. Delete is only available for inactive categories with no products.
+          Manage product categories. Click Edit to see bilingual fields. Delete is only available for inactive categories with no products.
         </Typography.Text>
 
         <Table<Category>
@@ -375,6 +538,11 @@ export default function CategoriesListClient({
           rowKey="id"
           dataSource={categories}
           columns={columns}
+          expandable={{
+            expandedRowRender,
+            expandedRowKeys: editingKey ? [editingKey] : [],
+            showExpandColumn: false,
+          }}
           pagination={{ pageSize: 20, showSizeChanger: true, showTotal: (total) => `Total ${total}` }}
           scroll={{ x: true }}
         />
@@ -416,4 +584,3 @@ export default function CategoriesListClient({
     </div>
   );
 }
-

@@ -27,7 +27,7 @@ async function handleJson(req: NextRequest) {
   if (images?.length) {
     const { rows: existing = [] } = await query(
       `
-        SELECT id, position, sort_order
+        SELECT id, position, sort_order, url
         FROM product_images
         WHERE product_id = $1
         ORDER BY COALESCE(position, sort_order, 9999)
@@ -49,6 +49,15 @@ async function handleJson(req: NextRequest) {
       const img = finalOrder[idx];
       if (!img?.id) continue;
       await query('UPDATE product_images SET position = $1 WHERE id = $2', [idx + 1, img.id]);
+    }
+    
+    // Update og_image_url to the first image's URL (convert /original/ to /medium/)
+    if (finalOrder.length > 0 && finalOrder[0]?.url) {
+      const firstImageUrl = finalOrder[0].url.replace('/original/', '/medium/');
+      await query(
+        'UPDATE products SET og_image_url = $1, updated_at = NOW() WHERE id = $2',
+        [firstImageUrl, productId]
+      );
     }
   }
 
@@ -113,8 +122,8 @@ async function handleUpload(req: NextRequest) {
   const medium = await sharp(baseForDerivatives).resize(900, 900, { fit: 'inside' }).jpeg({ quality: 85 }).toBuffer();
 
   const urlOriginal = await uploadToStorage(originalPath, originalJpeg);
-  await uploadToStorage(thumbPath, thumb);
-  await uploadToStorage(mediumPath, medium);
+  const urlThumb = await uploadToStorage(thumbPath, thumb);
+  const urlMedium = await uploadToStorage(mediumPath, medium);
 
   let position = desiredPosition;
   if (!position || Number.isNaN(position)) {
@@ -140,6 +149,15 @@ async function handleUpload(req: NextRequest) {
   );
 
   const inserted = insertedRows[0];
+  
+  // If this is the first image (position 1), update product's og_image_url
+  if (position === 1) {
+    await query(
+      'UPDATE products SET og_image_url = $1, updated_at = NOW() WHERE id = $2',
+      [urlMedium, productId]
+    );
+  }
+  
   return NextResponse.json({ image: inserted });
 }
 

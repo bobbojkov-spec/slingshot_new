@@ -7,10 +7,14 @@ export async function GET() {
     const { rows } = await query(`
       SELECT 
         c.*,
-        CAST(COUNT(p.id) AS INTEGER) as product_count
+        (SELECT CAST(COUNT(*) AS INTEGER) FROM products p WHERE p.category_id = c.id) as product_count,
+        (SELECT json_build_object('name', ct.name, 'description', ct.description)
+         FROM category_translations ct 
+         WHERE ct.category_id = c.id AND ct.language_code = 'en') as translation_en,
+        (SELECT json_build_object('name', ct.name, 'description', ct.description)
+         FROM category_translations ct 
+         WHERE ct.category_id = c.id AND ct.language_code = 'bg') as translation_bg
       FROM categories c
-      LEFT JOIN products p ON p.category_id = c.id
-      GROUP BY c.id
       ORDER BY c.name ASC
     `);
 
@@ -70,7 +74,7 @@ export async function POST(req: Request) {
 // UPDATE existing category
 export async function PUT(req: Request) {
   try {
-    const { categoryId, data } = await req.json();
+    const { categoryId, data, translation_en, translation_bg } = await req.json();
 
     if (!categoryId) {
       return NextResponse.json({ error: 'categoryId required' }, { status: 400 });
@@ -121,6 +125,35 @@ export async function PUT(req: Request) {
       `,
       values
     );
+
+    // Save translations if provided
+    if (translation_en) {
+      await query(
+        `
+          INSERT INTO category_translations (category_id, language_code, name, description, updated_at)
+          VALUES ($1, 'en', $2, $3, NOW())
+          ON CONFLICT (category_id, language_code) DO UPDATE SET
+            name = EXCLUDED.name,
+            description = EXCLUDED.description,
+            updated_at = NOW()
+        `,
+        [categoryId, translation_en.name, translation_en.description]
+      );
+    }
+
+    if (translation_bg) {
+      await query(
+        `
+          INSERT INTO category_translations (category_id, language_code, name, description, updated_at)
+          VALUES ($1, 'bg', $2, $3, NOW())
+          ON CONFLICT (category_id, language_code) DO UPDATE SET
+            name = EXCLUDED.name,
+            description = EXCLUDED.description,
+            updated_at = NOW()
+        `,
+        [categoryId, translation_bg.name, translation_bg.description]
+      );
+    }
 
     return NextResponse.json({ category: rows[0] });
   } catch (error: any) {

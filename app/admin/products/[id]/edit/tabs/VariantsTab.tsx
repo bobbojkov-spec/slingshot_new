@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
+import BilingualInput from '../../../../components/BilingualInput';
 import type { Product } from '../EditProduct';
 
 type Variant = {
@@ -14,6 +15,12 @@ type Variant = {
   inventory_quantity?: number;
   available?: boolean;
   status?: string;
+  translation_en?: {
+    title?: string;
+  };
+  translation_bg?: {
+    title?: string;
+  };
 };
 
 export default function VariantsTab({
@@ -26,6 +33,15 @@ export default function VariantsTab({
   const [editingKey, setEditingKey] = useState<string>('');
   const [editForm, setEditForm] = useState<Variant>({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isBilingualModalOpen, setIsBilingualModalOpen] = useState(false);
+  const [bilingualEditForm, setBilingualEditForm] = useState<{
+    variant?: Variant;
+    translation_en: { title: string };
+    translation_bg: { title: string };
+  }>({
+    translation_en: { title: '' },
+    translation_bg: { title: '' },
+  });
   const [addForm] = Form.useForm();
 
   const variants = draft.variants || [];
@@ -142,6 +158,57 @@ export default function VariantsTab({
       addForm.resetFields();
     } catch (err: any) {
       message.error(err?.message || 'Failed to create variant');
+    }
+  };
+
+  const openBilingualModal = (record: Variant) => {
+    setBilingualEditForm({
+      variant: record,
+      translation_en: {
+        title: record.translation_en?.title || record.title || '',
+      },
+      translation_bg: {
+        title: record.translation_bg?.title || '',
+      },
+    });
+    setIsBilingualModalOpen(true);
+  };
+
+  const saveBilingualEdit = async () => {
+    if (!bilingualEditForm.variant) return;
+
+    try {
+      const res = await fetch('/api/admin/products/variants', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          variantId: bilingualEditForm.variant.id,
+          data: {},
+          translation_en: bilingualEditForm.translation_en,
+          translation_bg: bilingualEditForm.translation_bg,
+        }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to update translations');
+
+      setDraft((prev) => ({
+        ...prev,
+        variants: prev.variants?.map((v) =>
+          v.id === bilingualEditForm.variant?.id
+            ? {
+                ...v,
+                translation_en: bilingualEditForm.translation_en,
+                translation_bg: bilingualEditForm.translation_bg,
+              }
+            : v
+        ),
+      }));
+
+      message.success('Variant translations updated');
+      setIsBilingualModalOpen(false);
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to update translations');
     }
   };
 
@@ -280,7 +347,16 @@ export default function VariantsTab({
               size="small"
               icon={<EditOutlined />}
               onClick={() => startEdit(record)}
+              title="Quick edit"
             />
+            <Button
+              type="link"
+              size="small"
+              onClick={() => openBilingualModal(record)}
+              title="Edit translations"
+            >
+              🌐
+            </Button>
             {record.status !== 'active' && (
               <Popconfirm
                 title="Delete variant?"
@@ -348,6 +424,35 @@ export default function VariantsTab({
             <InputNumber style={{ width: '100%' }} min={0} />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title={`Edit Variant Translations: ${bilingualEditForm.variant?.title || ''}`}
+        open={isBilingualModalOpen}
+        onCancel={() => setIsBilingualModalOpen(false)}
+        onOk={saveBilingualEdit}
+        okText="Save Translations"
+        width={900}
+      >
+        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+          <BilingualInput
+            label="Variant Title"
+            enValue={bilingualEditForm.translation_en.title}
+            bgValue={bilingualEditForm.translation_bg.title}
+            onEnChange={(val) =>
+              setBilingualEditForm({
+                ...bilingualEditForm,
+                translation_en: { ...bilingualEditForm.translation_en, title: val },
+              })
+            }
+            onBgChange={(val) =>
+              setBilingualEditForm({
+                ...bilingualEditForm,
+                translation_bg: { ...bilingualEditForm.translation_bg, title: val },
+              })
+            }
+          />
+        </Space>
       </Modal>
     </div>
   );

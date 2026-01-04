@@ -50,7 +50,19 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
         `,
         [productId]
       ),
-      query('SELECT * FROM product_variants WHERE product_id = $1', [productId]),
+      query(
+        `
+          SELECT 
+            pv.*,
+            json_build_object('title', pvt_en.title) as translation_en,
+            json_build_object('title', pvt_bg.title) as translation_bg
+          FROM product_variants pv
+          LEFT JOIN product_variant_translations pvt_en ON pv.id = pvt_en.variant_id AND pvt_en.language_code = 'en'
+          LEFT JOIN product_variant_translations pvt_bg ON pv.id = pvt_bg.variant_id AND pvt_bg.language_code = 'bg'
+          WHERE pv.product_id = $1
+        `,
+        [productId]
+      ),
       query('SELECT * FROM product_descriptions WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_specs WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_packages WHERE product_id = $1 LIMIT 1', [productId]),

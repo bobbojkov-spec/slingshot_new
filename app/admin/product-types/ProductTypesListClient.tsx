@@ -21,6 +21,7 @@ import {
   DeleteOutlined,
   SaveOutlined,
   CloseOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
 
 type ProductType = {
@@ -35,6 +36,14 @@ type ProductType = {
   product_count?: number;
   created_at?: string;
   updated_at?: string;
+  translation_en?: {
+    name?: string;
+    description?: string;
+  };
+  translation_bg?: {
+    name?: string;
+    description?: string;
+  };
 };
 
 export default function ProductTypesListClient({
@@ -46,6 +55,12 @@ export default function ProductTypesListClient({
   const [editingKey, setEditingKey] = useState<string>('');
   const [editForm, setEditForm] = useState<Partial<ProductType>>({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [translationSaving, setTranslationSaving] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [translationSavedAt, setTranslationSavedAt] = useState<Record<string, number>>(
+    {}
+  );
   const [addForm] = Form.useForm();
 
   const isEditing = (record: ProductType) => record.id === editingKey;
@@ -174,6 +189,87 @@ export default function ProductTypesListClient({
     }
   };
 
+  const handleBgChange = (id: string, value: string) => {
+    setProductTypes((prev) =>
+      prev.map((type) =>
+        type.id === id
+          ? {
+              ...type,
+              translation_bg: { ...type.translation_bg, name: value },
+            }
+          : type
+      )
+    );
+  };
+
+  const saveTranslation = async (record: ProductType) => {
+    if (translationSaving[record.id]) return;
+    const enValue = record.translation_en?.name || record.name || '';
+    const bgValue = record.translation_bg?.name || '';
+
+    setTranslationSaving((prev) => ({ ...prev, [record.id]: true }));
+
+    try {
+      const res = await fetch('/api/admin/product-types', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productTypeId: record.id,
+          data: {},
+          translation_en: { name: enValue },
+          translation_bg: { name: bgValue },
+        }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to save translation');
+
+      setProductTypes((prev) =>
+        prev.map((type) =>
+          type.id === record.id
+            ? {
+                ...type,
+                translation_en: { ...(type.translation_en || {}), name: enValue },
+                translation_bg: { ...(type.translation_bg || {}), name: bgValue },
+              }
+            : type
+        )
+      );
+
+      setTranslationSavedAt((prev) => {
+        const next = { ...prev, [record.id]: Date.now() };
+        setTimeout(() => {
+          setTranslationSavedAt((current) => {
+            const { [record.id]: _, ...rest } = current;
+            return rest;
+          });
+        }, 5000);
+        return next;
+      });
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to save translation');
+    } finally {
+      setTranslationSaving((prev) => {
+        const next = { ...prev };
+        delete next[record.id];
+        return next;
+      });
+    }
+  };
+
+  const copyEnglishToBulgarian = (record: ProductType) => {
+    const english = record.translation_en?.name || record.name || '';
+    if (!english) return;
+    const updatedRecord = {
+      ...record,
+      translation_bg: { name: english },
+    };
+    setProductTypes((prev) =>
+      prev.map((type) => (type.id === record.id ? updatedRecord : type))
+    );
+    void saveTranslation(updatedRecord);
+  };
+
   const columns = [
     {
       title: 'Status',
@@ -238,6 +334,60 @@ export default function ProductTypesListClient({
       },
     },
     {
+      title: 'Translation',
+      key: 'translation',
+      width: 320,
+      render: (_: any, record: ProductType) => {
+        const englishValue = record.translation_en?.name || record.name || '';
+        const bulgarianValue = record.translation_bg?.name || '';
+        const isSaving = Boolean(translationSaving[record.id]);
+        const savedAt = translationSavedAt[record.id];
+        return (
+          <div style={{ minWidth: 300 }}>
+            <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                🇬🇧 English
+              </Typography.Text>
+              <Input value={englishValue} readOnly style={{ backgroundColor: '#fff' }} />
+              <div>
+                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    🇧🇬 Bulgarian
+                  </Typography.Text>
+                  <Button
+                    size="small"
+                    icon={<CopyOutlined />}
+                    onClick={() => copyEnglishToBulgarian(record)}
+                    disabled={!englishValue || isSaving}
+                  >
+                    Copy
+                  </Button>
+                </Space>
+                <Input
+                  value={bulgarianValue}
+                  onChange={(e) => handleBgChange(record.id, e.target.value)}
+                  onBlur={() => saveTranslation(record)}
+                  placeholder="Bulgarian name"
+                  style={{ backgroundColor: '#fffbe6' }}
+                  disabled={isSaving}
+                />
+              </div>
+              {isSaving && (
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  Saving…
+                </Typography.Text>
+              )}
+              {!isSaving && savedAt && (
+                <Typography.Text type="success" style={{ fontSize: 12 }}>
+                  Saved
+                </Typography.Text>
+              )}
+            </Space>
+          </div>
+        );
+      },
+    },
+    {
       title: 'Sort Order',
       dataIndex: 'sort_order',
       key: 'sort_order',
@@ -298,7 +448,9 @@ export default function ProductTypesListClient({
               size="small"
               icon={<EditOutlined />}
               onClick={() => startEdit(record)}
+              title="Quick edit"
             />
+            {/* translation available inline */}
             {record.status !== 'active' && (record.product_count || 0) === 0 && (
               <Popconfirm
                 title="Delete product type?"
@@ -387,6 +539,7 @@ export default function ProductTypesListClient({
           </Form.Item>
         </Form>
       </Modal>
+
     </Card>
   );
 }

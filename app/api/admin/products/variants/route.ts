@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 // UPDATE existing variant
 export async function PUT(req: Request) {
   try {
-    const { variantId, data } = await req.json();
+    const { variantId, data, translation_en, translation_bg } = await req.json();
 
     if (!variantId) {
       return NextResponse.json({ error: 'variantId required' }, { status: 400 });
@@ -102,6 +102,33 @@ export async function PUT(req: Request) {
       `,
       values
     );
+
+    // Save translations if provided
+    if (translation_en) {
+      await query(
+        `
+          INSERT INTO product_variant_translations (variant_id, language_code, title, updated_at)
+          VALUES ($1, 'en', $2, NOW())
+          ON CONFLICT (variant_id, language_code) DO UPDATE SET
+            title = EXCLUDED.title,
+            updated_at = NOW()
+        `,
+        [variantId, translation_en.title]
+      );
+    }
+
+    if (translation_bg) {
+      await query(
+        `
+          INSERT INTO product_variant_translations (variant_id, language_code, title, updated_at)
+          VALUES ($1, 'bg', $2, NOW())
+          ON CONFLICT (variant_id, language_code) DO UPDATE SET
+            title = EXCLUDED.title,
+            updated_at = NOW()
+        `,
+        [variantId, translation_bg.title]
+      );
+    }
 
     return NextResponse.json({ variant: rows[0] });
   } catch (error: any) {

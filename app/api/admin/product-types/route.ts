@@ -7,10 +7,20 @@ export async function GET() {
     const { rows } = await query(`
       SELECT 
         pt.*,
-        CAST(COUNT(p.id) AS INTEGER) as product_count
+        CAST(COUNT(p.id) AS INTEGER) as product_count,
+        json_build_object(
+          'name', ptt_en.name,
+          'description', ptt_en.description
+        ) as translation_en,
+        json_build_object(
+          'name', ptt_bg.name,
+          'description', ptt_bg.description
+        ) as translation_bg
       FROM product_types pt
       LEFT JOIN products p ON p.product_type = pt.name
-      GROUP BY pt.id
+      LEFT JOIN product_type_translations ptt_en ON pt.id = ptt_en.product_type_id AND ptt_en.language_code = 'en'
+      LEFT JOIN product_type_translations ptt_bg ON pt.id = ptt_bg.product_type_id AND ptt_bg.language_code = 'bg'
+      GROUP BY pt.id, ptt_en.name, ptt_en.description, ptt_bg.name, ptt_bg.description
       ORDER BY pt.name ASC
     `);
 
@@ -69,7 +79,7 @@ export async function POST(req: Request) {
 // UPDATE existing product type
 export async function PUT(req: Request) {
   try {
-    const { productTypeId, data } = await req.json();
+    const { productTypeId, data, translation_en, translation_bg } = await req.json();
 
     if (!productTypeId) {
       return NextResponse.json({ error: 'productTypeId required' }, { status: 400 });
@@ -116,6 +126,43 @@ export async function PUT(req: Request) {
       `,
       values
     );
+
+    const { rows: slugRows } = await query(
+      'SELECT slug FROM product_types WHERE id = $1 LIMIT 1',
+      [productTypeId]
+    );
+    const translationSlug = slugRows[0]?.slug || data.slug || '';
+
+    // Save translations if provided
+    if (translation_en) {
+      await query(
+        `
+          INSERT INTO product_type_translations (product_type_id, language_code, name, slug, description, updated_at)
+          VALUES ($1, 'en', $2, $3, $4, NOW())
+          ON CONFLICT (product_type_id, language_code) DO UPDATE SET
+            name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
+            description = EXCLUDED.description,
+            updated_at = NOW()
+        `,
+        [productTypeId, translation_en.name, translationSlug, translation_en.description]
+      );
+    }
+
+    if (translation_bg) {
+      await query(
+        `
+          INSERT INTO product_type_translations (product_type_id, language_code, name, slug, description, updated_at)
+          VALUES ($1, 'bg', $2, $3, $4, NOW())
+          ON CONFLICT (product_type_id, language_code) DO UPDATE SET
+            name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
+            description = EXCLUDED.description,
+            updated_at = NOW()
+        `,
+        [productTypeId, translation_bg.name, translationSlug, translation_bg.description]
+      );
+    }
 
     return NextResponse.json({ productType: rows[0] });
   } catch (error: any) {
