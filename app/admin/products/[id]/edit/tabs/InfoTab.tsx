@@ -46,7 +46,8 @@ export default function InfoTab({
         quill.off('text-change', handler);
       };
     }
-  }, [quill, draft.info?.description_html, setDraft]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quill, setDraft]);
 
   useEffect(() => {
     if (quill2) {
@@ -61,7 +62,8 @@ export default function InfoTab({
         quill2.off('text-change', handler);
       };
     }
-  }, [quill2, draft.info?.description_html2, setDraft]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quill2, setDraft]);
 
   return (
     <Space orientation="vertical" size={12} style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>

@@ -7,7 +7,7 @@ export default function CoMetaTab() {
     <Alert
       type="info"
       showIcon
-      message="CO Meta editor coming later"
+      title="CO Meta editor coming later"
       description="This tab is a placeholder and does not change any data yet."
     />
   );

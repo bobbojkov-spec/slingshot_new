@@ -27,27 +27,32 @@ export async function POST(req: Request) {
         UPDATE products
         SET
           title = $1,
-          handle = $2,
-          product_type = $3,
-          tags = $4,
-          status = $5,
-          seo_title = $6,
-          seo_description = $7,
-          description_html = $8,
-          specs_html = $9,
-          package_includes = $10,
-          category_id = $11
-        WHERE id = $12
+          name = $2,
+          handle = $3,
+          product_type = $4,
+          tags = $5,
+          status = $6,
+          seo_title = $7,
+          seo_description = $8,
+          description_html = $9,
+          description_html2 = $10,
+          specs_html = $11,
+          package_includes = $12,
+          category_id = $13,
+          updated_at = NOW()
+        WHERE id = $14
       `,
       [
         info.title ?? null,
+        info.name ?? info.title ?? null,
         info.handle ?? null,
         info.product_type ?? null,
-        normalizedTags ?? null,
+        normalizedTags,
         info.status ?? null,
         info.seo_title ?? null,
         info.seo_description ?? null,
         info.description_html ?? null,
+        info.description_html2 ?? null,
         info.specs_html ?? null,
         info.package_includes ?? null,
         info.categoryId ?? null,
@@ -55,38 +60,7 @@ export async function POST(req: Request) {
       ]
     );
 
-    await query(
-      `
-        INSERT INTO product_descriptions (product_id, description_html, description_html2)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (product_id) DO UPDATE
-        SET description_html = EXCLUDED.description_html,
-            description_html2 = EXCLUDED.description_html2
-      `,
-      [product.id, info.description_html ?? '', info.description_html2 ?? '']
-    );
-
-    await query(
-      `
-        INSERT INTO product_specs (product_id, specs_html)
-        VALUES ($1, $2)
-        ON CONFLICT (product_id) DO UPDATE
-        SET specs_html = EXCLUDED.specs_html
-      `,
-      [product.id, info.specs_html ?? '']
-    );
-
-    await query(
-      `
-        INSERT INTO product_packages (product_id, package_includes)
-        VALUES ($1, $2)
-        ON CONFLICT (product_id) DO UPDATE
-        SET package_includes = EXCLUDED.package_includes
-      `,
-      [product.id, info.package_includes ?? '']
-    );
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: 'Product updated successfully' });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'Unexpected error' }, { status: 500 });
   }
