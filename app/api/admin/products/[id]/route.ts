@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(_: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const productId = params?.id;
 
   if (!productId) {
@@ -47,7 +48,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         `,
         [productId]
       ),
-      query('SELECT * FROM product_variants WHERE product_id = $1 ORDER BY created_at ASC', [productId]),
+      query('SELECT * FROM product_variants WHERE product_id = $1', [productId]),
       query('SELECT * FROM product_descriptions WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_specs WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_packages WHERE product_id = $1 LIMIT 1', [productId]),
