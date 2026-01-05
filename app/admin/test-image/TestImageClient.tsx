@@ -18,7 +18,13 @@ import {
   Upload,
   message,
 } from "antd";
-import { UploadOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload";
 
 type TestImageRecord = {
@@ -263,6 +269,9 @@ const TestImageClient = () => {
     return option?.aspect ?? 1;
   }, [ratio]);
 
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   return (
     <Space orientation="vertical" size={24} style={{ width: "100%" }}>
       <Card title="Test Image Upload">
@@ -309,7 +318,7 @@ const TestImageClient = () => {
                   src={item.normalized_small}
                   alt={item.name}
                   width="100%"
-                  height={200}
+                  height={300}
                   style={{ objectFit: "cover" }}
                 />
               }
@@ -330,9 +339,11 @@ const TestImageClient = () => {
                 <Button
                   size="small"
                   type="link"
-                  href={item.normalized_large}
-                  target="_blank"
-                  rel="noreferrer"
+                  icon={<EyeOutlined />}
+                  onClick={() => {
+                    setPreviewUrl(item.normalized_large);
+                    setPreviewVisible(true);
+                  }}
                 >
                   View large
                 </Button>
@@ -341,6 +352,25 @@ const TestImageClient = () => {
           </Col>
         ))}
       </Row>
+
+      <Modal
+        open={previewVisible}
+        footer={null}
+        onCancel={() => {
+          setPreviewVisible(false);
+          setPreviewUrl(null);
+        }}
+        width="80vw"
+      >
+        {previewUrl && (
+          <AntdImage
+            src={previewUrl}
+            alt="Large preview"
+            width="100%"
+            style={{ objectFit: "contain" }}
+          />
+        )}
+      </Modal>
 
       <Modal
         open={modalVisible}
