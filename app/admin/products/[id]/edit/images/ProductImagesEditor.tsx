@@ -7,7 +7,7 @@ import {
   Card,
   Col,
   Divider,
-  Image,
+  Image as AntImage,
   Modal,
   Row,
   Select,
@@ -34,12 +34,6 @@ type ProductImage = {
   medium_url?: string;
   position?: number;
 };
-
-interface CustomUploadRequest {
-  file: File;
-  onSuccess?: (response: any) => void;
-  onError?: (error: Error | string) => void;
-}
 
 const ratioOptions = [
   { label: '1:1', value: '1:1', aspect: 1 },
@@ -250,7 +244,15 @@ export default function ProductImagesEditor({
     }
   };
 
-  const handleDragUpload = async ({ file, onError, onSuccess }: CustomUploadRequest) => {
+  const handleDragUpload = async (options: any) => {
+    const rcFile = options.file;
+    const fileCandidate = (rcFile?.originFileObj as File) || options.file;
+    if (typeof fileCandidate === 'string') {
+      options.onError?.(new Error('Unsupported file type'));
+      message.error('Unsupported file type');
+      return;
+    }
+    const file = fileCandidate as File;
     try {
       const newImg = await uploadProductImage(file);
       const next = normalizeImages([...images, newImg]);
@@ -259,9 +261,9 @@ export default function ProductImagesEditor({
       await loadImages();
       setDeletedImageIds([]);
       message.success('Image uploaded and saved');
-      onSuccess?.(newImg);
+      options.onSuccess?.(newImg);
     } catch (err: any) {
-      onError?.(err);
+      options.onError?.(err);
       message.error(err?.message || 'Drag upload failed');
     }
   };
@@ -356,7 +358,10 @@ export default function ProductImagesEditor({
         {images.map((img, idx) => (
           <Card
             key={img.id || `${idx}-${img.url ?? Math.random()}`}
-            styles={{ body: { padding: 0 }, border: '1px solid #d9d9d9', borderRadius: 8 }}
+            styles={{
+              body: { padding: 0 },
+              root: { border: '1px solid #d9d9d9', borderRadius: 8 },
+            }}
             variant="outlined"
             style={{ borderRadius: 8 }}
           >
@@ -369,7 +374,7 @@ export default function ProductImagesEditor({
                 background: '#fafafa',
               }}
             >
-              <Image
+              <AntImage
                 src={resolveImageUrl(img) || undefined}
                 alt={`Image ${idx + 1}`}
                 height={180}
