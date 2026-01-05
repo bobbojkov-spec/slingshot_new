@@ -160,13 +160,26 @@ const TestImageClient = () => {
       };
     });
   }, [images]);
+  const [originalDimensions, setOriginalDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
   const handleCropSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      setCropImageSrc(reader.result as string);
+      const src = reader.result as string;
+      setCropImageSrc(src);
       setModalVisible(true);
+      createImage(src)
+        .then((image) => {
+          setOriginalDimensions({ width: image.naturalWidth, height: image.naturalHeight });
+        })
+        .catch(() => {
+          setOriginalDimensions(null);
+        });
     };
     reader.readAsDataURL(file);
     setSelectedFile(file);
@@ -391,21 +404,26 @@ const TestImageClient = () => {
         width={800}
       >
         <Space orientation="vertical" style={{ width: "100%" }}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Typography.Text>Select ratio</Typography.Text>
-              <Select
-                style={{ width: "100%" }}
-                value={ratio}
-                onChange={(value) => setRatio(value)}
-                options={ratioOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
-              />
-            </Col>
-            <Col span={12}>
-              <Typography.Text>Zoom</Typography.Text>
-              <Slider min={1} max={3} step={0.1} value={zoom} onChange={(value) => setZoom(value)} />
-            </Col>
-          </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Typography.Text>Select ratio</Typography.Text>
+                <Select
+                  style={{ width: "100%" }}
+                  value={ratio}
+                  onChange={(value) => setRatio(value)}
+                  options={ratioOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
+                />
+              </Col>
+              <Col span={12}>
+                <Typography.Text>Zoom</Typography.Text>
+                <Slider min={1} max={3} step={0.1} value={zoom} onChange={(value) => setZoom(value)} />
+              </Col>
+            </Row>
+            {originalDimensions && (
+              <Typography.Text type="secondary">
+                Original size: {originalDimensions.width} × {originalDimensions.height} px
+              </Typography.Text>
+            )}
           <div
             style={{
               position: "relative",
