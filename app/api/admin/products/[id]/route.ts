@@ -98,7 +98,7 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       ),
       query(
         `
-          SELECT id, product_id, name_en, name_bg, hex_color, position, created_at, updated_at
+          SELECT id, product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at
           FROM product_colors
           WHERE product_id = $1
           ORDER BY position ASC, name_en ASC

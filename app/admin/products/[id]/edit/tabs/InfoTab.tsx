@@ -1,24 +1,34 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Input, Select, Space, Typography, Divider } from 'antd';
+import { useMemo, useState } from 'react';
+import { Checkbox, Input, Select, Space, Typography, Divider, message } from 'antd';
 import type { Product } from '../EditProduct';
 import BilingualInput from '@/app/admin/components/BilingualInput';
 import BilingualRichText from '@/app/admin/components/BilingualRichText';
 import BilingualTags from '@/app/admin/components/BilingualTags';
+import { colorsUrl } from '../colorsApi';
 
 type Option = { label: string; value: string };
+
+type ActivityCategory = {
+  id: string;
+  name_en: string;
+  name_bg: string;
+  slug: string;
+};
 
 export default function InfoTab({
   draft,
   setDraft,
   categories,
   productTypes,
+  activityCategories,
 }: {
   draft: Product;
   setDraft: React.Dispatch<React.SetStateAction<Product>>;
   categories: { id: string; name: string }[];
   productTypes: string[];
+  activityCategories: ActivityCategory[];
 }) {
   // Debug: Check what we're receiving
   console.log('[InfoTab] draft.translation_en:', draft.translation_en);
@@ -33,6 +43,52 @@ export default function InfoTab({
     () => (productTypes || []).map((t) => ({ label: t, value: t })),
     [productTypes]
   );
+
+  const activityOptions = useMemo<Option[]>(
+    () =>
+      (activityCategories || []).map((cat) => ({
+        label: `${cat.name_en} / ${cat.name_bg}`,
+        value: cat.id,
+      })),
+    [activityCategories]
+  );
+
+  const activityCategoryIds = draft.activity_category_ids || [];
+
+  const [updatingColorId, setUpdatingColorId] = useState<string | null>(null);
+  const productColors = draft.colors || [];
+  const sortedProductColors = useMemo(
+    () => [...productColors].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+    [productColors]
+  );
+
+  const handleToggleColor = async (color: any) => {
+    if (!draft.id) return;
+    setUpdatingColorId(color.id);
+    try {
+      const url = colorsUrl(draft.id);
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ colorId: color.id, is_visible: !(color.is_visible !== false) }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to update color visibility');
+
+      setDraft((prev) => ({
+        ...prev,
+        colors: prev.colors?.map((c) =>
+          c.id === color.id ? { ...c, ...body.color } : c
+        ),
+      }));
+
+      message.success(`Color ${body.color.is_visible ? 'enabled' : 'hidden'}`);
+    } catch (error: any) {
+      message.error(error?.message || 'Unable to update color visibility');
+    } finally {
+      setUpdatingColorId(null);
+    }
+  };
 
   // Helper to update EN translation
   const updateTranslationEN = (field: string, value: any) => {
@@ -138,6 +194,67 @@ export default function InfoTab({
           }
           allowClear
           placeholder="Select status"
+        />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '80vw' }}>
+        <Typography.Text strong>Product Colors</Typography.Text>
+        <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+          {sortedProductColors.length ? (
+            sortedProductColors.map((color) => {
+              const checked = color.is_visible !== false;
+              return (
+                <Checkbox
+                  key={color.id}
+                  checked={checked}
+                  onChange={() => handleToggleColor(color)}
+                  disabled={updatingColorId === color.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: 4,
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                  title={`${color.name_en} / ${color.name_bg}`}
+                >
+                  <span
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 12,
+                      backgroundColor: color.hex_color || '#000',
+                      border: '1px solid #e0e0e0',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  />
+                </Checkbox>
+              );
+            })
+          ) : (
+            <Typography.Text type="secondary">No colors yet</Typography.Text>
+          )}
+        </div>
+      </div>
+
+      <Divider />
+
+      <div style={{ width: '100%', maxWidth: '80vw' }}>
+        <Typography.Text strong>Activity Categories</Typography.Text>
+        <Checkbox.Group
+          options={activityOptions}
+          value={activityCategoryIds}
+          onChange={(vals) =>
+            setDraft((prev) => ({
+              ...prev,
+              activity_category_ids: vals as string[],
+            }))
+          }
+          style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8 }}
         />
       </div>
 

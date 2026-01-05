@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: { params: { id?: string } }) {
   try {
     const { rows: colors = [] } = await query(
       `
-        SELECT id, product_id, name_en, name_bg, hex_color, position, created_at, updated_at
+        SELECT id, product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at
         FROM product_colors
         WHERE product_id = $1
         ORDER BY position ASC, name_en ASC
@@ -57,9 +57,9 @@ export async function POST(req: Request, { params }: { params: { id?: string } }
 
     const { rows: colorRows } = await query(
       `
-        INSERT INTO product_colors (product_id, name_en, name_bg, hex_color, position, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-        RETURNING id, product_id, name_en, name_bg, hex_color, position, created_at, updated_at
+        INSERT INTO product_colors (product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, TRUE, NOW(), NOW())
+        RETURNING id, product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at
       `,
       [productId, name_en, name_bg, hex_color || '#000000', position ?? 0]
     );
@@ -92,7 +92,7 @@ export async function PUT(req: Request, { params }: { params: { id?: string } })
   }
 
   try {
-    const { colorId, name_en, name_bg, hex_color, position } = await req.json();
+    const { colorId, name_en, name_bg, hex_color, position, is_visible } = await req.json();
     if (!colorId) {
       return NextResponse.json({ error: 'colorId required' }, { status: 400 });
     }
@@ -117,6 +117,10 @@ export async function PUT(req: Request, { params }: { params: { id?: string } })
       updates.push(`position = $${idx++}`);
       values.push(position);
     }
+    if (is_visible !== undefined) {
+      updates.push(`is_visible = $${idx++}`);
+      values.push(is_visible);
+    }
 
     if (!updates.length) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
@@ -131,7 +135,7 @@ export async function PUT(req: Request, { params }: { params: { id?: string } })
         UPDATE product_colors
         SET ${updates.join(', ')}
         WHERE id = $${idx++} AND product_id = $${idx}
-        RETURNING id, product_id, name_en, name_bg, hex_color, position, created_at, updated_at
+        RETURNING id, product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at
       `,
       values
     );
@@ -140,7 +144,22 @@ export async function PUT(req: Request, { params }: { params: { id?: string } })
       return NextResponse.json({ error: 'Color not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ color: updatedRows[0] });
+    const updatedColor = updatedRows[0];
+
+    if (is_visible === true) {
+      await query(
+        `
+          INSERT INTO product_variant_availability (variant_id, color_id, stock_qty, is_active, created_at, updated_at)
+          SELECT id, $1, 0, false, NOW(), NOW()
+          FROM product_variants
+          WHERE product_id = $2
+          ON CONFLICT (variant_id, color_id) DO NOTHING
+        `,
+        [colorId, productId]
+      );
+    }
+
+    return NextResponse.json({ color: updatedColor });
   } catch (error: any) {
     console.error('Failed to edit product color', error);
     return NextResponse.json({ error: error?.message || 'Unable to update color' }, { status: 500 });

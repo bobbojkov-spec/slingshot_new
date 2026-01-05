@@ -5,13 +5,7 @@ import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfir
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import BilingualInput from '../../../../components/BilingualInput';
 import type { Product } from '../EditProduct';
-
-const colorsUrl = (productId: string) => {
-  if (!productId) {
-    throw new Error('Missing productId for colorsUrl');
-  }
-  return `/api/admin/products/${productId}/colors`;
-};
+import { colorsUrl } from '../colorsApi';
 
 type Variant = {
   id?: string;
@@ -72,6 +66,10 @@ export default function VariantsTab({
   const sortedColors = useMemo(
     () => [...colors].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
     [colors]
+  );
+  const visibleColors = useMemo(
+    () => sortedColors.filter((color) => color.is_visible !== false),
+    [sortedColors]
   );
   const sortedVariants = useMemo(
     () => [...variants].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
@@ -685,7 +683,7 @@ export default function VariantsTab({
           title="Availability Matrix"
           description="Update stock and activation per variant × color cell."
         >
-          {!(sortedColors.length && sortedVariants.length) ? (
+          {!(visibleColors.length && sortedVariants.length) ? (
             <Typography.Text type="secondary">
               Add at least one variant and color to configure availability.
             </Typography.Text>
@@ -704,7 +702,7 @@ export default function VariantsTab({
                     >
                       Variant
                     </th>
-                    {sortedColors.map((color) => (
+                    {visibleColors.map((color) => (
                       <th
                         key={color.id}
                         style={{
@@ -747,7 +745,7 @@ export default function VariantsTab({
                           SKU: {variant.sku || '-'}
                         </Typography.Text>
                       </td>
-                      {sortedColors.map((color) => {
+                      {visibleColors.map((color) => {
                         const entry = getAvailabilityEntry(variant.id!, color.id);
                         const cellKey = `${variant.id}-${color.id}`;
                         const isSaving = savingAvailabilityKey === cellKey;
