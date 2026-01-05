@@ -327,15 +327,25 @@ const TestImageClient = () => {
         {normalizedImages.map((item) => (
           <Col key={item.id} xs={12} sm={8} md={6} lg={4}>
             <Card
-              cover={
+            cover={
+              <div
+                style={{
+                  height: 300,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#fafafa",
+                }}
+              >
                 <AntdImage
                   src={item.normalized_small}
                   alt={item.name}
-                  width="100%"
                   height={300}
-                  style={{ objectFit: "cover" }}
+                  width="auto"
+                  style={{ objectFit: "contain", maxHeight: "100%", maxWidth: "100%" }}
                 />
-              }
+              </div>
+            }
               actions={[
                 <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(item.id)}>
                   Edit

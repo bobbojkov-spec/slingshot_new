@@ -118,8 +118,14 @@ async function handleUpload(req: NextRequest) {
     }
   }
 
-  const thumb = await sharp(baseForDerivatives).resize(300, 300, { fit: 'cover' }).jpeg({ quality: 80 }).toBuffer();
-  const medium = await sharp(baseForDerivatives).resize(900, 900, { fit: 'inside' }).jpeg({ quality: 85 }).toBuffer();
+  const thumb = await sharp(baseForDerivatives)
+    .resize({ height: 300 })
+    .jpeg({ quality: 80 })
+    .toBuffer();
+  const medium = await sharp(baseForDerivatives)
+    .resize({ width: 900, height: 900, fit: 'inside' })
+    .jpeg({ quality: 85 })
+    .toBuffer();
 
   const urlOriginal = await uploadToStorage(originalPath, originalJpeg);
   const urlThumb = await uploadToStorage(thumbPath, thumb);

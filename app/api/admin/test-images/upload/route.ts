@@ -31,55 +31,18 @@ async function ensureTable() {
   `);
 }
 
-function parseRatio(value: string | null) {
-  if (!value) return null;
-  const parts = value.split(':').map((part) => Number(part));
-  if (parts.length !== 2 || parts.some((n) => Number.isNaN(n) || n <= 0)) {
-    return null;
-  }
-  return parts[0] / parts[1];
-}
-
-async function resizeBuffers(buffer: Buffer, ratioValue: number | null) {
-  const croppedBuffer = await (async () => {
-    if (!ratioValue) return buffer;
-    const metadata = await sharp(buffer).metadata();
-    if (!metadata.width || !metadata.height) return buffer;
-    const width = metadata.width;
-    const height = metadata.height;
-    let cropWidth = width;
-    let cropHeight = height;
-    if (width / height > ratioValue) {
-      cropWidth = Math.round(ratioValue * height);
-    } else {
-      cropHeight = Math.round(width / ratioValue);
-    }
-    const left = Math.max(0, Math.round((width - cropWidth) / 2));
-    const top = Math.max(0, Math.round((height - cropHeight) / 2));
-    return sharp(buffer)
-      .extract({ left, top, width: cropWidth, height: cropHeight })
-      .toBuffer();
-  })();
-
-  const smallBuffer = await sharp(croppedBuffer)
-    .resize(300, 300, { fit: 'cover' })
+async function resizeBuffers(buffer: Buffer) {
+  const smallBuffer = await sharp(buffer)
+    .resize({ height: 300 })
     .jpeg({ quality: 80 })
     .toBuffer();
 
-  const largeResizeArgs: sharp.ResizeOptions = ratioValue
-    ? {
-        width: 900,
-        height: Math.max(1, Math.round(900 / ratioValue)),
-        fit: 'fill',
-      }
-    : { width: 900, fit: 'inside' };
-
-  const largeBuffer = await sharp(croppedBuffer)
-    .resize(largeResizeArgs)
+  const largeBuffer = await sharp(buffer)
+    .resize({ width: 900, height: 900, fit: 'inside' })
     .jpeg({ quality: 85 })
     .toBuffer();
 
-  return { smallBuffer, largeBuffer, croppedBuffer };
+  return { smallBuffer, largeBuffer };
 }
 
 export async function POST(req: NextRequest) {
@@ -98,7 +61,6 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ratioValue = parseRatio(cropRatio);
 
     const basePath = `test-images/${randomUUID()}`;
     const timestamp = Date.now();
@@ -112,7 +74,7 @@ export async function POST(req: NextRequest) {
       upsert: true,
     });
 
-    const { smallBuffer, largeBuffer } = await resizeBuffers(buffer, ratioValue);
+    const { smallBuffer, largeBuffer } = await resizeBuffers(buffer);
     const smallUrl = await uploadPublicImage(smallPath, smallBuffer, {
       contentType: 'image/jpeg',
       upsert: true,

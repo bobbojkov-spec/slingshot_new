@@ -42,15 +42,28 @@ export default function ImagesSection({
     <Space orientation="vertical" size={12} style={{ width: '100%' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
         {images.map((img, idx) => (
-          <div key={img.id || idx} style={{ border: '1px solid #d9d9d9', borderRadius: 4, overflow: 'hidden' }}>
-            <Image
-              src={img.url}
-              alt={`Image ${idx + 1}`}
-              width="100%"
-              height={140}
-              style={{ objectFit: 'cover' }}
-              preview
-            />
+          <div
+            key={img.id || idx}
+            style={{ border: '1px solid #d9d9d9', borderRadius: 4, overflow: 'hidden' }}
+          >
+            <div
+              style={{
+                height: 140,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#fafafa',
+              }}
+            >
+              <Image
+                src={img.url}
+                alt={`Image ${idx + 1}`}
+                height={140}
+                width="auto"
+                preview
+                style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }}
+              />
+            </div>
             <div style={{ padding: 6, fontSize: 12, color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Position: {img.position ?? idx + 1}</span>
               <Space size={4}>

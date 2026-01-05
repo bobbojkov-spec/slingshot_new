@@ -252,28 +252,54 @@ export default function ProductsListClient({ products }: { products: Product[] }
   };
 
   const columns = [
-    {
-      title: <span style={{ fontSize: 11 }}>Img</span>,
-      dataIndex: 'images',
-      width: 100,
-      render: (_: any, record: Product) => {
-        const name = record.title || record.name || 'Untitled';
-        const url = record.images?.[0]?.url;
-        return url ? (
-          <AntImage
-            src={url}
-            alt={name}
-            width={80}
-            height={80}
-            style={{ objectFit: 'cover', borderRadius: 4 }}
-            preview
-            fallback="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='10'%3ENo image%3C/text%3E%3C/svg%3E"
-          />
-        ) : (
-          <div style={{ width: 80, height: 80, background: '#f5f5f5', borderRadius: 4 }} />
-        );
-      },
-    },
+        {
+          title: <span style={{ fontSize: 11 }}>Img</span>,
+          dataIndex: 'images',
+          width: 100,
+          render: (_: any, record: Product) => {
+            const name = record.title || record.name || 'Untitled';
+            const url = record.images?.[0]?.url;
+            return url ? (
+              <div
+                style={{
+                  width: '100%',
+                  height: 80,
+                  minHeight: 80,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <AntImage
+                  src={url}
+                  alt={name}
+                  height={80}
+                  width="auto"
+                  preview
+                  style={{
+                    objectFit: 'contain',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    borderRadius: 4,
+                  }}
+                  fallback="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='10'%3ENo image%3C/text%3E%3C/svg%3E"
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: 80,
+                  background: '#f5f5f5',
+                  borderRadius: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              />
+            );
+          },
+        },
     {
       title: <span style={{ fontSize: 11, fontWeight: 600 }}>Name</span>,
       dataIndex: 'title',
@@ -471,15 +497,32 @@ export default function ProductsListClient({ products }: { products: Product[] }
           <Space orientation="vertical" size={12} style={{ width: '100%' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
               {(activeProduct.images || []).map((img, idx) => (
-                <div key={img.id || idx} style={{ border: '1px solid #d9d9d9', borderRadius: 4, overflow: 'hidden' }}>
+              <div
+                key={img.id || idx}
+                style={{ border: '1px solid #d9d9d9', borderRadius: 4, overflow: 'hidden' }}
+              >
+                <div
+                  style={{
+                    height: 140,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#fafafa',
+                  }}
+                >
                   <AntImage
                     src={img.url}
                     alt={`${activeProduct.title || 'Image'} ${idx + 1}`}
-                    width="100%"
                     height={140}
-                    style={{ objectFit: 'cover' }}
+                    width="auto"
                     preview
+                    style={{
+                      objectFit: 'contain',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                    }}
                   />
+                </div>
                   <div style={{ padding: 6, fontSize: 12, color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>Position: {img.position ?? idx + 1}</span>
                     <Space size={4}>
