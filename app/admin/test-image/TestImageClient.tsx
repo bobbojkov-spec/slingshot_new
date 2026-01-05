@@ -10,6 +10,7 @@ import {
   Image as AntdImage,
   Input,
   Modal,
+  Popconfirm,
   Row,
   Select,
   Slider,
@@ -326,9 +327,17 @@ const TestImageClient = () => {
                 <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(item.id)}>
                   Edit
                 </Button>,
-                <Button size="small" icon={<DeleteOutlined />} danger onClick={() => handleDelete(item.id)}>
-                  Delete
-                </Button>,
+                <Popconfirm
+                  title="Delete this image?"
+                  description="This removes all sized versions from storage. Are you sure?"
+                  onConfirm={() => handleDelete(item.id)}
+                  okText="Delete"
+                  cancelText="Cancel"
+                >
+                  <Button size="small" icon={<DeleteOutlined />} danger>
+                    Delete
+                  </Button>
+                </Popconfirm>,
               ]}
             >
               <Typography.Title level={5}>{item.name}</Typography.Title>
