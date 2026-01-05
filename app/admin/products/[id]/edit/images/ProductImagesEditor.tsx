@@ -322,7 +322,7 @@ export default function ProductImagesEditor({
         Images for {productTitle}
       </Typography.Title>
       <Card>
-        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <Space orientation="vertical" size={16} style={{ width: '100%' }}>
           <Button type="primary" icon={<UploadOutlined />} onClick={() => hiddenInputRef.current?.click()}>
             Upload with Crop Ratio
           </Button>
