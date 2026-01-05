@@ -9,10 +9,11 @@ export default async function ProductImagesPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams: SearchParams;
 }) {
-  const productId = params?.id;
+  const resolvedParams = await params;
+  const productId = resolvedParams?.id;
   if (!productId) {
     notFound();
   }
