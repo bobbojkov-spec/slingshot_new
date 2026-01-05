@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getImageVariantUrl } from '@/lib/utils/imagePaths';
 
 export async function GET(_: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -82,7 +83,11 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       product: {
         ...rest,
         category: category_info || null,
-        images: imageRows,
+      images: imageRows.map((row) => ({
+        ...row,
+        thumb_url: getImageVariantUrl(row.url, 'thumb') || row.url,
+        medium_url: getImageVariantUrl(row.url, 'medium') || row.url,
+      })),
         variants: variantRows,
         // Legacy fallback fields
         description_html: rest.description_html ?? descriptions.description_html ?? null,

@@ -5,7 +5,7 @@ import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, InboxOutlined } fro
 
 type Product = {
   id?: string;
-  images?: { id?: string; url: string; position?: number }[];
+  images?: { id?: string; url: string; position?: number; thumb_url?: string; medium_url?: string }[];
   [key: string]: any; // Allow additional properties
 };
 
@@ -56,7 +56,7 @@ export default function ImagesSection({
               }}
             >
               <Image
-                src={img.url}
+                src={img.thumb_url || img.url}
                 alt={`Image ${idx + 1}`}
                 height={140}
                 width="auto"

@@ -3,6 +3,7 @@ import { uploadPublicImage } from '@/lib/railway/storage';
 import { query } from '@/lib/db';
 import sharp from 'sharp';
 import { randomUUID } from 'crypto';
+import { getImageVariantUrl } from '@/lib/utils/imagePaths';
 
 const PRODUCT_IMAGES_PATH = 'product-images';
 
@@ -155,6 +156,9 @@ async function handleUpload(req: NextRequest) {
   );
 
   const inserted = insertedRows[0];
+
+  const thumbUrlValue = urlThumb || getImageVariantUrl(inserted.url, 'thumb') || null;
+  const mediumUrlValue = urlMedium || getImageVariantUrl(inserted.url, 'medium') || null;
   
   // If this is the first image (position 1), update product's og_image_url
   if (position === 1) {
@@ -164,7 +168,13 @@ async function handleUpload(req: NextRequest) {
     );
   }
   
-  return NextResponse.json({ image: inserted });
+  return NextResponse.json({
+    image: {
+      ...inserted,
+      thumb_url: thumbUrlValue,
+      medium_url: mediumUrlValue,
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {

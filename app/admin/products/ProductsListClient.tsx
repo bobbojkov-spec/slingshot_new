@@ -32,7 +32,7 @@ type Product = {
   name?: string;
   handle?: string;
   tags?: string[];
-  images?: { id?: string; url?: string; position?: number }[];
+  images?: { id?: string; url?: string; position?: number; thumb_url?: string; medium_url?: string }[];
   imageCount?: number;
   product_type?: string;
   productType?: string;
@@ -258,8 +258,9 @@ export default function ProductsListClient({ products }: { products: Product[] }
           width: 100,
           render: (_: any, record: Product) => {
             const name = record.title || record.name || 'Untitled';
-            const url = record.images?.[0]?.url;
-            return url ? (
+            const firstImage = record.images?.[0];
+            const imgUrl = firstImage?.thumb_url || firstImage?.url;
+            return imgUrl ? (
               <div
                 style={{
                   width: '100%',
@@ -271,7 +272,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
                 }}
               >
                 <AntImage
-                  src={url}
+                  src={imgUrl}
                   alt={name}
                   height={80}
                   width="auto"
@@ -511,7 +512,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
                   }}
                 >
                   <AntImage
-                    src={img.url}
+                    src={img.thumb_url || img.url}
                     alt={`${activeProduct.title || 'Image'} ${idx + 1}`}
                     height={140}
                     width="auto"
