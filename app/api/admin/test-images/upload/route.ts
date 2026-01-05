@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS test_images (
 
 async function ensureTable() {
   await query(TABLE_SQL);
+  await query(`
+    ALTER TABLE test_images
+    ADD COLUMN IF NOT EXISTS original_public_url TEXT,
+    ADD COLUMN IF NOT EXISTS small_public_url TEXT,
+    ADD COLUMN IF NOT EXISTS large_public_url TEXT
+  `);
 }
 
 function parseRatio(value: string | null) {
