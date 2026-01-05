@@ -44,10 +44,13 @@ export async function POST(req: Request, { params }: { params: { id?: string } }
   }
 
   try {
-    const { name_en, name_bg, hex_color, position } = await req.json();
+    const body = await req.json();
+    console.log('[colors POST] productId=', params.id);
+    console.log('[colors POST] body=', body);
+    const { name_en, name_bg, hex_color, position } = body;
     if (!name_en || !name_bg) {
       return NextResponse.json(
-        { error: 'name_en and name_bg are required' },
+        { error: 'name_en and name_bg are required', received: body },
         { status: 400 }
       );
     }

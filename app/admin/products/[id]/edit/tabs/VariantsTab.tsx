@@ -281,8 +281,17 @@ export default function VariantsTab({
       const method = colorToEdit ? 'PUT' : 'POST';
       const payload = {
         ...values,
+        name_en: values.name_en?.toString().trim() ?? '',
+        name_bg: values.name_bg?.toString().trim() ?? '',
+        hex_color: values.hex_color,
+        position: values.position,
         colorId: colorToEdit?.id,
       };
+
+      if (!payload.name_en || !payload.name_bg) {
+        console.warn('[colors] blocked submit — missing names', payload);
+        return;
+      }
       const url = colorsUrl(draft.id);
       console.log('[colors] POST', url, { productId: draft.id, payload });
 
