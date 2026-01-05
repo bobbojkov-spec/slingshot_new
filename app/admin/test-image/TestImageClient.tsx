@@ -9,7 +9,6 @@ import {
   Divider,
   Image as AntdImage,
   Input,
-  List,
   Modal,
   Row,
   Select,
@@ -120,6 +119,23 @@ const TestImageClient = () => {
     fetchImages();
   }, []);
 
+  const normalizedImages = useMemo(() => {
+    const parse = (value: string | null) => {
+      if (!value) return null;
+      try {
+        return JSON.parse(value);
+      } catch {
+        return null;
+      }
+    };
+
+    return images.map((item) => ({
+      ...item,
+      original_url: item.original_public_url || parse(item.original_url)?.publicUrl || item.original_url,
+      small_url: item.small_public_url || parse(item.small_url)?.publicUrl || item.small_url,
+      large_url: item.large_public_url || parse(item.large_url)?.publicUrl || item.large_url,
+    }));
+  }, [images]);
   const handleCropSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -267,15 +283,12 @@ const TestImageClient = () => {
 
       <Divider>Uploaded Images</Divider>
 
-      <List
-        dataSource={images}
-        loading={loading}
-        grid={{ gutter: 16, column: 3 }}
-        renderItem={(item) => (
-          <List.Item>
+      <Row gutter={[16, 16]}>
+        {normalizedImages.map((item) => (
+          <Col key={item.id} xs={24} sm={12} lg={8}>
             <Card
               cover={
-            <AntdImage
+                <AntdImage
                   src={item.small_url}
                   alt={item.name}
                   width="100%"
@@ -308,9 +321,9 @@ const TestImageClient = () => {
                 </Button>
               </div>
             </Card>
-          </List.Item>
-        )}
-      />
+          </Col>
+        ))}
+      </Row>
 
       <Modal
         open={modalVisible}

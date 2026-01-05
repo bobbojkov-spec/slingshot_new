@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS test_images (
   original_url TEXT NOT NULL,
   small_url TEXT,
   large_url TEXT,
+  original_public_url TEXT,
+  small_public_url TEXT,
+  large_public_url TEXT,
   crop_ratio TEXT,
   mode TEXT,
   created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
@@ -123,21 +126,38 @@ export async function POST(req: NextRequest) {
           original_url,
           small_url,
           large_url,
+          original_public_url,
+          small_public_url,
+          large_public_url,
           crop_ratio,
           mode,
           created_at,
           updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           original_url = EXCLUDED.original_url,
           small_url = EXCLUDED.small_url,
           large_url = EXCLUDED.large_url,
+          original_public_url = EXCLUDED.original_public_url,
+          small_public_url = EXCLUDED.small_public_url,
+          large_public_url = EXCLUDED.large_public_url,
           crop_ratio = EXCLUDED.crop_ratio,
           mode = EXCLUDED.mode,
           updated_at = NOW()
       `,
-      [id, name, originalUrl, smallUrl, largeUrl, cropRatio, mode]
+      [
+        id,
+        name,
+        originalUrl,
+        smallUrl,
+        largeUrl,
+        originalUrl.publicUrl,
+        smallUrl.publicUrl,
+        largeUrl.publicUrl,
+        cropRatio,
+        mode,
+      ]
     );
 
     const { rows } = await query('SELECT * FROM test_images WHERE id = $1', [id]);
