@@ -1,26 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import BilingualInput from '../../../../components/BilingualInput';
 import type { Product } from '../EditProduct';
 
+const colorsUrl = (productId: string) => {
+  if (!productId) {
+    throw new Error('Missing productId for colorsUrl');
+  }
+  return `/api/admin/products/${productId}/colors`;
+};
+
 type Variant = {
   id?: string;
   title?: string;
+  name_en?: string;
+  name_bg?: string;
   sku?: string;
   price?: number;
   compare_at_price?: number;
   inventory_quantity?: number;
   available?: boolean;
   status?: string;
+  position?: number;
   translation_en?: {
     title?: string;
   };
   translation_bg?: {
     title?: string;
   };
+};
+
+type AvailabilityEntry = {
+  variant_id: string;
+  color_id: string;
+  stock_qty: number;
+  is_active: boolean;
 };
 
 export default function VariantsTab({
@@ -43,8 +60,23 @@ export default function VariantsTab({
     translation_bg: { title: '' },
   });
   const [addForm] = Form.useForm();
+  const [colorForm] = Form.useForm();
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+  const [colorToEdit, setColorToEdit] = useState<any>(null);
+  const [savingAvailabilityKey, setSavingAvailabilityKey] = useState<string>('');
 
   const variants = draft.variants || [];
+  const colors = draft.colors || [];
+  const availability = draft.availability || [];
+
+  const sortedColors = useMemo(
+    () => [...colors].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+    [colors]
+  );
+  const sortedVariants = useMemo(
+    () => [...variants].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+    [variants]
+  );
 
   const isEditing = (record: Variant) => record.id === editingKey;
 
@@ -72,10 +104,11 @@ export default function VariantsTab({
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error || 'Failed to update variant');
 
-      // Update local state
       setDraft((prev) => ({
         ...prev,
-        variants: prev.variants?.map((v) => (v.id === id ? { ...v, ...editForm } : v)),
+        variants: prev.variants?.map((v) =>
+          v.id === id ? { ...v, ...editForm } : v
+        ),
       }));
 
       message.success('Variant updated');
@@ -126,6 +159,7 @@ export default function VariantsTab({
       setDraft((prev) => ({
         ...prev,
         variants: prev.variants?.filter((v) => v.id !== id),
+        availability: prev.availability?.filter((entry) => entry.variant_id !== id),
       }));
 
       message.success('Variant deleted');
@@ -136,12 +170,23 @@ export default function VariantsTab({
 
   const addVariant = async (values: any) => {
     try {
+      const payload = {
+        title: values.title,
+        sku: values.sku,
+        price: values.price,
+        compare_at_price: values.compare_at_price,
+        inventory_quantity: values.inventory_quantity ?? 0,
+        name_en: values.name_en || values.title,
+        name_bg: values.name_bg || '',
+        position: values.position ?? 0,
+      };
+
       const res = await fetch('/api/admin/products/variants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           productId: draft.id,
-          variant: values,
+          variant: payload,
         }),
       });
 
@@ -151,6 +196,7 @@ export default function VariantsTab({
       setDraft((prev) => ({
         ...prev,
         variants: [...(prev.variants || []), body.variant],
+        availability: [...(prev.availability || []), ...(body.availability || [])],
       }));
 
       message.success('Variant added');
@@ -165,10 +211,10 @@ export default function VariantsTab({
     setBilingualEditForm({
       variant: record,
       translation_en: {
-        title: record.translation_en?.title || record.title || '',
+        title: record.translation_en?.title || record.title || record.name_en || '',
       },
       translation_bg: {
-        title: record.translation_bg?.title || '',
+        title: record.translation_bg?.title || record.name_bg || '',
       },
     });
     setIsBilingualModalOpen(true);
@@ -212,6 +258,145 @@ export default function VariantsTab({
     }
   };
 
+  const openColorModal = (color?: any) => {
+    setColorToEdit(color || null);
+    if (color) {
+      colorForm.setFieldsValue({
+        name_en: color.name_en,
+        name_bg: color.name_bg,
+        hex_color: color.hex_color,
+        position: color.position,
+      });
+    } else {
+      colorForm.resetFields();
+      colorForm.setFieldsValue({ hex_color: '#000000', position: 0 });
+    }
+    setIsColorModalOpen(true);
+  };
+
+  const handleColorSubmit = async (values: any) => {
+    if (!draft.id) return;
+
+    try {
+      const method = colorToEdit ? 'PUT' : 'POST';
+      const payload = {
+        ...values,
+        colorId: colorToEdit?.id,
+      };
+      const url = colorsUrl(draft.id);
+      console.log('[colors] POST', url, { productId: draft.id, payload });
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to save color');
+
+      setDraft((prev) => {
+        const next = { ...prev };
+        if (colorToEdit) {
+          next.colors = next.colors?.map((c: any) => (c.id === body.color.id ? body.color : c));
+        } else {
+          next.colors = [...(next.colors || []), body.color];
+          next.availability = [...(next.availability || []), ...(body.availability || [])];
+        }
+        return next;
+      });
+
+      message.success(`Color ${colorToEdit ? 'updated' : 'added'}`);
+      setIsColorModalOpen(false);
+      colorForm.resetFields();
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to save color');
+    }
+  };
+
+  const deleteColor = async (colorId: string) => {
+    if (!draft.id) return;
+
+    try {
+      const url = colorsUrl(draft.id);
+      console.log('[colors] DELETE', url, { productId: draft.id, colorId });
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ colorId }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to delete color');
+
+      setDraft((prev) => ({
+        ...prev,
+        colors: prev.colors?.filter((c: any) => c.id !== colorId),
+        availability: prev.availability?.filter((entry) => entry.color_id !== colorId),
+      }));
+
+      message.success('Color removed');
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to delete color');
+    }
+  };
+
+  const getAvailabilityEntry = (variantId: string, colorId: string): AvailabilityEntry => {
+    const entry = availability.find((row) => row.variant_id === variantId && row.color_id === colorId);
+    if (entry) {
+      return entry as AvailabilityEntry;
+    }
+    return {
+      variant_id: variantId,
+      color_id: colorId,
+      stock_qty: 0,
+      is_active: false,
+    };
+  };
+
+  const saveAvailabilityCell = async (
+    variantId: string,
+    colorId: string,
+    overrides: Partial<AvailabilityEntry>
+  ) => {
+    if (!draft.id) return;
+
+    const key = `${variantId}-${colorId}`;
+    const existing = getAvailabilityEntry(variantId, colorId);
+    const payload = {
+      variant_id: variantId,
+      color_id: colorId,
+      stock_qty: overrides.stock_qty ?? existing.stock_qty,
+      is_active: overrides.is_active ?? existing.is_active,
+    };
+
+    setSavingAvailabilityKey(key);
+    try {
+      const res = await fetch(`/api/admin/products/${draft.id}/availability`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries: [payload] }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to save availability');
+
+      setDraft((prev) => ({
+        ...prev,
+        availability: [
+          ...(prev.availability?.filter(
+            (entry) => !(entry.variant_id === variantId && entry.color_id === colorId)
+          ) || []),
+          ...(body.entries || []),
+        ],
+      }));
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to save availability');
+    } finally {
+      setSavingAvailabilityKey('');
+    }
+  };
+
   const columns = [
     {
       title: 'Status',
@@ -228,7 +413,7 @@ export default function VariantsTab({
       ),
     },
     {
-      title: 'Title',
+      title: 'Title (EN)',
       dataIndex: 'title',
       key: 'title',
       render: (_: any, record: Variant) => {
@@ -236,11 +421,11 @@ export default function VariantsTab({
           return (
             <Input
               value={editForm.title}
-              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              onChange={(e) => setEditForm({ ...editForm, title: e.target.value, name_en: e.target.value })}
             />
           );
         }
-        return record.title || record.name || '—';
+        return record.title || record.name_en || '—';
       },
     },
     {
@@ -317,9 +502,26 @@ export default function VariantsTab({
       },
     },
     {
+      title: 'Position',
+      dataIndex: 'position',
+      key: 'position',
+      render: (_: any, record: Variant) => {
+        if (isEditing(record)) {
+          return (
+            <InputNumber
+              value={editForm.position}
+              onChange={(val) => setEditForm({ ...editForm, position: val ?? 0 })}
+              style={{ width: '100%' }}
+            />
+          );
+        }
+        return record.position !== undefined ? record.position : '—';
+      },
+    },
+    {
       title: 'Actions',
       key: 'actions',
-      width: 150,
+      width: 180,
       fixed: 'right' as const,
       render: (_: any, record: Variant) => {
         if (isEditing(record)) {
@@ -377,24 +579,214 @@ export default function VariantsTab({
 
   return (
     <div>
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
-        <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-          <Typography.Text>
-            Manage product variants. Only inactive variants can be deleted.
-          </Typography.Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsAddModalOpen(true)}>
-            Add Variant
-          </Button>
-        </Space>
+      <Space orientation="vertical" size={24} style={{ width: '100%' }}>
+        <CardSection
+          title="Product Variants"
+          description="Add pricing, SKU and inventory per variant."
+          action={
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsAddModalOpen(true)}>
+              Add Variant
+            </Button>
+          }
+        >
+          <Table<Variant>
+            size="small"
+            rowKey={(row) => row.id || row.sku || row.title || Math.random().toString()}
+            dataSource={sortedVariants}
+            columns={columns}
+            pagination={false}
+            scroll={{ x: true }}
+          />
+        </CardSection>
 
-        <Table<Variant>
-          size="small"
-          rowKey={(row) => row.id || row.sku || row.title || Math.random().toString()}
-          dataSource={variants}
-          columns={columns}
-          pagination={false}
-          scroll={{ x: true }}
-        />
+        <CardSection
+          title="Product Colors"
+          description="Colors are global to the product and reused by every variant."
+          action={
+            <Button type="default" icon={<PlusOutlined />} onClick={() => openColorModal()}>
+              Add Color
+            </Button>
+          }
+        >
+          <Table
+            size="small"
+            rowKey={(row) => row.id}
+            dataSource={sortedColors}
+            pagination={false}
+            columns={[
+              {
+                title: 'Name (EN)',
+                dataIndex: 'name_en',
+                key: 'name_en',
+              },
+              {
+                title: 'Name (BG)',
+                dataIndex: 'name_bg',
+                key: 'name_bg',
+              },
+              {
+                title: 'Color',
+                key: 'color',
+                render: (_: any, record: any) => (
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      border: '1px solid #e0e0e0',
+                      backgroundColor: record.hex_color || '#000',
+                    }}
+                  />
+                ),
+              },
+              {
+                title: 'Position',
+                dataIndex: 'position',
+                key: 'position',
+                render: (value: number) => value ?? 0,
+              },
+              {
+                title: 'Actions',
+                key: 'actions',
+                render: (_: any, record: any) => (
+                  <Space size={4}>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<EditOutlined />}
+                      onClick={() => openColorModal(record)}
+                    />
+                    <Popconfirm
+                      title="Delete color?"
+                      description="This will remove related availability."
+                      onConfirm={() => deleteColor(record.id)}
+                      okText="Delete"
+                      okType="danger"
+                    >
+                      <Button type="link" size="small" danger icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                  </Space>
+                ),
+              },
+            ]}
+          />
+        </CardSection>
+
+        <CardSection
+          title="Availability Matrix"
+          description="Update stock and activation per variant × color cell."
+        >
+          {!(sortedColors.length && sortedVariants.length) ? (
+            <Typography.Text type="secondary">
+              Add at least one variant and color to configure availability.
+            </Typography.Text>
+          ) : (
+            <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
+              <table style={{ width: '100%', borderSpacing: 0 }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        textAlign: 'left',
+                        padding: '8px 12px',
+                        borderBottom: '1px solid #f0f0f0',
+                        minWidth: 200,
+                      }}
+                    >
+                      Variant
+                    </th>
+                    {sortedColors.map((color) => (
+                      <th
+                        key={color.id}
+                        style={{
+                          textAlign: 'center',
+                          padding: '8px 12px',
+                          borderBottom: '1px solid #f0f0f0',
+                        }}
+                      >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <span
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: '50%',
+                              backgroundColor: color.hex_color || '#000',
+                              margin: '0 auto',
+                            }}
+                          />
+                          <span style={{ fontSize: 12 }}>{color.name_en}</span>
+                          <span style={{ fontSize: 10, color: '#6b7280' }}>{color.name_bg}</span>
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedVariants.map((variant) => (
+                    <tr key={variant.id}>
+                      <td
+                        style={{
+                          padding: '8px 12px',
+                          borderBottom: '1px solid #f0f0f0',
+                        }}
+                      >
+                        <Typography.Text strong>
+                          {variant.title || variant.name_en || variant.translation_en?.title || 'Untitled'}
+                        </Typography.Text>
+                        <br />
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                          SKU: {variant.sku || '-'}
+                        </Typography.Text>
+                      </td>
+                      {sortedColors.map((color) => {
+                        const entry = getAvailabilityEntry(variant.id!, color.id);
+                        const cellKey = `${variant.id}-${color.id}`;
+                        const isSaving = savingAvailabilityKey === cellKey;
+
+                        return (
+                          <td
+                            key={color.id}
+                            style={{
+                              padding: '8px 12px',
+                              borderBottom: '1px solid #f0f0f0',
+                            }}
+                          >
+                            <Space orientation="vertical" size={2} style={{ width: '100%' }}>
+                              <InputNumber
+                                size="small"
+                                min={0}
+                                value={entry.stock_qty}
+                                onChange={(val) =>
+                                  saveAvailabilityCell(variant.id!, color.id, {
+                                    stock_qty: val ?? 0,
+                                  })
+                                }
+                                style={{ width: '100%' }}
+                                disabled={isSaving}
+                              />
+                              <Switch
+                                size="small"
+                                checked={entry.is_active}
+                                onChange={(checked) =>
+                                  saveAvailabilityCell(variant.id!, color.id, {
+                                    is_active: checked,
+                                  })
+                                }
+                                loading={isSaving}
+                                checkedChildren="Active"
+                                unCheckedChildren="Inactive"
+                              />
+                            </Space>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardSection>
       </Space>
 
       <Modal
@@ -408,19 +800,33 @@ export default function VariantsTab({
         okText="Add Variant"
       >
         <Form form={addForm} layout="vertical" onFinish={addVariant}>
-          <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
-            <Input placeholder="e.g., Small / Black" />
+          <Form.Item
+            name="title"
+            label="Name (EN)"
+            rules={[{ required: true, message: 'English name is required' }]}
+          >
+            <Input placeholder="e.g., 7m" />
+          </Form.Item>
+          <Form.Item name="name_bg" label="Name (BG)">
+            <Input placeholder="e.g., 7м" />
           </Form.Item>
           <Form.Item name="sku" label="SKU">
             <Input placeholder="e.g., WF1-V6-SM-BLK" />
           </Form.Item>
-          <Form.Item name="price" label="Price (€)" rules={[{ required: true, message: 'Price is required' }]}>
+          <Form.Item
+            name="price"
+            label="Price (€)"
+            rules={[{ required: true, message: 'Price is required' }]}
+          >
             <InputNumber prefix="€" style={{ width: '100%' }} min={0} step={0.01} />
           </Form.Item>
           <Form.Item name="compare_at_price" label="Compare at Price (€)">
             <InputNumber prefix="€" style={{ width: '100%' }} min={0} step={0.01} />
           </Form.Item>
           <Form.Item name="inventory_quantity" label="Inventory Quantity" initialValue={0}>
+            <InputNumber style={{ width: '100%' }} min={0} />
+          </Form.Item>
+          <Form.Item name="position" label="Position" initialValue={0}>
             <InputNumber style={{ width: '100%' }} min={0} />
           </Form.Item>
         </Form>
@@ -434,7 +840,7 @@ export default function VariantsTab({
         okText="Save Translations"
         width={900}
       >
-        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <Space orientation="vertical" size={16} style={{ width: '100%' }}>
           <BilingualInput
             label="Variant Title"
             enValue={bilingualEditForm.translation_en.title}
@@ -454,6 +860,76 @@ export default function VariantsTab({
           />
         </Space>
       </Modal>
+
+      <Modal
+        title={colorToEdit ? 'Edit Color' : 'Add Color'}
+        open={isColorModalOpen}
+        onCancel={() => {
+          setIsColorModalOpen(false);
+          colorForm.resetFields();
+          setColorToEdit(null);
+        }}
+        onOk={() => colorForm.submit()}
+        okText={colorToEdit ? 'Save Color' : 'Add Color'}
+      >
+        <Form form={colorForm} layout="vertical" onFinish={handleColorSubmit}>
+          <Form.Item
+            name="name_en"
+            label="Name (EN)"
+            rules={[{ required: true, message: 'English name required' }]}
+          >
+            <Input placeholder="e.g., Sand" />
+          </Form.Item>
+          <Form.Item name="name_bg" label="Name (BG)" rules={[{ required: true, message: 'Bulgarian name required' }]}>
+            <Input placeholder="e.g., Пясък" />
+          </Form.Item>
+          <Form.Item
+            name="hex_color"
+            label="Color"
+            rules={[{ required: true, message: 'Pick a color' }]}
+          >
+            <Input type="color" />
+          </Form.Item>
+          <Form.Item name="position" label="Position" initialValue={0}>
+            <InputNumber style={{ width: '100%' }} min={0} />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
+
+function CardSection({
+  title,
+  description,
+  action,
+  children,
+}: {
+  title: string;
+  description: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        padding: 16,
+        border: '1px solid #f0f0f0',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+      }}
+    >
+      <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+        <div>
+          <Typography.Title level={5} style={{ marginBottom: 4 }}>
+            {title}
+          </Typography.Title>
+          <Typography.Text type="secondary">{description}</Typography.Text>
+        </div>
+        {action}
+      </Space>
+      <div style={{ marginTop: 16 }}>{children}</div>
     </div>
   );
 }
