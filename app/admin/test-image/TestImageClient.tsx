@@ -309,16 +309,16 @@ const TestImageClient = () => {
 
       <Divider>Uploaded Images</Divider>
 
-      <Row gutter={[16, 16]}>
+      <Row gutter={[8, 8]}>
         {normalizedImages.map((item) => (
-          <Col key={item.id} xs={24} sm={12} lg={8}>
+          <Col key={item.id} xs={12} sm={8} md={6} lg={4}>
             <Card
               cover={
                 <AntdImage
                   src={item.normalized_small}
                   alt={item.name}
                   width="100%"
-                  height={300}
+                  height={180}
                   style={{ objectFit: "cover" }}
                 />
               }
