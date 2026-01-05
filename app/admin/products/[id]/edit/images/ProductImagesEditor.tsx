@@ -298,18 +298,24 @@ export default function ProductImagesEditor({
   };
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Breadcrumb>
-        <Breadcrumb.Item>
-          <Link href={backLink}>Products</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          <Link href={`/admin/products/${productId}/edit${backLink.includes('?') ? `?${backLink.split('?')[1]}` : ''}`}>
-            {productTitle}
-          </Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Images</Breadcrumb.Item>
-      </Breadcrumb>
+    <Space orientation="vertical" size={24} style={{ width: '100%' }}>
+      <Breadcrumb
+        items={[
+          { title: <Link href={backLink}>Products</Link> },
+          {
+            title: (
+              <Link
+                href={`/admin/products/${productId}/edit${
+                  backLink.includes('?') ? `?${backLink.split('?')[1]}` : ''
+                }`}
+              >
+                {productTitle}
+              </Link>
+            ),
+          },
+          { title: 'Images' },
+        ]}
+      />
       <Typography.Title level={4} style={{ margin: 0 }}>
         Images for {productTitle}
       </Typography.Title>
@@ -350,8 +356,8 @@ export default function ProductImagesEditor({
         {images.map((img, idx) => (
           <Card
             key={img.id || `${idx}-${img.url ?? Math.random()}`}
-            bodyStyle={{ padding: 0 }}
-            bordered
+            styles={{ body: { padding: 0 }, border: '1px solid #d9d9d9', borderRadius: 8 }}
+            variant="outlined"
             style={{ borderRadius: 8 }}
           >
             <div
