@@ -30,6 +30,14 @@ type TestImageRecord = {
   crop_ratio: string | null;
   mode: string | null;
   created_at: string;
+  signed_urls?: {
+    original?: string;
+    small?: string;
+    large?: string;
+  };
+  original_public_url?: string;
+  small_public_url?: string;
+  large_public_url?: string;
 };
 
 const ratioOptions = [
@@ -129,12 +137,21 @@ const TestImageClient = () => {
       }
     };
 
-    return images.map((item) => ({
-      ...item,
-      original_url: item.original_public_url || parse(item.original_url)?.publicUrl || item.original_url,
-      small_url: item.small_public_url || parse(item.small_url)?.publicUrl || item.small_url,
-      large_url: item.large_public_url || parse(item.large_url)?.publicUrl || item.large_url,
-    }));
+    return images.map((item) => {
+      const normalized = {
+        original_url: item.original_public_url || parse(item.original_url)?.publicUrl || item.original_url,
+        small_url: item.small_public_url || parse(item.small_url)?.publicUrl || item.small_url,
+        large_url: item.large_public_url || parse(item.large_url)?.publicUrl || item.large_url,
+      };
+
+      return {
+        ...item,
+        ...normalized,
+        signed_urls: item.signed_urls,
+        normalized_small: item.signed_urls?.small || normalized.small_url,
+        normalized_large: item.signed_urls?.large || normalized.large_url,
+      };
+    });
   }, [images]);
   const handleCropSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -289,7 +306,7 @@ const TestImageClient = () => {
             <Card
               cover={
                 <AntdImage
-                  src={item.small_url}
+                  src={item.normalized_small}
                   alt={item.name}
                   width="100%"
                   height={200}
@@ -313,7 +330,7 @@ const TestImageClient = () => {
                 <Button
                   size="small"
                   type="link"
-                  href={item.large_url}
+                  href={item.normalized_large}
                   target="_blank"
                   rel="noreferrer"
                 >

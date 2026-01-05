@@ -1,7 +1,7 @@
 // Railway Storage Client (S3-compatible)
 // Supports AWS S3, MinIO, Cloudflare R2, and other S3-compatible storage
 
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand, GetObjectCommandInput } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Public bucket configuration
@@ -184,6 +184,23 @@ export async function downloadFile(filePath: string, bucket: string = STORAGE_BU
   }
 
   return Buffer.concat(chunks);
+}
+
+/**
+ * Generate a presigned GET URL for an object in Railway storage
+ */
+export async function getPresignedUrl(
+  filePath: string,
+  bucket: string = STORAGE_BUCKETS.PUBLIC,
+  expiresIn = 60 * 5
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: filePath,
+  });
+  const client = getS3Client();
+  const signedUrl = await getSignedUrl(client, command, { expiresIn });
+  return signedUrl;
 }
 
 /**

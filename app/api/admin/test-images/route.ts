@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { deletePublicImage } from '@/lib/railway/storage';
+import { deletePublicImage, getPresignedUrl } from '@/lib/railway/storage';
 
 export async function GET() {
   try {
@@ -8,7 +8,39 @@ export async function GET() {
       SELECT * FROM test_images
       ORDER BY created_at DESC
     `);
-    return NextResponse.json({ images: rows });
+    const parsePath = (value: string | null | undefined): string | null => {
+      if (!value) return null;
+      try {
+        const parsed = JSON.parse(value);
+        return parsed?.path ?? null;
+      } catch {
+        return null;
+      }
+    };
+
+    const signedRows = await Promise.all(
+      rows.map(async (row: any) => {
+        const originalPath = parsePath(row.original_url);
+        const smallPath = parsePath(row.small_url);
+        const largePath = parsePath(row.large_url);
+        const signed = await Promise.all([
+          originalPath ? getPresignedUrl(originalPath) : null,
+          smallPath ? getPresignedUrl(smallPath) : null,
+          largePath ? getPresignedUrl(largePath) : null,
+        ]);
+
+        return {
+          ...row,
+          signed_urls: {
+            original: signed[0],
+            small: signed[1],
+            large: signed[2],
+          },
+        };
+      })
+    );
+
+    return NextResponse.json({ images: signedRows });
   } catch (error: any) {
     console.error('Failed to load test images', error);
     return NextResponse.json(
