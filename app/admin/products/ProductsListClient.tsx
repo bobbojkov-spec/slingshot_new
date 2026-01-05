@@ -104,6 +104,22 @@ export default function ProductsListClient({ products }: { products: Product[] }
     return option?.aspect ?? 1;
   }, [ratio]);
 
+  const normalizeUrl = (value: string | null | undefined) => {
+    if (!value) return null;
+    try {
+      const parsed = JSON.parse(value);
+      return parsed?.publicUrl || parsed?.url || value;
+    } catch {
+      return value;
+    }
+  };
+
+  const resolveImageUrl = (image: { url?: string; thumb_url?: string }) => {
+    const thumb = normalizeUrl(image.thumb_url);
+    if (thumb) return thumb;
+    return normalizeUrl(image.url) || image.url || null;
+  };
+
   const createImage = (url: string) =>
     new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new Image();
@@ -354,7 +370,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
           render: (_: any, record: Product) => {
             const name = record.title || record.name || 'Untitled';
             const firstImage = record.images?.[0];
-            const imgUrl = firstImage?.thumb_url || firstImage?.url;
+            const imgUrl = firstImage ? resolveImageUrl(firstImage) : null;
             return imgUrl ? (
               <div
                 style={{
@@ -607,7 +623,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
                   }}
                 >
                   <AntImage
-                    src={img.thumb_url || img.url}
+                    src={resolveImageUrl(img) || undefined}
                     alt={`${activeProduct.title || 'Image'} ${idx + 1}`}
                     height={140}
                     width="auto"
