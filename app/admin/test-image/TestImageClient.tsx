@@ -7,7 +7,7 @@ import {
   Card,
   Col,
   Divider,
-  Image,
+  Image as AntdImage,
   Input,
   List,
   Modal,
@@ -275,7 +275,7 @@ const TestImageClient = () => {
           <List.Item>
             <Card
               cover={
-                <Image
+            <AntdImage
                   src={item.small_url}
                   alt={item.name}
                   width="100%"
