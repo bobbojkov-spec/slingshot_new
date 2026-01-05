@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Breadcrumb,
   Button,
@@ -25,6 +25,7 @@ import {
 } from '@ant-design/icons';
 import Cropper from 'react-easy-crop';
 import Link from 'next/link';
+import { getImageVariantUrl } from '@/lib/utils/imagePaths';
 
 type ProductImage = {
   id?: string;
@@ -138,6 +139,32 @@ export default function ProductImagesEditor({
     });
   };
 
+  const enrichImages = (rows: any[]): ProductImage[] =>
+    rows.map((row: any) => ({
+      ...row,
+      thumb_url: getImageVariantUrl(row.url, 'thumb') || row.thumb_url || row.url,
+      medium_url: getImageVariantUrl(row.url, 'medium') || row.medium_url || row.url,
+    }));
+
+  const loadImages = async () => {
+    const res = await fetch(`/api/admin/products/${productId}`, { cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error('Failed to load product images');
+    }
+    const payload = await res.json();
+    const fetched = payload?.product?.images ?? [];
+    const normalized = normalizeImages(enrichImages(fetched));
+    setImages(normalized);
+    return normalized;
+  };
+
+  useEffect(() => {
+    loadImages().catch(() => {
+      // keep initial images if load fails
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const uploadProductImage = async (file: File) => {
     const form = new FormData();
     form.append('file', file);
@@ -212,6 +239,7 @@ export default function ProductImagesEditor({
       const next = normalizeImages([...images, newImg]);
       setImages(next);
       await saveImages(next);
+      await loadImages();
       setDeletedImageIds([]);
       message.success('Image uploaded and saved');
       closeCropModal();
@@ -228,6 +256,7 @@ export default function ProductImagesEditor({
       const next = normalizeImages([...images, newImg]);
       setImages(next);
       await saveImages(next);
+      await loadImages();
       setDeletedImageIds([]);
       message.success('Image uploaded and saved');
       onSuccess?.(newImg);
@@ -245,6 +274,7 @@ export default function ProductImagesEditor({
     setImages(normalized);
     try {
       await saveImages(normalized);
+      await loadImages();
       setDeletedImageIds([]);
     } catch (err: any) {
       message.error(err?.message || 'Reorder failed');
@@ -259,6 +289,7 @@ export default function ProductImagesEditor({
     setImages(normalized);
     try {
       await saveImages(normalized, updatedDeleteIds);
+      await loadImages();
       setDeletedImageIds([]);
       message.success('Image deleted');
     } catch (err: any) {
