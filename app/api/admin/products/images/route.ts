@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadPublicImage } from '@/lib/railway/storage';
+import { uploadPublicImage, getPresignedUrl } from '@/lib/railway/storage';
 import { query } from '@/lib/db';
 import sharp from 'sharp';
 import { randomUUID } from 'crypto';
 import { getImageVariantUrl } from '@/lib/utils/imagePaths';
 
 const PRODUCT_IMAGES_PATH = 'product-images';
+
+async function ensureImagePathColumns() {
+  await query(`
+    ALTER TABLE product_images
+    ADD COLUMN IF NOT EXISTS original_path TEXT,
+    ADD COLUMN IF NOT EXISTS thumb_path TEXT,
+    ADD COLUMN IF NOT EXISTS medium_path TEXT
+  `);
+}
 
 async function uploadToStorage(path: string, buffer: Buffer, contentType = 'image/jpeg') {
   const result = await uploadPublicImage(path, buffer, {
@@ -132,6 +141,8 @@ async function handleUpload(req: NextRequest) {
   const urlThumb = await uploadToStorage(thumbPath, thumb);
   const urlMedium = await uploadToStorage(mediumPath, medium);
 
+  await ensureImagePathColumns();
+
   let position = desiredPosition;
   if (!position || Number.isNaN(position)) {
     const { rows: existing = [] } = await query(
@@ -148,11 +159,19 @@ async function handleUpload(req: NextRequest) {
 
   const { rows: insertedRows } = await query(
     `
-      INSERT INTO product_images (product_id, shopify_product_id, url, position)
+      INSERT INTO product_images (
+        product_id,
+        shopify_product_id,
+        url,
+        original_path,
+        thumb_path,
+        medium_path,
+        position
+      )
       VALUES ($1, $2, $3, $4)
       RETURNING id, product_id, url, position, shopify_product_id
     `,
-    [productId, shopifyId, urlOriginal, position]
+    [productId, shopifyId, urlOriginal, originalPath, thumbPath, mediumPath, position]
   );
 
   const inserted = insertedRows[0];

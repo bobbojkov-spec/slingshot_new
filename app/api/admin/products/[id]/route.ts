@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { getImageVariantUrl } from '@/lib/utils/imagePaths';
+import { getPresignedUrl } from '@/lib/railway/storage';
 
 export async function GET(_: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -41,10 +42,22 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       { rows: packageRows = [] },
       { rows: translationsEN = [] },
       { rows: translationsBG = [] },
+      { rows: activityRows = [] },
+      { rows: colorRows = [] },
+      { rows: availabilityRows = [] },
     ] = await Promise.all([
       query(
         `
-          SELECT id, product_id, url, position, sort_order, shopify_product_id
+          SELECT
+            id,
+            product_id,
+            url,
+            position,
+            sort_order,
+            shopify_product_id,
+            original_path,
+            thumb_path,
+            medium_path
           FROM product_images
           WHERE product_id = $1
           ORDER BY COALESCE(position, sort_order, 9999)
@@ -69,6 +82,47 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       query('SELECT * FROM product_packages WHERE product_id = $1 LIMIT 1', [productId]),
       query('SELECT * FROM product_translations WHERE product_id = $1 AND language_code = $2 LIMIT 1', [productId, 'en']),
       query('SELECT * FROM product_translations WHERE product_id = $1 AND language_code = $2 LIMIT 1', [productId, 'bg']),
+      query(
+        `
+          SELECT 
+            ac.id,
+            ac.name_en,
+            ac.name_bg,
+            ac.slug
+          FROM activity_categories ac
+          JOIN product_activity_categories pac ON pac.activity_category_id = ac.id
+          WHERE pac.product_id = $1
+          ORDER BY ac.position ASC
+        `,
+        [productId],
+      ),
+      query(
+        `
+          SELECT id, product_id, name_en, name_bg, hex_color, position, created_at, updated_at
+          FROM product_colors
+          WHERE product_id = $1
+          ORDER BY position ASC, name_en ASC
+        `,
+        [productId]
+      ),
+      query(
+        `
+          SELECT 
+            pva.variant_id,
+            pva.color_id,
+            pva.stock_qty,
+            pva.is_active,
+            pva.created_at,
+            pva.updated_at
+          FROM product_variant_availability pva
+          JOIN product_variants pv ON pv.id = pva.variant_id
+          WHERE pv.product_id = $1
+            AND EXISTS (
+              SELECT 1 FROM product_colors pc WHERE pc.id = pva.color_id AND pc.product_id = $1
+            )
+        `,
+        [productId]
+      ),
     ]);
 
     const descriptions = descRows[0] || {};
@@ -78,16 +132,25 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
     const translationBG = translationsBG[0] || {};
 
     const { category_info, ...rest } = product;
+    const signedImages = await Promise.all(
+      imageRows.map(async (row: any) => {
+        const thumbUrl = row.thumb_path ? await getPresignedUrl(row.thumb_path) : null;
+        const mediumUrl = row.medium_path ? await getPresignedUrl(row.medium_path) : null;
+        const originalUrl = row.original_path ? await getPresignedUrl(row.original_path) : null;
+        return {
+          ...row,
+          thumb_url: thumbUrl || getImageVariantUrl(row.url, 'thumb') || row.url,
+          medium_url: mediumUrl || getImageVariantUrl(row.url, 'medium') || row.url,
+          original_url: originalUrl || row.url,
+        };
+      })
+    );
 
     return NextResponse.json({
       product: {
         ...rest,
         category: category_info || null,
-      images: imageRows.map((row) => ({
-        ...row,
-        thumb_url: getImageVariantUrl(row.url, 'thumb') || row.url,
-        medium_url: getImageVariantUrl(row.url, 'medium') || row.url,
-      })),
+        images: signedImages,
         variants: variantRows,
         // Legacy fallback fields
         description_html: rest.description_html ?? descriptions.description_html ?? null,
@@ -121,6 +184,10 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
           seo_title: translationBG.seo_title || '',
           seo_description: translationBG.seo_description || '',
         },
+        activity_categories: activityRows,
+        activity_category_ids: activityRows.map((row) => row.id),
+        colors: colorRows,
+        availability: availabilityRows,
       },
     });
   } catch (error: any) {
