@@ -168,13 +168,15 @@ async function handleUpload(req: NextRequest) {
     );
   }
   
-  return NextResponse.json({
-    image: {
-      ...inserted,
-      thumb_url: thumbUrlValue,
-      medium_url: mediumUrlValue,
-    },
-  });
+    return NextResponse.json({
+      image: {
+        ...inserted,
+        url: thumbUrlValue || inserted.url,
+        original_url: inserted.url,
+        thumb_url: thumbUrlValue,
+        medium_url: mediumUrlValue,
+      },
+    });
 }
 
 export async function POST(req: NextRequest) {
