@@ -12,18 +12,21 @@ import {
   Card,
   Divider,
   Modal,
-  Upload,
+  Row,
+  Col,
+  Slider,
   message,
 } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
-  InboxOutlined,
   PictureOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import Cropper from 'react-easy-crop';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type Product = {
@@ -48,6 +51,13 @@ type Product = {
   [key: string]: any;
 };
 
+const ratioOptions = [
+  { label: '1:1', value: '1:1', aspect: 1 },
+  { label: '3:1', value: '3:1', aspect: 3 },
+  { label: '4:3', value: '4:3', aspect: 4 / 3 },
+  { label: '16:9', value: '16:9', aspect: 16 / 9 },
+];
+
 export default function ProductsListClient({ products }: { products: Product[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -61,7 +71,17 @@ export default function ProductsListClient({ products }: { products: Product[] }
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
-  const [aspect, setAspect] = useState<string>('original');
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [ratio, setRatio] = useState('1:1');
+  const [uploading, setUploading] = useState(false);
+  const [originalDimensions, setOriginalDimensions] =
+    useState<{ width: number; height: number } | null>(null);
+  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setRows(products);
@@ -78,6 +98,117 @@ export default function ProductsListClient({ products }: { products: Product[] }
     setProductType(t ? t.toLowerCase() : undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectedRatio = useMemo(() => {
+    const option = ratioOptions.find((item) => item.value === ratio);
+    return option?.aspect ?? 1;
+  }, [ratio]);
+
+  const createImage = (url: string) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', (error) => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImage = async (
+    imageSrc: string,
+    pixelCrop: { width: number; height: number; x: number; y: number }
+  ) => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Unable to get canvas context');
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Failed to create cropped image'));
+          return;
+        }
+        resolve(blob);
+      }, 'image/jpeg');
+    });
+  };
+
+  const handleHiddenInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const src = reader.result as string;
+      setCropImageSrc(src);
+      setCropModalOpen(true);
+      createImage(src)
+        .then((image) => {
+          setOriginalDimensions({ width: image.naturalWidth, height: image.naturalHeight });
+        })
+        .catch(() => {
+          setOriginalDimensions(null);
+        });
+    };
+    reader.readAsDataURL(file);
+    setSelectedFile(file);
+    event.target.value = '';
+  };
+
+  const closeCropModal = () => {
+    setCropModalOpen(false);
+    setCropImageSrc(null);
+    setSelectedFile(null);
+    setCroppedAreaPixels(null);
+    setZoom(1);
+    setRatio('1:1');
+    setOriginalDimensions(null);
+  };
+
+  const uploadProductImage = async (file: File) => {
+    if (!activeProduct?.id) throw new Error('No active product');
+    const form = new FormData();
+    form.append('file', file);
+    form.append('productId', activeProduct.id);
+    form.append('position', String((activeProduct.images?.length || 0) + 1));
+    const res = await fetch('/api/admin/products/images', {
+      method: 'POST',
+      body: form,
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body?.error || 'Upload failed');
+    return body.image;
+  };
+
+  const handleUploadSubmit = async () => {
+    if (!selectedFile || !cropImageSrc || !croppedAreaPixels || !activeProduct) return;
+    setUploading(true);
+    try {
+      const blob = await getCroppedImage(cropImageSrc, croppedAreaPixels);
+      const file = new File([blob], selectedFile.name, { type: 'image/jpeg' });
+      const newImg = await uploadProductImage(file);
+      const next = normalizeImages([...(activeProduct.images || []), newImg]);
+      setActiveProduct({ ...activeProduct, images: next });
+      await saveImages(next, deletedImageIds);
+      message.success('Image uploaded and saved');
+      closeCropModal();
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -168,42 +299,6 @@ export default function ProductsListClient({ products }: { products: Product[] }
     const min = Math.min(...prices);
     const max = Math.max(...prices);
     return min === max ? `€${Math.round(min)}` : `€${Math.round(min)} / €${Math.round(max)}`;
-  };
-
-  const computeCropBox = async (file: File, targetAspect: string) => {
-    return new Promise<{ cropX: number; cropY: number; cropW: number; cropH: number } | null>((resolve) => {
-      const ImgCtor = typeof window !== 'undefined' ? window.Image : undefined;
-      if (!ImgCtor) {
-        resolve(null);
-        return;
-      }
-      const img = new ImgCtor();
-      img.onload = () => {
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
-        if (!w || !h || targetAspect === 'original') {
-          resolve(null);
-          return;
-        }
-        const [aW, aH] = targetAspect.split(':').map((n) => Number(n));
-        if (!aW || !aH) {
-          resolve(null);
-          return;
-        }
-        const desired = aW / aH;
-        let cropW = w;
-        let cropH = Math.round(w / desired);
-        if (cropH > h) {
-          cropH = h;
-          cropW = Math.round(h * desired);
-        }
-        const cropX = Math.floor((w - cropW) / 2);
-        const cropY = Math.floor((h - cropH) / 2);
-        resolve({ cropX, cropY, cropW, cropH });
-      };
-      img.onerror = () => resolve(null);
-      img.src = URL.createObjectURL(file);
-    });
   };
 
   const queryString = useMemo(() => {
@@ -586,63 +681,75 @@ export default function ProductsListClient({ products }: { products: Product[] }
               {(!activeProduct.images || activeProduct.images.length === 0) && <Alert type="info" message="No images" showIcon />}
             </div>
             <Space size={8}>
-              <Select
-                size="small"
-                value={aspect}
-                style={{ width: 160 }}
-                onChange={(val) => setAspect(val)}
-                options={[
-                  { label: 'Aspect: Original', value: 'original' },
-                  { label: 'Aspect: 1:1', value: '1:1' },
-                  { label: 'Aspect: 4:3', value: '4:3' },
-                  { label: 'Aspect: 3:4', value: '3:4' },
-                  { label: 'Aspect: 16:9', value: '16:9' },
-                  { label: 'Aspect: 9:16', value: '9:16' },
-                ]}
-              />
-              <Upload
-                multiple
-                showUploadList={false}
-                customRequest={async ({ file, onSuccess, onError }) => {
-                  if (!activeProduct?.id) {
-                    onError?.(new Error('No product'));
-                    return;
-                  }
-                  try {
-                    const crop = await computeCropBox(file as File, aspect);
-                    const form = new FormData();
-                    form.append('file', file as Blob);
-                    form.append('productId', activeProduct.id);
-                    form.append('position', String((activeProduct.images?.length || 0) + 1));
-                    if (crop) {
-                      form.append('cropX', String(crop.cropX));
-                      form.append('cropY', String(crop.cropY));
-                      form.append('cropW', String(crop.cropW));
-                      form.append('cropH', String(crop.cropH));
-                    }
-                    const res = await fetch('/api/admin/products/images', {
-                      method: 'POST',
-                      body: form,
-                    });
-                    const body = await res.json();
-                    if (!res.ok) throw new Error(body?.error || 'Upload failed');
-                    const newImg = body.image;
-                    const next = normalizeImages([...(activeProduct.images || []), newImg]);
-                    setActiveProduct({ ...activeProduct, images: next });
-                    await saveImages(next, deletedImageIds);
-                    message.success('Image uploaded and saved');
-                    onSuccess?.(body, file as any);
-                  } catch (err: any) {
-                    onError?.(err);
-                    message.error(err?.message || 'Upload failed');
-                  }
-                }}
+              <Button
+                type="primary"
+                icon={<UploadOutlined />}
+                onClick={() => hiddenInputRef.current?.click()}
               >
-                <Button icon={<InboxOutlined />}>Upload image</Button>
-              </Upload>
+                Upload with Crop Ratio
+              </Button>
+              <input
+                ref={hiddenInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleHiddenInputChange}
+              />
             </Space>
           </Space>
         ) : null}
+      </Modal>
+      <Modal
+        open={cropModalOpen}
+        onCancel={closeCropModal}
+        title="Crop Image"
+        okText="Save"
+        confirmLoading={uploading}
+        onOk={handleUploadSubmit}
+        width={800}
+      >
+        <Space orientation="vertical" style={{ width: '100%' }}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Typography.Text>Select ratio</Typography.Text>
+              <Select
+                style={{ width: '100%' }}
+                value={ratio}
+                onChange={(value) => setRatio(value)}
+                options={ratioOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
+              />
+            </Col>
+            <Col span={12}>
+              <Typography.Text>Zoom</Typography.Text>
+              <Slider min={1} max={3} step={0.1} value={zoom} onChange={(value) => setZoom(value)} />
+            </Col>
+          </Row>
+          {originalDimensions && (
+            <Typography.Text type="secondary">
+              Original size: {originalDimensions.width} × {originalDimensions.height} px
+            </Typography.Text>
+          )}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 400,
+              backgroundColor: '#333',
+            }}
+          >
+            {cropImageSrc && (
+              <Cropper
+                image={cropImageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={selectedRatio}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+              />
+            )}
+          </div>
+        </Space>
       </Modal>
     </Space>
   );
