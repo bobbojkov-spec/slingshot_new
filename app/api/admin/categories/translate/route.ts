@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialized lazily inside handler
 
 type CategoryTranslationPayload = {
   categoryId: string;
@@ -36,6 +36,13 @@ English category data:
 ${JSON.stringify({ name: englishName, description: englishDescription }, null, 2)}
 
 Provide only the JSON object in your response.`;
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+    }
+
+    const openai = new OpenAI({ apiKey });
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',

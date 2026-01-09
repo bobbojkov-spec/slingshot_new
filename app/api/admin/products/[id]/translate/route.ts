@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialized lazily inside handler
 
 export async function POST(req: Request) {
   try {
@@ -60,6 +58,12 @@ Content to translate:
 ${JSON.stringify(contentToTranslate, null, 2)}
 
 Return ONLY a valid JSON object with the same structure, but with Bulgarian translations. Do not add any explanation or markdown formatting.`;
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+    }
+    const openai = new OpenAI({ apiKey });
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
