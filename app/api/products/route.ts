@@ -13,6 +13,9 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const offset = (page - 1) * limit;
 
+    console.log('[API Products] Fetch started:', { lang, page, limit, queryTerm, category: categorySlug, types: typeSlugs, tags: tagNames, availability });
+
+
     // Filters
     const queryTerm = searchParams.get('q') || searchParams.get('search');
     const categorySlug = searchParams.get('category'); // e.g., 'kite', 'foil'
@@ -130,6 +133,10 @@ export async function GET(req: Request) {
     // Add limit/offset to params
     const productsParams = [...params, limit, offset];
     const productsResult = await query(productsSql, productsParams);
+
+    console.log('[API Products] Count result:', countResult.rows[0]);
+    console.log('[API Products] Products fetched:', productsResult.rows.length);
+
 
     const products = await Promise.all(productsResult.rows.map(async (row: any) => ({
       id: row.id,
@@ -279,7 +286,8 @@ export async function GET(req: Request) {
       },
     });
   } catch (error: any) {
-    console.error('Failed to load products:', error);
+    console.error('[API Products] Failed to load products - Full Error:', error);
+    console.error('[API Products] Stack:', error.stack);
     return NextResponse.json(
       { error: error.message || 'Failed to load products' },
       { status: 500 }
