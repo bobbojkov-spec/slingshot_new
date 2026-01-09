@@ -13,15 +13,14 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const offset = (page - 1) * limit;
 
-    console.log('[API Products] Fetch started:', { lang, page, limit, queryTerm, category: categorySlug, types: typeSlugs, tags: tagNames, availability });
-
-
     // Filters
     const queryTerm = searchParams.get('q') || searchParams.get('search');
     const categorySlug = searchParams.get('category'); // e.g., 'kite', 'foil'
     const typeSlugs = searchParams.getAll('type'); // e.g., ['boards', 'kites']
     const tagNames = searchParams.getAll('tag'); // e.g. ['Big Air', 'Freeride']
     const availability = searchParams.get('availability'); // 'in_stock' or 'out_of_stock'
+
+    console.log('[API Products] Fetch started:', { lang, page, limit, queryTerm, category: categorySlug, types: typeSlugs, tags: tagNames, availability });
 
     // Build WHERE clause
     const conditions = [`p.status = 'active'`, `c.visible = true`, `c.status = 'active'`, `pt.visible = true`, `pt.status = 'active'`];
