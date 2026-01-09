@@ -1,201 +1,115 @@
-'use client';
+import { query } from "@/lib/db";
+import { getPresignedUrl } from "@/lib/railway/storage";
+import ProductClientWrapper from "./ProductClientWrapper";
+import { notFound } from "next/navigation";
 
-import { Suspense, useEffect, useState, use } from 'react';
-import Link from "next/link";
-import { ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
-import ProductGallery from "@/components/ProductGallery";
-import ColorSelector from "@/components/ColorSelector";
-import PriceNote from "@/components/PriceNote";
-import { useCart } from "@/lib/cart/CartContext";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { ProductGrid } from "@/components/products/ProductGrid";
+// Define helper to fetch product data (mirroring api/products/[slug] logic but server-side)
+async function getProductData(slug: string, lang: string = 'en') {
+  // Query 1: Product Basic Info
+  const productSql = `
+    SELECT 
+      p.*,
+      pt.title as translated_name,
+      pt.description as translated_description,
+      c.name as category_name,
+      pt_type.name as type_name
+    FROM products p
+    LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = $2
+    LEFT JOIN categories c ON p.category_id = c.id
+    LEFT JOIN product_types pt_type ON p.product_type_id = pt_type.id
+    WHERE p.slug = $1 AND p.status = 'active'
+  `;
+  const { rows: products } = await query(productSql, [slug, lang]);
+  if (products.length === 0) return null;
+  const product = products[0];
 
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  description: string;
-  sizes: string[];
-  specs: { label: string; value: string }[];
-  image: string;
-  images: string[];
-  slug: string;
-  category_name?: string;
-  product_type?: string;
+  // Query 2: Images
+  const imagesSql = `
+    SELECT storage_path, is_main, display_order 
+    FROM product_images_railway 
+    WHERE product_id = $1 
+    ORDER BY is_main DESC, display_order ASC
+  `;
+  const { rows: images } = await query(imagesSql, [product.id]);
+
+  // Query 3: Specs (Tags/Meta) - Simplified for now, or fetch from product_tags ? 
+  // Let's assume description contains HTML specs or we skip specs for now if complex.
+  // Actually the client wrapper expects `specs`. Let's mock or fetch from tags if possible.
+
+  // Query 4: Variants (Sizes)
+  const variantsSql = `
+    SELECT option1_value, price, inventory_quantity 
+    FROM product_variants 
+    WHERE product_id = $1 
+    ORDER BY position ASC
+  `;
+  const { rows: variants } = await query(variantsSql, [product.id]);
+  const sizes = [...new Set(variants.map((v: any) => v.option1_value).filter(Boolean))];
+  const price = variants.length > 0 ? parseFloat(variants[0].price) : 0;
+
+  // Process Images
+  const imageUrls = await Promise.all(images.map(async (img: any) => {
+    return await getPresignedUrl(img.storage_path);
+  }));
+  const mainImage = imageUrls.length > 0 ? imageUrls[0] : (product.og_image_url || '/placeholder.jpg');
+
+  // Related Products (Simple: Same Category)
+  const relatedSql = `
+    SELECT p.id, p.name, p.slug, 
+      (SELECT price FROM product_variants pv WHERE pv.product_id = p.id LIMIT 1) as price,
+       p.og_image_url
+    FROM products p
+    WHERE p.category_id = $1 AND p.id != $2 AND p.status = 'active'
+    LIMIT 4
+  `;
+  const { rows: relatedRows } = await query(relatedSql, [product.category_id, product.id]);
+
+  const relatedHelper = await Promise.all(relatedRows.map(async (row: any) => {
+    // Fetch main image for related
+    const imgSql = `SELECT storage_path FROM product_images_railway WHERE product_id = $1 AND is_main = true LIMIT 1`;
+    const { rows: imgRows } = await query(imgSql, [row.id]);
+    let imgUrl = row.og_image_url || '/placeholder.jpg';
+    if (imgRows.length > 0) {
+      imgUrl = await getPresignedUrl(imgRows[0].storage_path);
+    }
+    return {
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      price: parseFloat(row.price || '0'),
+      image: imgUrl,
+      category: product.category_name // approx
+    };
+  }));
+
+  return {
+    product: {
+      id: product.id,
+      name: product.translated_name || product.name,
+      category: product.category_name, // slug? name? Wrapper expects string
+      price: price,
+      description: product.translated_description || product.description || '',
+      sizes: sizes,
+      specs: [], // TODO: Fetch real specs
+      image: mainImage, // Main image for OG or cart
+      images: imageUrls, // Array for gallery
+      slug: product.slug,
+      category_name: product.category_name
+    },
+    related: relatedHelper
+  };
 }
 
-export default function Page({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
-  const [product, setProduct] = useState<Product | null>(null);
-  const [related, setRelated] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
 
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [quantity, setQuantity] = useState(1);
-  const { addItem } = useCart();
-  const { language } = useLanguage();
+  const data = await getProductData(slug, 'en'); // Default EN
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      if (!slug) return;
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/products/${slug}`);
-        if (!res.ok) throw new Error('Product not found');
-        const data = await res.json();
-        setProduct(data.product);
-        setRelated(data.related);
-        if (data.product.sizes?.length > 0) {
-          setSelectedSize(data.product.sizes[0]);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error loading product');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProduct();
-  }, [slug]);
+  if (!data) {
+    notFound();
+  }
 
-  const handleAddToInquiry = () => {
-    if (!product) return;
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size: selectedSize,
-      category: product.category,
-      slug: product.slug,
-      qty: quantity
-    });
-  };
-
-  const t = {
-    size: language === "bg" ? "Размер" : "Size",
-    quantity: language === "bg" ? "Количество" : "Quantity",
-    addToInquiry: language === "bg" ? "Добави за запитване" : "Add to Inquiry",
-    specs: language === "bg" ? "Спецификации" : "Specifications",
-    related: language === "bg" ? "Може да харесате" : "You May Also Like"
-  };
-
-  if (loading) return <div className="min-h-screen pt-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
-  if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">Product not found</div>;
-
-  return (
-    <div className="min-h-screen bg-background pt-24 pb-12">
-      {/* Breadcrumb / Nav */}
-      <div className="container mx-auto px-4 mb-8">
-        <nav className="flex items-center gap-2 text-sm font-body text-muted-foreground uppercase tracking-wide">
-          <Link href="/" className="hover:text-black">Home</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link href="/shop" className="hover:text-black">Shop</Link>
-          {product.category_name && (
-            <>
-              <ChevronRight className="w-3 h-3" />
-              <Link href={`/shop?category=${product.category_name.toLowerCase()}`} className="hover:text-black">{product.category_name}</Link>
-            </>
-          )}
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-black font-semibold">{product.name}</span>
-        </nav>
-      </div>
-
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-
-          {/* Gallery */}
-          <div className="animate-fade-in">
-            <ProductGallery images={product.images} productName={product.name} />
-          </div>
-
-          {/* Details */}
-          <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <span className="text-sm font-bold tracking-[0.2em] text-accent mb-2 uppercase">{product.category_name}</span>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">{product.name}</h1>
-            <div className="text-2xl font-bold mb-4">€{product.price.toLocaleString()}</div>
-
-            <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: product.description }} />
-
-            <div className="mb-8">
-              <PriceNote />
-            </div>
-
-            {/* Sizes */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="mb-8">
-                <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
-                <div className="flex gap-2 flex-wrap">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 rounded border text-sm font-medium transition-all ${selectedSize === size
-                        ? "border-black bg-black text-white"
-                        : "border-gray-200 hover:border-black text-gray-700"
-                        }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Add to Cart */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-gray-100">
-              <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 hover:bg-gray-100 transition-colors"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="font-medium w-12 text-center">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 hover:bg-gray-100 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-3 px-8 hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 rounded">
-                <ShoppingBag className="w-5 h-5" /> {t.addToInquiry}
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* Specs */}
-      {product.specs && product.specs.length > 0 && (
-        <div className="bg-gray-50 py-16 mt-16 border-t border-gray-100">
-          <div className="container mx-auto px-4">
-            <h3 className="text-2xl font-black uppercase tracking-tight mb-8">{t.specs}</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {product.specs.map((spec) => (
-                <div key={spec.label} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                  <span className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">{spec.label}</span>
-                  <span className="block font-bold text-lg text-gray-900">{spec.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Related Products */}
-      {related.length > 0 && (
-        <div className="container mx-auto px-4 py-16 border-t border-gray-100">
-          <h2 className="text-3xl font-black uppercase tracking-tight mb-12 text-center">{t.related}</h2>
-          <ProductGrid products={related} />
-        </div>
-      )}
-    </div>
-  );
+  return <ProductClientWrapper product={data.product} related={data.related} />;
 }
 

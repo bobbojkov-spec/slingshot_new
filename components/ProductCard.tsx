@@ -1,7 +1,7 @@
- "use client";
+"use client";
 
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
 
 interface Product {
@@ -59,7 +59,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           }}
           className="absolute bottom-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-accent hover:text-white"
         >
-          <Eye className="w-5 h-5" />
+          <ShoppingCart className="w-5 h-5" />
         </button>
       </div>
       <Link href={`/product/${product.slug}`} className="block p-4">
