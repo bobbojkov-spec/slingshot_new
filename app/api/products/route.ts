@@ -17,10 +17,17 @@ export async function GET(req: Request) {
     const queryTerm = searchParams.get('q') || searchParams.get('search');
     const categorySlug = searchParams.get('category'); // e.g., 'kite', 'foil'
     const typeSlugs = searchParams.getAll('type'); // e.g., ['boards', 'kites']
+    const tagNames = searchParams.getAll('tag'); // e.g. ['Big Air', 'Freeride']
+    const availability = searchParams.get('availability'); // 'in_stock' or 'out_of_stock'
+
+    // activity maps to tags in our system (e.g. big-air -> Big Air)
     const activity = searchParams.get('activity');
-    // activity maps to tags in our system
     if (activity) {
-      tagNames.push(activity);
+      // Simple unslugify: replace - with space and Title Case
+      const formattedTag = activity.split('-')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+      tagNames.push(formattedTag);
     }
 
     console.log('[API Products] Fetch started:', { lang, page, limit, queryTerm, category: categorySlug, types: typeSlugs, tags: tagNames, availability });
