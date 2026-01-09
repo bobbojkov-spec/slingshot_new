@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
+import { useSignedImages } from "@/hooks/useSignedImages";
 
 interface Product {
   id: string;
@@ -22,27 +23,37 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const { addItem } = useCart();
+  const { getUrl, loading } = useSignedImages([product.image]);
+  const signedImage = getUrl(product.image);
 
   const handleAdd = () => {
     addItem({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: signedImage || product.image, // Fallback to original path for cart (potentially signed later or stored as is)
       slug: product.slug,
       category: product.category,
       qty: 1
     });
   };
+
+  // Decide what to show. If loading, show placeholder or skeleton? 
+  // For a card list, ideally skeleton. For now, simple transition.
+
   return (
     <div className="product-card group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
       <div className="relative">
         <Link href={`/product/${product.slug}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            className="product-card-image transition-transform duration-300 group-hover:scale-105"
-          />
+          {loading ? (
+            <div className="product-card-image bg-gray-100 animate-pulse aspect-square" />
+          ) : (
+            <img
+              src={signedImage || ''}
+              alt={product.name}
+              className="product-card-image transition-transform duration-300 group-hover:scale-105"
+            />
+          )}
         </Link>
         {product.badge && (
           <div className="absolute top-3 left-3">

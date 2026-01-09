@@ -23,6 +23,12 @@ export async function POST(req: Request) {
         for (const path of paths) {
             if (!path) continue;
 
+            // Safety check: if path is already a URL, don't sign it again
+            if (path.startsWith('http') || path.startsWith('data:')) {
+                urls[path] = path;
+                continue;
+            }
+
             const cached = urlCache.get(path);
             if (cached && cached.expiresAt > now) {
                 urls[path] = cached.url;
