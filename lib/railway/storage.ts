@@ -25,6 +25,20 @@ export const STORAGE_BUCKETS = {
   RAW: process.env.RAILWAY_STORAGE_BUCKET_RAW || 'slingshot-raw',
 } as const;
 
+let hasLoggedConfigWarning = false;
+
+/**
+ * Checks if mandatory Railway Storage environment variables are set.
+ */
+export function isRailwayStorageConfigured() {
+  return Boolean(
+    process.env.RAILWAY_STORAGE_ACCESS_KEY &&
+    process.env.RAILWAY_STORAGE_SECRET_KEY &&
+    process.env.RAILWAY_STORAGE_BUCKET &&
+    process.env.RAILWAY_STORAGE_ENDPOINT
+  );
+}
+
 // Initialize S3 clients (separate for public and raw buckets)
 let s3Client: S3Client | null = null;
 let rawS3Client: S3Client | null = null;
@@ -194,13 +208,38 @@ export async function getPresignedUrl(
   bucket: string = STORAGE_BUCKETS.PUBLIC,
   expiresIn = 60 * 5
 ): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: bucket,
-    Key: filePath,
-  });
-  const client = getS3Client();
-  const signedUrl = await getSignedUrl(client, command, { expiresIn });
-  return signedUrl;
+  if (!isRailwayStorageConfigured()) {
+    if (!hasLoggedConfigWarning) {
+      console.warn('⚠️ Railway Storage not configured. Missing RAILWAY_STORAGE_* environment variables. Using fallback URLs.');
+      hasLoggedConfigWarning = true;
+    }
+
+    const assetsBaseUrl = process.env.NEXT_PUBLIC_ASSETS_BASE_URL;
+    if (assetsBaseUrl) {
+      return `${assetsBaseUrl.replace(/\/$/, '')}/${bucket}/${filePath.replace(/^\//, '')}`;
+    }
+
+    // Last resort fallback: just return the path (UI might render placeholder)
+    return filePath;
+  }
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: filePath,
+    });
+    const client = getS3Client();
+    const signedUrl = await getSignedUrl(client, command, { expiresIn });
+    return signedUrl;
+  } catch (error: any) {
+    console.error(`Failed to generate presigned URL for ${filePath}:`, error.message);
+    // Return fallback even on signing error if we have a base URL
+    const assetsBaseUrl = process.env.NEXT_PUBLIC_ASSETS_BASE_URL;
+    if (assetsBaseUrl) {
+      return `${assetsBaseUrl.replace(/\/$/, '')}/${bucket}/${filePath.replace(/^\//, '')}`;
+    }
+    return filePath;
+  }
 }
 
 /**
