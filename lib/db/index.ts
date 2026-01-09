@@ -5,10 +5,10 @@ ensureEnv();
 
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_PRIVATE_URL || process.env.DATABASE_URL,
   // Railway PostgreSQL requires SSL
-  ssl: process.env.DATABASE_URL?.includes('railway') || process.env.DATABASE_URL?.includes('rlwy.net') 
-    ? { rejectUnauthorized: false } 
+  ssl: process.env.DATABASE_URL?.includes('railway') || process.env.DATABASE_URL?.includes('rlwy.net')
+    ? { rejectUnauthorized: false }
     : undefined,
 });
 
