@@ -20,9 +20,15 @@ const supportLinks = [
   { key: "footer.links.faq", href: "/faq" }
 ];
 
+import { usePathname } from "next/navigation";
+
+// ... inside component
 const Footer = () => {
+  const pathname = usePathname();
   const { t } = useLanguage();
   const rightsText = t("footer.rights").replace("{year}", new Date().getFullYear().toString());
+
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <footer className="footer-section">
@@ -65,10 +71,10 @@ const Footer = () => {
               </a>
             </div>
             <div className="pt-4 border-t border-white/10">
-            <span className="font-body text-xs text-white/40 uppercase tracking-wider mb-2 block">
-              {t("footer.languageLabel")}
-            </span>
-            <button className="text-white/80 hover:text-accent">{t("footer.languageSwitch")}</button>
+              <span className="font-body text-xs text-white/40 uppercase tracking-wider mb-2 block">
+                {t("footer.languageLabel")}
+              </span>
+              <button className="text-white/80 hover:text-accent">{t("footer.languageSwitch")}</button>
             </div>
           </div>
 

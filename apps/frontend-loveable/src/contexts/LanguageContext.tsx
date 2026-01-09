@@ -19,6 +19,11 @@ const translations: Record<Language, Record<string, string>> = {
     'search.placeholder': 'Search products...',
     'language.switch': 'BG',
     
+    // Menu Group Labels (for navigation structure)
+    'menu_group.gear': 'GEAR',
+    'menu_group.accessories': 'ACCESSORIES',
+    'menu_group.categories': 'CATEGORIES',
+    
     // Shop
     'shop.title': 'SHOP',
     'shop.subtitle': 'All Slingshot Gear',
@@ -116,6 +121,11 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.accessories': 'Аксесоари',
     'search.placeholder': 'Търсене на продукти...',
     'language.switch': 'EN',
+    
+    // Menu Group Labels (for navigation structure)
+    'menu_group.gear': 'ЕКИПИРОВКА',
+    'menu_group.accessories': 'АКСЕСОАРИ',
+    'menu_group.categories': 'КАТЕГОРИИ',
     
     // Shop
     'shop.title': 'МАГАЗИН',

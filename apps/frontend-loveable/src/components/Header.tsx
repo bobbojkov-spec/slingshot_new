@@ -4,15 +4,18 @@ import { Menu, X, ShoppingBag, Search } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import LanguageSwitch from "@/components/LanguageSwitch";
+import { useNavigation } from "@/hooks/useNavigation";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { data: navigationData } = useNavigation();
   const { itemCount, setIsCartOpen } = useCart();
 
   // Handle scroll effect
@@ -52,12 +55,22 @@ const Header = () => {
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
-  const navLinks = [
-    { name: t('nav.kites'), href: "/category/kites" },
-    { name: t('nav.boards'), href: "/category/boards" },
-    { name: t('nav.wings'), href: "/category/wings" },
-    { name: t('nav.foils'), href: "/category/foils" },
-    { name: t('nav.accessories'), href: "/category/accessories" },
+  const dynamicNavLinks = navigationData?.categories?.map((category) => ({
+    name: category.name,
+    href: `/category/${category.slug}`,
+  })) || [
+      { name: t('nav.kites'), href: "/category/kites" },
+      { name: t('nav.boards'), href: "/category/boards" },
+      { name: t('nav.wings'), href: "/category/wings" },
+      { name: t('nav.foils'), href: "/category/foils" },
+      { name: t('nav.accessories'), href: "/category/accessories" },
+    ];
+
+  const groupedProductTypes = navigationData?.productTypesByGroup;
+  const menuGroupKeys: Array<"gear" | "accessories" | "categories"> = [
+    "gear",
+    "accessories",
+    "categories",
   ];
 
   const headerClass = `fixed w-full z-50 transition-all duration-300 bg-deep-navy ${isScrolled ? 'shadow-lg' : ''}`;
@@ -69,10 +82,10 @@ const Header = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 shrink-0">
-            <img 
-              alt="Slingshot" 
-              className="h-10 w-auto" 
-              src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png" 
+            <img
+              alt="Slingshot"
+              className="h-10 w-auto"
+              src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png"
             />
             <span className="font-logo font-extrabold text-white text-lg tracking-tight hidden sm:block">
               BULGARIA
@@ -80,24 +93,89 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map(link => (
+          <nav className="hidden lg:flex items-center gap-8 relative">
+            {dynamicNavLinks.map(link => (
               <Link key={link.name} to={link.href} className={linkClass}>
                 {link.name}
               </Link>
             ))}
+            {/* Shop Mega Menu Trigger */}
+            <div className="relative">
+              <button
+                onClick={() => setIsMegaOpen(!isMegaOpen)}
+                className={`nav-link-white flex items-center gap-1 ${isMegaOpen ? 'text-accent' : ''}`}
+              >
+                {t('shop.title')}
+              </button>
+            </div>
           </nav>
+
+          {/* Mega Menu Content (Full Width) */}
+          <div
+            className={`fixed top-20 left-0 right-0 w-full bg-deep-navy/95 backdrop-blur-md border-t border-white/10 shadow-xl transition-all duration-300 origin-top z-40 ${isMegaOpen
+                ? 'opacity-100 translate-y-0 visible'
+                : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+              }`}
+          >
+            <div className="section-container py-12">
+              <div className="grid grid-cols-4 gap-12">
+                {/* Categories Column */}
+                <div>
+                  <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                    {t('home.categories')}
+                  </h3>
+                  <div className="flex flex-col gap-3">
+                    {navigationData?.categories?.map((category) => (
+                      <Link
+                        key={category.id}
+                        to={`/category/${category.slug}`}
+                        className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-lg font-medium"
+                        onClick={() => setIsMegaOpen(false)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dynamic Group Columns */}
+                {menuGroupKeys.map((groupKey) => {
+                  const types = groupedProductTypes?.[groupKey];
+                  if (!types || types.length === 0) return null;
+                  return (
+                    <div key={groupKey}>
+                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                        {t(`menu_group.${groupKey}`)}
+                      </h3>
+                      <div className="flex flex-col gap-3">
+                        {types.map((type) => (
+                          <Link
+                            key={type.id}
+                            to={`/products/${type.slug}`}
+                            className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
+                            onClick={() => setIsMegaOpen(false)}
+                          >
+                            {type.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <button 
+            <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="touch-target flex items-center justify-center text-white/80 hover:text-accent transition-colors"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={() => setIsCartOpen(true)}
               className="touch-target flex items-center justify-center text-white/80 hover:text-accent transition-colors relative"
             >
@@ -115,8 +193,8 @@ const Header = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
-              className="lg:hidden touch-target flex items-center justify-center text-white" 
+            <button
+              className="lg:hidden touch-target flex items-center justify-center text-white"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Menu"
             >
@@ -127,10 +205,9 @@ const Header = () => {
       </div>
 
       {/* Search Dropdown */}
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${
-          isSearchOpen ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
-        }`}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
         <div className="section-container py-4">
           <form onSubmit={handleSearchSubmit} className="relative">
@@ -145,8 +222,8 @@ const Header = () => {
                          focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent
                          transition-all duration-200"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-accent transition-colors"
             >
               <Search className="w-5 h-5" />
@@ -156,23 +233,22 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div 
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${
-          isMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
-        }`}
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
         <nav className="section-container py-6 flex flex-col gap-4">
-          {navLinks.map(link => (
-            <Link 
-              key={link.name} 
-              to={link.href} 
-              className="nav-link-white text-lg py-2" 
+          {dynamicNavLinks.map(link => (
+            <Link
+              key={link.name}
+              to={link.href}
+              className="nav-link-white text-lg py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               {link.name}
             </Link>
           ))}
-          
+
           {/* Language Switch in Mobile Menu */}
           <div className="pt-4 mt-2 border-t border-white/10">
             <LanguageSwitch className="text-white/80 hover:text-accent" />

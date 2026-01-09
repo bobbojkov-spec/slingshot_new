@@ -13,18 +13,21 @@ export async function POST(req: Request) {
     const { rows } = await query(
       `
         INSERT INTO product_variants (
-          product_id, 
-          title, 
-          sku, 
-          price, 
+          product_id,
+          title,
+          sku,
+          price,
           compare_at_price,
           inventory_quantity,
-          available, 
+          available,
           status,
+          name_en,
+          name_bg,
+          position,
           created_at,
           updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING *
       `,
       [
@@ -36,10 +39,27 @@ export async function POST(req: Request) {
         variant.inventory_quantity || 0,
         true,
         'active',
+        variant.name_en || variant.title || null,
+        variant.name_bg || null,
+        variant.position || 0,
       ]
     );
 
-    return NextResponse.json({ variant: rows[0] });
+    const createdVariant = rows[0];
+
+    const { rows: availabilityRows = [] } = await query(
+      `
+        INSERT INTO product_variant_availability (variant_id, color_id, stock_qty, is_active, created_at, updated_at)
+        SELECT $1, id, 0, false, NOW(), NOW()
+        FROM product_colors
+        WHERE product_id = $2
+        ON CONFLICT (variant_id, color_id) DO NOTHING
+        RETURNING variant_id, color_id, stock_qty, is_active, created_at, updated_at
+      `,
+      [createdVariant.id, productId]
+    );
+
+    return NextResponse.json({ variant: createdVariant, availability: availabilityRows });
   } catch (error: any) {
     console.error('Failed to create variant:', error);
     return NextResponse.json({ error: error.message || 'Failed to create variant' }, { status: 500 });
@@ -87,6 +107,18 @@ export async function PUT(req: Request) {
     if (data.status !== undefined) {
       updates.push(`status = $${paramIndex++}`);
       values.push(data.status);
+    }
+    if (data.name_en !== undefined) {
+      updates.push(`name_en = $${paramIndex++}`);
+      values.push(data.name_en);
+    }
+    if (data.name_bg !== undefined) {
+      updates.push(`name_bg = $${paramIndex++}`);
+      values.push(data.name_bg);
+    }
+    if (data.position !== undefined) {
+      updates.push(`position = $${paramIndex++}`);
+      values.push(data.position);
     }
 
     // Always update updated_at

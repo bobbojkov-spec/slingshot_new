@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getPresignedUrl } from '@/lib/railway/storage';
+import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET() {
   try {
@@ -20,17 +22,18 @@ export async function GET() {
 
     const productIds = productRows.map((row: any) => row.id).filter(Boolean);
 
+    // We'll process images later in map since async transformation needed
     const { rows: imageRows = [] } =
       productIds.length > 0
         ? await query(
-            `
-              SELECT id, product_id, url, position, shopify_product_id
-              FROM product_images
-              WHERE product_id = ANY($1)
-              ORDER BY COALESCE(position, 9999)
+          `
+              SELECT id, product_id, storage_path, size, display_order
+              FROM product_images_railway
+              WHERE product_id = ANY($1) AND size = 'thumb'
+              ORDER BY display_order ASC
             `,
-            [productIds]
-          )
+          [productIds]
+        )
         : { rows: [] };
 
     const { rows: variantRows = [] } =
@@ -38,18 +41,31 @@ export async function GET() {
         ? await query('SELECT * FROM product_variants WHERE product_id = ANY($1)', [productIds])
         : { rows: [] };
 
+    // Generate presigned URLs for all images found
+    const processedImages = await Promise.all(
+      imageRows.map(async (row: any) => {
+        const url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+        return {
+          ...row,
+          url,
+          thumb_url: url
+        };
+      })
+    );
+
     const imagesByProduct = new Map<string, any[]>();
-    imageRows.forEach((img: any) => {
+    processedImages.forEach((img: any) => {
       const list = imagesByProduct.get(img.product_id) || [];
-      list.push(img);
+      // Only keep valid URLs
+      if (img.url) list.push(img);
       imagesByProduct.set(img.product_id, list);
     });
 
     const variantsByProduct = new Map<string, any[]>();
-    variantRows.forEach((variant: any) => {
-      const list = variantsByProduct.get(variant.product_id) || [];
-      list.push(variant);
-      variantsByProduct.set(variant.product_id, list);
+    variantRows.forEach((v: any) => {
+      const list = variantsByProduct.get(v.product_id) || [];
+      list.push(v);
+      variantsByProduct.set(v.product_id, list);
     });
 
     const assembled = productRows.map((product: any) => {

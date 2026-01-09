@@ -153,6 +153,20 @@ export async function POST(req: Request) {
       );
     }
 
+    if (Array.isArray(product.activity_category_ids)) {
+      await query('DELETE FROM product_activity_categories WHERE product_id = $1', [product.id]);
+      const distinctIds = Array.from(new Set(product.activity_category_ids.filter(Boolean)));
+      if (distinctIds.length > 0) {
+        await query(
+          `
+            INSERT INTO product_activity_categories (product_id, activity_category_id, created_at, updated_at)
+            SELECT $1, unnest($2::uuid[]), NOW(), NOW()
+          `,
+          [product.id, distinctIds],
+        );
+      }
+    }
+
     return NextResponse.json({ success: true, message: 'Product updated successfully' });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'Unexpected error' }, { status: 500 });

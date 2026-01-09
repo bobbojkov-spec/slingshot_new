@@ -1,148 +1,136 @@
-"use client";
+'use client';
 
-import { Filter, ChevronDown, X } from "lucide-react";
-import { useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
-import PriceNote from "@/components/PriceNote";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { ProductGrid } from '@/components/products/ProductGrid';
+import { Breadcrumbs } from '@/components/shop/Breadcrumbs';
+import { ShopToolbar } from '@/components/shop/ShopToolbar';
+import { ShopHero } from '@/components/shop/ShopHero';
+import { FloatingWarning } from '@/components/FloatingWarning';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const products = [
-  { id: "1", name: "RPX V2", category: "Kite", price: 1899, image: "/lovable-uploads/rpx-kite.jpg", badge: "New", slug: "rpx-v2" },
-  { id: "2", name: "Ghost V3", category: "Kite", price: 1799, originalPrice: 1999, image: "/lovable-uploads/ghost-kite.jpg", badge: "Sale", slug: "ghost-v3" },
-  { id: "3", name: "UFO V3", category: "Kite", price: 1699, image: "/lovable-uploads/ufo-kite.jpg", slug: "ufo-v3" },
-  { id: "4", name: "Fuse", category: "Kite", price: 1599, image: "/lovable-uploads/fuse-kite.jpg", slug: "fuse" },
-  { id: "5", name: "SlingWing V4", category: "Wing", price: 899, image: "/lovable-uploads/slingwing-v4.jpg", badge: "New", slug: "slingwing-v4" },
-  { id: "6", name: "SlingWing NXT", category: "Wing", price: 799, image: "/lovable-uploads/slingwing-nxt.jpg", slug: "slingwing-nxt" },
-  { id: "7", name: "Formula V3", category: "Board", price: 749, image: "/lovable-uploads/formula-board.jpg", slug: "formula-v3" },
-  { id: "8", name: "Sci-Fly XT V2", category: "Board", price: 1299, image: "/lovable-uploads/scifly-board.jpg", slug: "scifly-xt-v2" }
-];
-
-const heroImage = "/lovable-uploads/hero-wind.jpg";
-
-const normalize = (value?: string) => value?.toLowerCase() ?? "";
-
-const updateParams = (router: ReturnType<typeof useRouter>, searchParams: URLSearchParams, updates: Record<string, string | undefined>) => {
-  const nextParams = new URLSearchParams(searchParams.toString());
-  Object.entries(updates).forEach(([key, value]) => {
-    if (!value) {
-      nextParams.delete(key);
-    } else {
-      nextParams.set(key, value);
-    }
-  });
-  const queryString = nextParams.toString();
-  router.replace(queryString ? `/shop?${queryString}` : "/shop");
-};
-
-export default function Page() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { language, t } = useLanguage();
 
-  const searchQuery = searchParams.get("search") || "";
-  const categoryFilter = searchParams.get("category") || "";
+  const [products, setProducts] = useState([]);
+  const [facets, setFacets] = useState({ categories: [], types: [], tags: [] });
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch = searchQuery
-        ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) || product.category.toLowerCase().includes(searchQuery.toLowerCase())
-        : true;
-      const matchesCategory = categoryFilter
-        ? product.category.toLowerCase() === categoryFilter.toLowerCase()
-        : true;
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchQuery, categoryFilter]);
+  // Default filter logic: If no category is present, redirect/default to "kite"
+  useEffect(() => {
+    if (!searchParams.has('category') && !searchParams.has('q')) { // Don't redirect if searching
+      // Actually, let's just fetch default "Kite" but update URL to be explicit? 
+      // Or just fetch "Kite" products implicitly?
+      // User said: "Make a default filter when you click on shop, by sport kites"
+      // It's better for UX to have the URL reflect the state.
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('category', 'kite');
+      router.replace(`/shop?${params.toString()}`);
+    }
+  }, [searchParams, router]);
 
-  const clearSearch = () => updateParams(router, searchParams, { search: undefined });
-  const clearCategory = () => updateParams(router, searchParams, { category: undefined });
-  const clearFilters = () => router.replace("/shop");
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        // If we are in the middle of redirecting to default category, wait?
+        // No, current params are used. If params change, effect re-runs.
+
+        const params = new URLSearchParams(searchParams.toString());
+        // If no category yet (initial load before redirect), don't fetch or fetch everything?
+        // Let's fetch whatever params say.
+
+        const res = await fetch(`/api/products?${params.toString()}&limit=12`); // 12 items for grid (3x4 or 4x3)
+        if (!res.ok) throw new Error('Failed to fetch products');
+
+        const data = await res.json();
+        setProducts(data.products);
+        setFacets(data.facets || { categories: [], types: [], tags: [] });
+        setPagination(data.pagination);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [searchParams]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > pagination.totalPages) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', newPage.toString());
+    router.push(`/shop?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const breadcrumbItems = [
+    { label: 'Shop', href: '/shop' },
+    ...(searchParams.get('category') ? [{ label: searchParams.get('category')!.toUpperCase() }] : []),
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="pt-20">
-        <section className="relative h-48 lg:h-64 animate-fade-in">
-          <img src={heroImage} alt="Shop" className="image-cover" />
-          <div className="hero-overlay-center" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-3xl lg:text-4xl font-heading font-bold text-white uppercase tracking-tight">{t("shop.title")}</h1>
-              <p className="text-base lg:text-lg text-white/80 mt-2 font-body">{t("shop.subtitle")}</p>
-            </div>
+    <div className="min-h-screen bg-white">
+      <ShopHero title={searchParams.get('category') || 'Shop'} />
+
+      <ShopToolbar facets={facets} totalProducts={pagination.total} />
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Breadcrumbs items={breadcrumbItems} />
+        </div>
+
+        {error ? (
+          <div className="text-center py-20 text-red-500">Error: {error}</div>
+        ) : loading ? (
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
           </div>
-        </section>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
+        ) : (
+          <>
+            <ProductGrid products={products} />
 
-        <div className="section-container pt-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <PriceNote />
-        </div>
-
-        <div className="section-container py-6 border-b border-border animate-fade-in" style={{ animationDelay: "150ms" }}>
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex gap-3 flex-wrap items-center">
-              <button className="filter-button">
-                <Filter className="w-4 h-4" /> {t("shop.filter")}
-              </button>
-              <button className="filter-button">
-                {t("shop.category")} <ChevronDown className="w-4 h-4" />
-              </button>
-              <button className="filter-button hidden sm:flex">
-                {t("shop.price")} <ChevronDown className="w-4 h-4" />
-              </button>
-
-              {searchQuery && (
-                <span className="filter-tag">
-                  "{searchQuery}"
-                  <button onClick={clearSearch} className="hover:text-white/60">
-                    <X className="w-3 h-3" />
-                  </button>
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="flex justify-center items-center mt-12 space-x-4">
+                <Button
+                  variant="outline"
+                  disabled={pagination.page === 1}
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" /> Previous
+                </Button>
+                <span className="text-sm font-medium">
+                  Page {pagination.page} of {pagination.totalPages}
                 </span>
-              )}
-              {categoryFilter && (
-                <span className="filter-tag">
-                  {categoryFilter}
-                  <button onClick={clearCategory} className="hover:text-white/60">
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-            </div>
-            <span className="font-body text-sm text-muted-foreground">
-              {filteredProducts.length} {t("shop.products")}
-            </span>
-          </div>
-
-          {searchQuery && (
-            <div className="mt-4 pt-4 border-t border-border">
-              <p className="font-body text-muted-foreground">
-                {t("shop.search_results")}: <span className="text-foreground font-medium">"{searchQuery}"</span>
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="section-container section-padding">
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              {filteredProducts.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 animate-fade-in">
-              <p className="font-heading text-xl text-muted-foreground mb-4">{t("shop.no_results")}</p>
-              <button onClick={clearFilters} className="btn-outline">
-                {language === "bg" ? "Изчисти филтрите" : "Clear filters"}
-              </button>
-            </div>
-          )}
-        </div>
-      </main>
-      <Footer />
+                <Button
+                  variant="outline"
+                  disabled={pagination.page === pagination.totalPages}
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                >
+                  Next <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      <FloatingWarning />
     </div>
   );
 }
 
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ShopContent />
+    </Suspense>
+  );
+}

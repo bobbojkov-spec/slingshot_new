@@ -122,6 +122,7 @@ async function fetchCategoriesAndTypes() {
     return {
       categories: data?.categories || [],
       productTypes: data?.productTypes || [],
+      activityCategories: data?.activityCategories || [],
     };
   } catch (error) {
     console.error('[EDIT PAGE] Failed to load product meta', error);
@@ -135,14 +136,14 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
   
   console.log('[EDIT PAGE] Loading product with ID:', productId);
   
-  const [product, lists] = await Promise.all([
+    const [product, lists] = await Promise.all([
     fetchProduct(productId),
     fetchCategoriesAndTypes()
   ]);
 
   console.log('[EDIT PAGE] Product result:', product ? 'FOUND' : 'NOT FOUND');
-  console.log('[EDIT PAGE] Categories count:', lists.categories.length);
-  console.log('[EDIT PAGE] Product types count:', lists.productTypes.length);
+    console.log('[EDIT PAGE] Categories count:', lists.categories.length);
+    console.log('[EDIT PAGE] Product types count:', lists.productTypes.length);
 
   if (!product) {
     return (
@@ -154,5 +155,12 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
     );
   }
 
-  return <EditProduct product={product} categories={lists.categories} productTypes={lists.productTypes} />;
+  return (
+    <EditProduct
+      product={product}
+      categories={lists.categories}
+      productTypes={lists.productTypes}
+      activityCategories={lists.activityCategories}
+    />
+  );
 }

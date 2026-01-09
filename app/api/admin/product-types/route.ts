@@ -20,8 +20,8 @@ export async function GET() {
       LEFT JOIN products p ON p.product_type = pt.name
       LEFT JOIN product_type_translations ptt_en ON pt.id = ptt_en.product_type_id AND ptt_en.language_code = 'en'
       LEFT JOIN product_type_translations ptt_bg ON pt.id = ptt_bg.product_type_id AND ptt_bg.language_code = 'bg'
-      GROUP BY pt.id, ptt_en.name, ptt_en.description, ptt_bg.name, ptt_bg.description
-      ORDER BY pt.name ASC
+      GROUP BY pt.id, pt.menu_group, ptt_en.name, ptt_en.description, ptt_bg.name, ptt_bg.description
+      ORDER BY pt.menu_group, pt.sort_order, pt.name ASC
     `);
 
     return NextResponse.json({ productTypes: rows });
@@ -38,7 +38,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, slug, description, sort_order } = body;
+    const { name, slug, description, sort_order, menu_group } = body;
 
     if (!name) {
       return NextResponse.json({ error: 'Product type name is required' }, { status: 400 });
@@ -55,15 +55,16 @@ export async function POST(req: Request) {
           handle,
           description, 
           sort_order,
+          menu_group,
           status,
           visible,
           created_at,
           updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
         RETURNING *
       `,
-      [name, finalSlug, finalSlug, description || null, sort_order || 0, 'active', true]
+      [name, finalSlug, finalSlug, description || null, sort_order || 0, menu_group || 'gear', 'active', true]
     );
 
     return NextResponse.json({ productType: rows[0] });
@@ -112,6 +113,10 @@ export async function PUT(req: Request) {
     if (data.visible !== undefined) {
       updates.push(`visible = $${paramIndex++}`);
       values.push(data.visible);
+    }
+    if (data.menu_group !== undefined) {
+      updates.push(`menu_group = $${paramIndex++}`);
+      values.push(data.menu_group);
     }
 
     updates.push(`updated_at = NOW()`);

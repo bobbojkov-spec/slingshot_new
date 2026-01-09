@@ -4,6 +4,7 @@ export const translations = {
     "header.nav.boards": "Boards",
     "header.nav.wings": "Wings",
     "header.nav.foils": "Foils",
+    "header.nav.wake": "Wake",
     "header.nav.accessories": "Accessories",
     "header.nav.about": "About",
     "header.nav.contact": "Contact",
@@ -100,6 +101,9 @@ export const translations = {
     "shop.clearFilters": "Clear filters",
     "category.new_arrivals": "New Arrivals",
     "category.all_products": "All Products",
+    "menu_group.gear": "GEAR",
+    "menu_group.accessories": "ACCESSORIES",
+    "menu_group.categories": "CATEGORIES",
     "breadcrumbs.home": "Home",
     "breadcrumbs.shop": "Shop"
   },
@@ -108,6 +112,7 @@ export const translations = {
     "header.nav.boards": "Дъски",
     "header.nav.wings": "Уингове",
     "header.nav.foils": "Фойлове",
+    "header.nav.wake": "Уейк",
     "header.nav.accessories": "Аксесоари",
     "header.nav.about": "За нас",
     "header.nav.contact": "Контакт",
@@ -204,6 +209,9 @@ export const translations = {
     "shop.clearFilters": "Изчисти филтрите",
     "category.new_arrivals": "Нови продукти",
     "category.all_products": "Всички продукти",
+    "menu_group.gear": "ЕКИПИРОВКА",
+    "menu_group.accessories": "АКСЕСОАРИ",
+    "menu_group.categories": "КАТЕГОРИИ",
     "breadcrumbs.home": "Начало",
     "breadcrumbs.shop": "Магазин"
   }

@@ -1,11 +1,10 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
-import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form } from 'antd';
+import { useMemo, useState, useEffect, type ReactNode } from 'react';
+import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import BilingualInput from '../../../../components/BilingualInput';
 import type { Product } from '../EditProduct';
-import { colorsUrl } from '../colorsApi';
 
 type Variant = {
   id?: string;
@@ -34,6 +33,13 @@ type AvailabilityEntry = {
   is_active: boolean;
 };
 
+type SharedColor = {
+  id: string;
+  name_en: string;
+  name_bg?: string;
+  hex_color: string;
+};
+
 export default function VariantsTab({
   draft,
   setDraft,
@@ -54,10 +60,26 @@ export default function VariantsTab({
     translation_bg: { title: '' },
   });
   const [addForm] = Form.useForm();
-  const [colorForm] = Form.useForm();
-  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
-  const [colorToEdit, setColorToEdit] = useState<any>(null);
   const [savingAvailabilityKey, setSavingAvailabilityKey] = useState<string>('');
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [selectedSharedColor, setSelectedSharedColor] = useState<SharedColor | null>(null);
+  const [assignPosition, setAssignPosition] = useState(0);
+  const [sharedColors, setSharedColors] = useState<SharedColor[]>([]);
+  const [loadingAssignment, setLoadingAssignment] = useState(false);
+
+  useEffect(() => {
+    const loadSharedColors = async () => {
+      try {
+        const res = await fetch("/api/admin/colors");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Failed to load colors");
+        setSharedColors(data.colors ?? []);
+      } catch (err: any) {
+        message.error(err?.message || "Unable to load colors");
+      }
+    };
+    loadSharedColors();
+  }, []);
 
   const variants = draft.variants || [];
   const colors = draft.colors || [];
@@ -256,95 +278,56 @@ export default function VariantsTab({
     }
   };
 
-  const openColorModal = (color?: any) => {
-    setColorToEdit(color || null);
-    if (color) {
-      colorForm.setFieldsValue({
-        name_en: color.name_en,
-        name_bg: color.name_bg,
-        hex_color: color.hex_color,
-        position: color.position,
-      });
-    } else {
-      colorForm.resetFields();
-      colorForm.setFieldsValue({ hex_color: '#000000', position: 0 });
-    }
-    setIsColorModalOpen(true);
-  };
-
-  const handleColorSubmit = async (values: any) => {
-    if (!draft.id) return;
-
+  const handleAssignColor = async () => {
+    if (!draft.id || !selectedSharedColor) return;
+    setLoadingAssignment(true);
     try {
-      const method = colorToEdit ? 'PUT' : 'POST';
-      const payload = {
-        ...values,
-        name_en: values.name_en?.toString().trim() ?? '',
-        name_bg: values.name_bg?.toString().trim() ?? '',
-        hex_color: values.hex_color,
-        position: values.position,
-        colorId: colorToEdit?.id,
-      };
-
-      if (!payload.name_en || !payload.name_bg) {
-        console.warn('[colors] blocked submit — missing names', payload);
-        return;
-      }
-      const url = colorsUrl(draft.id);
-      console.log('[colors] POST', url, { productId: draft.id, payload });
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch(`/api/admin/products/${draft.id}/color-assignments`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ colorId: selectedSharedColor.id, position: assignPosition }),
       });
-
-      const body = await res.json();
-      if (!res.ok) throw new Error(body?.error || 'Failed to save color');
-
-      setDraft((prev) => {
-        const next = { ...prev };
-        if (colorToEdit) {
-          next.colors = next.colors?.map((c: any) => (c.id === body.color.id ? body.color : c));
-        } else {
-          next.colors = [...(next.colors || []), body.color];
-          next.availability = [...(next.availability || []), ...(body.availability || [])];
-        }
-        return next;
-      });
-
-      message.success(`Color ${colorToEdit ? 'updated' : 'added'}`);
-      setIsColorModalOpen(false);
-      colorForm.resetFields();
-    } catch (err: any) {
-      message.error(err?.message || 'Failed to save color');
-    }
-  };
-
-  const deleteColor = async (colorId: string) => {
-    if (!draft.id) return;
-
-    try {
-      const url = colorsUrl(draft.id);
-      console.log('[colors] DELETE', url, { productId: draft.id, colorId });
-      const res = await fetch(url, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ colorId }),
-      });
-
-      const body = await res.json();
-      if (!res.ok) throw new Error(body?.error || 'Failed to delete color');
-
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to assign color');
       setDraft((prev) => ({
         ...prev,
-        colors: prev.colors?.filter((c: any) => c.id !== colorId),
-        availability: prev.availability?.filter((entry) => entry.color_id !== colorId),
+        colors: [...(prev.colors || []), {
+          id: data.assignment.id,
+          color_id: selectedSharedColor.id,
+          position: data.assignment.position,
+          name_en: selectedSharedColor.name_en,
+          name_bg: selectedSharedColor.name_bg,
+          hex_color: selectedSharedColor.hex_color,
+        }],
       }));
-
-      message.success('Color removed');
+      message.success('Color assigned to product');
+      setAssignModalOpen(false);
+      setSelectedSharedColor(null);
     } catch (err: any) {
-      message.error(err?.message || 'Failed to delete color');
+      message.error(err?.message || 'Failed to assign color');
+    } finally {
+      setLoadingAssignment(false);
+    }
+  };
+
+  const removeAssignment = async (assignmentId: string) => {
+    if (!draft.id) return;
+    try {
+      const res = await fetch(`/api/admin/products/${draft.id}/color-assignments`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignmentId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to remove color');
+      setDraft((prev) => ({
+        ...prev,
+        colors: prev.colors?.filter((color) => color.id !== assignmentId),
+        availability: prev.availability?.filter((entry) => entry.color_id !== assignmentId),
+      }));
+      message.success('Color removed from product');
+    } catch (err: any) {
+      message.error(err?.message || 'Unable to remove color');
     }
   };
 
@@ -608,11 +591,16 @@ export default function VariantsTab({
 
         <CardSection
           title="Product Colors"
-          description="Colors are global to the product and reused by every variant."
+          description="Assign shared colors from the central catalog to this product."
           action={
-            <Button type="default" icon={<PlusOutlined />} onClick={() => openColorModal()}>
-              Add Color
-            </Button>
+            <Space>
+              <Button type="default" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
+                Assign Color
+              </Button>
+              <a href="/admin/colors" target="_blank" rel="noreferrer">
+                Manage catalog
+              </a>
+            </Space>
           }
         >
           <Table
@@ -621,16 +609,8 @@ export default function VariantsTab({
             dataSource={sortedColors}
             pagination={false}
             columns={[
-              {
-                title: 'Name (EN)',
-                dataIndex: 'name_en',
-                key: 'name_en',
-              },
-              {
-                title: 'Name (BG)',
-                dataIndex: 'name_bg',
-                key: 'name_bg',
-              },
+              { title: 'Name (EN)', dataIndex: 'name_en', key: 'name_en' },
+              { title: 'Name (BG)', dataIndex: 'name_bg', key: 'name_bg' },
               {
                 title: 'Color',
                 key: 'color',
@@ -642,6 +622,7 @@ export default function VariantsTab({
                       borderRadius: '50%',
                       border: '1px solid #e0e0e0',
                       backgroundColor: record.hex_color || '#000',
+                      margin: '0 auto',
                     }}
                   />
                 ),
@@ -650,29 +631,20 @@ export default function VariantsTab({
                 title: 'Position',
                 dataIndex: 'position',
                 key: 'position',
-                render: (value: number) => value ?? 0,
               },
               {
                 title: 'Actions',
                 key: 'actions',
                 render: (_: any, record: any) => (
-                  <Space size={4}>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<EditOutlined />}
-                      onClick={() => openColorModal(record)}
-                    />
-                    <Popconfirm
-                      title="Delete color?"
-                      description="This will remove related availability."
-                      onConfirm={() => deleteColor(record.id)}
-                      okText="Delete"
-                      okType="danger"
-                    >
-                      <Button type="link" size="small" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
-                  </Space>
+                  <Button
+                    type="link"
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeAssignment(record.id)}
+                  >
+                    Remove
+                  </Button>
                 ),
               },
             ]}
@@ -869,39 +841,56 @@ export default function VariantsTab({
       </Modal>
 
       <Modal
-        title={colorToEdit ? 'Edit Color' : 'Add Color'}
-        open={isColorModalOpen}
+        title="Assign Shared Color"
+        open={assignModalOpen}
         onCancel={() => {
-          setIsColorModalOpen(false);
-          colorForm.resetFields();
-          setColorToEdit(null);
+          setAssignModalOpen(false);
+          setSelectedSharedColor(null);
         }}
-        onOk={() => colorForm.submit()}
-        okText={colorToEdit ? 'Save Color' : 'Add Color'}
+        okText="Assign"
+        confirmLoading={loadingAssignment}
+        onOk={handleAssignColor}
+        width={400}
       >
-        <Form form={colorForm} layout="vertical" onFinish={handleColorSubmit}>
-          <Form.Item
-            name="name_en"
-            label="Name (EN)"
-            rules={[{ required: true, message: 'English name required' }]}
-          >
-            <Input placeholder="e.g., Sand" />
+        <Form layout="vertical">
+          <Form.Item label="Color" required>
+            <Select
+              placeholder="Select a shared color"
+              value={selectedSharedColor?.id}
+              onChange={(value) => {
+                const selection = sharedColors.find((color) => color.id === value) || null;
+                setSelectedSharedColor(selection);
+              }}
+            >
+              {sharedColors.map((color) => (
+                <Select.Option key={color.id} value={color.id}>
+                  <Space>
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        backgroundColor: color.hex_color || '#000',
+                        display: 'inline-block',
+                      }}
+                    />
+                    <span>{color.name_en}</span>
+                  </Space>
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
-          <Form.Item name="name_bg" label="Name (BG)" rules={[{ required: true, message: 'Bulgarian name required' }]}>
-            <Input placeholder="e.g., Пясък" />
-          </Form.Item>
-          <Form.Item
-            name="hex_color"
-            label="Color"
-            rules={[{ required: true, message: 'Pick a color' }]}
-          >
-            <Input type="color" />
-          </Form.Item>
-          <Form.Item name="position" label="Position" initialValue={0}>
-            <InputNumber style={{ width: '100%' }} min={0} />
+          <Form.Item label="Position">
+            <InputNumber
+              style={{ width: '100%' }}
+              min={0}
+              value={assignPosition}
+              onChange={(value) => setAssignPosition(value ?? 0)}
+            />
           </Form.Item>
         </Form>
       </Modal>
+
     </div>
   );
 }

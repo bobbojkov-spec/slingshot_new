@@ -92,7 +92,7 @@ export default function SeoSection({ productId, productTitle, productDescription
       }
       style={{ marginBottom: 24 }}
     >
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={16} style={{ width: '100%' }}>
         {/* Search Engine Meta */}
         <div>
           <Typography.Title level={5}>Search Engine Optimization</Typography.Title>

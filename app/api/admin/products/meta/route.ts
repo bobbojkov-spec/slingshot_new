@@ -12,7 +12,16 @@ export async function GET() {
       new Set(typesRows.map((row: any) => (row.product_type || '').toString().trim()).filter(Boolean))
     ).sort((a, b) => a.localeCompare(b));
 
-    return NextResponse.json({ categories, productTypes });
+    const { rows: activityCategories = [] } = await query(
+      `
+        SELECT id, name_en, name_bg, slug
+        FROM activity_categories
+        WHERE is_active = true
+        ORDER BY position ASC, name_en ASC
+      `,
+    );
+
+    return NextResponse.json({ categories, productTypes, activityCategories });
   } catch (error: any) {
     console.error('Unable to fetch admin product meta', error);
     return NextResponse.json(

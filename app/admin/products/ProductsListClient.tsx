@@ -180,7 +180,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
   };
 
   const goToEditImages = (id: string) => {
-    router.push(`/admin/products/${id}/edit/images${queryString}`);
+    router.push(`/admin/product-images/${id}/edit${queryString}`);
   };
 
   const columns = [
@@ -194,6 +194,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
         const imgUrl = resolveImageUrl(firstImage);
         return imgUrl ? (
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               width: '100%',
               height: 80,

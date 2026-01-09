@@ -17,6 +17,9 @@ async function copyEnglishToBulgarian() {
         tags = pt_en.tags,
         seo_title = pt_en.seo_title,
         seo_description = pt_en.seo_description,
+        meta_keywords = pt_en.meta_keywords,
+        og_title = pt_en.og_title,
+        og_description = pt_en.og_description,
         updated_at = NOW()
       FROM product_translations pt_en
       WHERE pt_bg.product_id = pt_en.product_id
@@ -24,7 +27,12 @@ async function copyEnglishToBulgarian() {
         AND pt_en.language_code = 'en'
         AND (
           pt_bg.title IS NULL OR pt_bg.title = '' OR
-          pt_bg.description_html IS NULL OR pt_bg.description_html = ''
+          pt_bg.description_html IS NULL OR pt_bg.description_html = '' OR
+          pt_bg.seo_title IS NULL OR pt_bg.seo_title = '' OR
+          pt_bg.seo_description IS NULL OR pt_bg.seo_description = '' OR
+          pt_bg.meta_keywords IS NULL OR pt_bg.meta_keywords = '' OR
+          pt_bg.og_title IS NULL OR pt_bg.og_title = '' OR
+          pt_bg.og_description IS NULL OR pt_bg.og_description = ''
         )
     `);
     console.log(`✅ Updated ${updateResult.rowCount} existing Bulgarian translations\n`);
@@ -41,8 +49,11 @@ async function copyEnglishToBulgarian() {
         specs_html, 
         package_includes, 
         tags, 
-        seo_title, 
+        seo_title,
         seo_description,
+        meta_keywords,
+        og_title,
+        og_description,
         created_at,
         updated_at
       )
@@ -57,6 +68,9 @@ async function copyEnglishToBulgarian() {
         pt_en.tags,
         pt_en.seo_title,
         pt_en.seo_description,
+        pt_en.meta_keywords,
+        pt_en.og_title,
+        pt_en.og_description,
         NOW() as created_at,
         NOW() as updated_at
       FROM product_translations pt_en

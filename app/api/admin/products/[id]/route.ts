@@ -98,10 +98,21 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       ),
       query(
         `
-          SELECT id, product_id, name_en, name_bg, hex_color, position, is_visible, created_at, updated_at
-          FROM product_colors
-          WHERE product_id = $1
-          ORDER BY position ASC, name_en ASC
+          SELECT
+            pc.id,
+            pc.product_id,
+            pc.color_id,
+            pc.position,
+            sc.name_en,
+            sc.name_bg,
+            sc.hex_color,
+            sc.position AS shared_position,
+            sc.created_at AS shared_created_at,
+            sc.updated_at AS shared_updated_at
+          FROM product_colors pc
+          LEFT JOIN shared_colors sc ON sc.id = pc.color_id
+          WHERE pc.product_id = $1
+          ORDER BY pc.position ASC
         `,
         [productId]
       ),
@@ -145,6 +156,17 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
         };
       })
     );
+
+    const colors = colorRows.map((row: any) => ({
+      id: row.id,
+      color_id: row.color_id,
+      position: row.position,
+      name_en: row.name_en || row.shared_name_en || '',
+      name_bg: row.name_bg || row.shared_name_bg || '',
+      hex_color: row.hex_color || row.shared_hex_color || '#000',
+      created_at: row.shared_created_at,
+      updated_at: row.shared_updated_at,
+    }));
 
     return NextResponse.json({
       product: {

@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
+// Helper to slugify text
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/&/g, '-and-')   // Replace & with 'and'
+    .replace(/[^\w\u0400-\u04FF-]+/g, '') // Remove all non-word chars (allowing Cyrillic)
+    .replace(/--+/g, '-')     // Replace multiple - with single -
+    .replace(/^-+/, '')       // Trim - from start of text
+    .replace(/-+$/, '');      // Trim - from end of text
+}
+
 // GET all categories
 export async function GET() {
   try {
@@ -128,30 +142,34 @@ export async function PUT(req: Request) {
 
     // Save translations if provided
     if (translation_en) {
+      const enSlug = slugify(translation_en.name);
       await query(
         `
-          INSERT INTO category_translations (category_id, language_code, name, description, updated_at)
-          VALUES ($1, 'en', $2, $3, NOW())
+          INSERT INTO category_translations (category_id, language_code, name, slug, description, updated_at)
+          VALUES ($1, 'en', $2, $3, $4, NOW())
           ON CONFLICT (category_id, language_code) DO UPDATE SET
             name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
             description = EXCLUDED.description,
             updated_at = NOW()
         `,
-        [categoryId, translation_en.name, translation_en.description]
+        [categoryId, translation_en.name, enSlug, translation_en.description]
       );
     }
 
     if (translation_bg) {
+      const bgSlug = slugify(translation_bg.name);
       await query(
         `
-          INSERT INTO category_translations (category_id, language_code, name, description, updated_at)
-          VALUES ($1, 'bg', $2, $3, NOW())
+          INSERT INTO category_translations (category_id, language_code, name, slug, description, updated_at)
+          VALUES ($1, 'bg', $2, $3, $4, NOW())
           ON CONFLICT (category_id, language_code) DO UPDATE SET
             name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
             description = EXCLUDED.description,
             updated_at = NOW()
         `,
-        [categoryId, translation_bg.name, translation_bg.description]
+        [categoryId, translation_bg.name, bgSlug, translation_bg.description]
       );
     }
 
@@ -205,8 +223,8 @@ export async function DELETE(req: Request) {
     // Check if has products
     if (category.product_count > 0) {
       return NextResponse.json(
-        { 
-          error: `Cannot delete category with ${category.product_count} linked products. Remove or reassign products first.` 
+        {
+          error: `Cannot delete category with ${category.product_count} linked products. Remove or reassign products first.`
         },
         { status: 400 }
       );

@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -65,8 +66,9 @@ const categoryNames: Record<string, { en: string; bg: string }> = {
   accessories: { en: "Accessories", bg: "Аксесоари" }
 };
 
-export default function Page({ params }: { params: { slug?: string } }) {
-  const category = params.slug || "kites";
+export default function Page({ params }: { params: Promise<{ slug?: string }> }) {
+  const resolvedParams = use(params);
+  const category = resolvedParams?.slug || "kites";
   const { language, t } = useLanguage();
   const categoryInfo = categoryData[category] || categoryData.kites;
   const products = allProducts.filter((product) => product.category === category);

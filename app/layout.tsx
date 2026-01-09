@@ -2,6 +2,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 import type { Metadata } from "next";
 import CartDrawer from "@/components/CartDrawer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { headers } from "next/headers";
 import type { Language } from "@/lib/i18n/LanguageContext";
 
@@ -62,7 +64,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers initialLanguage={initialLanguage}>
-          {children}
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <CartDrawer />
         </Providers>
       </body>

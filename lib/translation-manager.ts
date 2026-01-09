@@ -72,6 +72,10 @@ async function translateCategories() {
       ct.description AS description_en
     FROM categories c
     LEFT JOIN category_translations ct ON c.id = ct.category_id AND ct.language_code = 'en'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM category_translations ct_bg 
+      WHERE ct_bg.category_id = c.id AND ct_bg.language_code = 'bg'
+    )
   `);
 
   for (const category of categories) {
@@ -115,6 +119,10 @@ async function translateProductTypes() {
       ptt.name AS name_en
     FROM product_types pt
     LEFT JOIN product_type_translations ptt ON pt.id = ptt.product_type_id AND ptt.language_code = 'en'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM product_type_translations ptt_bg
+      WHERE ptt_bg.product_type_id = pt.id AND ptt_bg.language_code = 'bg'
+    )
   `);
 
   for (const type of productTypes) {
@@ -154,6 +162,10 @@ async function translateVariants() {
       pvt.title AS title_en
     FROM product_variants pv
     LEFT JOIN product_variant_translations pvt ON pv.id = pvt.variant_id AND pvt.language_code = 'en'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM product_variant_translations pvt_bg
+      WHERE pvt_bg.variant_id = pv.id AND pvt_bg.language_code = 'bg'
+    )
   `);
 
   for (const variant of variants) {
@@ -196,6 +208,10 @@ async function translateProducts() {
       ) AS translation_en
     FROM products p
     LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = 'en'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM product_translations pt_bg
+      WHERE pt_bg.product_id = p.id AND pt_bg.language_code = 'bg'
+    )
   `);
 
   for (const product of products) {

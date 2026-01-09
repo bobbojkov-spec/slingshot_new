@@ -13,6 +13,8 @@ import {
   TableOutlined,
   TagsOutlined,
   TeamOutlined,
+  BgColorsOutlined,
+  GlobalOutlined,
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, Space, Spin, Typography, message } from "antd";
 import Link from "next/link";
@@ -31,6 +33,7 @@ type AdminMenuNode = {
 
 const ADMIN_MENU: AdminMenuNode[] = [
   { key: "dashboard", icon: <HomeOutlined />, labelText: "Dashboard", href: "/admin" },
+  { key: "hero-slides", icon: <FileProtectOutlined />, labelText: "Hero Slides", href: "/admin/hero-slides" },
   {
     key: "catalog",
     icon: <AppstoreOutlined />,
@@ -39,6 +42,10 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-products-new", icon: <TableOutlined />, labelText: "Products", href: "/admin/products" },
       { key: "catalog-categories", icon: <TagsOutlined />, labelText: "Categories", href: "/admin/categories" },
       { key: "catalog-product-types", icon: <TagsOutlined />, labelText: "Product Types", href: "/admin/product-types" },
+      { key: "catalog-colors", icon: <BgColorsOutlined />, labelText: "Colors", href: "/admin/colors" },
+      { key: "catalog-menu-groups", icon: <TagsOutlined />, labelText: "Menu Groups", href: "/admin/menu-groups" },
+      { key: "catalog-activity-categories", icon: <TagsOutlined />, labelText: "Activity Categories", href: "/admin/activity-categories" },
+      { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
     ],
   },
   { key: "test-image", icon: <FileProtectOutlined />, labelText: "Test Image", href: "/admin/test-image" },
@@ -224,31 +231,39 @@ export default function AdminShellClient({
 
   return (
     <Layout className="AdminShell" style={{ minHeight: "100vh", ...adminShellStyle }}>
-      <Sider width={240} collapsedWidth={56}>
-        <div
-          style={{
-            padding: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <BarChartOutlined style={{ color: "#fff", fontSize: 20 }} />
-          <Typography.Text
-            className="AdminLogoText"
-            style={{ color: "#fff", fontWeight: 700, margin: 0 }}
+      <Sider width={240} collapsedWidth={56} style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div
+            style={{
+              padding: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
           >
-            Admin
-          </Typography.Text>
+            <BarChartOutlined style={{ color: "#fff", fontSize: 20 }} />
+            <Typography.Text
+              className="AdminLogoText"
+              style={{ color: "#fff", fontWeight: 700, margin: 0 }}
+            >
+              Admin
+            </Typography.Text>
+          </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[selectedKey]}
+            openKeys={openKeys}
+            onOpenChange={(keys) => setOpenKeys(keys as string[])}
+            items={antdMenuItems}
+            style={{ flex: 1, borderRight: 0 }}
+          />
+          <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <Typography.Text type="secondary" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
+              v 1.1
+            </Typography.Text>
+          </div>
         </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          openKeys={openKeys}
-          onOpenChange={(keys) => setOpenKeys(keys as string[])}
-          items={antdMenuItems}
-        />
       </Sider>
       <Layout>
         <Header
