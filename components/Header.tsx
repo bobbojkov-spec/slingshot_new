@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Menu, X, Search, ShoppingBag } from "lucide-react";
+import { Menu, X, Search, ShoppingBag, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -26,8 +26,11 @@ const Header = () => {
   const { language, setLanguage, t } = useLanguage();
   const { data: navigation } = useNavigation();
 
-  // Track which sport is currently being hovered
+  // Track which sport is currently being hovered (Desktop)
   const [activeSport, setActiveSport] = useState<string | null>(null);
+
+  // Track which sport is expanded (Mobile)
+  const [expandedSport, setExpandedSport] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -294,14 +297,83 @@ const Header = () => {
       >
         <nav className="section-container py-6 flex flex-col gap-4">
           {navigation?.sports?.map((sport) => (
-            <Link
-              key={sport.slug}
-              href={`/category/${sport.slug}`}
-              className="nav-link-white text-lg py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {sport.name}
-            </Link>
+            <div key={sport.slug} className="border-b border-white/5 pb-2">
+              <div
+                className="flex items-center justify-between py-2 cursor-pointer"
+                onClick={() => setExpandedSport(expandedSport === sport.slug ? null : sport.slug)}
+              >
+                <span className="nav-link-white text-lg">{sport.name}</span>
+                <ChevronDown
+                  className={`w-5 h-5 text-white/70 transition-transform duration-300 ${expandedSport === sport.slug ? "rotate-180" : ""
+                    }`}
+                />
+              </div>
+
+              <div
+                className={`overflow-hidden transition-all duration-300 ${expandedSport === sport.slug ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+              >
+                <div className="pl-4 flex flex-col gap-3 py-2">
+                  <Link
+                    href={`/category/${sport.slug}`}
+                    className="text-white/60 hover:text-white text-base"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {t('category.all_products')} {sport.name}
+                  </Link>
+
+                  {/* Gear */}
+                  {sport.productGroups?.gear && sport.productGroups.gear.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <span className="text-xs uppercase tracking-wider text-white/30 font-bold">{t('menu_group.gear')}</span>
+                      {sport.productGroups.gear.map((type) => (
+                        <Link
+                          key={`mob-${sport.slug}-${type.slug}`}
+                          href={`/shop?category=${sport.slug}&type=${type.slug}`}
+                          className="text-white/80 hover:text-accent pl-2 border-l border-white/10"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {type.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Accessories */}
+                  {sport.productGroups?.accessories && sport.productGroups.accessories.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <span className="text-xs uppercase tracking-wider text-white/30 font-bold">{t('menu_group.accessories')}</span>
+                      {sport.productGroups.accessories.map((type) => (
+                        <Link
+                          key={`mob-${sport.slug}-${type.slug}`}
+                          href={`/shop?category=${sport.slug}&type=${type.slug}`}
+                          className="text-white/80 hover:text-accent pl-2 border-l border-white/10"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {type.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Categories (Activities) */}
+                  <div className="flex flex-col gap-2 mt-2">
+                    <span className="text-xs uppercase tracking-wider text-white/30 font-bold">Categories</span>
+                    {navigation?.activityCategories?.map((activity) => (
+                      <Link
+                        key={`mob-${sport.slug}-${activity.id}`}
+                        href={`/shop?category=${sport.slug}&activity=${activity.slug}`}
+                        className="text-white/80 hover:text-accent pl-2 border-l border-white/10"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {activity.name}
+                      </Link>
+                    ))}
+                  </div>
+
+                </div>
+              </div>
+            </div>
           ))}
           <Link
             href="/shop"
