@@ -21,6 +21,7 @@ interface Product {
     images: string[];
     slug: string;
     category_name?: string;
+    categorySlug?: string;
     product_type?: string;
 }
 
@@ -68,7 +69,7 @@ export default function ProductClientWrapper({ product, related }: ProductClient
                     {product.category_name && (
                         <>
                             <ChevronRight className="w-3 h-3" />
-                            <Link href={`/shop?category=${product.category_name.toLowerCase()}`} className="hover:text-black">{product.category_name}</Link>
+                            <Link href={`/shop?category=${product.categorySlug || product.category_name?.toLowerCase()}`} className="hover:text-black">{product.category_name}</Link>
                         </>
                     )}
                     <ChevronRight className="w-3 h-3" />
@@ -98,7 +99,7 @@ export default function ProductClientWrapper({ product, related }: ProductClient
                         </div>
 
                         {/* Sizes */}
-                        {product.sizes && product.sizes.length > 0 && (
+                        {product.sizes && product.sizes.length > 0 && !(product.sizes.length === 1 && product.sizes[0] === 'Default Title') && (
                             <div className="mb-8">
                                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
                                 <div className="flex gap-2 flex-wrap">

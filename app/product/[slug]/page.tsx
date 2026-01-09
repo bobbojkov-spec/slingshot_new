@@ -11,7 +11,8 @@ async function getProductData(slug: string, lang: string = 'en') {
       p.*,
       pt.title as translated_name,
       pt.description_html as translated_description,
-      c.name as category_name
+      c.name as category_name,
+      c.slug as category_slug
     FROM products p
     LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = $2
     LEFT JOIN categories c ON p.category_id = c.id
@@ -23,10 +24,10 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   // Query 2: Images
   const imagesSql = `
-    SELECT storage_path, display_order 
+    SELECT DISTINCT ON (display_order) storage_path, display_order 
     FROM product_images_railway 
     WHERE product_id = $1 AND size = 'big'
-    ORDER BY display_order ASC
+    ORDER BY display_order ASC, created_at DESC
   `;
   const { rows: images } = await query(imagesSql, [product.id]);
 
@@ -92,7 +93,8 @@ async function getProductData(slug: string, lang: string = 'en') {
       image: mainImage, // Main image for OG or cart
       images: imageUrls, // Array for gallery
       slug: product.slug,
-      category_name: product.category_name
+      category_name: product.category_name,
+      categorySlug: product.category_slug
     },
     related: relatedHelper
   };
