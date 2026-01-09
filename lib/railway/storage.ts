@@ -42,7 +42,7 @@ function getS3Client(): S3Client {
         accessKeyId: storageAccessKey,
         secretAccessKey: storageSecretKey,
       },
-      forcePathStyle: storageType === 'minio', // MinIO requires path-style URLs
+      forcePathStyle: true, // Always true for better compatibility with non-AWS S3
     });
   }
 
@@ -172,7 +172,7 @@ export async function downloadFile(filePath: string, bucket: string = STORAGE_BU
   });
 
   const response = await client.send(command);
-  
+
   if (!response.Body) {
     throw new Error(`File not found: ${filePath}`);
   }
