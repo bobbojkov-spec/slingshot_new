@@ -10,7 +10,7 @@ async function getProductData(slug: string, lang: string = 'en') {
     SELECT 
       p.*,
       pt.title as translated_name,
-      pt.description as translated_description,
+      pt.description_html as translated_description,
       c.name as category_name
     FROM products p
     LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = $2
@@ -23,10 +23,10 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   // Query 2: Images
   const imagesSql = `
-    SELECT storage_path, is_main, display_order 
+    SELECT storage_path, display_order 
     FROM product_images_railway 
     WHERE product_id = $1 
-    ORDER BY is_main DESC, display_order ASC
+    ORDER BY display_order ASC
   `;
   const { rows: images } = await query(imagesSql, [product.id]);
 
@@ -64,7 +64,7 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   const relatedHelper = await Promise.all(relatedRows.map(async (row: any) => {
     // Fetch main image for related
-    const imgSql = `SELECT storage_path FROM product_images_railway WHERE product_id = $1 AND is_main = true LIMIT 1`;
+    const imgSql = `SELECT storage_path FROM product_images_railway WHERE product_id = $1 ORDER BY display_order ASC LIMIT 1`;
     const { rows: imgRows } = await query(imgSql, [row.id]);
     let imgUrl = row.og_image_url || '/placeholder.jpg';
     if (imgRows.length > 0) {
@@ -86,7 +86,7 @@ async function getProductData(slug: string, lang: string = 'en') {
       name: product.translated_name || product.name,
       category: product.category_name, // slug? name? Wrapper expects string
       price: price,
-      description: product.translated_description || product.description || '',
+      description: product.translated_description || product.description_html || product.description || '',
       sizes: sizes,
       specs: [], // TODO: Fetch real specs
       image: mainImage, // Main image for OG or cart
