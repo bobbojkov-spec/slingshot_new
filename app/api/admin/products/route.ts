@@ -44,7 +44,12 @@ export async function GET() {
     // Generate presigned URLs for all images found
     const processedImages = await Promise.all(
       imageRows.map(async (row: any) => {
-        const url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+        let url = null;
+        try {
+          url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+        } catch (e) {
+          console.error(`Error signing admin image URL for ${row.id}:`, e);
+        }
         return {
           ...row,
           url,
