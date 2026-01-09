@@ -36,13 +36,13 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   // Query 4: Variants (Sizes)
   const variantsSql = `
-    SELECT option1_value, price, inventory_quantity 
+    SELECT title, price, inventory_quantity 
     FROM product_variants 
     WHERE product_id = $1 
     ORDER BY position ASC
   `;
   const { rows: variants } = await query(variantsSql, [product.id]);
-  const sizes = [...new Set(variants.map((v: any) => v.option1_value).filter(Boolean))];
+  const sizes = [...new Set(variants.map((v: any) => v.title).filter(Boolean))];
   const price = variants.length > 0 ? parseFloat(variants[0].price) : 0;
 
   // Process Images

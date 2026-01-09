@@ -61,6 +61,25 @@ async function checkSchema() {
             console.log('⚠️ No railway product images found!');
         }
 
+        // 6. Check Product Variants
+        console.log('\n--- Product Variants ---');
+        const variantCols = await query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'product_variants'
+      ORDER BY column_name;
+    `);
+        console.table(variantCols.rows);
+
+        // 7. Check Categories
+        console.log('\n--- Categories ---');
+        const categoryCols = await query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'categories'
+      ORDER BY column_name;
+    `);
+        console.table(categoryCols.rows);
     } catch (err) {
         console.error('❌ Error analyzing schema:', err);
     } finally {

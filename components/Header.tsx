@@ -103,21 +103,24 @@ const Header = () => {
             */}
           <div
             className="hidden lg:flex h-full items-center justify-center"
-            onMouseLeave={handleNavLeave}
           >
             <nav className="flex items-center gap-8 h-full">
               {navigation?.sports?.map((sport) => (
                 <div
                   key={sport.slug}
                   className="relative h-full flex items-center"
-                  onMouseEnter={() => {
-                    setActiveSport(sport.slug);
-                    setIsMegaOpen(true);
-                  }}
                 >
                   <button
-                    onClick={() => { }} // No-op or toggle if needed, but hover does the work
-                    className={`nav-link-white h-full flex items-center px-2 cursor-default bg-transparent border-0 ${activeSport === sport.slug && isMegaOpen ? "text-accent" : ""
+                    onClick={() => {
+                      if (activeSport === sport.slug && isMegaOpen) {
+                        setIsMegaOpen(false);
+                        setActiveSport(null);
+                      } else {
+                        setActiveSport(sport.slug);
+                        setIsMegaOpen(true);
+                      }
+                    }}
+                    className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 outline-none ${activeSport === sport.slug && isMegaOpen ? "text-accent" : ""
                       }`}
                   >
                     {sport.name}
@@ -129,15 +132,17 @@ const Header = () => {
               <Link
                 href="/shop"
                 className="nav-link-white uppercase tracking-[0.3em] text-xs h-full flex items-center px-2"
-                onMouseEnter={handleNavLeave} // Close mega menu if hovering Shop
+                onClick={() => {
+                  setIsMegaOpen(false);
+                  setActiveSport(null);
+                }}
               >
                 {t('shop.title')}
               </Link>
             </nav>
 
             {/* Per-Sport Mega Menu (Full Width) 
-                Added z-40 and fixed positioning. The parent has onMouseLeave, so moving 
-                nav -> menu keeps the mouse inside the value parent.
+                Added z-40 and fixed positioning.
             */}
             <div
               className={`fixed top-20 left-0 right-0 w-full bg-deep-navy/95 backdrop-blur-md border-t border-white/10 shadow-xl transition-all duration-300 origin-top z-40 ${isMegaOpen && activeSport
