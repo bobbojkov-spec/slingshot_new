@@ -411,7 +411,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
           onRow={(record) => ({
             onClick: () => goToEditPage(record.id),
           })}
-          scroll={{ x: true }}
+          scroll={{ x: 1200 }}
         />
       </Card>
       <Typography.Text type="secondary" style={{ fontSize: 12 }}>

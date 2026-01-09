@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-export async function PUT(req: Request, { params }: { params: { id?: string } }) {
-  const productId = params?.id;
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }

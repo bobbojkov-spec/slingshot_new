@@ -231,7 +231,13 @@ export default function AdminShellClient({
 
   return (
     <Layout className="AdminShell" style={{ minHeight: "100vh", ...adminShellStyle }}>
-      <Sider width={240} collapsedWidth={56} style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Sider
+        width={240}
+        collapsedWidth={0}
+        breakpoint="lg"
+        trigger={null}
+        style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0, left: 0, zIndex: 100 }}
+      >
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <div
             style={{
@@ -260,7 +266,7 @@ export default function AdminShellClient({
           />
           <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <Typography.Text type="secondary" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
-              v 1.1
+              v 1.2
             </Typography.Text>
           </div>
         </div>
@@ -277,7 +283,7 @@ export default function AdminShellClient({
         >
           <Space size={12}>
             <Button
-              className="AdminHamburger"
+              className="AdminHamburger lg:hidden"
               type="text"
               aria-label="Open navigation"
               onClick={() => setMobileNavOpen(true)}

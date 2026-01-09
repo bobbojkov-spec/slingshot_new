@@ -558,7 +558,7 @@ export default function CategoriesListClient({
             showExpandColumn: false,
           }}
           pagination={{ pageSize: 20, showSizeChanger: true, showTotal: (total) => `Total ${total}` }}
-          scroll={{ x: true }}
+          scroll={{ x: 1000 }}
         />
       </Card>
 
