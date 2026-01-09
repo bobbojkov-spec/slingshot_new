@@ -48,7 +48,12 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   // Process Images
   const imageUrls = await Promise.all(images.map(async (img: any) => {
-    return await getPresignedUrl(img.storage_path);
+    try {
+      return await getPresignedUrl(img.storage_path);
+    } catch (e) {
+      console.error(`Error signing URL for ${img.storage_path}:`, e);
+      return '/placeholder.jpg';
+    }
   }));
   const mainImage = imageUrls.length > 0 ? imageUrls[0] : (product.og_image_url || '/placeholder.jpg');
 
@@ -69,7 +74,12 @@ async function getProductData(slug: string, lang: string = 'en') {
     const { rows: imgRows } = await query(imgSql, [row.id]);
     let imgUrl = row.og_image_url || '/placeholder.jpg';
     if (imgRows.length > 0) {
-      imgUrl = await getPresignedUrl(imgRows[0].storage_path);
+      try {
+        imgUrl = await getPresignedUrl(imgRows[0].storage_path);
+      } catch (e) {
+        console.error(`Error signing related image for ${row.id}:`, e);
+        imgUrl = '/placeholder.jpg';
+      }
     }
     return {
       id: row.id,
