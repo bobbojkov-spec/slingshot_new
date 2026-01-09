@@ -1,97 +1,131 @@
-import { supabaseAdmin } from './server';
+import { query } from '@/lib/db';
+import { getPresignedUrl } from '@/lib/railway/storage';
 
 type AnyRecord = Record<string, any>;
 
 export async function fetchProductsWithImages() {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('products')
-      .select(
-        '*, category:categories(id, name, slug, handle), product_descriptions:product_descriptions(description_html, description_html2), product_variants:product_variants(*)'
-      )
-      .order('created_at', { ascending: false });
+    // 1. Fetch Products with joined data
+    // We'll join simpler tables, but might need separate queries for one-to-many to avoid massive duplication
+    // For now, let's fetch products and their categories first
+    const productsSql = `
+      SELECT 
+        p.*,
+        c.id as category_id_joined, c.name as category_name, c.slug as category_slug, c.handle as category_handle
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      ORDER BY p.created_at DESC
+    `;
+    const { rows: products } = await query(productsSql);
 
-    if (error) {
-      return { products: [] as AnyRecord[], error };
+    if (!products.length) {
+      return { products: [], error: null };
     }
 
-    const productIds = (data || []).map((p: AnyRecord) => p.id).filter(Boolean);
+    const productIds = products.map((p: any) => p.id);
 
-    // fetch images keyed by product_id if table exists
-    let images: AnyRecord[] = [];
-    if (productIds.length > 0) {
-      const { data: imagesData, error: imagesError } = await supabaseAdmin
-        .from('product_images')
-        .select('product_id, url, position, sort_order')
-        .in('product_id', productIds);
-      if (!imagesError && imagesData) {
-        images = imagesData;
-      }
+    // 2. Fetch Images (Railway S3)
+    const imagesSql = `
+      SELECT product_id, storage_path, size, display_order 
+      FROM product_images_railway 
+      WHERE product_id = ANY($1)
+      ORDER BY display_order ASC
+    `;
+    const { rows: imageRows } = await query(imagesSql, [productIds]);
+
+    // Process images: Generate presigned URLs
+    // This needs to be async, but we can't use await inside basic map nicely without Promise.all
+    // We'll create a map of product_id -> promise of images
+    const imagesByProductId = new Map<string, any[]>();
+
+    // Group raw rows first
+    for (const img of imageRows) {
+      const list = imagesByProductId.get(img.product_id) || [];
+      list.push(img);
+      imagesByProductId.set(img.product_id, list);
     }
 
-    const imagesByProduct = new Map<string, AnyRecord[]>();
-    images
-      .sort((a: AnyRecord, b: AnyRecord) => {
-        const pa = a.position ?? a.sort_order ?? 9999;
-        const pb = b.position ?? b.sort_order ?? 9999;
-        return pa - pb;
-      })
-      .forEach((img: any) => {
-        const list = imagesByProduct.get(img.product_id) || [];
-        list.push(img);
-        imagesByProduct.set(img.product_id, list);
-      });
-
-    // fetch specs and packages by product_id (even if no FK)
-    const specsByProduct = new Map<string, AnyRecord>();
-    const packagesByProduct = new Map<string, AnyRecord>();
-
-    if (productIds.length > 0) {
-      const { data: specsRows } = await supabaseAdmin
-        .from('product_specs')
-        .select('*')
-        .in('product_id', productIds);
-      (specsRows || []).forEach((row: AnyRecord) => {
-        specsByProduct.set(row.product_id, row);
-      });
-
-      const { data: packageRows } = await supabaseAdmin
-        .from('product_packages')
-        .select('*')
-        .in('product_id', productIds);
-      (packageRows || []).forEach((row: AnyRecord) => {
-        packagesByProduct.set(row.product_id, row);
-      });
+    // 3. Fetch Variants
+    const variantsSql = `
+      SELECT * FROM product_variants WHERE product_id = ANY($1) ORDER BY position ASC
+    `;
+    const { rows: variantsRows } = await query(variantsSql, [productIds]);
+    const variantsByProductId = new Map<string, any[]>();
+    for (const v of variantsRows) {
+      const list = variantsByProductId.get(v.product_id) || [];
+      list.push(v);
+      variantsByProductId.set(v.product_id, list);
     }
 
-    const withImages =
-      data?.map((p: AnyRecord) => {
-        const desc =
-          Array.isArray(p.product_descriptions) && p.product_descriptions[0]
-            ? {
-                description_html: p.product_descriptions[0].description_html,
-              }
-            : {};
-        const specsFirst = specsByProduct.get(p.id);
-        const pkgFirst = packagesByProduct.get(p.id);
-        return {
-          ...p,
-          description_html: p.description_html ?? desc.description_html,
-          description_html2: p.description_html2 ?? (desc as any).description_html2,
-          specs_html: p.specs_html ?? specsFirst?.specs_html ?? specsFirst?.specs ?? specsFirst?.content,
-          package_includes:
-            p.package_includes ??
-            pkgFirst?.package_includes ??
-            pkgFirst?.includes ??
-            pkgFirst?.content ??
-            pkgFirst?.description,
-          variants: p.variants ?? p.product_variants ?? [],
-          images: imagesByProduct.get(p.id) || [],
-        };
-      }) || [];
+    // 4. Fetch Descriptions
+    const descSql = `
+      SELECT product_id, description_html, description_html2 FROM product_descriptions WHERE product_id = ANY($1)
+    `;
+    const { rows: descRows } = await query(descSql, [productIds]);
+    const descByProductId = new Map<string, any>();
+    for (const d of descRows) {
+      descByProductId.set(d.product_id, d);
+    }
 
-    return { products: withImages, error: null };
+    // 5. Fetch Specs
+    const specsSql = `
+      SELECT * FROM product_specs WHERE product_id = ANY($1)
+    `;
+    const { rows: specsRows } = await query(specsSql, [productIds]);
+    const specsByProductId = new Map<string, any>();
+    for (const s of specsRows) {
+      specsByProductId.set(s.product_id, s);
+    }
+
+    // 6. Fetch Packages
+    const pkgSql = `
+      SELECT * FROM product_packages WHERE product_id = ANY($1)
+    `;
+    const { rows: pkgRows } = await query(pkgSql, [productIds]);
+    const pkgByProductId = new Map<string, any>();
+    for (const p of pkgRows) {
+      pkgByProductId.set(p.product_id, p);
+    }
+
+    // Assemble Data with Async Image Signing
+    const resultProducts = await Promise.all(products.map(async (p: any) => {
+      const rawImages = imagesByProductId.get(p.id) || [];
+
+      // Sign URLs for all images
+      const imagesWithUrls = await Promise.all(rawImages.map(async (img: any) => ({
+        ...img,
+        url: await getPresignedUrl(img.storage_path)
+      })));
+
+      const desc = descByProductId.get(p.id);
+      const specsFirst = specsByProductId.get(p.id);
+      const pkgFirst = pkgByProductId.get(p.id);
+
+      return {
+        ...p,
+        category: {
+          id: p.category_id_joined,
+          name: p.category_name,
+          slug: p.category_slug,
+          handle: p.category_handle
+        },
+        description_html: p.description_html ?? desc?.description_html,
+        description_html2: p.description_html2 ?? desc?.description_html2,
+        specs_html: p.specs_html ?? specsFirst?.specs_html ?? specsFirst?.specs ?? specsFirst?.content,
+        package_includes: p.package_includes ??
+          pkgFirst?.package_includes ??
+          pkgFirst?.includes ??
+          pkgFirst?.content ??
+          pkgFirst?.description,
+        variants: variantsByProductId.get(p.id) || [],
+        images: imagesWithUrls
+      };
+    }));
+
+    return { products: resultProducts, error: null };
+
   } catch (error: any) {
+    console.error('Fetch products error:', error);
     return { products: [] as AnyRecord[], error };
   }
 }
@@ -99,9 +133,13 @@ export async function fetchProductsWithImages() {
 export async function fetchDashboardSnapshot() {
   async function countTable(table: string) {
     try {
-      const { count } = await supabaseAdmin.from(table).select('*', { count: 'exact', head: true });
-      return count ?? 0;
-    } catch {
+      // Use parameterized query even for table name if possible, but PG doesn't allow table name param.
+      // Since 'table' is internal string literal, it's safe.
+      const sql = `SELECT COUNT(*) as count FROM ${table}`;
+      const { rows } = await query(sql);
+      return parseInt(rows[0]?.count || '0', 10);
+    } catch (e) {
+      console.error(`Error counting ${table}:`, e);
       return 0;
     }
   }
@@ -115,13 +153,15 @@ export async function fetchDashboardSnapshot() {
 
   let lastImported: AnyRecord[] = [];
   try {
-    const { data } = await supabaseAdmin
-      .from('products')
-      .select('id, title, updated_at, created_at')
-      .order('created_at', { ascending: false })
-      .limit(5);
-    lastImported = data || [];
-  } catch {
+    const { rows } = await query(`
+      SELECT id, title, updated_at, created_at 
+      FROM products 
+      ORDER BY created_at DESC 
+      LIMIT 5
+    `);
+    lastImported = rows;
+  } catch (e) {
+    console.error('Error fetching last imported:', e);
     lastImported = [];
   }
 
@@ -133,4 +173,5 @@ export async function fetchDashboardSnapshot() {
     lastImported,
   };
 }
+
 

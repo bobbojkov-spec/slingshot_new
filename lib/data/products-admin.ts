@@ -90,3 +90,64 @@ export async function getAdminProducts() {
         return [];
     }
 }
+
+export async function getAdminProductById(id: string) {
+    try {
+        const { rows: productRows = [] } = await query(`
+      SELECT
+        p.*,
+        jsonb_build_object(
+          'id', c.id,
+          'name', c.name,
+          'slug', c.slug,
+          'handle', c.handle
+        ) AS category_info
+      FROM products p
+      LEFT JOIN categories c ON c.id = p.category_id
+      WHERE p.id = $1
+    `, [id]);
+
+        if (!productRows.length) return null;
+        const product = productRows[0];
+
+        // Fetch images
+        const { rows: imageRows = [] } = await query(`
+      SELECT id, product_id, storage_path, size, display_order
+      FROM product_images_railway
+      WHERE product_id = $1
+      ORDER BY display_order ASC
+    `, [id]);
+
+        // Fetch variants
+        const { rows: variantRows = [] } = await query('SELECT * FROM product_variants WHERE product_id = $1', [id]);
+
+        // Sign images
+        const processedImages = await Promise.all(
+            imageRows.map(async (row: any) => {
+                let url = null;
+                try {
+                    url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+                } catch (e) {
+                    console.error(`Error signing admin image URL for ${row.id}:`, e);
+                }
+                return {
+                    ...row,
+                    url,
+                    thumb_url: url
+                };
+            })
+        );
+
+        const { category_info, ...rest } = product;
+        return {
+            ...rest,
+            category: category_info || null,
+            images: processedImages.filter(img => img.url), // Only valid images
+            variants: variantRows,
+        };
+
+    } catch (error: any) {
+        console.error(`Failed to load admin product ${id}`, error);
+        return null;
+    }
+}
