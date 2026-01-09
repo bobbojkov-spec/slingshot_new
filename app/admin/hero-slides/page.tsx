@@ -257,7 +257,7 @@ export default function HeroSlidesPage() {
             formData.append('file', croppedFile);
             formData.append('derived', 'true');
 
-            const response = await fetch('/api/media', {
+            const response = await fetch('/api/admin/hero-slides/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -795,7 +795,7 @@ export default function HeroSlidesPage() {
                                                     message.loading({ content: 'Uploading image...', key: 'upload' });
                                                     const formData = new FormData();
                                                     formData.append('file', file);
-                                                    const response = await fetch('/api/media', {
+                                                    const response = await fetch('/api/admin/hero-slides/upload', {
                                                         method: 'POST',
                                                         body: formData,
                                                     });
