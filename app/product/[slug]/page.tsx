@@ -11,12 +11,10 @@ async function getProductData(slug: string, lang: string = 'en') {
       p.*,
       pt.title as translated_name,
       pt.description as translated_description,
-      c.name as category_name,
-      pt_type.name as type_name
+      c.name as category_name
     FROM products p
     LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = $2
     LEFT JOIN categories c ON p.category_id = c.id
-    LEFT JOIN product_types pt_type ON p.product_type_id = pt_type.id
     WHERE p.slug = $1 AND p.status = 'active'
   `;
   const { rows: products } = await query(productSql, [slug, lang]);

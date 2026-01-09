@@ -290,9 +290,8 @@ const Header = () => {
         </div>
       </div >
 
-      {/* Mobile Menu */}
       < div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+        className={`lg:hidden fixed top-20 left-0 right-0 bottom-0 bg-deep-navy border-t border-white/10 overflow-y-auto transition-all duration-300 ease-out z-50 ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
           }`}
       >
         <nav className="section-container py-6 flex flex-col gap-4">
