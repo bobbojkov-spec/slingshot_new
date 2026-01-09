@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadPublicImage, getPresignedUrl } from '@/lib/railway/storage';
+import { uploadPublicImage } from '@/lib/railway/storage';
 import { query } from '@/lib/db';
 import sharp from 'sharp';
 import { randomUUID } from 'crypto';
@@ -60,7 +60,7 @@ async function handleJson(req: NextRequest) {
       if (!img?.id) continue;
       await query('UPDATE product_images SET position = $1 WHERE id = $2', [idx + 1, img.id]);
     }
-    
+
     // Update og_image_url to the first image's URL (convert /original/ to /medium/)
     if (finalOrder.length > 0 && finalOrder[0]?.url) {
       const firstImageUrl = finalOrder[0].url.replace('/original/', '/medium/');
@@ -178,7 +178,7 @@ async function handleUpload(req: NextRequest) {
 
   const thumbUrlValue = urlThumb || getImageVariantUrl(inserted.url, 'thumb') || null;
   const mediumUrlValue = urlMedium || getImageVariantUrl(inserted.url, 'medium') || null;
-  
+
   // If this is the first image (position 1), update product's og_image_url
   if (position === 1) {
     await query(
@@ -186,15 +186,15 @@ async function handleUpload(req: NextRequest) {
       [urlMedium, productId]
     );
   }
-  
-    return NextResponse.json({
-      image: {
-        ...inserted,
-        original_url: inserted.url,
-        thumb_url: thumbUrlValue,
-        medium_url: mediumUrlValue,
-      },
-    });
+
+  return NextResponse.json({
+    image: {
+      ...inserted,
+      original_url: inserted.url,
+      thumb_url: thumbUrlValue,
+      medium_url: mediumUrlValue,
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {

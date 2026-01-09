@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { deletePublicImage, getPresignedUrl } from '@/lib/railway/storage';
+import { deletePublicImage, getProxyUrl } from '@/lib/railway/storage';
 
 export async function GET() {
   try {
@@ -23,11 +23,11 @@ export async function GET() {
         const originalPath = parsePath(row.original_url);
         const smallPath = parsePath(row.small_url);
         const largePath = parsePath(row.large_url);
-        const signed = await Promise.all([
-          originalPath ? getPresignedUrl(originalPath) : null,
-          smallPath ? getPresignedUrl(smallPath) : null,
-          largePath ? getPresignedUrl(largePath) : null,
-        ]);
+        const signed = [
+          originalPath ? getProxyUrl(originalPath) : null,
+          smallPath ? getProxyUrl(smallPath) : null,
+          largePath ? getProxyUrl(largePath) : null,
+        ];
 
         return {
           ...row,

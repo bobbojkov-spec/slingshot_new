@@ -1,5 +1,5 @@
 import { query } from '@/lib/db';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getProxyUrl } from '@/lib/utils/imagePaths';
 
 type AnyRecord = Record<string, any>;
 
@@ -92,10 +92,10 @@ export async function fetchProductsWithImages() {
       const rawImages = imagesByProductId.get(p.id) || [];
 
       // Sign URLs for all images
-      const imagesWithUrls = await Promise.all(rawImages.map(async (img: any) => ({
+      const imagesWithUrls = rawImages.map((img: any) => ({
         ...img,
-        url: await getPresignedUrl(img.storage_path)
-      })));
+        url: getProxyUrl(img.storage_path)
+      }));
 
       const desc = descByProductId.get(p.id);
       const specsFirst = specsByProductId.get(p.id);

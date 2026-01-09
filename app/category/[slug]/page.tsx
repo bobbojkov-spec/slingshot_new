@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { getPresignedUrl } from "@/lib/railway/storage";
+import { getProxyUrl } from "@/lib/utils/imagePaths";
 import CategoryClientWrapper from "./CategoryClientWrapper";
 
 // Define strict types for our DB result rows
@@ -44,24 +44,20 @@ async function getCategoryData(slug: string, lang: string) {
 
   const { rows: products } = await query(productsSql, [slug, lang]);
 
-  // Process products (presigned urls, parsing numbers)
-  const processedProducts = await Promise.all(products.map(async (row: any) => ({
+  // Process products (parsing numbers, proxy urls)
+  const processedProducts = products.map((row: any) => ({
     id: row.id,
     name: row.name,
     category: row.category_name, // Prop for ProductCard
     price: parseFloat(row.price || '0'),
     originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
-    image: row.image_path ? await getPresignedUrl(row.image_path) : (row.og_image_url || '/placeholder.jpg'),
+    image: row.image_path ? getProxyUrl(row.image_path) : (row.og_image_url || '/placeholder.jpg'),
     slug: row.slug,
-    badge: undefined, // Add badge logic if needed
+    badge: undefined,
     inStock: (parseInt(row.total_inventory || '0') > 0)
-  })));
+  }));
 
   // 2. Fetch Category Info (Hero, Description)
-  // This is still partially hardcoded because "Hero Images" might not be in DB yet?
-  // Or we can fetch category details. For now, let's keep the hardcoded descriptions as fallback 
-  // but rely on DB for the *existence* of the category.
-
   return { products: processedProducts };
 }
 

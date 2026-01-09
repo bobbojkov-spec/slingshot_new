@@ -24,3 +24,8 @@ export function getImageVariantUrl(
   return null;
 }
 
+export function getProxyUrl(filePath: string, bucket: string = 'slingshotnewimages-hw-tht'): string {
+  if (!filePath) return '';
+  if (filePath.startsWith('http')) return filePath;
+  return `/api/media/raw?path=${encodeURIComponent(filePath)}&bucket=${encodeURIComponent(bucket)}`;
+}

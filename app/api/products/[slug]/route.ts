@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getProxyUrl } from '@/lib/railway/storage';
 import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -89,14 +89,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     `;
     // Note: RANDOM() is efficient enough for small catalog.
     const relatedResult = await query(relatedSql, [product.category_id, product.id]);
-    const related = await Promise.all(relatedResult.rows.map(async (row: any) => ({
+    const related = relatedResult.rows.map((row: any) => ({
       id: row.id,
       name: row.name,
       category: row.category_name,
       price: parseFloat(row.price || '0'),
-      image: row.image_path ? await getPresignedUrl(row.image_path) : null,
+      image: row.image_path ? getProxyUrl(row.image_path) : null,
       slug: row.slug
-    })));
+    }));
 
     // 4. Specs - Hardcoded for now or fetch?
     // User requested dynamic. If not in DB, maybe just generic?
@@ -109,10 +109,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
     // Images: Fetch from product_images table
     // fallback to og_image_url if no images found?
-    let images = await Promise.all(imageRows.map(async (r: any) => r.storage_path ? await getPresignedUrl(r.storage_path) : null));
+    let images = imageRows.map((r: any) => r.storage_path ? getProxyUrl(r.storage_path) : null);
     images = images.filter(Boolean); // Remove nulls
 
-    const mainImage = product.image_path ? await getPresignedUrl(product.image_path) : null;
+    const mainImage = product.image_path ? getProxyUrl(product.image_path) : null;
 
     if (images.length === 0 && mainImage) {
       images = [mainImage];

@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { getPresignedUrl } from "@/lib/railway/storage";
+import { getProxyUrl } from "@/lib/utils/imagePaths";
 import ProductClientWrapper from "./ProductClientWrapper";
 import { notFound } from "next/navigation";
 
@@ -47,14 +47,7 @@ async function getProductData(slug: string, lang: string = 'en') {
   const price = variants.length > 0 ? parseFloat(variants[0].price) : 0;
 
   // Process Images
-  const imageUrls = await Promise.all(images.map(async (img: any) => {
-    try {
-      return await getPresignedUrl(img.storage_path);
-    } catch (e) {
-      console.error(`Error signing URL for ${img.storage_path}:`, e);
-      return '/placeholder.jpg';
-    }
-  }));
+  const imageUrls = images.map((img: any) => getProxyUrl(img.storage_path));
   const mainImage = imageUrls.length > 0 ? imageUrls[0] : (product.og_image_url || '/placeholder.jpg');
 
   // Related Products (Simple: Same Category)
@@ -74,12 +67,7 @@ async function getProductData(slug: string, lang: string = 'en') {
     const { rows: imgRows } = await query(imgSql, [row.id]);
     let imgUrl = row.og_image_url || '/placeholder.jpg';
     if (imgRows.length > 0) {
-      try {
-        imgUrl = await getPresignedUrl(imgRows[0].storage_path);
-      } catch (e) {
-        console.error(`Error signing related image for ${row.id}:`, e);
-        imgUrl = '/placeholder.jpg';
-      }
+      imgUrl = getProxyUrl(imgRows[0].storage_path);
     }
     return {
       id: row.id,

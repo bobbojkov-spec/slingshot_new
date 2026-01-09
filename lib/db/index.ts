@@ -3,11 +3,20 @@ import { ensureEnv } from '@/lib/env';
 
 ensureEnv();
 
+const connectionString =
+  process.env.DATABASE_PUBLIC_URL ||
+  process.env.DATABASE_PRIVATE_URL ||
+  process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.warn('[DB] WARNING: No DATABASE_URL found in environment variables.');
+}
+
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_PRIVATE_URL || process.env.DATABASE_URL,
-  // Railway PostgreSQL requires SSL
-  ssl: process.env.DATABASE_URL?.includes('railway') || process.env.DATABASE_URL?.includes('rlwy.net')
+  connectionString,
+  // Railway PostgreSQL requires SSL for external/public connections
+  ssl: connectionString?.includes('railway') || connectionString?.includes('rlwy.net')
     ? { rejectUnauthorized: false }
     : undefined,
 });

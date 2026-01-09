@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { deletePublicImage, getPresignedUrl } from '@/lib/railway/storage';
+import { deletePublicImage, getProxyUrl } from '@/lib/railway/storage';
 import {
   ensureProductImagesRailwayTable,
   ImageSize,
@@ -37,7 +37,7 @@ const buildBundles = async (rows: ProductImageRecord[]): Promise<ProductImageBun
     existing.order = Math.min(existing.order, row.display_order);
     const createdAt = normalizeCreatedAt(row.created_at);
     existing.createdAt = existing.createdAt || createdAt;
-    const signedUrl = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+    const signedUrl = row.storage_path ? getProxyUrl(row.storage_path) : null;
     existing.urls[row.size] = signedUrl ? { url: signedUrl, path: row.storage_path } : null;
     map.set(key, existing);
   }

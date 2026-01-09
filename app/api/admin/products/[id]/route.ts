@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { getImageVariantUrl } from '@/lib/utils/imagePaths';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getProxyUrl } from '@/lib/railway/storage';
 
 export async function GET(_: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -145,9 +145,9 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
     const { category_info, ...rest } = product;
     const signedImages = await Promise.all(
       imageRows.map(async (row: any) => {
-        const thumbUrl = row.thumb_path ? await getPresignedUrl(row.thumb_path) : null;
-        const mediumUrl = row.medium_path ? await getPresignedUrl(row.medium_path) : null;
-        const originalUrl = row.original_path ? await getPresignedUrl(row.original_path) : null;
+        const thumbUrl = row.thumb_path ? getProxyUrl(row.thumb_path) : null;
+        const mediumUrl = row.medium_path ? getProxyUrl(row.medium_path) : null;
+        const originalUrl = row.original_path ? getProxyUrl(row.original_path) : null;
         return {
           ...row,
           thumb_url: thumbUrl || getImageVariantUrl(row.url, 'thumb') || row.url,

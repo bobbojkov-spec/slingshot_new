@@ -39,6 +39,14 @@ export function isRailwayStorageConfigured() {
   );
 }
 
+/**
+ * Construct a proxy URL for an image.
+ */
+export function getProxyUrl(filePath: string, bucket: string = STORAGE_BUCKETS.PUBLIC): string {
+  if (!filePath) return '';
+  return `/api/media/raw?path=${encodeURIComponent(filePath)}&bucket=${encodeURIComponent(bucket)}`;
+}
+
 // Initialize S3 clients (separate for public and raw buckets)
 let s3Client: S3Client | null = null;
 let rawS3Client: S3Client | null = null;

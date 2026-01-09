@@ -1,5 +1,5 @@
 import { query } from '@/lib/db';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getProxyUrl } from '@/lib/utils/imagePaths';
 
 export async function getAdminProducts() {
     try {
@@ -40,21 +40,14 @@ export async function getAdminProducts() {
                 : { rows: [] };
 
         // Generate presigned URLs for all images found
-        const processedImages = await Promise.all(
-            imageRows.map(async (row: any) => {
-                let url = null;
-                try {
-                    url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
-                } catch (e) {
-                    console.error(`Error signing admin image URL for ${row.id}:`, e);
-                }
-                return {
-                    ...row,
-                    url,
-                    thumb_url: url
-                };
-            })
-        );
+        const processedImages = imageRows.map((row: any) => {
+            const url = row.storage_path ? getProxyUrl(row.storage_path) : null;
+            return {
+                ...row,
+                url,
+                thumb_url: url
+            };
+        });
 
         const imagesByProduct = new Map<string, any[]>();
         processedImages.forEach((img: any) => {
@@ -122,21 +115,14 @@ export async function getAdminProductById(id: string) {
         const { rows: variantRows = [] } = await query('SELECT * FROM product_variants WHERE product_id = $1', [id]);
 
         // Sign images
-        const processedImages = await Promise.all(
-            imageRows.map(async (row: any) => {
-                let url = null;
-                try {
-                    url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
-                } catch (e) {
-                    console.error(`Error signing admin image URL for ${row.id}:`, e);
-                }
-                return {
-                    ...row,
-                    url,
-                    thumb_url: url
-                };
-            })
-        );
+        const processedImages = imageRows.map((row: any) => {
+            const url = row.storage_path ? getProxyUrl(row.storage_path) : null;
+            return {
+                ...row,
+                url,
+                thumb_url: url
+            };
+        });
 
         const { category_info, ...rest } = product;
         return {

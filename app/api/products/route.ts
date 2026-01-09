@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getProxyUrl } from '@/lib/railway/storage';
 import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET(req: Request) {
@@ -153,14 +153,7 @@ export async function GET(req: Request) {
       slug: row.slug || row.id, // Fallback to ID if slug is empty
       price: row.price ? parseFloat(row.price) : 0,
       originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : undefined,
-      image: await (async () => {
-        try {
-          return row.image_path ? await getPresignedUrl(row.image_path) : (row.og_image_url || '/placeholder.jpg');
-        } catch (e) {
-          console.error(`Error getting presigned URL for ${row.image_path}:`, e);
-          return row.og_image_url || '/placeholder.jpg';
-        }
-      })(),
+      image: row.image_path ? getProxyUrl(row.image_path) : (row.og_image_url || '/placeholder.jpg'),
       category: row.category_name,
       categorySlug: row.category_slug,
       type: row.type_name,
