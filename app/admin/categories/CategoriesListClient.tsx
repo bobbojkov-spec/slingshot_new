@@ -406,7 +406,7 @@ export default function CategoriesListClient({
     return (
       <div style={{ padding: '16px 24px', backgroundColor: '#fafafa' }}>
         <Space orientation="vertical" size={16} style={{ width: '100%' }}>
-          <Divider orientation="left" plain style={{ textAlign: 'left' }}>
+          <Divider plain style={{ textAlign: 'left', margin: 0 }}>
             Multilingual Content
           </Divider>
 

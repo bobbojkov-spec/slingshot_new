@@ -39,7 +39,7 @@ export function LanguageProvider({
   };
 
   const t = (key: string) => {
-    return translations[language]?.[key] ?? translations.en[key] ?? key;
+    return (translations[language] as any)?.[key] ?? (translations.en as any)?.[key] ?? key;
   };
 
   return (

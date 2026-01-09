@@ -247,7 +247,8 @@ const TestImageClient = () => {
     await fetchImages();
   };
 
-  const handleGalleryUpload = async ({ file, onSuccess, onError }: CustomUploadRequest) => {
+  const handleGalleryUpload = async (options: any) => {
+    const { file, onSuccess, onError } = options;
     try {
       await uploadTestImage({ file, mode: "gallery", name: file.name });
       onSuccess?.("ok");
@@ -327,25 +328,25 @@ const TestImageClient = () => {
         {normalizedImages.map((item) => (
           <Col key={item.id} xs={12} sm={8} md={6} lg={4}>
             <Card
-            cover={
-              <div
-                style={{
-                  height: 300,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#fafafa",
-                }}
-              >
-                <AntdImage
-                  src={item.normalized_small}
-                  alt={item.name}
-                  height={300}
-                  width="auto"
-                  style={{ objectFit: "contain", maxHeight: "100%", maxWidth: "100%" }}
-                />
-              </div>
-            }
+              cover={
+                <div
+                  style={{
+                    height: 300,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "#fafafa",
+                  }}
+                >
+                  <AntdImage
+                    src={item.normalized_small}
+                    alt={item.name}
+                    height={300}
+                    width="auto"
+                    style={{ objectFit: "contain", maxHeight: "100%", maxWidth: "100%" }}
+                  />
+                </div>
+              }
               actions={[
                 <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(item.id)}>
                   Edit
@@ -414,26 +415,26 @@ const TestImageClient = () => {
         width={800}
       >
         <Space orientation="vertical" style={{ width: "100%" }}>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Typography.Text>Select ratio</Typography.Text>
-                <Select
-                  style={{ width: "100%" }}
-                  value={ratio}
-                  onChange={(value) => setRatio(value)}
-                  options={ratioOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
-                />
-              </Col>
-              <Col span={12}>
-                <Typography.Text>Zoom</Typography.Text>
-                <Slider min={1} max={3} step={0.1} value={zoom} onChange={(value) => setZoom(value)} />
-              </Col>
-            </Row>
-            {originalDimensions && (
-              <Typography.Text type="secondary">
-                Original size: {originalDimensions.width} × {originalDimensions.height} px
-              </Typography.Text>
-            )}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Typography.Text>Select ratio</Typography.Text>
+              <Select
+                style={{ width: "100%" }}
+                value={ratio}
+                onChange={(value) => setRatio(value)}
+                options={ratioOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
+              />
+            </Col>
+            <Col span={12}>
+              <Typography.Text>Zoom</Typography.Text>
+              <Slider min={1} max={3} step={0.1} value={zoom} onChange={(value) => setZoom(value)} />
+            </Col>
+          </Row>
+          {originalDimensions && (
+            <Typography.Text type="secondary">
+              Original size: {originalDimensions.width} × {originalDimensions.height} px
+            </Typography.Text>
+          )}
           <div
             style={{
               position: "relative",

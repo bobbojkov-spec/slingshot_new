@@ -79,7 +79,7 @@ async function run() {
 
     console.log('\n✅ All translations migrated and copied!');
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('Error:', (err as any).message);
   }
   process.exit(0);
 }

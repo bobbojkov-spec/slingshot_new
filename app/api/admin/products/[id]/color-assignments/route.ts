@@ -8,8 +8,8 @@ const ensureProductColorsColumn = async () => {
   `);
 };
 
-export async function POST(req: NextRequest, { params }: { params: { id?: string } }) {
-  const productId = params?.id;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }
@@ -62,8 +62,8 @@ export async function POST(req: NextRequest, { params }: { params: { id?: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id?: string } }) {
-  const productId = params?.id;
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }

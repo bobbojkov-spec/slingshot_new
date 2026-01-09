@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-const getProductId = (params: { id?: string }) => {
-  return params?.id;
-};
+// Helper removed as params are now async and destructuring is preferred inline
+// or we can make helper async if needed, but inline is cleaner for Next.js 15 patterns
 
-export async function GET(_: Request, { params }: { params: { id?: string } }) {
-  const productId = getProductId(params);
+
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }
@@ -32,10 +32,10 @@ export async function GET(_: Request, { params }: { params: { id?: string } }) {
   }
 }
 
-export async function POST(req: Request, { params }: { params: { id?: string } }) {
-  const productId = getProductId(params);
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   console.log('[colors route] url=', req.url);
-  console.log('[colors route] params.id=', params?.id);
+  console.log('[colors route] params.id=', productId);
   if (!productId) {
     return NextResponse.json(
       { error: 'Product ID required', url: req.url, params },
@@ -45,7 +45,7 @@ export async function POST(req: Request, { params }: { params: { id?: string } }
 
   try {
     const body = await req.json();
-    console.log('[colors POST] productId=', params.id);
+    console.log('[colors POST] productId=', productId);
     console.log('[colors POST] body=', body);
     const { name_en, name_bg, hex_color, position } = body;
     if (!name_en || !name_bg) {
@@ -85,8 +85,8 @@ export async function POST(req: Request, { params }: { params: { id?: string } }
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id?: string } }) {
-  const productId = getProductId(params);
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }
@@ -166,8 +166,8 @@ export async function PUT(req: Request, { params }: { params: { id?: string } })
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id?: string } }) {
-  const productId = getProductId(params);
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: productId } = await params;
   if (!productId) {
     return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
   }

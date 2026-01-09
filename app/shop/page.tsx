@@ -16,7 +16,7 @@ function ShopContent() {
 
   const [products, setProducts] = useState([]);
   const [facets, setFacets] = useState({ categories: [], types: [], tags: [] });
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
