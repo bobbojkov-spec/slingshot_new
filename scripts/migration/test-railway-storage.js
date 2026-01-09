@@ -10,16 +10,16 @@ ensureEnv();
 const storageType = process.env.RAILWAY_STORAGE_TYPE || 's3';
 const storageEndpoint = process.env.RAILWAY_STORAGE_ENDPOINT;
 const storageRegion = process.env.RAILWAY_STORAGE_REGION || 'us-east-1';
-const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY_ID;
-const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_ACCESS_KEY;
+const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY;
+const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_KEY;
 const railwayBucketPublic = process.env.RAILWAY_STORAGE_BUCKET_PUBLIC;
 
 // Raw bucket configuration
 const rawStorageType = process.env.RAILWAY_STORAGE_RAW_TYPE || storageType;
 const rawStorageEndpoint = process.env.RAILWAY_STORAGE_RAW_ENDPOINT || storageEndpoint;
 const rawStorageRegion = process.env.RAILWAY_STORAGE_RAW_REGION || storageRegion;
-const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY_ID;
-const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_ACCESS_KEY;
+const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY;
+const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_KEY;
 const railwayBucketRaw = process.env.RAILWAY_STORAGE_BUCKET_RAW;
 
 console.log('🧪 Testing Railway Storage Connections\n');

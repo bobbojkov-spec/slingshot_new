@@ -7,21 +7,21 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 // Public bucket configuration
 const storageType = process.env.RAILWAY_STORAGE_TYPE || 's3';
 const storageEndpoint = process.env.RAILWAY_STORAGE_ENDPOINT;
-const storageRegion = process.env.RAILWAY_STORAGE_REGION || 'us-east-1';
-const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY_ID;
-const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_ACCESS_KEY;
+const storageRegion = process.env.RAILWAY_STORAGE_REGION || 'auto';
+const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY;
+const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_KEY;
 const publicUrlBase = process.env.RAILWAY_STORAGE_PUBLIC_URL_BASE;
 
 // Raw/Admin bucket configuration (separate credentials)
 const rawStorageType = process.env.RAILWAY_STORAGE_RAW_TYPE || storageType;
 const rawStorageEndpoint = process.env.RAILWAY_STORAGE_RAW_ENDPOINT || storageEndpoint;
 const rawStorageRegion = process.env.RAILWAY_STORAGE_RAW_REGION || storageRegion;
-const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY_ID || storageAccessKey;
-const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_ACCESS_KEY || storageSecretKey;
+const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY || storageAccessKey;
+const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_KEY || storageSecretKey;
 
 // Storage bucket names (matching Supabase buckets)
 export const STORAGE_BUCKETS = {
-  PUBLIC: process.env.RAILWAY_STORAGE_BUCKET_PUBLIC || 'slingshot-images-dev',
+  PUBLIC: process.env.RAILWAY_STORAGE_BUCKET || 'slingshotnewimages-hw-tht',
   RAW: process.env.RAILWAY_STORAGE_BUCKET_RAW || 'slingshot-raw',
 } as const;
 

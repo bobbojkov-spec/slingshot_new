@@ -36,11 +36,9 @@ const storageRegion =
   normalizeEnvValue(process.env.IMAGE_STORAGE_REGION) ||
   'us-east-1';
 const storageAccessKey =
-  normalizeEnvValue(process.env.RAILWAY_STORAGE_ACCESS_KEY_ID) ||
-  normalizeEnvValue(process.env.IMAGE_STORAGE_ACCESS_KEY);
+  normalizeEnvValue(process.env.RAILWAY_STORAGE_ACCESS_KEY);
 const storageSecretKey =
-  normalizeEnvValue(process.env.RAILWAY_STORAGE_SECRET_KEY) ||
-  normalizeEnvValue(process.env.IMAGE_STORAGE_SECRET_KEY);
+  normalizeEnvValue(process.env.RAILWAY_STORAGE_SECRET_KEY);
 const publicUrlBase =
   normalizeEnvValue(process.env.RAILWAY_STORAGE_PUBLIC_URL_BASE) ||
   normalizeEnvValue(process.env.IMAGE_STORAGE_PUBLIC_URL_BASE) ||
@@ -48,9 +46,8 @@ const publicUrlBase =
 
 const STORAGE_BUCKETS = {
   PUBLIC:
-    process.env.RAILWAY_STORAGE_BUCKET_PUBLIC ||
-    process.env.IMAGE_STORAGE_BUCKET ||
-    'slingshot-images-dev',
+    process.env.RAILWAY_STORAGE_BUCKET ||
+    'slingshotnewimages-hw-tht',
 };
 
 let s3Client = null;

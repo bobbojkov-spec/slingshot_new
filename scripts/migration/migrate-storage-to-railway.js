@@ -19,8 +19,8 @@ const supabaseBucketRaw = process.env.SUPABASE_BUCKET_RAW || 'slingshot-raw';
 const storageType = process.env.RAILWAY_STORAGE_TYPE || 's3';
 const storageEndpoint = process.env.RAILWAY_STORAGE_ENDPOINT;
 const storageRegion = process.env.RAILWAY_STORAGE_REGION || 'us-east-1';
-const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY_ID;
-const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_ACCESS_KEY;
+const storageAccessKey = process.env.RAILWAY_STORAGE_ACCESS_KEY;
+const storageSecretKey = process.env.RAILWAY_STORAGE_SECRET_KEY;
 const railwayBucketPublic = process.env.RAILWAY_STORAGE_BUCKET_PUBLIC || 'slingshot-images-dev';
 const publicUrlBase = process.env.RAILWAY_STORAGE_PUBLIC_URL_BASE;
 
@@ -28,8 +28,8 @@ const publicUrlBase = process.env.RAILWAY_STORAGE_PUBLIC_URL_BASE;
 const rawStorageType = process.env.RAILWAY_STORAGE_RAW_TYPE || storageType;
 const rawStorageEndpoint = process.env.RAILWAY_STORAGE_RAW_ENDPOINT || storageEndpoint;
 const rawStorageRegion = process.env.RAILWAY_STORAGE_RAW_REGION || storageRegion;
-const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY_ID || storageAccessKey;
-const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_ACCESS_KEY || storageSecretKey;
+const rawStorageAccessKey = process.env.RAILWAY_STORAGE_RAW_ACCESS_KEY || storageAccessKey;
+const rawStorageSecretKey = process.env.RAILWAY_STORAGE_RAW_SECRET_KEY || storageSecretKey;
 const railwayBucketRaw = process.env.RAILWAY_STORAGE_BUCKET_RAW || 'slingshot-raw';
 
 // Validate configuration
@@ -41,7 +41,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 if (!storageEndpoint || !storageAccessKey || !storageSecretKey) {
   console.error('❌ Missing Railway Storage configuration');
-  console.error('Required: RAILWAY_STORAGE_ENDPOINT, RAILWAY_STORAGE_ACCESS_KEY_ID, RAILWAY_STORAGE_SECRET_ACCESS_KEY');
+  console.error('Required: RAILWAY_STORAGE_ENDPOINT, RAILWAY_STORAGE_ACCESS_KEY, RAILWAY_STORAGE_SECRET_KEY');
   process.exit(1);
 }
 
@@ -87,7 +87,7 @@ async function downloadFromSupabase(bucket, filePath) {
 async function uploadToRailway(bucket, filePath, buffer, contentType = 'application/octet-stream', isRawBucket = false) {
   // Use appropriate client based on bucket type
   const client = isRawBucket ? rawS3Client : s3Client;
-  
+
   const command = new PutObjectCommand({
     Bucket: bucket,
     Key: filePath,
@@ -231,7 +231,7 @@ async function main() {
 
   // Test connections
   console.log('🔍 Testing connections...');
-  
+
   try {
     const { data: buckets } = await supabaseAdmin.storage.listBuckets();
     console.log(`✅ Supabase: Connected (${buckets?.length || 0} buckets found)`);
