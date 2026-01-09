@@ -1,7 +1,11 @@
 import { query } from './db';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const getOpenAI = () => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+  return new OpenAI({ apiKey });
+};
 
 const SLEEP_MS = 400;
 
@@ -55,7 +59,7 @@ ${JSON.stringify(payload, null, 2)}
 }
 
 async function runPrompt(basePrompt: string) {
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [{ role: 'user', content: basePrompt }],
     response_format: { type: 'json_object' },

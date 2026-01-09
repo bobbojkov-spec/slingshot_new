@@ -3,7 +3,11 @@ import 'dotenv/config';
 import OpenAI from 'openai';
 import { query } from '../lib/db';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const getOpenAI = () => {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+    return new OpenAI({ apiKey });
+};
 
 const IGNORED_BRANDS = [
     'Slingshot', 'Ride Engine', 'Phantasm', 'Moonwalker', 'Code', 'Hover Glide', 'Dwarf Craft', 'SlingWing', 'UFO', 'RPM', 'Machine', 'Ghost'
@@ -30,7 +34,7 @@ Return strictly valid JSON with the translated fields.
 }
 
 async function runPrompt(prompt: string) {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' },

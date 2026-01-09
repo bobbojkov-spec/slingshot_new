@@ -3,7 +3,11 @@ import 'dotenv/config';
 import { query } from '../lib/db';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const getOpenAI = () => {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+    return new OpenAI({ apiKey });
+};
 
 async function getUniqueTags() {
     // Fetch tags from English translations
@@ -60,7 +64,7 @@ async function translateTagsBulk(tags: string[]): Promise<Record<string, string>
     `;
 
         try {
-            const completion = await openai.chat.completions.create({
+            const completion = await getOpenAI().chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: prompt }],
                 response_format: { type: 'json_object' },
