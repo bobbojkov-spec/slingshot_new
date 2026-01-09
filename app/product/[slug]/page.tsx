@@ -25,7 +25,7 @@ async function getProductData(slug: string, lang: string = 'en') {
   const imagesSql = `
     SELECT storage_path, display_order 
     FROM product_images_railway 
-    WHERE product_id = $1 
+    WHERE product_id = $1 AND size = 'big'
     ORDER BY display_order ASC
   `;
   const { rows: images } = await query(imagesSql, [product.id]);
@@ -64,7 +64,7 @@ async function getProductData(slug: string, lang: string = 'en') {
 
   const relatedHelper = await Promise.all(relatedRows.map(async (row: any) => {
     // Fetch main image for related
-    const imgSql = `SELECT storage_path FROM product_images_railway WHERE product_id = $1 ORDER BY display_order ASC LIMIT 1`;
+    const imgSql = `SELECT storage_path FROM product_images_railway WHERE product_id = $1 AND size = 'small' ORDER BY display_order ASC LIMIT 1`;
     const { rows: imgRows } = await query(imgSql, [row.id]);
     let imgUrl = row.og_image_url || '/placeholder.jpg';
     if (imgRows.length > 0) {

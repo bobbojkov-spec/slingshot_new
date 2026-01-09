@@ -28,7 +28,7 @@ function ShopContent() {
       // User said: "Make a default filter when you click on shop, by sport kites"
       // It's better for UX to have the URL reflect the state.
       const params = new URLSearchParams(searchParams.toString());
-      params.set('category', 'kite');
+      params.set('category', 'kites');
       router.replace(`/shop?${params.toString()}`);
     }
   }, [searchParams, router]);

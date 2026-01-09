@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     if (queryTerm) {
       conditions.push(`(
         p.name ILIKE $${paramIndex} OR 
-        p.description ILIKE $${paramIndex} OR
+        p.description_html ILIKE $${paramIndex} OR
         pt_t.title ILIKE $${paramIndex} OR
         array_to_string(p.tags, ' ') ILIKE $${paramIndex} OR
         pt.name ILIKE $${paramIndex}
@@ -195,7 +195,7 @@ export async function GET(req: Request) {
     let ctxIdx = 2;
 
     if (queryTerm) {
-      contextConditionsBase.push(`(p.name ILIKE $${ctxIdx} OR p.description ILIKE $${ctxIdx} OR pt_t.title ILIKE $${ctxIdx} OR array_to_string(p.tags, ' ') ILIKE $${ctxIdx} OR pt.name ILIKE $${ctxIdx})`);
+      contextConditionsBase.push(`(p.name ILIKE $${ctxIdx} OR p.description_html ILIKE $${ctxIdx} OR pt_t.title ILIKE $${ctxIdx} OR array_to_string(p.tags, ' ') ILIKE $${ctxIdx} OR pt.name ILIKE $${ctxIdx})`);
       contextParams.push(`%${queryTerm}%`);
       ctxIdx++;
     }
@@ -236,7 +236,7 @@ export async function GET(req: Request) {
     let tagCtxIdx = 2;
 
     if (queryTerm) {
-      tagContextConditions.push(`(p.name ILIKE $${tagCtxIdx} OR p.description ILIKE $${tagCtxIdx} OR pt_t.title ILIKE $${tagCtxIdx} OR array_to_string(p.tags, ' ') ILIKE $${tagCtxIdx} OR pt.name ILIKE $${tagCtxIdx})`);
+      tagContextConditions.push(`(p.name ILIKE $${tagCtxIdx} OR p.description_html ILIKE $${tagCtxIdx} OR pt_t.title ILIKE $${tagCtxIdx} OR array_to_string(p.tags, ' ') ILIKE $${tagCtxIdx} OR pt.name ILIKE $${tagCtxIdx})`);
       tagContextParams.push(`%${queryTerm}%`);
       tagCtxIdx++;
     }
