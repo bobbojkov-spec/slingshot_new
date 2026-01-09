@@ -64,7 +64,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       </div>
       <Link href={`/product/${product.slug}`} className="block p-4">
         <span className="font-body text-sm text-muted-foreground uppercase tracking-wide">{product.category}</span>
-        <h3 className="font-heading font-semibold text-foreground mt-1 mb-2 group-hover:text-accent transition-colors">
+        <h3 className="font-heading font-semibold text-[22px] leading-tight text-foreground mt-1 mb-2 group-hover:text-accent transition-colors">
           {product.name}
         </h3>
         <div className="flex items-center gap-2">
