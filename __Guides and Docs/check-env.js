@@ -7,11 +7,14 @@ const checkEnv = async () => {
     console.log("🔍 Starting Sanity Check...");
 
     // 1. Check for local vs production vars
-    const apiUrl = process.env.VITE_API_URL || 'http://localhost:5000';
+    // Default to localhost:3000/api/health for Next.js app
+    const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000/api/health';
     console.log(`📡 Target API URL: ${apiUrl}`);
 
-    if (apiUrl.endsWith('/')) {
-        console.warn("⚠️  WARNING: VITE_API_URL has a trailing slash. This often causes '//endpoint' errors.");
+    if (apiUrl.endsWith('/') && !apiUrl.includes('api/health')) {
+        // Only warn if it looks like a base URL with a trailing slash
+        // If it's the full health path, it's fine.
+        console.warn("⚠️  WARNING: VITE_API_URL has a trailing slash. Ensure it points to the health endpoint.");
     }
 
     // 2. Try to ping the API
@@ -21,9 +24,10 @@ const checkEnv = async () => {
         const response = await fetch(apiUrl);
         const duration = Date.now() - start;
 
-        if (response.ok || response.status === 404) {
-            // 404 is actually "good" here because it means the server responded, not a network crash
+        if (response.ok) {
             console.log(`✅ API is reachable! (Status: ${response.status}, Time: ${duration}ms)`);
+        } else {
+            console.log(`⚠️ API reachable but returned status: ${response.status}`);
         }
 
         // 3. Check for the JSON trap
@@ -37,19 +41,32 @@ const checkEnv = async () => {
 
             // Advanced Service Check
             const data = await response.json();
-            if (data.services) {
+
+            // Check for simple { db: 'ok' } response from app/api/health/route.ts
+            if (data.db === 'ok') {
+                console.log("\n📊 System Report:");
+                console.log(`   - Server Status: ✅ Online`);
+                console.log(`   - Database: ✅ Connected`);
+                console.log(`   - Environment: ${process.env.NODE_ENV || 'unknown'}`);
+            } else if (data.services) {
+                // Keep backward compatibility for original script format if needed
                 console.log("\n📊 System Report:");
                 console.log(`   - Server Status: ${data.status === 'ok' ? '✅ Online' : '⚠️ Issues'}`);
                 console.log(`   - Database: ${data.services.database === 'connected' ? '✅ Connected' : '❌ DISCONNECTED'}`);
                 if (data.services.latency) console.log(`   - DB Latency: ${data.services.latency}`);
                 console.log(`   - Environment: ${data.env?.node_env || 'unknown'}`);
+            } else {
+                // Unknown response format but technically successful JSON
+                console.log("\n⚠️  Unknown JSON response format:");
+                console.log(data);
+                console.log("   But at least it's JSON and the DB check didn't crash.");
+            }
 
-                if (data.services.database !== 'connected') {
-                    console.error("\n🚨 CRITICAL: Your backend is live but cannot talk to the Database!");
-                    console.error(`   Error: ${data.error || 'Unknown DB Error'}`);
-                    console.log("   Action: Check your DATABASE_URL in Railway variables.");
-                    process.exit(1); // Fail for CI/CD
-                }
+            if (data.db === 'error') {
+                console.error("\n🚨 CRITICAL: Your backend is live but cannot talk to the Database!");
+                console.error(`   Error: ${data.error || 'Unknown DB Error'}`);
+                console.log("   Action: Check your DATABASE_URL in Railway variables.");
+                process.exit(1);
             }
         }
 
@@ -57,6 +74,7 @@ const checkEnv = async () => {
         console.error("❌ CONNECTION FAILED: Could not reach the API.");
         console.error(`   Error: ${error.message}`);
         console.log("   Action: Ensure your backend is running or your URL is correct.");
+        process.exit(1);
     }
 };
 
