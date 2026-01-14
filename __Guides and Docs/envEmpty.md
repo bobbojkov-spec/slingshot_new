@@ -16,4 +16,5 @@ DEV_ADMIN_DEVICE_ID=dev-browser
 DEV_ADMIN_BOOTSTRAP=true
 
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+RESEND_API_KEY="re_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxx"
 
