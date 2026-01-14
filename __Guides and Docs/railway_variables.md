@@ -2,7 +2,17 @@
 
 The application currently has two different storage clients (`lib/railway/s3-client.ts` and `lib/railway/storage.ts`) with distinct environment variable requirements. To ensure specific routes (like `/api/media`) work correctly and to prevent 503 errors, you must set the following variables in Railway.
 
-## Critical Variables
+## Database Variables (Postgres)
+
+Your code at `lib/dbPg.ts` uses **PostgreSQL**, not MySQL.
+
+| Variable Name | Value | Notes |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | `postgresql://...` | Connection string |
+
+> **Note**: Do NOT use `MYSQL_URL` or `MYSQL_...` variables. The application will ignore them.
+
+## Critical Storage Variables
 
 If you are using a single bucket and user for everything, you must **duplicate** your credentials across these variable names.
 
