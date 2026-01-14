@@ -7,14 +7,18 @@ const checkEnv = async () => {
     console.log("🔍 Starting Sanity Check...");
 
     // 1. Check for local vs production vars
-    // Default to localhost:3000/api/health for Next.js app
-    const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000/api/health';
+    // 1. Check for local vs production vars
+    // Default to localhost:3000 for Next.js app
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    // Construct health endpoint from site URL
+    const apiUrl = siteUrl.endsWith('/')
+        ? `${siteUrl}api/health`
+        : `${siteUrl}/api/health`;
+
     console.log(`📡 Target API URL: ${apiUrl}`);
 
-    if (apiUrl.endsWith('/') && !apiUrl.includes('api/health')) {
+    if (siteUrl.endsWith('/') && !siteUrl.includes('api')) {
         // Only warn if it looks like a base URL with a trailing slash
-        // If it's the full health path, it's fine.
-        console.warn("⚠️  WARNING: VITE_API_URL has a trailing slash. Ensure it points to the health endpoint.");
     }
 
     // 2. Try to ping the API
