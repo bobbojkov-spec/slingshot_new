@@ -33,19 +33,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     const product = productResult.rows[0];
 
     // 2. Fetch Variants (for pricing and options)
-    // Assuming structure: price, inventory_quantity, size (option1?), color (option2?)
-    // Need to verify columns. For now assuming standard Shopify-like structure.
     const variantsSql = `
       SELECT 
         id, 
         price, 
         compare_at_price, 
-        option1_value as size, 
-        option2_value as color, 
         inventory_quantity,
-        title
+        title,
+        sku,
+        available,
+        status,
+        position
       FROM product_variants 
-      WHERE product_id = $1 
+      WHERE product_id = $1 AND status = 'active'
       ORDER BY position ASC
     `;
     const imagesSql = `
@@ -61,15 +61,28 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     ]);
 
     const variants = variantsResult.rows;
-    const imageRows = imagesResult.rows;
+    const imageRowsRaw = imagesResult.rows;
+    // Deduplicate images
+    const seenPaths = new Set();
+    const imageRows = imageRowsRaw.filter((r: any) => {
+      if (seenPaths.has(r.storage_path)) return false;
+      seenPaths.add(r.storage_path);
+      return true;
+    });
 
     // Get Min/Max Price
-    const prices = variants.map((v: any) => parseFloat(v.price));
-    const price = Math.min(...prices) || 0;
+    const prices = variants.map((v: any) => parseFloat(v.price)).filter(p => !isNaN(p));
+    const price = prices.length > 0 ? Math.min(...prices) : 0;
 
-    // Extract options
-    const sizes = Array.from(new Set(variants.map((v: any) => v.size).filter(Boolean)));
-    const colors = Array.from(new Set(variants.map((v: any) => v.color).filter(Boolean))); // Need to map to actual color codes later?
+    // Extract variant options (using titles as options since we don't have separate size/color columns)
+    const variantOptions = variants.map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      price: parseFloat(v.price || 0),
+      compareAtPrice: v.compare_at_price ? parseFloat(v.compare_at_price) : null,
+      available: v.available,
+      sku: v.sku
+    }));
 
     // 3. Fetch Related Products (Same Product Type or Category, max 4)
     // Prefer same type, fallback to category.
@@ -124,9 +137,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         image: mainImage,
         price,
         images,
-        sizes,
+        variants: variantOptions,
         specs
-        // colors: [] // Handled by frontend mapping?
       },
       related
     });

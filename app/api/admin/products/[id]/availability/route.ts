@@ -29,7 +29,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const placeholders = normalizedEntries
       .map((_, index) => {
         const base = index * 4;
-        return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4})`;
+        return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, NOW(), NOW())`;
       })
       .join(', ');
 

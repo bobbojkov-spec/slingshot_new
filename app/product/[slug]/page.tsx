@@ -16,7 +16,15 @@ interface Product {
   category: string;
   price: number;
   description: string;
-  sizes: string[];
+  sizes?: string[]; // Legacy field
+  variants?: Array<{
+    id: string;
+    title: string;
+    price: number;
+    compareAtPrice: number | null;
+    available: boolean;
+    sku: string;
+  }>;
   specs: { label: string; value: string }[];
   image: string;
   images: string[];
@@ -47,9 +55,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         const data = await res.json();
         setProduct(data.product);
         setRelated(data.related);
-        if (data.product.sizes?.length > 0) {
-          setSelectedSize(data.product.sizes[0]);
-        }
+
+        // Handle both new variants structure and legacy sizes
+        const availableSizes = data.product.variants?.map((v: any) => v.title) || data.product.sizes || [];
+        // if (availableSizes.length > 0) {
+        //   setSelectedSize(availableSizes[0]);
+        // }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error loading product');
       } finally {
@@ -115,7 +126,25 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
             <span className="text-sm font-bold tracking-[0.2em] text-accent mb-2 uppercase">{product.category_name}</span>
             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">{product.name}</h1>
-            <div className="text-2xl font-bold mb-4">€{product.price.toLocaleString()}</div>
+            <div className="text-2xl font-bold mb-4">
+              {(() => {
+                if (selectedSize && product.variants) {
+                  const v = product.variants.find(v => v.title === selectedSize);
+                  if (v) return `€${v.price.toLocaleString()}`;
+                }
+                if (product.variants && product.variants.length > 0) {
+                  const prices = product.variants.map(v => v.price).filter(p => !isNaN(p));
+                  if (prices.length > 0) {
+                    const min = Math.min(...prices);
+                    const max = Math.max(...prices);
+                    return min === max
+                      ? `€${min.toLocaleString()}`
+                      : `€${min.toLocaleString()} - €${max.toLocaleString()}`;
+                  }
+                }
+                return `€${product.price ? product.price.toLocaleString() : '0'}`;
+              })()}
+            </div>
 
             <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: product.description }} />
@@ -124,12 +153,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               <PriceNote />
             </div>
 
-            {/* Sizes */}
-            {product.sizes && product.sizes.length > 0 && (
+            {/* Sizes/Variants */}
+            {((product.variants && product.variants.length > 0) || (product.sizes && product.sizes.length > 0)) && (
               <div className="mb-8">
                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
                 <div className="flex gap-2 flex-wrap">
-                  {product.sizes.map((size) => (
+                  {(product.variants?.map(v => v.title) || product.sizes || []).map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}

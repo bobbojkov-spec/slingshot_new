@@ -56,8 +56,9 @@ export async function GET() {
     const imagesByProduct = new Map<string, any[]>();
     processedImages.forEach((img: any) => {
       const list = imagesByProduct.get(img.product_id) || [];
-      // Only keep valid URLs
-      if (img.url) list.push(img);
+      // Only keep valid URLs and avoid duplicates
+      const exists = list.some((existing) => existing.storage_path === img.storage_path);
+      if (img.url && !exists) list.push(img);
       imagesByProduct.set(img.product_id, list);
     });
 
