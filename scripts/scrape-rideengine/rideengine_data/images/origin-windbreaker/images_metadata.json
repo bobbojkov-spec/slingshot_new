@@ -1,0 +1,60 @@
+{
+  "product_handle": "origin-windbreaker",
+  "product_title": "Origin Windbreaker",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_OriginStudio.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/OriginStudio.jpg?v=1702328938",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Origin Windbreaker",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_REOriginWeb5.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOriginWeb5.jpg?v=1702331714",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Origin Windbreaker",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_REOriginWeb4.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOriginWeb4.jpg?v=1702331714",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Origin Windbreaker",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_REOriginWeb2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOriginWeb2.jpg?v=1702331714",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Origin Windbreaker",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_Jacket.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/Jacket.jpg?v=1702328938",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Origin Windbreaker",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_Jacket2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/Jacket2.jpg?v=1702328938",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Origin Windbreaker",
+      "position": 6
+    }
+  ]
+}

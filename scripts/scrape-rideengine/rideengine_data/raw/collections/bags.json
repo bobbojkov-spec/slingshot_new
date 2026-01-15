@@ -1,0 +1,1000 @@
+{
+  "handle": "bags",
+  "url": "https://rideengine.com/collections/bags",
+  "product_count": 8,
+  "products": [
+    {
+      "id": 7239408484486,
+      "title": "Solar Shield Downwind SUP Foilboard Bag",
+      "handle": "solar-shield-dw-foilboard-bag",
+      "body_html": "<p>Downwind foil boards are meticulously crafted, high-performance pieces of equipment where even the slightest imperfections can affect their overall advantages. The Solar Shield Downwind SUP Board Bag is engineered to provide peace of mind when transporting your board to and from the drop location. With 10mm of closed-cell foam enveloping the entire board, it offers protection from inevitable bumps and drops. The T-Plus material shields the board from the sun’s rays when secured on the roof or in a truck bed. Additionally, a full hook and loop mast slot provide ample space for all mast placements on all boards, ensuring versatility and convenience. Trust the Solar Shield Downwind SUP Board Bag to safeguard your precious equipment and maintain its peak performance.<strong></strong></p>",
+      "published_at": "2024-09-30T16:32:38-07:00",
+      "created_at": "2024-07-26T13:41:00-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865856134,
+          "title": "203 cm",
+          "option1": "203 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250538001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006381789318,
+            "product_id": 7239408484486,
+            "position": 1,
+            "created_at": "2024-09-25T14:32:54-07:00",
+            "updated_at": "2024-09-25T14:32:56-07:00",
+            "alt": "Solar Shield Down Wind Foil Board Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_MAIN.jpg?v=1727299976",
+            "variant_ids": [
+              41263865856134,
+              41263865888902,
+              41263865921670
+            ]
+          },
+          "available": true,
+          "price": "160.00",
+          "grams": 14515,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408484486,
+          "created_at": "2024-07-26T13:41:00-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865888902,
+          "title": "228 cm",
+          "option1": "228 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250538002",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006381789318,
+            "product_id": 7239408484486,
+            "position": 1,
+            "created_at": "2024-09-25T14:32:54-07:00",
+            "updated_at": "2024-09-25T14:32:56-07:00",
+            "alt": "Solar Shield Down Wind Foil Board Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_MAIN.jpg?v=1727299976",
+            "variant_ids": [
+              41263865856134,
+              41263865888902,
+              41263865921670
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 14515,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408484486,
+          "created_at": "2024-07-26T13:41:00-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865921670,
+          "title": "260 cm",
+          "option1": "260 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250538003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006381789318,
+            "product_id": 7239408484486,
+            "position": 1,
+            "created_at": "2024-09-25T14:32:54-07:00",
+            "updated_at": "2024-09-25T14:32:56-07:00",
+            "alt": "Solar Shield Down Wind Foil Board Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_MAIN.jpg?v=1727299976",
+            "variant_ids": [
+              41263865856134,
+              41263865888902,
+              41263865921670
+            ]
+          },
+          "available": true,
+          "price": "180.00",
+          "grams": 14515,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7239408484486,
+          "created_at": "2024-07-26T13:41:00-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34006381789318,
+          "created_at": "2024-09-25T14:32:54-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T14:32:56-07:00",
+          "product_id": 7239408484486,
+          "variant_ids": [
+            41263865856134,
+            41263865888902,
+            41263865921670
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_MAIN.jpg?v=1727299976",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006381756550,
+          "created_at": "2024-09-25T14:32:54-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T14:32:56-07:00",
+          "product_id": 7239408484486,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_02.jpg?v=1727299976",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006381822086,
+          "created_at": "2024-09-25T14:32:54-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T14:32:56-07:00",
+          "product_id": 7239408484486,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250538_SOLARSHIELDDWFOIL_25X_01.jpg?v=1727299976",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "203 cm",
+            "228 cm",
+            "260 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408418950,
+      "title": "Solar Shield Wing Foil Bag",
+      "handle": "solar-shield-wing-foil-bag",
+      "body_html": "<p>Your wing foil board holds a significant place in your investments, alongside your mountain bike and quite conceivably your car! Safeguarding your high-performance craft should be of equal importance, ensuring your board serves you well over time. The Solar Shield Wing Foil Bag is an ideal daily driver, shielding against awkward knocks and impacts, while also blocking the harsh UV rays that can cause fading and deterioration of finishes. With its long hook and loop mast slot, you can keep the foil in place for transportation, accommodating all available foil placements.<strong></strong></p>\n<p><strong>Materials</strong></p>\n<ul>\n<li>T-Plus tarpaulin</li>\n<li>Marine grade zipper</li>\n<li>Hook and loop mast slot</li>\n<li>Closed cell foam</li>\n</ul>",
+      "published_at": "2024-09-30T16:33:46-07:00",
+      "created_at": "2024-07-26T13:40:59-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865725062,
+          "title": "142 cm",
+          "option1": "142 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250536001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006438903942,
+            "product_id": 7239408418950,
+            "position": 1,
+            "created_at": "2024-09-25T15:01:11-07:00",
+            "updated_at": "2024-09-25T15:01:12-07:00",
+            "alt": "Solar Shield Wing Foil Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_MAIN_1.jpg?v=1727301672",
+            "variant_ids": [
+              41263865725062,
+              41263865757830,
+              41263865790598
+            ]
+          },
+          "available": true,
+          "price": "130.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408418950,
+          "created_at": "2024-07-26T13:40:59-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865757830,
+          "title": "168 cm",
+          "option1": "168 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250536002",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006438903942,
+            "product_id": 7239408418950,
+            "position": 1,
+            "created_at": "2024-09-25T15:01:11-07:00",
+            "updated_at": "2024-09-25T15:01:12-07:00",
+            "alt": "Solar Shield Wing Foil Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_MAIN_1.jpg?v=1727301672",
+            "variant_ids": [
+              41263865725062,
+              41263865757830,
+              41263865790598
+            ]
+          },
+          "available": false,
+          "price": "135.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408418950,
+          "created_at": "2024-07-26T13:40:59-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865790598,
+          "title": "198 cm",
+          "option1": "198 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250536003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006438903942,
+            "product_id": 7239408418950,
+            "position": 1,
+            "created_at": "2024-09-25T15:01:11-07:00",
+            "updated_at": "2024-09-25T15:01:12-07:00",
+            "alt": "Solar Shield Wing Foil Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_MAIN_1.jpg?v=1727301672",
+            "variant_ids": [
+              41263865725062,
+              41263865757830,
+              41263865790598
+            ]
+          },
+          "available": true,
+          "price": "140.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7239408418950,
+          "created_at": "2024-07-26T13:40:59-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34006438903942,
+          "created_at": "2024-09-25T15:01:11-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T15:01:12-07:00",
+          "product_id": 7239408418950,
+          "variant_ids": [
+            41263865725062,
+            41263865757830,
+            41263865790598
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_MAIN_1.jpg?v=1727301672",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006411870342,
+          "created_at": "2024-09-25T14:50:36-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T14:50:37-07:00",
+          "product_id": 7239408418950,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_01.jpg?v=1727301037",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006411903110,
+          "created_at": "2024-09-25T14:50:36-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T14:50:37-07:00",
+          "product_id": 7239408418950,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250536_SOLARSHIELDWING_25X_02.jpg?v=1727301037",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "142 cm",
+            "168 cm",
+            "198 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408451718,
+      "title": "Solar Shield Kite Foilboard Bag",
+      "handle": "solar-shield-kite-foilboard-bag",
+      "body_html": "<p>Hard rails, thin noses, and lightweight constructions are all prone to damage and all are found in high performance pocket kite foil boards. Slipping your board in a Solar Shield will give you a piece of mind when transporting from your house to the beach.<strong></strong></p>",
+      "published_at": "2024-09-30T16:51:19-07:00",
+      "created_at": "2024-07-26T13:41:00-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865823366,
+          "title": "116 cm",
+          "option1": "116 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250537001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "99.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408451718,
+          "created_at": "2024-07-26T13:41:00-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36766624710790,
+          "created_at": "2025-11-17T08:53:12-08:00",
+          "position": 1,
+          "updated_at": "2025-11-17T08:53:14-08:00",
+          "product_id": 7239408451718,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/solarkiteshort01.jpg?v=1763398394",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36766624776326,
+          "created_at": "2025-11-17T08:53:12-08:00",
+          "position": 2,
+          "updated_at": "2025-11-17T08:53:19-08:00",
+          "product_id": 7239408451718,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/solarkiteshort03.jpg?v=1763398399",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36766624743558,
+          "created_at": "2025-11-17T08:53:12-08:00",
+          "position": 3,
+          "updated_at": "2025-11-17T08:53:19-08:00",
+          "product_id": 7239408451718,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/solarkiteshort02.jpg?v=1763398399",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "116 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408386182,
+      "title": "Solar Shield Surfboard Bag",
+      "handle": "solar-shield-surfboard-bag",
+      "body_html": "<p>Experience superior protection and convenience with our ultralight, padded cover designed to safeguard your valuable blade from UV damage. Featuring a full 5mm closed cell padding on both top and bottom, an expandable tail for fin accommodation, and a durable T-Plus material shell, this cover ensures your board stays waxed and free from shatter dings.<strong></strong></p>\n<ul></ul>",
+      "published_at": "2024-10-01T09:29:48-07:00",
+      "created_at": "2024-07-26T13:40:58-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865593990,
+          "title": "172 cm",
+          "option1": "172 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250535001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34041120456838,
+            "product_id": 7239408386182,
+            "position": 1,
+            "created_at": "2024-10-01T09:28:55-07:00",
+            "updated_at": "2024-10-01T09:28:57-07:00",
+            "alt": "Solar Shield Surfboard Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250535_SOLARSHIELDSURF_25X_MAIN_1.jpg?v=1727800137",
+            "variant_ids": [
+              41263865593990,
+              41263865659526
+            ]
+          },
+          "available": true,
+          "price": "120.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408386182,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865659526,
+          "title": "202 cm",
+          "option1": "202 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250535002",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34041120456838,
+            "product_id": 7239408386182,
+            "position": 1,
+            "created_at": "2024-10-01T09:28:55-07:00",
+            "updated_at": "2024-10-01T09:28:57-07:00",
+            "alt": "Solar Shield Surfboard Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250535_SOLARSHIELDSURF_25X_MAIN_1.jpg?v=1727800137",
+            "variant_ids": [
+              41263865593990,
+              41263865659526
+            ]
+          },
+          "available": true,
+          "price": "125.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408386182,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34041120456838,
+          "created_at": "2024-10-01T09:28:55-07:00",
+          "position": 1,
+          "updated_at": "2024-10-01T09:28:57-07:00",
+          "product_id": 7239408386182,
+          "variant_ids": [
+            41263865593990,
+            41263865659526
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250535_SOLARSHIELDSURF_25X_MAIN_1.jpg?v=1727800137",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34041120424070,
+          "created_at": "2024-10-01T09:28:55-07:00",
+          "position": 2,
+          "updated_at": "2024-10-01T09:28:57-07:00",
+          "product_id": 7239408386182,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250535_SOLARSHIELDSURF_25X_01_1.jpg?v=1727800137",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34041120391302,
+          "created_at": "2024-10-01T09:28:55-07:00",
+          "position": 3,
+          "updated_at": "2024-10-01T09:28:56-07:00",
+          "product_id": 7239408386182,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250535_SOLARSHIELDSURF_25X_02_1.jpg?v=1727800136",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "172 cm",
+            "202 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408320646,
+      "title": "RE_Serve Golf Coffin",
+      "handle": "re_serve-golf-coffin",
+      "body_html": "<p>Still airline-friendly! When it’s time to pack kiteboarding gear, get your credit card ready, while golf equipment breezes through the belt. The Ride Engine Golf Coffin accommodates a twin board up to 150cm and foil boards up to 42cm wide. With ample space for a 3-kite quiver and essentials like a harness and bar, you might just pass as the next tour pro if the agent plays along.<strong></strong></p>\n<p><strong>Materials</strong></p>\n<ul>\n<li>P/F 420D INVISIBLE LATTICE PUZX 2 58 nylon shell • Heavy-duty YKK marine grade zippers</li>\n</ul>",
+      "published_at": "2024-09-30T16:34:43-07:00",
+      "created_at": "2024-07-26T13:40:58-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865561222,
+          "title": "150 cm",
+          "option1": "150 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250532001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34005033287814,
+            "product_id": 7239408320646,
+            "position": 1,
+            "created_at": "2024-09-25T10:50:50-07:00",
+            "updated_at": "2024-09-25T10:50:52-07:00",
+            "alt": "RE_Serve Golf Coffin Kiteboarding Travel Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250532_RESERVEGOLFCOFFIN_25X_MAIN.jpg?v=1727286652",
+            "variant_ids": [
+              41263865561222
+            ]
+          },
+          "available": true,
+          "price": "349.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408320646,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34005033287814,
+          "created_at": "2024-09-25T10:50:50-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T10:50:52-07:00",
+          "product_id": 7239408320646,
+          "variant_ids": [
+            41263865561222
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250532_RESERVEGOLFCOFFIN_25X_MAIN.jpg?v=1727286652",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34005033320582,
+          "created_at": "2024-09-25T10:50:50-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T10:50:52-07:00",
+          "product_id": 7239408320646,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250532_RESERVEGOLFCOFFIN_25X_02.jpg?v=1727286652",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34005033255046,
+          "created_at": "2024-09-25T10:50:50-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T10:50:52-07:00",
+          "product_id": 7239408320646,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250532_RESERVEGOLFCOFFIN_25X_01.jpg?v=1727286652",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "150 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408353414,
+      "title": "RE_Serve Wing Travel Coffin",
+      "handle": "re_serve-wing-travel-coffin",
+      "body_html": "<p>Crafted for contemporary wing boards, this coffin travel bag ensures your prized deck arrives at its destination unscathed. The Wing Board Travel Coffin boasts a wide-body wheeled chassis, effortlessly maneuvering through airports, hotels, and the trail to the beach with the resilience of an off road race truck. Featuring robust 360-degree padding, it provides comprehensive protection for all your gear, while a full-length heavy-duty zipper facilitates easy packing and unpacking. Additionally, a spacious internal pocket accommodates your wings or foils for added care. Dual mesh pockets at the nose and tail are perfect for storing wetsuits, sun protection, and other soft items, securely in place even during TSA luggage inspections, along with ensuring extra protection where it’s needed most for your board.</p>\n<p><span><strong>Materials</strong> </span></p>\n<ul>\n<li>\n<span>10mm PE closed cell foam bottom, top and sidewalls </span><span>• P/F 420D INVISIBLE LATTICE PUZX 2 58 nylon shell</span>\n</li>\n<li><span>Heavy-duty YKK marine grade zippers </span></li>\n</ul>",
+      "published_at": "2024-09-30T16:38:41-07:00",
+      "created_at": "2024-07-26T13:40:58-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865626758,
+          "title": "152 cm",
+          "option1": "152 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250533001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006349938822,
+            "product_id": 7239408353414,
+            "position": 1,
+            "created_at": "2024-09-25T14:21:33-07:00",
+            "updated_at": "2024-09-25T14:21:34-07:00",
+            "alt": "RE_Serve Wing Travel Coffin Wing Foil Travel Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_MAIN.jpg?v=1727299294",
+            "variant_ids": [
+              41263865626758,
+              41263865692294
+            ]
+          },
+          "available": true,
+          "price": "369.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408353414,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865692294,
+          "title": "178 cm",
+          "option1": "178 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250533002",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34006349938822,
+            "product_id": 7239408353414,
+            "position": 1,
+            "created_at": "2024-09-25T14:21:33-07:00",
+            "updated_at": "2024-09-25T14:21:34-07:00",
+            "alt": "RE_Serve Wing Travel Coffin Wing Foil Travel Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_MAIN.jpg?v=1727299294",
+            "variant_ids": [
+              41263865626758,
+              41263865692294
+            ]
+          },
+          "available": true,
+          "price": "379.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408353414,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34006349938822,
+          "created_at": "2024-09-25T14:21:33-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T14:21:34-07:00",
+          "product_id": 7239408353414,
+          "variant_ids": [
+            41263865626758,
+            41263865692294
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_MAIN.jpg?v=1727299294",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006349971590,
+          "created_at": "2024-09-25T14:21:33-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T14:21:35-07:00",
+          "product_id": 7239408353414,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_02.jpg?v=1727299295",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34006349906054,
+          "created_at": "2024-09-25T14:21:33-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T14:21:34-07:00",
+          "product_id": 7239408353414,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_01.jpg?v=1727299294",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "152 cm",
+            "178 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408287878,
+      "title": "RE_Serve SeaFarer Coffin",
+      "handle": "re_serve-seafarer-coffin",
+      "body_html": "<p>An ultimate gear-hauling solution! The Seafarer Coffin bag stands out as the epitome of versatility in the collection, catering to both traveling kiteboarders and wakeboarders alike. Offering ample room to accommodate large twin boards, foil boards, foils, and even many blunt nose strapless surfboards, it ensures you have space to spare for essential kites, bars, and accessories needed for your destination.<strong></strong></p>\n<p><strong>Materials</strong></p>\n<ul>\n<li>10mm PE closed cell foam bottom, top and sidewalls</li>\n<li>P/F 420D INVISIBLE LATTICE PUZX 2 58 nylon shell</li>\n<li>Heavy-duty YKK marine grade zippers</li>\n</ul>",
+      "published_at": "2024-09-30T16:51:07-07:00",
+      "created_at": "2024-07-26T13:40:58-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865528454,
+          "title": "162 cm",
+          "option1": "162 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250531001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34004931739782,
+            "product_id": 7239408287878,
+            "position": 1,
+            "created_at": "2024-09-25T10:32:58-07:00",
+            "updated_at": "2024-09-25T10:32:59-07:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250531_RESERVESEAFARERCOFFIN_25X_MAIN.jpg?v=1727285579",
+            "variant_ids": [
+              41263865528454
+            ]
+          },
+          "available": true,
+          "price": "299.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408287878,
+          "created_at": "2024-07-26T13:40:58-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34004931739782,
+          "created_at": "2024-09-25T10:32:58-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T10:32:59-07:00",
+          "product_id": 7239408287878,
+          "variant_ids": [
+            41263865528454
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250531_RESERVESEAFARERCOFFIN_25X_MAIN.jpg?v=1727285579",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34004931772550,
+          "created_at": "2024-09-25T10:32:58-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T10:32:59-07:00",
+          "product_id": 7239408287878,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250531_RESERVESEAFARERCOFFIN_25X_01.jpg?v=1727285579",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34004931805318,
+          "created_at": "2024-09-25T10:32:58-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T10:32:59-07:00",
+          "product_id": 7239408287878,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250531_RESERVESEAFARERCOFFIN_25X_02.jpg?v=1727285579",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "162 cm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239408255110,
+      "title": "RE_Serve Surf Travel Coffin",
+      "handle": "re_serve-surf-travel-coffin",
+      "body_html": "<p>Streamlining travel has become increasingly important, and the Surf Travel Coffin simplifies this process effectively. Offering generous space to pack according to your destination’s requirements, it significantly reduces weight with its side-wheeled design and RE-Serve material. Planning an adventurous kite surfing expedition? You’ll find ample space for 2 boards, a 3-kite quiver, bars, and a few wetsuits for added protection. If you’re checking off your bucket list with a surf-focused trip, simply slide in 3 boards along with all the essentials.</p>\n<p><strong>Materials</strong></p>\n<ul>\n<li>10mm PE closed cell foam bottom, top and sidewalls • P/F 420D INVISIBLE LATTICE PUZX 2 58 nylon shell</li>\n<li>Heavy-duty YKK marine grade zippers</li>\n</ul>",
+      "published_at": "2024-09-30T16:37:37-07:00",
+      "created_at": "2024-07-26T13:40:56-07:00",
+      "updated_at": "2026-01-14T13:56:01-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Bags",
+      "tags": [
+        "Travel Bag"
+      ],
+      "variants": [
+        {
+          "id": 41263865462918,
+          "title": "195 cm",
+          "option1": "195 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250530001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34004697383046,
+            "product_id": 7239408255110,
+            "position": 1,
+            "created_at": "2024-09-25T09:51:40-07:00",
+            "updated_at": "2024-09-25T09:51:41-07:00",
+            "alt": "RE_Serve Surf Travel Coffin Surfboard and Foil Board Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250530_RESERVESURFCOFFIN_25X_MAIN.jpg?v=1727283101",
+            "variant_ids": [
+              41263865462918,
+              41263865495686
+            ]
+          },
+          "available": true,
+          "price": "319.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408255110,
+          "created_at": "2024-07-26T13:40:56-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        },
+        {
+          "id": 41263865495686,
+          "title": "227 cm",
+          "option1": "227 cm",
+          "option2": null,
+          "option3": null,
+          "sku": "3250530002",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34004697383046,
+            "product_id": 7239408255110,
+            "position": 1,
+            "created_at": "2024-09-25T09:51:40-07:00",
+            "updated_at": "2024-09-25T09:51:41-07:00",
+            "alt": "RE_Serve Surf Travel Coffin Surfboard and Foil Board Bag | Ride Engine",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250530_RESERVESURFCOFFIN_25X_MAIN.jpg?v=1727283101",
+            "variant_ids": [
+              41263865462918,
+              41263865495686
+            ]
+          },
+          "available": true,
+          "price": "349.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408255110,
+          "created_at": "2024-07-26T13:40:56-07:00",
+          "updated_at": "2026-01-14T13:56:01-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34004697383046,
+          "created_at": "2024-09-25T09:51:40-07:00",
+          "position": 1,
+          "updated_at": "2024-09-25T09:51:41-07:00",
+          "product_id": 7239408255110,
+          "variant_ids": [
+            41263865462918,
+            41263865495686
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250530_RESERVESURFCOFFIN_25X_MAIN.jpg?v=1727283101",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34004697317510,
+          "created_at": "2024-09-25T09:51:40-07:00",
+          "position": 2,
+          "updated_at": "2024-09-25T09:51:41-07:00",
+          "product_id": 7239408255110,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250530_RESERVESURFCOFFIN_25X_01.jpg?v=1727283101",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34004697350278,
+          "created_at": "2024-09-25T09:51:40-07:00",
+          "position": 3,
+          "updated_at": "2024-09-25T09:51:41-07:00",
+          "product_id": 7239408255110,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250530_RESERVESURFCOFFIN_25X_02.jpg?v=1727283101",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "195 cm",
+            "227 cm"
+          ]
+        }
+      ]
+    }
+  ]
+}

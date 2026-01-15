@@ -1,0 +1,78 @@
+{
+  "product_handle": "jedi-robe-v3",
+  "product_title": "Jedi Robe V3",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3234730_JEDIROBEV3_GREYCAMO_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_GREYCAMO_23X_01.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3234730_JEDIROBEV3_GLASS_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_GLASS_23X_MAIN.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3234730_JEDIROBEV3_FLAMINGO_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_FLAMINGO_23X_01.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_3234730_JEDIROBEV3_BLACK_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_BLACK_23X_01.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_3234730_JEDIROBEV3_FLAMINGO_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_FLAMINGO_23X_03.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_3234730_JEDIROBEV3_BLACK_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_BLACK_23X_03.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 6
+    },
+    {
+      "index": 6,
+      "filename": "06_3234730_JEDIROBEV3_GREYCAMO_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_GREYCAMO_23X_03.jpg?v=1710528998",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 7
+    },
+    {
+      "index": 7,
+      "filename": "07_3234730_JEDIROBEV3_GLASS_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234730_JEDIROBEV3_GLASS_23X_03.jpg?v=1710528947",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Jedi Robe V3",
+      "position": 8
+    }
+  ]
+}

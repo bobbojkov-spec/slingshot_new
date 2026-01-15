@@ -1,0 +1,42 @@
+{
+  "product_handle": "performance-neoprene-hoodie",
+  "product_title": "Performance Neoprene Hoodie",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_PerformanceNeopreneHoodie-Black.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Performance Neoprene Hoodie",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3234738_PERFORMANCENEOHOODIE_BLACK_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234738_PERFORMANCENEOHOODIE_BLACK_23X_01.jpg?v=1702328888",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Performance Neoprene Hoodie",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_PerformanceNeopreneHoodie-MistGreen.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Performance Neoprene Hoodie",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_3234738_PERFORMANCENEOHOODIE_GREEN_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234738_PERFORMANCENEOHOODIE_GREEN_23X_01.jpg?v=1702328922",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Performance Neoprene Hoodie",
+      "position": 4
+    }
+  ]
+}

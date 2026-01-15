@@ -1,0 +1,33 @@
+{
+  "product_handle": "2020-metal-sliding-bar",
+  "product_title": "2020 Metal Sliding Bar",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_320003_main-1.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/320003_main-1.jpg?v=1617164136",
+      "width": 1000,
+      "height": 1000,
+      "alt": "2020 Metal Sliding Bar",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_320003_main-2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/320003_main-2.jpg?v=1617164136",
+      "width": 1000,
+      "height": 1000,
+      "alt": "2020 Metal Sliding Bar",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_320003_main-3.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/320003_main-3.jpg?v=1617164136",
+      "width": 1000,
+      "height": 1000,
+      "alt": "2020 Metal Sliding Bar",
+      "position": 3
+    }
+  ]
+}

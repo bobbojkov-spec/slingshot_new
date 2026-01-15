@@ -1,0 +1,141 @@
+{
+  "Harnesses": {
+    "handle": "harnesses",
+    "subcategories": [
+      {
+        "name": "Hyperlock System",
+        "handle": "hyperlock-system"
+      },
+      {
+        "name": "Wing Foil Harnesses",
+        "handle": "wing-foil-harnesses"
+      },
+      {
+        "name": "Spreader Bars",
+        "handle": "spreader-bars"
+      },
+      {
+        "name": "Parts & Accessories",
+        "handle": "harness-parts-accessories"
+      }
+    ]
+  },
+  "Performance PWC": {
+    "handle": "performance-pwc",
+    "subcategories": [
+      {
+        "name": "PWC Collars & Pontoons",
+        "handle": "pwc-collars-pontoons"
+      },
+      {
+        "name": "Performance Sleds",
+        "handle": "performance-sleds"
+      }
+    ]
+  },
+  "Inflation & Accessories": {
+    "handle": "inflation-accessories",
+    "subcategories": [
+      {
+        "name": "E-Inflation (Air Box)",
+        "handle": "e-inflation"
+      },
+      {
+        "name": "Manual Pumps",
+        "handle": "manual-pumps"
+      },
+      {
+        "name": "Leashes",
+        "handle": "leashes"
+      },
+      {
+        "name": "Foot Straps",
+        "handle": "foot-straps"
+      },
+      {
+        "name": "Vehicle Accessories",
+        "handle": "vehicle-accessories"
+      }
+    ]
+  },
+  "Protection": {
+    "handle": "protection",
+    "subcategories": [
+      {
+        "name": "Impact Vests",
+        "handle": "impact-vests"
+      },
+      {
+        "name": "Helmets",
+        "handle": "helmets"
+      },
+      {
+        "name": "Hand/Knee Protection",
+        "handle": "hand-knee-protection"
+      }
+    ]
+  },
+  "Bags": {
+    "handle": "bags",
+    "subcategories": [
+      {
+        "name": "Wheeled Travel",
+        "handle": "wheeled-travel-bags"
+      },
+      {
+        "name": "Board Bags",
+        "handle": "board-bags"
+      },
+      {
+        "name": "Day Protection",
+        "handle": "day-protection"
+      }
+    ]
+  },
+  "Wetsuits": {
+    "handle": "wetsuits",
+    "subcategories": [
+      {
+        "name": "Men's",
+        "handle": "mens-wetsuits"
+      },
+      {
+        "name": "Women's",
+        "handle": "womens-wetsuits"
+      },
+      {
+        "name": "Wetsuit Accessories",
+        "handle": "wetsuit-accessories"
+      }
+    ]
+  },
+  "Apparel": {
+    "handle": "apparel",
+    "subcategories": [
+      {
+        "name": "Robes & Ponchos",
+        "handle": "robes-ponchos"
+      },
+      {
+        "name": "Technical Jackets",
+        "handle": "technical-jackets"
+      },
+      {
+        "name": "Water Wear",
+        "handle": "water-wear"
+      },
+      {
+        "name": "Hoodies",
+        "handle": "hoodies"
+      },
+      {
+        "name": "T-Shirts",
+        "handle": "t-shirts"
+      },
+      {
+        "name": "Hats",
+        "handle": "hats"
+      }
+    ]
+  }
+}

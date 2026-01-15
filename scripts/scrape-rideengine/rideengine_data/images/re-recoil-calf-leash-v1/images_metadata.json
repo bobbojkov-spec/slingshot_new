@@ -1,0 +1,33 @@
+{
+  "product_handle": "re-recoil-calf-leash-v1",
+  "product_title": "RE-Recoil Calf Leash V1",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3232575018_RERECOILCALFLEASHV1GREEN_NA_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232575018_RERECOILCALFLEASHV1GREEN_NA_23X_MAIN.jpg?v=1686077001",
+      "width": 2000,
+      "height": 2000,
+      "alt": "RE-Recoil Calf Leash V1",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3232575021_RERECOILCALFLEASHV1GREYFOG_NA_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232575021_RERECOILCALFLEASHV1GREYFOG_NA_23X_MAIN.jpg?v=1686077001",
+      "width": 2000,
+      "height": 2000,
+      "alt": "RE-Recoil Calf Leash V1",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3214000500_RECalfLeash_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3214000500_RECalfLeash_23X_03.jpg?v=1686077009",
+      "width": 1999,
+      "height": 1996,
+      "alt": "RE-Recoil Calf Leash V1",
+      "position": 3
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "product_handle": "roam-v1-harness",
+  "product_title": "Roam V1 Harness",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3231520_ROAMV1HARNESS_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231520_ROAMV1HARNESS_23X_MAIN.jpg?v=1674694609",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Roam V1 Harness",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3231520_ROAMV1HARNESS_23X_02.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231520_ROAMV1HARNESS_23X_02.jpg?v=1674694609",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Roam V1 Harness",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3231520_ROAMV1HARNESS_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231520_ROAMV1HARNESS_23X_03.jpg?v=1674694609",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Roam V1 Harness",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_3231520_ROAMV1HARNESS_23X_04.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231520_ROAMV1HARNESS_23X_04.jpg?v=1674694609",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Roam V1 Harness",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_RE_Unity_Webbing_Connect_1800x1800_01e472a8-a7cb-4667-85ec-d806443a388f.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Unity_Webbing_Connect_1800x1800_01e472a8-a7cb-4667-85ec-d806443a388f.jpg?v=1674857181",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Roam V1 Harness",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_3231520000_RoamV1Harness_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231520000_RoamV1Harness_23X_01.jpg?v=1686159837",
+      "width": 1999,
+      "height": 1996,
+      "alt": "Roam V1 Harness",
+      "position": 6
+    },
+    {
+      "index": 6,
+      "filename": "06_3231520000_RoamV1Harness_23X_02.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231520000_RoamV1Harness_23X_02.jpg?v=1686159837",
+      "width": 1999,
+      "height": 1996,
+      "alt": "Roam V1 Harness",
+      "position": 7
+    },
+    {
+      "index": 7,
+      "filename": "07_3231520000_RoamV1Harness_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231520000_RoamV1Harness_23X_03.jpg?v=1686159837",
+      "width": 1999,
+      "height": 1996,
+      "alt": "Roam V1 Harness",
+      "position": 8
+    }
+  ]
+}

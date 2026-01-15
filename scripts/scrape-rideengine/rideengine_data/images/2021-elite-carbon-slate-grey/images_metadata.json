@@ -1,0 +1,51 @@
+{
+  "product_handle": "2021-elite-carbon-slate-grey",
+  "product_title": "Elite Carbon V6 Slate Grey Harness",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_32110002_MAIN-1_1.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32110002_MAIN-1_1.jpg?v=1631659527",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Elite Carbon V6 Slate Grey Harness",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_32110002_MAIN-3.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32110002_MAIN-3.jpg?v=1631659527",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Elite Carbon V6 Slate Grey Harness",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_32110002_MAIN-2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32110002_MAIN-2.jpg?v=1631659523",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Elite Carbon V6 Slate Grey Harness",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_carbon-elite-vetea-3-4-copy.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/carbon-elite-vetea-3-4-copy.jpg?v=1631659523",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Elite Carbon V6 Slate Grey Harness",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_carbon-elite-reed-front-copy.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/carbon-elite-reed-front-copy.jpg?v=1631659523",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Elite Carbon V6 Slate Grey Harness",
+      "position": 5
+    }
+  ]
+}

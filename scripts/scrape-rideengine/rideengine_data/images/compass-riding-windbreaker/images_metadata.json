@@ -1,0 +1,60 @@
+{
+  "product_handle": "compass-riding-windbreaker",
+  "product_title": "Compass Riding Windbreaker",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_CompassRidingJacket-Black.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/CompassRidingJacket-Black.jpg?v=1702328952",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Compass Riding Windbreaker",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3234731_COMPASSRIDINGWINDBREAKER_NA_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234731_COMPASSRIDINGWINDBREAKER_NA_23X_MAIN.jpg?v=1702328951",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Compass Riding Windbreaker",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3234731_COMPASSRIDINGWINDBREAKER_NA_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234731_COMPASSRIDINGWINDBREAKER_NA_23X_01.jpg?v=1702328951",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Compass Riding Windbreaker",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_3234731_COMPASSRIDINGWINDBREAKER_NA_23X_02.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234731_COMPASSRIDINGWINDBREAKER_NA_23X_02.jpg?v=1702328951",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Compass Riding Windbreaker",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_3234731_COMPASSRIDINGWINDBREAKER_NA_23X_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234731_COMPASSRIDINGWINDBREAKER_NA_23X_03.jpg?v=1702328951",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Compass Riding Windbreaker",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_3234731_COMPASSRIDINGWINDBREAKER_NA_23X_04.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234731_COMPASSRIDINGWINDBREAKER_NA_23X_04.jpg?v=1702328951",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Compass Riding Windbreaker",
+      "position": 6
+    }
+  ]
+}

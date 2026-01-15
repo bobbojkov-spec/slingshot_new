@@ -1,0 +1,60 @@
+{
+  "product_handle": "re-spot-camp-hat",
+  "product_title": "RE Spot Camp Hat",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_5-panel-cap-black-front-66ce5b20a9bda.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-black-front-66ce5b20a9bda.jpg?v=1724799783",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_5-panel-cap-black-back-66ce5b20ae1dd.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-black-back-66ce5b20ae1dd.jpg?v=1724799786",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_5-panel-cap-navy-front-66ce5b20ae347.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-navy-front-66ce5b20ae347.jpg?v=1724799788",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_5-panel-cap-navy-back-66ce5b20ae458.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-navy-back-66ce5b20ae458.jpg?v=1724799790",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_5-panel-cap-grey-front-66ce5b20ae5d3.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-grey-front-66ce5b20ae5d3.jpg?v=1724799792",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_5-panel-cap-grey-back-66ce5b20ae7ed.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/5-panel-cap-grey-back-66ce5b20ae7ed.jpg?v=1724799794",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Spot Camp Hat",
+      "position": 6
+    }
+  ]
+}

@@ -1,0 +1,1328 @@
+{
+  "handle": "water-wear",
+  "url": "https://rideengine.com/collections/water-wear",
+  "product_count": 3,
+  "products": [
+    {
+      "id": 7239408124038,
+      "title": "Haze Quick Dry Sun Hoodie",
+      "handle": "haze-quick-dry-sun-hoodie",
+      "body_html": "<p>Crafted from a moisture-wicking, quick-drying semi-perforated fabric, the Haze boasts an impressive UPF rating of 50+. Its standout feature is the innovative 4-way stretch material, designed for optimal elasticity while maintaining a performance fit, perfect for on water activities. Equipped with a built-in gaiter, it ensures ample coverage from the sun without compromising breathability. For unmatched protection during extended hours under the scorching sun, look no further than the Haze.</p>\n<h3>Features:</h3>\n<ul>\n<li>UPF 50+ protection from the sun’s rays.</li>\n<li>4-way stretch quick dry material.</li>\n<li>Fitted performance hood with integrated gaiter.</li>\n<li>Thumb hole sleeve providing stay in place performance.</li>\n<li>Performance comfort fit.</li>\n</ul>",
+      "published_at": "2024-08-20T15:36:05-07:00",
+      "created_at": "2024-07-26T13:40:54-07:00",
+      "updated_at": "2026-01-14T13:56:03-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Water Wear",
+      "tags": [
+        "Clothing",
+        "water wear"
+      ],
+      "variants": [
+        {
+          "id": 41263864479878,
+          "title": "S / Deep Sea",
+          "option1": "S",
+          "option2": "Deep Sea",
+          "option3": null,
+          "sku": "3250722031",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 33832232681606,
+            "product_id": 7239408124038,
+            "position": 4,
+            "created_at": "2024-08-28T17:12:25-07:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+            "variant_ids": [
+              41263864479878,
+              41263864512646,
+              41263864545414,
+              41263864578182,
+              41263864610950
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239408124038,
+          "created_at": "2024-07-26T13:40:54-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595804876934,
+          "title": "S / Granite Grey",
+          "option1": "S",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250722011",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34848947273862,
+            "product_id": 7239408124038,
+            "position": 1,
+            "created_at": "2025-02-17T14:06:32-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+            "variant_ids": [
+              41595804876934,
+              41595804942470,
+              41595805008006,
+              41595805073542,
+              41595805139078
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595804909702,
+          "title": "S / Fatigue Olive",
+          "option1": "S",
+          "option2": "Fatigue Olive",
+          "option3": null,
+          "sku": "3250722001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34849397145734,
+            "product_id": 7239408124038,
+            "position": 7,
+            "created_at": "2025-02-17T14:54:59-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+            "variant_ids": [
+              41595804909702,
+              41595804975238,
+              41595805040774,
+              41595805106310,
+              41595805171846
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41263864512646,
+          "title": "M / Deep Sea",
+          "option1": "M",
+          "option2": "Deep Sea",
+          "option3": null,
+          "sku": "3250722033",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 33832232681606,
+            "product_id": 7239408124038,
+            "position": 4,
+            "created_at": "2024-08-28T17:12:25-07:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+            "variant_ids": [
+              41263864479878,
+              41263864512646,
+              41263864545414,
+              41263864578182,
+              41263864610950
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 4,
+          "product_id": 7239408124038,
+          "created_at": "2024-07-26T13:40:54-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595804942470,
+          "title": "M / Granite Grey",
+          "option1": "M",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250722013",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34848947273862,
+            "product_id": 7239408124038,
+            "position": 1,
+            "created_at": "2025-02-17T14:06:32-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+            "variant_ids": [
+              41595804876934,
+              41595804942470,
+              41595805008006,
+              41595805073542,
+              41595805139078
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 5,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595804975238,
+          "title": "M / Fatigue Olive",
+          "option1": "M",
+          "option2": "Fatigue Olive",
+          "option3": null,
+          "sku": "3250722003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34849397145734,
+            "product_id": 7239408124038,
+            "position": 7,
+            "created_at": "2025-02-17T14:54:59-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+            "variant_ids": [
+              41595804909702,
+              41595804975238,
+              41595805040774,
+              41595805106310,
+              41595805171846
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 6,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41263864545414,
+          "title": "L / Deep Sea",
+          "option1": "L",
+          "option2": "Deep Sea",
+          "option3": null,
+          "sku": "3250722035",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 33832232681606,
+            "product_id": 7239408124038,
+            "position": 4,
+            "created_at": "2024-08-28T17:12:25-07:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+            "variant_ids": [
+              41263864479878,
+              41263864512646,
+              41263864545414,
+              41263864578182,
+              41263864610950
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 7,
+          "product_id": 7239408124038,
+          "created_at": "2024-07-26T13:40:54-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805008006,
+          "title": "L / Granite Grey",
+          "option1": "L",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250722015",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34848947273862,
+            "product_id": 7239408124038,
+            "position": 1,
+            "created_at": "2025-02-17T14:06:32-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+            "variant_ids": [
+              41595804876934,
+              41595804942470,
+              41595805008006,
+              41595805073542,
+              41595805139078
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 8,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805040774,
+          "title": "L / Fatigue Olive",
+          "option1": "L",
+          "option2": "Fatigue Olive",
+          "option3": null,
+          "sku": "3250722005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34849397145734,
+            "product_id": 7239408124038,
+            "position": 7,
+            "created_at": "2025-02-17T14:54:59-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+            "variant_ids": [
+              41595804909702,
+              41595804975238,
+              41595805040774,
+              41595805106310,
+              41595805171846
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 9,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41263864578182,
+          "title": "XL / Deep Sea",
+          "option1": "XL",
+          "option2": "Deep Sea",
+          "option3": null,
+          "sku": "3250722037",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 33832232681606,
+            "product_id": 7239408124038,
+            "position": 4,
+            "created_at": "2024-08-28T17:12:25-07:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+            "variant_ids": [
+              41263864479878,
+              41263864512646,
+              41263864545414,
+              41263864578182,
+              41263864610950
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 10,
+          "product_id": 7239408124038,
+          "created_at": "2024-07-26T13:40:54-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805073542,
+          "title": "XL / Granite Grey",
+          "option1": "XL",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250722017",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34848947273862,
+            "product_id": 7239408124038,
+            "position": 1,
+            "created_at": "2025-02-17T14:06:32-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+            "variant_ids": [
+              41595804876934,
+              41595804942470,
+              41595805008006,
+              41595805073542,
+              41595805139078
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 11,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805106310,
+          "title": "XL / Fatigue Olive",
+          "option1": "XL",
+          "option2": "Fatigue Olive",
+          "option3": null,
+          "sku": "3250722007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34849397145734,
+            "product_id": 7239408124038,
+            "position": 7,
+            "created_at": "2025-02-17T14:54:59-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+            "variant_ids": [
+              41595804909702,
+              41595804975238,
+              41595805040774,
+              41595805106310,
+              41595805171846
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 12,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41263864610950,
+          "title": "XXL / Deep Sea",
+          "option1": "XXL",
+          "option2": "Deep Sea",
+          "option3": null,
+          "sku": "3250722039",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 33832232681606,
+            "product_id": 7239408124038,
+            "position": 4,
+            "created_at": "2024-08-28T17:12:25-07:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+            "variant_ids": [
+              41263864479878,
+              41263864512646,
+              41263864545414,
+              41263864578182,
+              41263864610950
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 13,
+          "product_id": 7239408124038,
+          "created_at": "2024-07-26T13:40:54-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805139078,
+          "title": "XXL / Granite Grey",
+          "option1": "XXL",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": null,
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34848947273862,
+            "product_id": 7239408124038,
+            "position": 1,
+            "created_at": "2025-02-17T14:06:32-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+            "variant_ids": [
+              41595804876934,
+              41595804942470,
+              41595805008006,
+              41595805073542,
+              41595805139078
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 14,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41595805171846,
+          "title": "XXL / Fatigue Olive",
+          "option1": "XXL",
+          "option2": "Fatigue Olive",
+          "option3": null,
+          "sku": null,
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 34849397145734,
+            "product_id": 7239408124038,
+            "position": 7,
+            "created_at": "2025-02-17T14:54:59-08:00",
+            "updated_at": "2025-11-08T06:46:12-08:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+            "variant_ids": [
+              41595804909702,
+              41595804975238,
+              41595805040774,
+              41595805106310,
+              41595805171846
+            ]
+          },
+          "available": false,
+          "price": "99.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 15,
+          "product_id": 7239408124038,
+          "created_at": "2025-02-17T14:20:41-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 34848947273862,
+          "created_at": "2025-02-17T14:06:32-08:00",
+          "position": 1,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [
+            41595804876934,
+            41595804942470,
+            41595805008006,
+            41595805073542,
+            41595805139078
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_MAIN.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34848947306630,
+          "created_at": "2025-02-17T14:06:33-08:00",
+          "position": 2,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_01.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34848947241094,
+          "created_at": "2025-02-17T14:06:33-08:00",
+          "position": 3,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_GRANITEGREY_25X_02.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 33832232681606,
+          "created_at": "2024-08-28T17:12:25-07:00",
+          "position": 4,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [
+            41263864479878,
+            41263864512646,
+            41263864545414,
+            41263864578182,
+            41263864610950
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01a.jpg?v=1762613172",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 33832232648838,
+          "created_at": "2024-08-28T17:12:25-07:00",
+          "position": 5,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01b.jpg?v=1762613172",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 33832232714374,
+          "created_at": "2024-08-28T17:12:25-07:00",
+          "position": 6,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Haze_Web_LTD_01c.jpg?v=1762613172",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 34849397145734,
+          "created_at": "2025-02-17T14:54:59-08:00",
+          "position": 7,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [
+            41595804909702,
+            41595804975238,
+            41595805040774,
+            41595805106310,
+            41595805171846
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_MAIN_1.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34848947142790,
+          "created_at": "2025-02-17T14:06:32-08:00",
+          "position": 8,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_01.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 34848947175558,
+          "created_at": "2025-02-17T14:06:32-08:00",
+          "position": 9,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250722_HAZE_FATIGUEOLIVE_25X_02.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 33832257290374,
+          "created_at": "2024-08-28T17:46:59-07:00",
+          "position": 10,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/HazeHighlight04.jpg?v=1762613172",
+          "width": 2000,
+          "height": 2667
+        },
+        {
+          "id": 33832257224838,
+          "created_at": "2024-08-28T17:46:59-07:00",
+          "position": 11,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/HazeHighlight01.jpg?v=1762613172",
+          "width": 2000,
+          "height": 1500
+        },
+        {
+          "id": 33832257192070,
+          "created_at": "2024-08-28T17:46:59-07:00",
+          "position": 12,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/HazeHighlight02.jpg?v=1762613172",
+          "width": 2000,
+          "height": 1500
+        },
+        {
+          "id": 33832257257606,
+          "created_at": "2024-08-28T17:46:59-07:00",
+          "position": 13,
+          "updated_at": "2025-11-08T06:46:12-08:00",
+          "product_id": 7239408124038,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/HazeHighlight03.jpg?v=1762613172",
+          "width": 2000,
+          "height": 1500
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "Deep Sea",
+            "Granite Grey",
+            "Fatigue Olive"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7338554622086,
+      "title": "Basis Quick Dry Long Sleeve",
+      "handle": "basis-quick-dry-long-sleeve",
+      "body_html": "<p>Crafted from a moisture-wicking, quick-drying semi-perforated fabric, the Basis boasts an impressive UPF rating of 50+. Its 4-way stretch and performance-oriented fit ensure durability and sun protection, making it suitable for beachside activities as well as epic long session on the water. </p>\n<h3>Features:</h3>\n<ul>\n<li>UPF 50+ protection from the sun’s rays.</li>\n<li>4-way stretch quick dry material.<br>\n</li>\n<li>Thumb hole sleeve providing stay in place performance.</li>\n<li>Performance comfort fit.</li>\n</ul>",
+      "published_at": "2025-02-17T14:32:14-08:00",
+      "created_at": "2025-02-14T10:23:20-08:00",
+      "updated_at": "2026-01-14T13:56:03-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Water Wear",
+      "tags": [
+        "Clothing",
+        "water wear"
+      ],
+      "variants": [
+        {
+          "id": 41589838381190,
+          "title": "S / Granite Grey",
+          "option1": "S",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250723011",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36321201127558,
+            "product_id": 7338554622086,
+            "position": 1,
+            "created_at": "2025-08-25T11:24:58-07:00",
+            "updated_at": "2025-08-25T11:24:59-07:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+            "variant_ids": [
+              41589838381190,
+              41589838413958,
+              41589838446726,
+              41589838479494
+            ]
+          },
+          "available": true,
+          "price": "89.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7338554622086,
+          "created_at": "2025-02-14T10:23:21-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41589838413958,
+          "title": "M / Granite Grey",
+          "option1": "M",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250723013",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36321201127558,
+            "product_id": 7338554622086,
+            "position": 1,
+            "created_at": "2025-08-25T11:24:58-07:00",
+            "updated_at": "2025-08-25T11:24:59-07:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+            "variant_ids": [
+              41589838381190,
+              41589838413958,
+              41589838446726,
+              41589838479494
+            ]
+          },
+          "available": true,
+          "price": "89.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7338554622086,
+          "created_at": "2025-02-14T10:23:21-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41589838446726,
+          "title": "L / Granite Grey",
+          "option1": "L",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250723015",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36321201127558,
+            "product_id": 7338554622086,
+            "position": 1,
+            "created_at": "2025-08-25T11:24:58-07:00",
+            "updated_at": "2025-08-25T11:24:59-07:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+            "variant_ids": [
+              41589838381190,
+              41589838413958,
+              41589838446726,
+              41589838479494
+            ]
+          },
+          "available": true,
+          "price": "89.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7338554622086,
+          "created_at": "2025-02-14T10:23:21-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 41589838479494,
+          "title": "XL / Granite Grey",
+          "option1": "XL",
+          "option2": "Granite Grey",
+          "option3": null,
+          "sku": "3250723017",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36321201127558,
+            "product_id": 7338554622086,
+            "position": 1,
+            "created_at": "2025-08-25T11:24:58-07:00",
+            "updated_at": "2025-08-25T11:24:59-07:00",
+            "alt": null,
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+            "variant_ids": [
+              41589838381190,
+              41589838413958,
+              41589838446726,
+              41589838479494
+            ]
+          },
+          "available": true,
+          "price": "89.00",
+          "grams": 2268,
+          "compare_at_price": null,
+          "position": 4,
+          "product_id": 7338554622086,
+          "created_at": "2025-02-14T10:23:21-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36321201127558,
+          "created_at": "2025-08-25T11:24:58-07:00",
+          "position": 1,
+          "updated_at": "2025-08-25T11:24:59-07:00",
+          "product_id": 7338554622086,
+          "variant_ids": [
+            41589838381190,
+            41589838413958,
+            41589838446726,
+            41589838479494
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 36321201160326,
+          "created_at": "2025-08-25T11:24:58-07:00",
+          "position": 2,
+          "updated_at": "2025-08-25T11:24:59-07:00",
+          "product_id": 7338554622086,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryback2.jpg?v=1756146299",
+          "width": 1800,
+          "height": 1800
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "Granite Grey"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6677363327110,
+      "title": "Performance Neoprene Hoodie",
+      "handle": "performance-neoprene-hoodie",
+      "body_html": "<p>Minimalist, cold cutting perfection—the Performance Neoprene Hoodie is an ideal layering component that blocks the wind and adds insulation on those blustery days when an extra layer of neoprene will be the difference between staying out or heading home. With a performance pullover fit that eliminates unnecessary bagginess and a harness hook hole, the hoodie is 100% designed to be used on the water. For in-between sessions or as a session extender, this hoodie will become one of your favorites.</p><p><strong>Features</strong></p><p>• 1mm sustainably mined limestone neoprene<br>• Strategic Thermal Lock fleece lining keeps body heat in<br>• Durable flat-lock stitching<br>• Slim-fit hood with enough room to fit over a helmet<br>• Harness hook hole</p><p><strong>Sizes</strong><br>S, M, L, XL</p>",
+      "published_at": "2022-01-05T11:06:33-08:00",
+      "created_at": "2021-12-17T14:13:13-08:00",
+      "updated_at": "2026-01-14T13:56:03-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Technical Jackets",
+      "tags": [
+        "performance hoodie",
+        "techjackets",
+        "water wear"
+      ],
+      "variants": [
+        {
+          "id": 39679638012038,
+          "title": "S / Black",
+          "option1": "S",
+          "option2": "Black",
+          "option3": null,
+          "sku": "3228000001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293948981382,
+            "product_id": 6677363327110,
+            "position": 1,
+            "created_at": "2023-12-11T13:08:02-08:00",
+            "updated_at": "2023-12-11T13:08:08-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Black",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+            "variant_ids": [
+              39635571343494,
+              39635571376262,
+              39635571409030,
+              39679638012038
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 6677363327110,
+          "created_at": "2022-02-02T09:54:52-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 42391699685510,
+          "title": "S / Mist Green",
+          "option1": "S",
+          "option2": "Mist Green",
+          "option3": null,
+          "sku": "3234738100",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293951537286,
+            "product_id": 6677363327110,
+            "position": 3,
+            "created_at": "2023-12-11T13:08:41-08:00",
+            "updated_at": "2023-12-11T13:08:43-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Mist Green",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+            "variant_ids": [
+              42391699685510,
+              42391699718278,
+              42391699751046,
+              42391699783814
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 6677363327110,
+          "created_at": "2025-08-19T15:47:45-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 39635571343494,
+          "title": "M / Black",
+          "option1": "M",
+          "option2": "Black",
+          "option3": null,
+          "sku": "3228000003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293948981382,
+            "product_id": 6677363327110,
+            "position": 1,
+            "created_at": "2023-12-11T13:08:02-08:00",
+            "updated_at": "2023-12-11T13:08:08-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Black",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+            "variant_ids": [
+              39635571343494,
+              39635571376262,
+              39635571409030,
+              39679638012038
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 6677363327110,
+          "created_at": "2021-12-17T14:13:14-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 42391699718278,
+          "title": "M / Mist Green",
+          "option1": "M",
+          "option2": "Mist Green",
+          "option3": null,
+          "sku": "3234738101",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293951537286,
+            "product_id": 6677363327110,
+            "position": 3,
+            "created_at": "2023-12-11T13:08:41-08:00",
+            "updated_at": "2023-12-11T13:08:43-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Mist Green",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+            "variant_ids": [
+              42391699685510,
+              42391699718278,
+              42391699751046,
+              42391699783814
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 4,
+          "product_id": 6677363327110,
+          "created_at": "2025-08-19T15:47:45-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 39635571376262,
+          "title": "L / Black",
+          "option1": "L",
+          "option2": "Black",
+          "option3": null,
+          "sku": "3228000005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293948981382,
+            "product_id": 6677363327110,
+            "position": 1,
+            "created_at": "2023-12-11T13:08:02-08:00",
+            "updated_at": "2023-12-11T13:08:08-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Black",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+            "variant_ids": [
+              39635571343494,
+              39635571376262,
+              39635571409030,
+              39679638012038
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 5,
+          "product_id": 6677363327110,
+          "created_at": "2021-12-17T14:13:14-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 42391699751046,
+          "title": "L / Mist Green",
+          "option1": "L",
+          "option2": "Mist Green",
+          "option3": null,
+          "sku": "3234738102",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293951537286,
+            "product_id": 6677363327110,
+            "position": 3,
+            "created_at": "2023-12-11T13:08:41-08:00",
+            "updated_at": "2023-12-11T13:08:43-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Mist Green",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+            "variant_ids": [
+              42391699685510,
+              42391699718278,
+              42391699751046,
+              42391699783814
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 6,
+          "product_id": 6677363327110,
+          "created_at": "2025-08-19T15:47:45-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 39635571409030,
+          "title": "XL / Black",
+          "option1": "XL",
+          "option2": "Black",
+          "option3": null,
+          "sku": "3228000007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293948981382,
+            "product_id": 6677363327110,
+            "position": 1,
+            "created_at": "2023-12-11T13:08:02-08:00",
+            "updated_at": "2023-12-11T13:08:08-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Black",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+            "variant_ids": [
+              39635571343494,
+              39635571376262,
+              39635571409030,
+              39679638012038
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 7,
+          "product_id": 6677363327110,
+          "created_at": "2021-12-17T14:13:14-08:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        },
+        {
+          "id": 42391699783814,
+          "title": "XL / Mist Green",
+          "option1": "XL",
+          "option2": "Mist Green",
+          "option3": null,
+          "sku": "3234738103",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 32293951537286,
+            "product_id": 6677363327110,
+            "position": 3,
+            "created_at": "2023-12-11T13:08:41-08:00",
+            "updated_at": "2023-12-11T13:08:43-08:00",
+            "alt": "Ride Engine Performance Neoprene Hoodie - Mist Green",
+            "width": 1800,
+            "height": 1800,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+            "variant_ids": [
+              42391699685510,
+              42391699718278,
+              42391699751046,
+              42391699783814
+            ]
+          },
+          "available": true,
+          "price": "170.00",
+          "grams": 2722,
+          "compare_at_price": null,
+          "position": 8,
+          "product_id": 6677363327110,
+          "created_at": "2025-08-19T15:47:45-07:00",
+          "updated_at": "2026-01-14T13:56:03-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 32293948981382,
+          "created_at": "2023-12-11T13:08:02-08:00",
+          "position": 1,
+          "updated_at": "2023-12-11T13:08:08-08:00",
+          "product_id": 6677363327110,
+          "variant_ids": [
+            39635571343494,
+            39635571376262,
+            39635571409030,
+            39679638012038
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-Black.jpg?v=1702328888",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 30939193016454,
+          "created_at": "2023-01-05T08:57:50-08:00",
+          "position": 2,
+          "updated_at": "2023-12-11T13:08:08-08:00",
+          "product_id": 6677363327110,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234738_PERFORMANCENEOHOODIE_BLACK_23X_01.jpg?v=1702328888",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 32293951537286,
+          "created_at": "2023-12-11T13:08:41-08:00",
+          "position": 3,
+          "updated_at": "2023-12-11T13:08:43-08:00",
+          "product_id": 6677363327110,
+          "variant_ids": [
+            42391699685510,
+            42391699718278,
+            42391699751046,
+            42391699783814
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/PerformanceNeopreneHoodie-MistGreen.jpg?v=1702328923",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 30888086929542,
+          "created_at": "2022-12-22T09:02:02-08:00",
+          "position": 4,
+          "updated_at": "2023-12-11T13:08:42-08:00",
+          "product_id": 6677363327110,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3234738_PERFORMANCENEOHOODIE_GREEN_23X_01.jpg?v=1702328922",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "Black",
+            "Mist Green"
+          ]
+        }
+      ]
+    }
+  ]
+}

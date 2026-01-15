@@ -1,0 +1,51 @@
+{
+  "product_handle": "re-micro-pump",
+  "product_title": "RE Micro Pump",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_RE-micro-pump_WEB.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE-micro-pump_WEB.jpg?v=1626554715",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Micro Pump",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_RE_micro_pump_travelsetup1_WEB.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_micro_pump_travelsetup1_WEB.jpg?v=1626554729",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Micro Pump",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_RE_pump_dongles2_WEB_a20f3e19-8a88-4c01-b88f-9c697dd858c5.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_pump_dongles2_WEB_a20f3e19-8a88-4c01-b88f-9c697dd858c5.jpg?v=1626554737",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Micro Pump",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_RE_pump_gauge1_WEB.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_pump_gauge1_WEB.jpg?v=1626554745",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Micro Pump",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_RE_macro_pump_switch1_5ee5c9d5-c75e-4b4a-bff6-622f467cdf19.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_macro_pump_switch1_5ee5c9d5-c75e-4b4a-bff6-622f467cdf19.jpg?v=1626554804",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Micro Pump",
+      "position": 5
+    }
+  ]
+}

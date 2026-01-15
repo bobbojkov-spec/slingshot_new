@@ -1,0 +1,33 @@
+{
+  "product_handle": "re_serve-wing-travel-coffin",
+  "product_title": "RE_Serve Wing Travel Coffin",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3250533_RESERVEWINGCOFFIN_25X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_MAIN.jpg?v=1727299294",
+      "width": 2000,
+      "height": 2000,
+      "alt": "RE_Serve Wing Travel Coffin",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3250533_RESERVEWINGCOFFIN_25X_02.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_02.jpg?v=1727299295",
+      "width": 2000,
+      "height": 2000,
+      "alt": "RE_Serve Wing Travel Coffin",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3250533_RESERVEWINGCOFFIN_25X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250533_RESERVEWINGCOFFIN_25X_01.jpg?v=1727299294",
+      "width": 2000,
+      "height": 2000,
+      "alt": "RE_Serve Wing Travel Coffin",
+      "position": 3
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "product_handle": "hyperlock-design-upgrade-kit",
+  "product_title": "Hyperlock Design Upgrade Kit",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_RE_Hyperlock_Design_Upgrade_Studio_04.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RE_Hyperlock_Design_Upgrade_Studio_04.jpg?v=1758660858",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Hyperlock Design Upgrade Kit",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_Service_Carousel.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/Service_Carousel.jpg?v=1759950884",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Hyperlock Design Upgrade Kit",
+      "position": 2
+    }
+  ]
+}

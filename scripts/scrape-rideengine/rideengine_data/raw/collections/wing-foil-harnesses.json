@@ -1,0 +1,1637 @@
+{
+  "handle": "wing-foil-harnesses",
+  "url": "https://rideengine.com/collections/wing-foil-harnesses",
+  "product_count": 9,
+  "products": [
+    {
+      "id": 7447655284870,
+      "title": "Offshore Pack Harness",
+      "handle": "offshore-pack-harness",
+      "body_html": "<p>Long downwind runs or chasing open-ocean swell offer the ultimate glide zone experience, but they also come with inherent risks. Designed for these exposed missions, the Ride Engine Offshore Pack Harness is your essential companion for safety, comfort, and endurance.  </p>\n<p>Built on the ultra-light, shadow-like fit of the Free Float 4-Point Suspension Chest Cradle, the Offshore Pack features a 1L hydration bladder for sustained performance and a high-mounted harness line NUG hook, keeping your waist free and clear for unrestricted movement and leashing options. The high-visibility coloring enhances safety, while an EVA-backed harness hook connection ensures long distance comfort.  </p>",
+      "published_at": "2025-08-19T08:18:04-07:00",
+      "created_at": "2025-08-14T12:55:43-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "Harness",
+        "Wing"
+      ],
+      "variants": [
+        {
+          "id": 42384609738886,
+          "title": "S / High Visibility Yellow",
+          "option1": "S",
+          "option2": "High Visibility Yellow",
+          "option3": null,
+          "sku": "3260510001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36299927158918,
+            "product_id": 7447655284870,
+            "position": 2,
+            "created_at": "2025-08-18T13:23:34-07:00",
+            "updated_at": "2025-08-18T13:23:36-07:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOffshoreBagBack.jpg?v=1755548616",
+            "variant_ids": [
+              42384609738886,
+              42384609771654,
+              42384609804422
+            ]
+          },
+          "available": true,
+          "price": "160.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7447655284870,
+          "created_at": "2025-08-14T12:55:43-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 42384609771654,
+          "title": "M / High Visibility Yellow",
+          "option1": "M",
+          "option2": "High Visibility Yellow",
+          "option3": null,
+          "sku": "3260510003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36299927158918,
+            "product_id": 7447655284870,
+            "position": 2,
+            "created_at": "2025-08-18T13:23:34-07:00",
+            "updated_at": "2025-08-18T13:23:36-07:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOffshoreBagBack.jpg?v=1755548616",
+            "variant_ids": [
+              42384609738886,
+              42384609771654,
+              42384609804422
+            ]
+          },
+          "available": true,
+          "price": "160.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7447655284870,
+          "created_at": "2025-08-14T12:55:43-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 42384609804422,
+          "title": "L / High Visibility Yellow",
+          "option1": "L",
+          "option2": "High Visibility Yellow",
+          "option3": null,
+          "sku": "3260510005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 36299927158918,
+            "product_id": 7447655284870,
+            "position": 2,
+            "created_at": "2025-08-18T13:23:34-07:00",
+            "updated_at": "2025-08-18T13:23:36-07:00",
+            "alt": null,
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOffshoreBagBack.jpg?v=1755548616",
+            "variant_ids": [
+              42384609738886,
+              42384609771654,
+              42384609804422
+            ]
+          },
+          "available": true,
+          "price": "160.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7447655284870,
+          "created_at": "2025-08-14T12:55:43-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36299927126150,
+          "created_at": "2025-08-18T13:23:34-07:00",
+          "position": 1,
+          "updated_at": "2025-08-18T13:23:36-07:00",
+          "product_id": 7447655284870,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOffshoreBagFront.jpg?v=1755548616",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36299927158918,
+          "created_at": "2025-08-18T13:23:34-07:00",
+          "position": 2,
+          "updated_at": "2025-08-18T13:23:36-07:00",
+          "product_id": 7447655284870,
+          "variant_ids": [
+            42384609738886,
+            42384609771654,
+            42384609804422
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REOffshoreBagBack.jpg?v=1755548616",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "High Visibility Yellow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239407501446,
+      "title": "Bati Wing Foil Harness",
+      "handle": "bati-wing-foil-harness",
+      "body_html": "<p>Elevate your next wing foiling session with the innovative Bati Wing foil harness. At the heart of the Bati lies the scientifically proven Ride Engine Curv® composite hard shell, designed to evenly distribute harness line tension. Additionally, the Cell-Lock thermoformed padded waist interface delivers optimal support and comfort, maintaining its lightweight composition without water absorption during use. The double closure system ensures a secure fit while allowing ample movement for The Nug harness line hook, promoting a hassle-free and comfortable paddle out - ideal for shallow waters or chasing the wind line. Dual back- mounted D-rings offer versatility in leash attachment options.</p>\n<p><strong>Features</strong></p>\n<ul>\n<li>\n<meta charset=\"utf-8\"> <meta charset=\"utf-8\">Curv® Hard Shell: Molded composite material with Ride Engine hard shell technology that gives superior support and comfort.</li>\n<li>Thermoformed Molded Design: Provides a rash-free, non-water-absorbing interface</li>\n<li>Hook and Loop Closure: Keeps the harness snug, safe, and secure with no ride up</li>\n<li>The Nug Sliding Hook: Full side-to-side sliding hook with easy-in and easy-out geometry. Quickly move it out of the way when<br>paddling or getting on your board.</li>\n<li>Dual D-ring attachment points: Two stainless D-rings for multiple leash attachment options.</li>\n</ul>",
+      "published_at": "2024-09-10T08:24:43-07:00",
+      "created_at": "2024-07-26T13:40:45-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "Harness",
+        "Wing"
+      ],
+      "variants": [
+        {
+          "id": 41263861399686,
+          "title": "S",
+          "option1": "S",
+          "option2": null,
+          "option3": null,
+          "sku": "3240512001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239407501446,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 41263861432454,
+          "title": "M",
+          "option1": "M",
+          "option2": null,
+          "option3": null,
+          "sku": "3240512003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239407501446,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 41263861465222,
+          "title": "L",
+          "option1": "L",
+          "option2": null,
+          "option3": null,
+          "sku": "3240512005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7239407501446,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 41263861497990,
+          "title": "XL",
+          "option1": "XL",
+          "option2": null,
+          "option3": null,
+          "sku": "3240512007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 4,
+          "product_id": 7239407501446,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36858790477958,
+          "created_at": "2025-12-05T10:04:47-08:00",
+          "position": 1,
+          "updated_at": "2025-12-05T10:04:55-08:00",
+          "product_id": 7239407501446,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/BATIHARNESS_BLACK_25X_MAINcopy.jpg?v=1764957895",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36858790379654,
+          "created_at": "2025-12-05T10:04:47-08:00",
+          "position": 2,
+          "updated_at": "2025-12-05T10:04:55-08:00",
+          "product_id": 7239407501446,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/BATIHARNESS_BLACK_25X_02_d666a01f-082c-449a-acca-6993f00ac0bb.jpg?v=1764957895",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36858790412422,
+          "created_at": "2025-12-05T10:04:47-08:00",
+          "position": 3,
+          "updated_at": "2025-12-05T10:04:55-08:00",
+          "product_id": 7239407501446,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/BATIHARNESS_BLACK_25X_03_8b47a426-4b66-44f8-ba7c-f0d314e3d785.jpg?v=1764957895",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36858790445190,
+          "created_at": "2025-12-05T10:04:47-08:00",
+          "position": 4,
+          "updated_at": "2025-12-05T10:04:55-08:00",
+          "product_id": 7239407501446,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/BATIHARNESS_BLACK_25X_01_29713e61-c31d-4e4e-9521-6a90db7d3947.jpg?v=1764957895",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6747258159238,
+      "title": "Vinaka Pro Wing Harness",
+      "handle": "vinaka-pro-v1-harness",
+      "body_html": "<p>A next-level wing foiling harness for next-level wing foiling, the Vinaka Pro has a unique thermo-molded design that delivers superior support and a clean, shadow-like fit for fatigue-free, maximum-efficiency riding. The Vinaka Pro's inset support band doesn't absorb water, which keeps everything ultralight and dry, no matter how long your session. A sliding harness hook completely moves to either side for ease of padding and keeping your board ding-free.</p>",
+      "published_at": "2023-03-10T09:34:10-08:00",
+      "created_at": "2022-07-15T16:41:07-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "harness",
+        "vinaka",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 39818595106950,
+          "title": "S",
+          "option1": "S",
+          "option2": null,
+          "option3": null,
+          "sku": "3231519001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 4536,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 6747258159238,
+          "created_at": "2022-07-15T16:41:07-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595139718,
+          "title": "M",
+          "option1": "M",
+          "option2": null,
+          "option3": null,
+          "sku": "3231519003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 4536,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 6747258159238,
+          "created_at": "2022-07-15T16:41:07-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595172486,
+          "title": "L",
+          "option1": "L",
+          "option2": null,
+          "option3": null,
+          "sku": "3231519005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 4536,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 6747258159238,
+          "created_at": "2022-07-15T16:41:07-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595205254,
+          "title": "XL",
+          "option1": "XL",
+          "option2": null,
+          "option3": null,
+          "sku": "3231519007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "189.00",
+          "grams": 4536,
+          "compare_at_price": null,
+          "position": 4,
+          "product_id": 6747258159238,
+          "created_at": "2022-07-15T16:41:08-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36858788511878,
+          "created_at": "2025-12-05T10:03:44-08:00",
+          "position": 1,
+          "updated_at": "2025-12-05T10:04:03-08:00",
+          "product_id": 6747258159238,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231519_VINAKAPROV1HARNESS_NA_23X_MAIN.jpg?v=1764957843",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36858787233926,
+          "created_at": "2025-12-05T10:02:51-08:00",
+          "position": 2,
+          "updated_at": "2025-12-05T10:04:03-08:00",
+          "product_id": 6747258159238,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/BATIHARNESS_BLACK_25X_02_dba26be1-d38e-491b-8064-e1c3d40cabf8.jpg?v=1764957843",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31500630458502,
+          "created_at": "2023-06-02T14:21:12-07:00",
+          "position": 3,
+          "updated_at": "2025-12-05T10:04:03-08:00",
+          "product_id": 6747258159238,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231519001_VinakaProWingHarness_23X_01.jpg?v=1764957843",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500630392966,
+          "created_at": "2023-06-02T14:21:12-07:00",
+          "position": 4,
+          "updated_at": "2025-12-05T10:04:03-08:00",
+          "product_id": 6747258159238,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231519001_VinakaProWingHarness_23X_02.jpg?v=1764957843",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500630425734,
+          "created_at": "2023-06-02T14:21:12-07:00",
+          "position": 5,
+          "updated_at": "2025-12-05T10:04:03-08:00",
+          "product_id": 6747258159238,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231519001_VinakaProWingHarness_23X_03.jpg?v=1764957843",
+          "width": 1999,
+          "height": 1996
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6747258126470,
+      "title": "Vinaka V2 Wing Harness",
+      "handle": "vinaka-wingsurf-v2-harness",
+      "body_html": "<p>The world's first purpose-built harness for wing foiling, the Vinaka will have you riding longer and pinching upwind more efficiently by taking the wing's weight off your arms whenever you want. The Vinaka's ultra-minimal, no-BS design of ripstop nylon and thin closed-cell foam weighs in at a mere 450 grams, so you can still fully enjoy the free feeling of wing foiling. With a shadow-like fit and sliding hook, the Vinaka virtually disappears when swimming, paddling, or riding toeside (situations where a traditional kite or windsurf harness can be a massive hassle/pain/annoyance). If you want to extend your wing foiling sessions, the Vinaka will help you stay out on the water when everyone else that's winging must head in because their arms are smoked.</p>",
+      "published_at": "2023-03-10T09:35:24-08:00",
+      "created_at": "2022-07-15T16:41:04-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "harness",
+        "vinaka",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 39818594844806,
+          "title": "S / Zig Zag",
+          "option1": "S",
+          "option2": "Zig Zag",
+          "option3": null,
+          "sku": "3231518001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31023226683526,
+            "product_id": 6747258126470,
+            "position": 1,
+            "created_at": "2023-01-25T17:06:57-08:00",
+            "updated_at": "2023-01-25T17:07:06-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_MAIN.jpg?v=1674695226",
+            "variant_ids": [
+              39818594844806,
+              39818594877574,
+              39818594910342,
+              39818594943110
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 1,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818594877574,
+          "title": "M / Zig Zag",
+          "option1": "M",
+          "option2": "Zig Zag",
+          "option3": null,
+          "sku": "3231518003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31023226683526,
+            "product_id": 6747258126470,
+            "position": 1,
+            "created_at": "2023-01-25T17:06:57-08:00",
+            "updated_at": "2023-01-25T17:07:06-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_MAIN.jpg?v=1674695226",
+            "variant_ids": [
+              39818594844806,
+              39818594877574,
+              39818594910342,
+              39818594943110
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 2,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818594910342,
+          "title": "L / Zig Zag",
+          "option1": "L",
+          "option2": "Zig Zag",
+          "option3": null,
+          "sku": "3231518005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31023226683526,
+            "product_id": 6747258126470,
+            "position": 1,
+            "created_at": "2023-01-25T17:06:57-08:00",
+            "updated_at": "2023-01-25T17:07:06-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_MAIN.jpg?v=1674695226",
+            "variant_ids": [
+              39818594844806,
+              39818594877574,
+              39818594910342,
+              39818594943110
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 3,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818594943110,
+          "title": "XL / Zig Zag",
+          "option1": "XL",
+          "option2": "Zig Zag",
+          "option3": null,
+          "sku": "3231518007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31023226683526,
+            "product_id": 6747258126470,
+            "position": 1,
+            "created_at": "2023-01-25T17:06:57-08:00",
+            "updated_at": "2023-01-25T17:07:06-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_MAIN.jpg?v=1674695226",
+            "variant_ids": [
+              39818594844806,
+              39818594877574,
+              39818594910342,
+              39818594943110
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 4,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818594975878,
+          "title": "S / Grey Camo",
+          "option1": "S",
+          "option2": "Grey Camo",
+          "option3": null,
+          "sku": "3231518011",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31153630576774,
+            "product_id": 6747258126470,
+            "position": 3,
+            "created_at": "2023-02-28T14:44:24-08:00",
+            "updated_at": "2023-02-28T14:44:27-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/VinakaV2Camo.jpg?v=1677624267",
+            "variant_ids": [
+              39818594975878,
+              39818595008646,
+              39818595041414,
+              39818595074182
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 5,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595008646,
+          "title": "M / Grey Camo",
+          "option1": "M",
+          "option2": "Grey Camo",
+          "option3": null,
+          "sku": "3231518013",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31153630576774,
+            "product_id": 6747258126470,
+            "position": 3,
+            "created_at": "2023-02-28T14:44:24-08:00",
+            "updated_at": "2023-02-28T14:44:27-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/VinakaV2Camo.jpg?v=1677624267",
+            "variant_ids": [
+              39818594975878,
+              39818595008646,
+              39818595041414,
+              39818595074182
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 6,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595041414,
+          "title": "L / Grey Camo",
+          "option1": "L",
+          "option2": "Grey Camo",
+          "option3": null,
+          "sku": "3231518015",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31153630576774,
+            "product_id": 6747258126470,
+            "position": 3,
+            "created_at": "2023-02-28T14:44:24-08:00",
+            "updated_at": "2023-02-28T14:44:27-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/VinakaV2Camo.jpg?v=1677624267",
+            "variant_ids": [
+              39818594975878,
+              39818595008646,
+              39818595041414,
+              39818595074182
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 7,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818595074182,
+          "title": "XL / Grey Camo",
+          "option1": "XL",
+          "option2": "Grey Camo",
+          "option3": null,
+          "sku": "3231518017",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 31153630576774,
+            "product_id": 6747258126470,
+            "position": 3,
+            "created_at": "2023-02-28T14:44:24-08:00",
+            "updated_at": "2023-02-28T14:44:27-08:00",
+            "alt": "Ride Engine Vinaka V2 Wing Harness",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/VinakaV2Camo.jpg?v=1677624267",
+            "variant_ids": [
+              39818594975878,
+              39818595008646,
+              39818595041414,
+              39818595074182
+            ]
+          },
+          "available": true,
+          "price": "99.00",
+          "grams": 4536,
+          "compare_at_price": "154.00",
+          "position": 8,
+          "product_id": 6747258126470,
+          "created_at": "2022-07-15T16:41:04-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 31023226683526,
+          "created_at": "2023-01-25T17:06:57-08:00",
+          "position": 1,
+          "updated_at": "2023-01-25T17:07:06-08:00",
+          "product_id": 6747258126470,
+          "variant_ids": [
+            39818594844806,
+            39818594877574,
+            39818594910342,
+            39818594943110
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_MAIN.jpg?v=1674695226",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31023226650758,
+          "created_at": "2023-01-25T17:06:57-08:00",
+          "position": 2,
+          "updated_at": "2023-01-25T17:07:06-08:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_ZIGZAG_23X_01.jpg?v=1674695226",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31153630576774,
+          "created_at": "2023-02-28T14:44:24-08:00",
+          "position": 3,
+          "updated_at": "2023-02-28T14:44:27-08:00",
+          "product_id": 6747258126470,
+          "variant_ids": [
+            39818594975878,
+            39818595008646,
+            39818595041414,
+            39818595074182
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/VinakaV2Camo.jpg?v=1677624267",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31023226749062,
+          "created_at": "2023-01-25T17:06:57-08:00",
+          "position": 4,
+          "updated_at": "2023-02-28T14:44:27-08:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_GREYCAMO_23X_01.jpg?v=1677624267",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31023226552454,
+          "created_at": "2023-01-25T17:06:57-08:00",
+          "position": 5,
+          "updated_at": "2023-02-28T14:44:27-08:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3231518_VINAKAWINGSURFV2HARNESS_GREYCAMO_23X_02.jpg?v=1677624267",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31500629508230,
+          "created_at": "2023-06-02T14:20:42-07:00",
+          "position": 6,
+          "updated_at": "2023-06-02T14:20:44-07:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231518001_VinakaV2WingHarness_GreyCamo_23X_01.jpg?v=1685740844",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500629475462,
+          "created_at": "2023-06-02T14:20:42-07:00",
+          "position": 7,
+          "updated_at": "2023-06-02T14:20:44-07:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231518001_VinakaV2WingHarness_GreyCamo_23X_02.jpg?v=1685740844",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500629540998,
+          "created_at": "2023-06-02T14:20:42-07:00",
+          "position": 8,
+          "updated_at": "2023-06-02T14:20:44-07:00",
+          "product_id": 6747258126470,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3231518001_VinakaV2WingHarness_GreyCamo_23X_03.jpg?v=1685740844",
+          "width": 1999,
+          "height": 1996
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "Zig Zag",
+            "Grey Camo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6659903520902,
+      "title": "The Nug",
+      "handle": "the-nug",
+      "body_html": "<p>Simple, easy to use wingsurf harness line hook that is adaptable to any webbing waist leash or webbing slider harness.</p><p><b>Features:</b><br></p><ul>\n<li>Opening design that fits padded and non-padded webbing leashes.</li>\n<li>Easy in, easy out hook geometry that freely slides on the harness line.</li>\n<li>Fits up to 2\" webbing.</li>\n</ul>",
+      "published_at": "2021-11-22T12:51:29-08:00",
+      "created_at": "2021-11-22T11:51:09-08:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Spreader Bars",
+      "tags": [
+        "harness",
+        "harness parts",
+        "Spreader Bar",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 39607840964742,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null,
+          "sku": "3222000500",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "20.00",
+          "grams": 454,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 6659903520902,
+          "created_at": "2021-11-22T11:51:09-08:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 29373173760134,
+          "created_at": "2021-11-22T12:11:51-08:00",
+          "position": 1,
+          "updated_at": "2021-11-22T12:11:52-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/TheNugStudio01.jpg?v=1637611912",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 29373173858438,
+          "created_at": "2021-11-22T12:11:55-08:00",
+          "position": 2,
+          "updated_at": "2021-11-22T12:11:56-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/TheNugStudio02.jpg?v=1637611916",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 29373173989510,
+          "created_at": "2021-11-22T12:11:57-08:00",
+          "position": 3,
+          "updated_at": "2021-11-22T12:11:59-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/TheNugStudio03.jpg?v=1637611919",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 29373246865542,
+          "created_at": "2021-11-22T12:37:14-08:00",
+          "position": 4,
+          "updated_at": "2021-11-22T12:37:15-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Nugaction1.jpg?v=1637613435",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 29373247193222,
+          "created_at": "2021-11-22T12:37:19-08:00",
+          "position": 5,
+          "updated_at": "2021-11-22T12:37:20-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Nugaction4.jpg?v=1637613440",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 29373250502790,
+          "created_at": "2021-11-22T12:38:02-08:00",
+          "position": 6,
+          "updated_at": "2021-11-22T12:38:03-08:00",
+          "product_id": 6659903520902,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Nugaction3.jpg?v=1637613483",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "Default Title"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6747254521990,
+      "title": "Sky Hook Wing Vest V1",
+      "handle": "sky-hook-wing-vest-v1",
+      "body_html": "<p>Between the board and foil, sometimes wing foiling can be a full contact sport.</p>\n<p>The Sky Hook Wing Foil impact vest is designed to protect you from any and all collisions. At the same time, it connects you to the power of your wing with The Nug harness line hook and to your board with an optional leash attachment point. Full torso padding protects from impact and the added flotation can help boost confidence in the water.</p>\n<p><strong>Features</strong></p>\n<ul>\n<li>Full torso padding for protection and moderate flotation</li>\n<li>The Nug sliding harness line hook</li>\n<li>D-ring board leash attachment point</li>\n<li>4-way high stretch limestone-based neoprene</li>\n<li>Heavy-duty marine-grade YKK zipper</li>\n<li>WARNING: Not a USCGA Life Vest</li>\n</ul>",
+      "published_at": "2023-01-05T08:13:53-08:00",
+      "created_at": "2022-07-15T16:37:44-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Impact Vests",
+      "tags": [
+        "harness",
+        "Harness Sale",
+        "impact",
+        "impact vest",
+        "mens impact",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 39818580459654,
+          "title": "S",
+          "option1": "S",
+          "option2": null,
+          "option3": null,
+          "sku": "3232561001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 30960225026182,
+            "product_id": 6747254521990,
+            "position": 1,
+            "created_at": "2023-01-10T11:16:46-08:00",
+            "updated_at": "2023-01-10T11:16:47-08:00",
+            "alt": "Ride Engine Sky Hook Wing Vest V1",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_MAIN.jpg?v=1673378207",
+            "variant_ids": [
+              39818580459654,
+              39818580492422,
+              39818580525190,
+              39818580557958
+            ]
+          },
+          "available": true,
+          "price": "100.00",
+          "grams": 6804,
+          "compare_at_price": "200.00",
+          "position": 1,
+          "product_id": 6747254521990,
+          "created_at": "2022-07-15T16:37:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818580492422,
+          "title": "M",
+          "option1": "M",
+          "option2": null,
+          "option3": null,
+          "sku": "3232561003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 30960225026182,
+            "product_id": 6747254521990,
+            "position": 1,
+            "created_at": "2023-01-10T11:16:46-08:00",
+            "updated_at": "2023-01-10T11:16:47-08:00",
+            "alt": "Ride Engine Sky Hook Wing Vest V1",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_MAIN.jpg?v=1673378207",
+            "variant_ids": [
+              39818580459654,
+              39818580492422,
+              39818580525190,
+              39818580557958
+            ]
+          },
+          "available": false,
+          "price": "100.00",
+          "grams": 6804,
+          "compare_at_price": "200.00",
+          "position": 2,
+          "product_id": 6747254521990,
+          "created_at": "2022-07-15T16:37:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818580525190,
+          "title": "L",
+          "option1": "L",
+          "option2": null,
+          "option3": null,
+          "sku": "3232561005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 30960225026182,
+            "product_id": 6747254521990,
+            "position": 1,
+            "created_at": "2023-01-10T11:16:46-08:00",
+            "updated_at": "2023-01-10T11:16:47-08:00",
+            "alt": "Ride Engine Sky Hook Wing Vest V1",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_MAIN.jpg?v=1673378207",
+            "variant_ids": [
+              39818580459654,
+              39818580492422,
+              39818580525190,
+              39818580557958
+            ]
+          },
+          "available": false,
+          "price": "200.00",
+          "grams": 6804,
+          "compare_at_price": "200.00",
+          "position": 3,
+          "product_id": 6747254521990,
+          "created_at": "2022-07-15T16:37:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39818580557958,
+          "title": "XL",
+          "option1": "XL",
+          "option2": null,
+          "option3": null,
+          "sku": "3232561007",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": {
+            "id": 30960225026182,
+            "product_id": 6747254521990,
+            "position": 1,
+            "created_at": "2023-01-10T11:16:46-08:00",
+            "updated_at": "2023-01-10T11:16:47-08:00",
+            "alt": "Ride Engine Sky Hook Wing Vest V1",
+            "width": 2000,
+            "height": 2000,
+            "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_MAIN.jpg?v=1673378207",
+            "variant_ids": [
+              39818580459654,
+              39818580492422,
+              39818580525190,
+              39818580557958
+            ]
+          },
+          "available": false,
+          "price": "200.00",
+          "grams": 6804,
+          "compare_at_price": "200.00",
+          "position": 4,
+          "product_id": 6747254521990,
+          "created_at": "2022-07-15T16:37:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 30960225026182,
+          "created_at": "2023-01-10T11:16:46-08:00",
+          "position": 1,
+          "updated_at": "2023-01-10T11:16:47-08:00",
+          "product_id": 6747254521990,
+          "variant_ids": [
+            39818580459654,
+            39818580492422,
+            39818580525190,
+            39818580557958
+          ],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_MAIN.jpg?v=1673378207",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 30960225484934,
+          "created_at": "2023-01-10T11:17:09-08:00",
+          "position": 2,
+          "updated_at": "2023-01-10T11:17:11-08:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_01.jpg?v=1673378231",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 30960225452166,
+          "created_at": "2023-01-10T11:17:09-08:00",
+          "position": 3,
+          "updated_at": "2023-01-10T11:17:11-08:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_02.jpg?v=1673378231",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 30960225517702,
+          "created_at": "2023-01-10T11:17:09-08:00",
+          "position": 4,
+          "updated_at": "2023-01-10T11:17:11-08:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3232561_SKYHOOKWINGVESTV1_NA_23X_03.jpg?v=1673378231",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 31500631801990,
+          "created_at": "2023-06-02T14:21:49-07:00",
+          "position": 5,
+          "updated_at": "2023-06-02T14:21:50-07:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3232561001_SkyHookWingVestV1_23X_01.jpg?v=1685740910",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500631834758,
+          "created_at": "2023-06-02T14:21:49-07:00",
+          "position": 6,
+          "updated_at": "2023-06-02T14:21:50-07:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3232561001_SkyHookWingVestV1_23X_02.jpg?v=1685740910",
+          "width": 1999,
+          "height": 1996
+        },
+        {
+          "id": 31500631769222,
+          "created_at": "2023-06-02T14:21:49-07:00",
+          "position": 7,
+          "updated_at": "2023-06-02T14:21:50-07:00",
+          "product_id": 6747254521990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3232561001_SkyHookWingVestV1_23X_03.jpg?v=1685740910",
+          "width": 1999,
+          "height": 1996
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7239407534214,
+      "title": "Free Float Wing Foil Chest Harness",
+      "handle": "free-float-wingsurf-chest-harness",
+      "body_html": "<p>Crafted for ultimate freedom and minimal obstruction, the Free Float Wing Foil chest Harness features a 4-point suspension chest cradle design that distributes harness line pressure while enabling unrestricted movement. Elevating the hook reduces the need for excessive harness line length, minimizing bothersome harness line slap and accidental hooking. Moreover, positioning the chest harness frees up essential waist space, allowing for unhindered use of a waist leash for the wing or board. This harness also comes equipped with a hydration bladder and a detachable harness line hook, perfect for downwind SUP runs.</p>\n<p><br><strong>Features</strong></p>\n<ul>\n<li>4 Point Chest Cradle: Fully adjustable with 4 hook and loop, perforated EVA back and chest closures for ultimate stabilization and a shadow like fit.</li>\n<li>Hydration Bladder: 1-liter hydration bladder.</li>\n<li>Removable Harness Line Hook: Complete with The Nug, an easily removable harness line hook converting and making the pack<br>ideal for downwind SUP runs.</li>\n<li>EVA Padded Back: Perforated EVA padded back panel for comfort without added weight.</li>\n</ul>",
+      "published_at": "2024-09-10T08:24:39-07:00",
+      "created_at": "2024-07-26T13:40:45-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "Harness",
+        "Wing"
+      ],
+      "variants": [
+        {
+          "id": 41263861530758,
+          "title": "S",
+          "option1": "S",
+          "option2": null,
+          "option3": null,
+          "sku": "3250511001",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "150.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7239407534214,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 41263861563526,
+          "title": "M",
+          "option1": "M",
+          "option2": null,
+          "option3": null,
+          "sku": "3250511003",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "150.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7239407534214,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 41263861596294,
+          "title": "L",
+          "option1": "L",
+          "option2": null,
+          "option3": null,
+          "sku": "3250511005",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": false,
+          "price": "150.00",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7239407534214,
+          "created_at": "2024-07-26T13:40:45-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 36858776748166,
+          "created_at": "2025-12-05T09:55:40-08:00",
+          "position": 1,
+          "updated_at": "2025-12-05T09:55:41-08:00",
+          "product_id": 7239407534214,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/free_float_new.jpg?v=1764957341",
+          "width": 2000,
+          "height": 2000
+        },
+        {
+          "id": 36858779304070,
+          "created_at": "2025-12-05T09:57:11-08:00",
+          "position": 2,
+          "updated_at": "2025-12-05T09:57:12-08:00",
+          "product_id": 7239407534214,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/free_float_back.jpg?v=1764957432",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6578003705990,
+      "title": "Vinaka Wingsurf  V1 Black Harness",
+      "handle": "vinaka-wingsurf-v1-harness",
+      "body_html": "<p>The world's first purpose-built harness for wingsurfing, the Vinaka will have you riding longer and pinching upwind more efficiently by taking the wing's weight off your arms whenever you want. The Vinaka's ultra-minimal design of ripstop nylon and thin closed-cell foam weighs-in at a mere 450 grams, so you can still fully enjoy the free feeling of wingsurfing. With a shadow-like fit and sliding hook, the Vinaka virtually disappears when swimming, paddling, or riding toeside (situations where a traditional kite or windsurf harness can be a massive hassle/pain/annoyance). If want to extend your wingsurfing sessions, the Vinaka will help you stay out on the water when everyone else that's winging has to head in because their arms are smoked.</p><p>*Spreader Bar INCLUDED</p>",
+      "published_at": "2021-07-11T10:38:33-07:00",
+      "created_at": "2021-06-16T09:11:06-07:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Harnesses",
+      "tags": [
+        "harness",
+        "Harness Sale",
+        "vinaka",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 39390046027910,
+          "title": "S",
+          "option1": "S",
+          "option2": null,
+          "option3": null,
+          "sku": "3221001701",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "39.00",
+          "grams": 6350,
+          "compare_at_price": "154.00",
+          "position": 1,
+          "product_id": 6578003705990,
+          "created_at": "2021-06-16T09:11:06-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39422074617990,
+          "title": "M",
+          "option1": "M",
+          "option2": null,
+          "option3": null,
+          "sku": "3221001703",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": false,
+          "price": "154.00",
+          "grams": 6350,
+          "compare_at_price": "154.00",
+          "position": 2,
+          "product_id": 6578003705990,
+          "created_at": "2021-07-19T08:23:36-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39422074716294,
+          "title": "L",
+          "option1": "L",
+          "option2": null,
+          "option3": null,
+          "sku": "3221001705",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": false,
+          "price": "39.00",
+          "grams": 6350,
+          "compare_at_price": "154.00",
+          "position": 3,
+          "product_id": 6578003705990,
+          "created_at": "2021-07-19T08:24:11-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        },
+        {
+          "id": 39422074781830,
+          "title": "XL",
+          "option1": "XL",
+          "option2": null,
+          "option3": null,
+          "sku": "3221001707",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "39.00",
+          "grams": 6350,
+          "compare_at_price": "154.00",
+          "position": 4,
+          "product_id": 6578003705990,
+          "created_at": "2021-07-19T08:24:56-07:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 29347947446406,
+          "created_at": "2021-11-17T09:51:26-08:00",
+          "position": 1,
+          "updated_at": "2021-11-17T09:51:27-08:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Web_Vinaka_Back_1800x1800_e8f7750a-3f13-4e9c-aa52-bddb80ffc3e3.jpg?v=1637171487",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 29347947479174,
+          "created_at": "2021-11-17T09:51:26-08:00",
+          "position": 2,
+          "updated_at": "2021-11-17T09:51:27-08:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Web_Vinaka_Front_1800x1800_f10810de-099c-4e92-808d-dbd88695bb6f.jpg?v=1637171487",
+          "width": 1800,
+          "height": 1800
+        },
+        {
+          "id": 28497179672710,
+          "created_at": "2021-06-16T09:11:09-07:00",
+          "position": 3,
+          "updated_at": "2021-07-13T20:11:48-07:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Vinaka-Carousel-2.jpg?v=1626232308",
+          "width": 500,
+          "height": 500
+        },
+        {
+          "id": 28497179541638,
+          "created_at": "2021-06-16T09:11:09-07:00",
+          "position": 4,
+          "updated_at": "2021-07-13T20:11:48-07:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Vinaka-Carousel-1.jpg?v=1626232308",
+          "width": 500,
+          "height": 500
+        },
+        {
+          "id": 28497179705478,
+          "created_at": "2021-06-16T09:11:10-07:00",
+          "position": 5,
+          "updated_at": "2021-07-13T20:11:48-07:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Vinaka-Carousel-4.jpg?v=1626232308",
+          "width": 500,
+          "height": 500
+        },
+        {
+          "id": 28497179410566,
+          "created_at": "2021-06-16T09:11:08-07:00",
+          "position": 6,
+          "updated_at": "2021-07-13T20:11:48-07:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Vinaka-Carousel-3.jpg?v=1626232308",
+          "width": 500,
+          "height": 500
+        },
+        {
+          "id": 28497179476102,
+          "created_at": "2021-06-16T09:11:09-07:00",
+          "position": 7,
+          "updated_at": "2021-07-13T20:11:48-07:00",
+          "product_id": 6578003705990,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Vinaka-Carousel-5.jpg?v=1626232308",
+          "width": 500,
+          "height": 500
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6835047202950,
+      "title": "Vinaka Wingsurf Hook Replacement",
+      "handle": "vinaka-wingsurf-hook-replacement",
+      "body_html": "<p>Replacement spreader bar hook for the Vinaka Harness.</p>",
+      "published_at": "2023-01-05T15:35:00-08:00",
+      "created_at": "2023-01-05T15:34:58-08:00",
+      "updated_at": "2026-01-14T13:55:58-08:00",
+      "vendor": "Ride Engine",
+      "product_type": "Spreader Bars",
+      "tags": [
+        "harness",
+        "harness parts",
+        "Spreader Bar",
+        "Wing",
+        "wingharness"
+      ],
+      "variants": [
+        {
+          "id": 40069267193990,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null,
+          "sku": "3222000400",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "18.00",
+          "grams": 454,
+          "compare_at_price": "28.00",
+          "position": 1,
+          "product_id": 6835047202950,
+          "created_at": "2023-01-05T15:34:58-08:00",
+          "updated_at": "2026-01-14T13:55:58-08:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 31239910359174,
+          "created_at": "2023-03-21T08:44:03-07:00",
+          "position": 1,
+          "updated_at": "2023-03-21T08:44:06-07:00",
+          "product_id": 6835047202950,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/metal-hook-replacement.jpg?v=1679413446",
+          "width": 2000,
+          "height": 2000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "Default Title"
+          ]
+        }
+      ]
+    }
+  ]
+}

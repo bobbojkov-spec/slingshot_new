@@ -1,0 +1,16 @@
+// Prisma schema - UPDATED with WATERSPORTS
+// Add this to your Sport enum in prisma/schema.prisma
+
+enum Sport { 
+  KITE 
+  WING 
+  WAKE 
+  FOIL 
+  SUP 
+  WATERSPORTS  // ← ADD THIS - For multi-sport brands (Ride Engine, etc.)
+}
+
+// FRONTEND NOTE:
+// Filter out Sport.WATERSPORTS from sport-specific pages
+// Example:
+// const sportProducts = products.filter(p => p.sport !== 'WATERSPORTS');
