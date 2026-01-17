@@ -1,0 +1,24 @@
+{
+  "product_handle": "adapt-board-sock-v2",
+  "product_title": "Adapt Board Sock V2",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3235490_ADAPTBOARDSOCKV2_NA_23X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3235490_ADAPTBOARDSOCKV2_NA_23X_MAIN.jpg?v=1674846780",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Adapt Board Sock V2",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3235490_ADAPTBOARDSOCKV2_NA_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3235490_ADAPTBOARDSOCKV2_NA_23X_01.jpg?v=1674846780",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Adapt Board Sock V2",
+      "position": 2
+    }
+  ]
+}

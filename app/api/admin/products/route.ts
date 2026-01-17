@@ -41,25 +41,47 @@ export async function GET() {
         ? await query('SELECT * FROM product_variants WHERE product_id = ANY($1)', [productIds])
         : { rows: [] };
 
+    const { rows: colorRows = [] } =
+      productIds.length > 0
+        ? await query('SELECT id, product_id, name_en AS name, hex_color, position FROM product_colors WHERE product_id = ANY($1) ORDER BY position ASC', [productIds])
+        : { rows: [] };
+
     // Generate presigned URLs for all images found
     const processedImages = await Promise.all(
       imageRows.map(async (row: any) => {
-        const url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
-        return {
-          ...row,
-          url,
-          thumb_url: url
-        };
+        try {
+          const url = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+          return {
+            ...row,
+            url,
+            thumb_url: url
+          };
+        } catch (err) {
+          console.error(`Failed to sign URL for image ${row.id}`, err);
+          return { ...row, url: null, thumb_url: null };
+        }
       })
     );
+
+    // Process colors
+    const processedColors = colorRows.map((row: any) => ({
+      ...row,
+      url: null
+    }));
 
     const imagesByProduct = new Map<string, any[]>();
     processedImages.forEach((img: any) => {
       const list = imagesByProduct.get(img.product_id) || [];
-      // Only keep valid URLs and avoid duplicates
       const exists = list.some((existing) => existing.storage_path === img.storage_path);
       if (img.url && !exists) list.push(img);
       imagesByProduct.set(img.product_id, list);
+    });
+
+    const colorsByProduct = new Map<string, any[]>();
+    processedColors.forEach((color: any) => {
+      const list = colorsByProduct.get(color.product_id) || [];
+      list.push(color); // Removed the color.url check as we use hex_color primarily
+      colorsByProduct.set(color.product_id, list);
     });
 
     const variantsByProduct = new Map<string, any[]>();
@@ -78,6 +100,7 @@ export async function GET() {
         images,
         imageCount: images.length,
         variants: variantsByProduct.get(product.id) || [],
+        product_colors: colorsByProduct.get(product.id) || [],
       };
     });
 

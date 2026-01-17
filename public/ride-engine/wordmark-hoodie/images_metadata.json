@@ -1,0 +1,51 @@
+{
+  "product_handle": "wordmark-hoodie",
+  "product_title": "Wordmark Hoodie",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_RE_Wordmark_Hoodie_Black_1800x1800_d4950696-8305-48eb-a04c-856e3b3f73d8.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Wordmark_Hoodie_Black_1800x1800_d4950696-8305-48eb-a04c-856e3b3f73d8.jpg?v=1640401503",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Wordmark Hoodie",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_32290008_1_wordmark_hoodie.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32290008_1_wordmark_hoodie.jpg?v=1640401503",
+      "width": 1001,
+      "height": 1001,
+      "alt": "Wordmark Hoodie",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_32290008_main_wordmark_hoodie.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32290008_main_wordmark_hoodie.jpg?v=1640401503",
+      "width": 1001,
+      "height": 1001,
+      "alt": "Wordmark Hoodie",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_32290008_3_WordmarkHoodie.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32290008_3_WordmarkHoodie.jpg?v=1640401503",
+      "width": 1003,
+      "height": 1003,
+      "alt": "Wordmark Hoodie",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_32290008_2_wordmark_hoodie.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32290008_2_wordmark_hoodie.jpg?v=1640401499",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Wordmark Hoodie",
+      "position": 5
+    }
+  ]
+}

@@ -23,12 +23,14 @@ export default function InfoTab({
   categories,
   productTypes,
   activityCategories,
+  collections,
 }: {
   draft: Product;
   setDraft: React.Dispatch<React.SetStateAction<Product>>;
   categories: { id: string; name: string }[];
   productTypes: string[];
   activityCategories: ActivityCategory[];
+  collections: { id: string; title: string }[];
 }) {
   // Debug: Check what we're receiving
   console.log('[InfoTab] draft.translation_en:', draft.translation_en);
@@ -116,7 +118,7 @@ export default function InfoTab({
     <Space orientation="vertical" size={24} style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
       {/* NON-TRANSLATABLE FIELDS */}
       <Typography.Title level={5} style={{ marginBottom: 0 }}>General Information</Typography.Title>
-      
+
       <div style={{ width: '100%', maxWidth: '80vw' }}>
         <Typography.Text strong>Handle (URL slug)</Typography.Text>
         <Input
@@ -255,6 +257,21 @@ export default function InfoTab({
             }))
           }
           style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8 }}
+        />
+      </div>
+
+      <Divider />
+
+      <div style={{ width: '100%', maxWidth: '80vw' }}>
+        <Typography.Text strong>Collections</Typography.Text>
+        <Select
+          mode="multiple"
+          style={{ width: '100%', maxWidth: '80vw', marginTop: 8 }}
+          placeholder="Select collections"
+          options={collections.map(c => ({ label: c.title, value: c.id }))}
+          value={draft.collection_ids || []}
+          onChange={(vals) => setDraft(prev => ({ ...prev, collection_ids: vals }))}
+          optionFilterProp="label"
         />
       </div>
 

@@ -42,6 +42,7 @@ type Product = {
   info?: {
     tags?: string[] | string;
   };
+  product_colors?: Array<{ id: string; url: string; name?: string }>;
   [key: string]: any;
 };
 
@@ -253,9 +254,22 @@ export default function ProductsListClient({ products }: { products: Product[] }
     {
       title: <span style={{ fontSize: 11 }}>Price</span>,
       dataIndex: 'variants',
-      render: (_: any, record: Product) => (
-        <Typography.Text style={textStyle}>{priceRangeText(record)}</Typography.Text>
-      ),
+      render: (_: any, record: Product) => {
+        const variants = Array.isArray(record.variants) ? record.variants : [];
+        const prices: number[] = [];
+        variants.forEach((v) => {
+          const maybe = [
+            v.price,
+            v.price_eur,
+            v.price_eur_cents ? v.price_eur_cents / 100 : undefined,
+            v.price_cents ? v.price_cents / 100 : undefined,
+          ].find((n) => typeof n === 'number' && !Number.isNaN(n));
+          if (typeof maybe === 'number') prices.push(maybe);
+        });
+        if (!prices.length) return '—';
+        const min = Math.min(...prices);
+        return `€${Math.round(min)}`; // Always show min only
+      },
     },
     {
       title: <span style={{ fontSize: 11 }}>Variants</span>,
@@ -266,18 +280,26 @@ export default function ProductsListClient({ products }: { products: Product[] }
       },
     },
     {
-      title: <span style={{ fontSize: 11 }}>Available</span>,
-      dataIndex: 'availability',
+      title: <span style={{ fontSize: 11 }}>Colors</span>,
+      dataIndex: 'product_colors',
       render: (_: any, record: Product) => {
-        const variants = Array.isArray(record.variants) ? record.variants : [];
-        const inStock = variants.some((v) => {
-          if (v.available === true) return true;
-          const avail = (v.availability || v.status || '').toString().toLowerCase();
-          return avail.includes('stock');
-        });
-        if (inStock) return <Typography.Text style={textStyle}>In stock</Typography.Text>;
-        const fallback = (record.availability || record.status || '').toString().toLowerCase();
-        return <Typography.Text style={textStyle}>{fallback || '—'}</Typography.Text>;
+        const colors = record.product_colors || [];
+        if (!colors.length) return <Typography.Text style={textStyle}>—</Typography.Text>;
+        // Show up to 3 thumbnails, 50x50
+        return (
+          <div style={{ display: 'flex', gap: 4 }}>
+            {colors.slice(0, 3).map((c: any) => (
+              <div key={c.id} style={{ width: 50, height: 50, border: '1px solid #eee', borderRadius: 4, overflow: 'hidden' }}>
+                <img src={c.url} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ))}
+            {colors.length > 3 && (
+              <div style={{ width: 50, height: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: 4, fontSize: 11 }}>
+                +{colors.length - 3}
+              </div>
+            )}
+          </div>
+        )
       },
     },
     {

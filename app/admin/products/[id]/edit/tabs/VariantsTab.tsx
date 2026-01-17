@@ -24,6 +24,7 @@ type Variant = {
   translation_bg?: {
     title?: string;
   };
+  product_color_id?: string;
 };
 
 type AvailabilityEntry = {
@@ -263,10 +264,10 @@ export default function VariantsTab({
         variants: prev.variants?.map((v) =>
           v.id === bilingualEditForm.variant?.id
             ? {
-                ...v,
-                translation_en: bilingualEditForm.translation_en,
-                translation_bg: bilingualEditForm.translation_bg,
-              }
+              ...v,
+              translation_en: bilingualEditForm.translation_en,
+              translation_bg: bilingualEditForm.translation_bg,
+            }
             : v
         ),
       }));
@@ -433,6 +434,45 @@ export default function VariantsTab({
         }
         return record.sku || '—';
       },
+    },
+    {
+      title: 'Visual Color',
+      key: 'product_color_id',
+      width: 150,
+      render: (_: any, record: Variant) => {
+        const visualColors = draft.product_colors || [];
+        // If editing
+        if (isEditing(record)) {
+          return (
+            <Select
+              style={{ width: '100%' }}
+              allowClear
+              value={editForm.product_color_id}
+              onChange={(val) => setEditForm({ ...editForm, product_color_id: val })}
+            >
+              {visualColors.map((c: any) => (
+                <Select.Option key={c.id} value={c.id}>
+                  <Space>
+                    <img src={c.url || c.image_path} style={{ width: 20, height: 20, objectFit: 'contain' }} />
+                    {c.name || 'Unnamed'}
+                  </Space>
+                </Select.Option>
+              ))}
+            </Select>
+          );
+        }
+        // Read only
+        const color = visualColors.find((c: any) => c.id === record.product_color_id);
+        if (!color) return '—';
+        return (
+          <Space>
+            <div style={{ width: 20, height: 20, borderRadius: 2, border: '1px solid #ddd', overflow: 'hidden' }}>
+              <img src={color.url || color.image_path} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
+            <Typography.Text style={{ fontSize: 12 }}>{color.name}</Typography.Text>
+          </Space>
+        );
+      }
     },
     {
       title: 'Price (€)',

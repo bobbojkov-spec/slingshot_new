@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import InfoTab from './tabs/InfoTab';
 import VariantsTab from './tabs/VariantsTab';
 import CoMetaTab from './tabs/CoMetaTab';
+import ColorsTab from './tabs/ColorsTab';
 
 type ActivityCategory = {
   id: string;
@@ -58,12 +59,14 @@ export type Product = {
   id: string;
   info: ProductInfo;
   variants?: any[];
-  colors?: any[];
+  product_colors?: any[]; // Visual Colors
+  colors?: any[]; // Legacy colors (remove later?)
   availability?: any[];
   images?: any[];
   translation_en?: ProductTranslation;
   translation_bg?: ProductTranslation;
   activity_category_ids?: string[];
+  collection_ids?: string[];
 };
 
 export default function EditProduct({
@@ -71,11 +74,15 @@ export default function EditProduct({
   categories,
   productTypes,
   activityCategories,
+  collections,
+  initialCollectionIds,
 }: {
   product: Product;
   categories: { id: string; name: string }[];
   productTypes: string[];
   activityCategories: ActivityCategory[];
+  collections: { id: string; title: string }[];
+  initialCollectionIds?: string[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -83,8 +90,13 @@ export default function EditProduct({
     const qs = searchParams?.toString();
     return qs ? `/admin/products?${qs}` : '/admin/products';
   }, [searchParams]);
-  const [draft, setDraft] = useState<Product>(() => structuredClone(product));
-  const [activeTab, setActiveTab] = useState<'info' | 'variants' | 'cometa'>('info');
+
+  const [draft, setDraft] = useState<Product>(() => ({
+    ...structuredClone(product),
+    collection_ids: initialCollectionIds || []
+  }));
+
+  const [activeTab, setActiveTab] = useState<'info' | 'variants' | 'cometa' | 'colors'>('info');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -130,7 +142,7 @@ export default function EditProduct({
       </Space>
       <Tabs
         activeKey={activeTab}
-        onChange={(key) => setActiveTab(key as 'info' | 'variants' | 'cometa')}
+        onChange={(key) => setActiveTab(key as 'info' | 'variants' | 'cometa' | 'colors')}
         items={[
           {
             key: 'info',
@@ -142,6 +154,7 @@ export default function EditProduct({
                 categories={categories}
                 productTypes={productTypes}
                 activityCategories={activityCategories}
+                collections={collections}
               />
             ),
           },
@@ -154,6 +167,11 @@ export default function EditProduct({
             key: 'cometa',
             label: 'SEO Meta',
             children: <CoMetaTab draft={draft} setDraft={setDraft} />,
+          },
+          {
+            key: 'colors',
+            label: 'Visual Colors',
+            children: <ColorsTab draft={draft} setDraft={setDraft} />,
           },
         ]}
       />

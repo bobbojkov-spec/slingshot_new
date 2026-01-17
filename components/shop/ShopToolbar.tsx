@@ -16,6 +16,7 @@ interface Facets {
     categories: FacetItem[];
     types: FacetItem[];
     tags: FacetItem[];
+    brands: FacetItem[];
 }
 
 interface ShopToolbarProps {
@@ -111,6 +112,8 @@ export function ShopToolbar({ facets, totalProducts }: ShopToolbarProps) {
                             </div>
                         </div>
 
+
+
                         {/* Product Type (Multi Select) */}
                         <FilterDropdown
                             label="Product Type"
@@ -144,22 +147,7 @@ export function ShopToolbar({ facets, totalProducts }: ShopToolbarProps) {
                             />
                         </div>
 
-                        {/* Availability Toggle */}
-                        <button
-                            onClick={() => {
-                                updateFilterPlain('availability', availability === 'in_stock' ? null : 'in_stock');
-                            }}
-                            className={`h-[50px] px-4 rounded border flex items-center gap-2 text-sm font-medium transition-all ${availability === 'in_stock'
-                                ? 'bg-black text-white border-black'
-                                : 'bg-white text-gray-600 border-gray-300 hover:border-black'
-                                }`}
-                        >
-                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${availability === 'in_stock' ? 'border-white bg-white/20' : 'border-gray-400'
-                                }`}>
-                                {availability === 'in_stock' && <Check className="w-3 h-3" />}
-                            </div>
-                            In Stock
-                        </button>
+
 
                     </div>
 

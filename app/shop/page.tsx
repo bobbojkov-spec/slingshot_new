@@ -15,23 +15,12 @@ function ShopContent() {
   const router = useRouter();
 
   const [products, setProducts] = useState([]);
-  const [facets, setFacets] = useState({ categories: [], types: [], tags: [] });
+  const [facets, setFacets] = useState({ categories: [], types: [], tags: [], brands: [] });
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Default filter logic: If no category is present, redirect/default to "kite"
-  useEffect(() => {
-    if (!searchParams.has('category') && !searchParams.has('q')) { // Don't redirect if searching
-      // Actually, let's just fetch default "Kite" but update URL to be explicit? 
-      // Or just fetch "Kite" products implicitly?
-      // User said: "Make a default filter when you click on shop, by sport kites"
-      // It's better for UX to have the URL reflect the state.
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('category', 'kite');
-      router.replace(`/shop?${params.toString()}`);
-    }
-  }, [searchParams, router]);
+
 
   useEffect(() => {
     const fetchProducts = async () => {

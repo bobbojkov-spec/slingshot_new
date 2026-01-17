@@ -1,0 +1,24 @@
+{
+  "product_handle": "basis-quick-dry-long-sleeve",
+  "product_title": "Basis Quick Dry Long Sleeve",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_REquickdryfront2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryfront2.jpg?v=1756146299",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Basis Quick Dry Long Sleeve",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_REquickdryback2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/REquickdryback2.jpg?v=1756146299",
+      "width": 1800,
+      "height": 1800,
+      "alt": "Basis Quick Dry Long Sleeve",
+      "position": 2
+    }
+  ]
+}

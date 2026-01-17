@@ -1,0 +1,78 @@
+{
+  "product_handle": "tech-changing-robe",
+  "product_title": "Tech Changing Robe V1",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_RE_Changing_Robe_Image_3.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Changing_Robe_Image_3.jpg?v=1764111701",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_RE_TechChangingRobe_Black_Web_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_TechChangingRobe_Black_Web_01.jpg?v=1764111701",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_RE_TechChangingRobe_Black_Web_03.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_TechChangingRobe_Black_Web_03.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_RE_Changing_Robe_Image_4.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Changing_Robe_Image_4.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_RE_Changing_Robe_Image_5.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Changing_Robe_Image_5.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 5
+    },
+    {
+      "index": 5,
+      "filename": "05_RE_TechChangingRobe_Black_Web_04.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_TechChangingRobe_Black_Web_04.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 6
+    },
+    {
+      "index": 6,
+      "filename": "06_Techchangingropeblack2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/Techchangingropeblack2.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 7
+    },
+    {
+      "index": 7,
+      "filename": "07_RE_Changing_Robe_Image_1.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Changing_Robe_Image_1.jpg?v=1702058198",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Tech Changing Robe V1",
+      "position": 8
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "product_handle": "re-freestyle-kite-leash",
+  "product_title": "RE Freestyle Kite Leash",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_RE-Freestyle-leash_WEB.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE-Freestyle-leash_WEB.jpg?v=1618331084",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Freestyle Kite Leash",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_RE-kite-leash-release-detail_WEB_5b7533f8-d99a-4be4-b8d3-88534a7272c1.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE-kite-leash-release-detail_WEB_5b7533f8-d99a-4be4-b8d3-88534a7272c1.jpg?v=1618331101",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Freestyle Kite Leash",
+      "position": 2
+    }
+  ]
+}

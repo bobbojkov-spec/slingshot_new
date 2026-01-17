@@ -1,0 +1,88 @@
+
+import { query } from "@/lib/dbPg";
+
+export interface Collection {
+    id: string;
+    title: string;
+    handle: string;
+    description: string | null;
+    subtitle: string | null;
+    image_url: string | null;
+    video_url: string | null;
+    products: any[];
+}
+
+import { getPresignedUrl } from "@/lib/railway/storage";
+
+export async function getCollectionByHandle(handle: string): Promise<Collection | null> {
+    // Fetch collection details
+    const collectionRes = await query(
+        `SELECT 
+            c.id, 
+            COALESCE(ct.title, c.title) as title, 
+            c.handle, 
+            c.description, 
+            ct.subtitle,
+            c.image_url, 
+            c.video_url
+     FROM collections c
+     LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = 'en'
+     WHERE c.handle = $1`,
+        [handle]
+    );
+
+    if (collectionRes.rows.length === 0) {
+        return null;
+    }
+
+    const collection = collectionRes.rows[0];
+
+    // Sign the image URL if it's a relative path
+    let signedImageUrl = collection.image_url;
+    if (collection.image_url && !collection.image_url.startsWith('http') && !collection.image_url.startsWith('/')) {
+        try {
+            signedImageUrl = await getPresignedUrl(collection.image_url);
+        } catch (err) {
+            console.error(`Failed to sign collection image URL for ${handle}`, err);
+        }
+    }
+    collection.image_url = signedImageUrl;
+
+    // Fetch products for this collection
+    // We join with products to get full details needed for product card
+    // Using subqueries for image and price to be efficient for listing
+    const productsRes = await query(
+        `SELECT p.*, 
+             COALESCE(
+                 (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1),
+                 p.og_image_url
+             ) as image_path,
+             (SELECT price FROM product_variants WHERE product_id = p.id LIMIT 1) as price
+      FROM collection_products cp
+      JOIN products p ON cp.product_id = p.id
+      WHERE cp.collection_id = $1
+      ORDER BY cp.sort_order ASC`,
+        [collection.id]
+    );
+
+    // Transform to match what frontend expects
+    const products = await Promise.all(productsRes.rows.map(async (p: any) => {
+        let imageUrl = p.image_path;
+        if (p.image_path && !p.image_path.startsWith('http')) {
+            imageUrl = await getPresignedUrl(p.image_path);
+        }
+
+        return {
+            ...p,
+            price: p.price || 0,
+            slug: p.slug || p.handle, // Fallback to handle if slug is missing
+            image: imageUrl || '',
+            images: imageUrl ? [{ src: imageUrl, alt: p.name }] : []
+        };
+    }));
+
+    return {
+        ...collection,
+        products
+    };
+}

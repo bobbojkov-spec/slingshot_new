@@ -1,0 +1,24 @@
+{
+  "product_handle": "5mm-aire-neo-gloves",
+  "product_title": "5mm Aire Neo Gloves",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_AIRENEOGLOVE_NA_23X_MAIN_d66a1dcb-205c-470c-8a1e-5211b5823277.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/AIRENEOGLOVE_NA_23X_MAIN_d66a1dcb-205c-470c-8a1e-5211b5823277.jpg?v=1679423668",
+      "width": 2000,
+      "height": 2000,
+      "alt": "5mm Aire Neo Gloves",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_32380040_5MMAIRENEOGLOVE_NA_23X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/32380040_5MMAIRENEOGLOVE_NA_23X_01.jpg?v=1679423668",
+      "width": 2000,
+      "height": 2000,
+      "alt": "5mm Aire Neo Gloves",
+      "position": 2
+    }
+  ]
+}

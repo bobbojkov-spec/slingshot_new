@@ -1,0 +1,33 @@
+{
+  "product_handle": "point-seat-harness",
+  "product_title": "Point Seat Harness",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3250512_POINTHARNESS_25X_MAIN.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250512_POINTHARNESS_25X_MAIN.jpg?v=1726600897",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Point Seat Harness",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3250512_POINTHARNESS_25X_01.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/3250512_POINTHARNESS_25X_01.jpg?v=1726600898",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Point Seat Harness",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_RideEngine_PointMens_Lifestyle.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/files/RideEngine_PointMens_Lifestyle.jpg?v=1729641895",
+      "width": 2000,
+      "height": 2000,
+      "alt": "Point Seat Harness",
+      "position": 3
+    }
+  ]
+}

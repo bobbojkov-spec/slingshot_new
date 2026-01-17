@@ -40,8 +40,10 @@ const ADMIN_MENU: AdminMenuNode[] = [
     labelText: "Catalog",
     children: [
       { key: "catalog-products-new", icon: <TableOutlined />, labelText: "Products", href: "/admin/products" },
+      { key: "catalog-slingshot-collections", icon: <AppstoreOutlined />, labelText: "Slingshot Collections", href: "/admin/collections-slingshot" },
+      { key: "catalog-rideengine-collections", icon: <AppstoreOutlined />, labelText: "Ride Engine Collections", href: "/admin/collections-rideengine" },
+      { key: "catalog-collections", icon: <AppstoreOutlined />, labelText: "Collections (Legacy)", href: "/admin/collections" },
       { key: "catalog-categories", icon: <TagsOutlined />, labelText: "Categories", href: "/admin/categories" },
-      { key: "catalog-product-types", icon: <TagsOutlined />, labelText: "Product Types", href: "/admin/product-types" },
       { key: "catalog-colors", icon: <BgColorsOutlined />, labelText: "Colors", href: "/admin/colors" },
       { key: "catalog-menu-groups", icon: <TagsOutlined />, labelText: "Menu Groups", href: "/admin/menu-groups" },
       { key: "catalog-activity-categories", icon: <TagsOutlined />, labelText: "Activity Categories", href: "/admin/activity-categories" },
@@ -128,7 +130,6 @@ export default function AdminShellClient({
   const pathname = usePathname();
   const isLoginPage = pathname?.startsWith("/admin/login");
   const [runningTranslations, setRunningTranslations] = useState(false);
-  const antdMenuItems = useMemo(() => toAntdItems(ADMIN_MENU), []);
   const siderLabelCh = useMemo(() => maxLabelChars(ADMIN_MENU), []);
   const adminShellStyle = useMemo(
     () =>
@@ -139,11 +140,35 @@ export default function AdminShellClient({
   );
 
   useEffect(() => {
-    // Keep current behavior (auto-open parent menu) but make first paint stable
-    // by matching the initial state to the computed value.
+    // Keep current behavior but make first paint stable
+    // User wants "Catalog" always open or at least open by default.
     const desired = initialOpenKeysForSelectedKey(selectedKey);
-    setOpenKeys((prev) => (sameStringArray(prev, desired) ? prev : desired));
+    if (!desired.includes('catalog')) {
+      desired.push('catalog');
+    }
+    setOpenKeys((prev) => {
+      // Merge with previous, ensuring catalog is always there if we want it forced open
+      const setKeys = new Set([...prev, ...desired, 'catalog']);
+      return Array.from(setKeys);
+    });
   }, [selectedKey]);
+
+  // Recursively add style for indentation to children if needed
+  // User wants MORE indentation (15px extra).
+  const styledMenuItems = useMemo(() => {
+    return toAntdItems(ADMIN_MENU).map(item => {
+      if (item.key === 'catalog' && item.children) {
+        return {
+          ...item,
+          children: item.children.map((child: any) => ({
+            ...child,
+            style: { ...child.style, paddingLeft: '48px' } // Override for specific 15px extra indent (default is ~24+24?)
+          }))
+        }
+      }
+      return item;
+    });
+  }, []);
 
   useEffect(() => {
     if (isLoginPage) {
@@ -261,7 +286,7 @@ export default function AdminShellClient({
             selectedKeys={[selectedKey]}
             openKeys={openKeys}
             onOpenChange={(keys) => setOpenKeys(keys as string[])}
-            items={antdMenuItems}
+            items={styledMenuItems}
             style={{ flex: 1, borderRight: 0 }}
           />
           <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
@@ -346,12 +371,10 @@ export default function AdminShellClient({
           selectedKeys={[selectedKey]}
           openKeys={openKeys}
           onOpenChange={(keys) => setOpenKeys(keys as string[])}
-          items={antdMenuItems}
+          items={styledMenuItems}
           onClick={() => setMobileNavOpen(false)}
         />
       </Drawer>
     </Layout>
   );
 }
-
-

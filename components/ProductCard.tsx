@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import Link from "next/link";
 import { Eye } from "lucide-react";
@@ -8,6 +8,7 @@ interface Product {
   id: string;
   name: string;
   category: string;
+  categorySlug?: string;
   price: number;
   originalPrice?: number;
   image: string;
@@ -37,12 +38,18 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   return (
     <div className="product-card group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
       <div className="relative">
-        <Link href={`/product/${product.slug}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            className="product-card-image transition-transform duration-300 group-hover:scale-105"
-          />
+        <Link href={`/${product.categorySlug || product.category?.toLowerCase().replace(/ /g, '-') || 'shop'}/product/${product.slug}`}>
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="product-card-image transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="product-card-image bg-gray-100 flex items-center justify-center text-gray-400 aspect-[4/5] object-cover w-full h-full transition-transform duration-300 group-hover:scale-105">
+              No Image
+            </div>
+          )}
         </Link>
         {product.badge && (
           <div className="absolute top-3 left-3">
@@ -62,7 +69,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <Eye className="w-5 h-5" />
         </button>
       </div>
-      <Link href={`/product/${product.slug}`} className="block p-4">
+      <Link href={`/${product.categorySlug || product.category?.toLowerCase().replace(/ /g, '-') || 'shop'}/product/${product.slug}`} className="block p-4">
         <span className="font-body text-sm text-muted-foreground uppercase tracking-wide">{product.category}</span>
         <h3 className="font-heading font-semibold text-foreground mt-1 mb-2 group-hover:text-accent transition-colors">
           {product.name}

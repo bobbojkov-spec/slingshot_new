@@ -1,0 +1,42 @@
+{
+  "product_handle": "re-wordmark-t-1",
+  "product_title": "RE Wordmark T",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3229000_1_REwordmarkT.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229000_1_REwordmarkT.jpg?v=1652920127",
+      "width": 999,
+      "height": 999,
+      "alt": "RE Wordmark T",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_RE_Wordmark_Black_1800x1800_a60ea052-f2d9-452d-8314-93144b514177.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Wordmark_Black_1800x1800_a60ea052-f2d9-452d-8314-93144b514177.jpg?v=1652920127",
+      "width": 1800,
+      "height": 1800,
+      "alt": "RE Wordmark T",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3229000_main_REwordmarkT.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229000_main_REwordmarkT.jpg?v=1652920127",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Wordmark T",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_RE_Wordmark_Fog_1800x1800_81de7dc4-b45e-46e7-b534-f75e3b4e4a85.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_Wordmark_Fog_1800x1800_81de7dc4-b45e-46e7-b534-f75e3b4e4a85.jpg?v=1652920127",
+      "width": 1800,
+      "height": 1800,
+      "alt": "RE Wordmark T",
+      "position": 4
+    }
+  ]
+}

@@ -16,9 +16,9 @@ export async function POST(req: Request) {
       ? info.tags
       : typeof info.tags === 'string'
         ? info.tags
-            .split(',')
-            .map((t: string) => t.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean)
         : null;
     const normalizedTags = parsedTags && parsedTags.length > 0 ? parsedTags : null;
 
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     if (product.translation_en) {
       const enTrans = product.translation_en;
       const enTags = Array.isArray(enTrans.tags) ? enTrans.tags : [];
-      
+
       await query(
         `
           INSERT INTO product_translations (
@@ -119,7 +119,7 @@ export async function POST(req: Request) {
     if (product.translation_bg) {
       const bgTrans = product.translation_bg;
       const bgTags = Array.isArray(bgTrans.tags) ? bgTrans.tags : [];
-      
+
       await query(
         `
           INSERT INTO product_translations (
@@ -163,6 +163,26 @@ export async function POST(req: Request) {
             SELECT $1, unnest($2::uuid[]), NOW(), NOW()
           `,
           [product.id, distinctIds],
+        );
+      }
+    }
+
+    // Update Collections
+    if (Array.isArray(product.collection_ids)) {
+      await query('DELETE FROM collection_products WHERE product_id = $1', [product.id]);
+      const distinctColIds = Array.from(new Set(product.collection_ids.filter(Boolean)));
+      if (distinctColIds.length > 0) {
+        // We need to handle sort_order. For now, we just append them. 
+        // Better logic: preserve existing sort_order if possible? 
+        // For simplicity in this "assign" UI, we'll just re-insert with default sort 0 or index.
+        // But bulk insert with unnest is easier.
+        await query(
+          `
+                INSERT INTO collection_products (collection_id, product_id, sort_order)
+                SELECT unnest($2::uuid[]), $1, 0 
+                ON CONFLICT (collection_id, product_id) DO NOTHING
+              `,
+          [product.id, distinctColIds] // Note param order swapped for query convenience
         );
       }
     }

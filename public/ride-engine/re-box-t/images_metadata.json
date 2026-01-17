@@ -1,0 +1,42 @@
+{
+  "product_handle": "re-box-t",
+  "product_title": "RE Box T",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3229000_main_MensBoxT.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229000_main_MensBoxT.jpg?v=1652920066",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Box T",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_RE_BoxT_Black_1800x1800_b88b6a96-17a7-460f-9c43-86714ed06e41.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_BoxT_Black_1800x1800_b88b6a96-17a7-460f-9c43-86714ed06e41.jpg?v=1652920066",
+      "width": 1800,
+      "height": 1800,
+      "alt": "RE Box T",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3229000_1_MensBoxT.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229000_1_MensBoxT.jpg?v=1652920066",
+      "width": 1000,
+      "height": 1000,
+      "alt": "RE Box T",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_RE_BoxT_Fog_1800x1800_25fce83f-36a3-4cf0-86e2-0759376c2204.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/RE_BoxT_Fog_1800x1800_25fce83f-36a3-4cf0-86e2-0759376c2204.jpg?v=1652920066",
+      "width": 1800,
+      "height": 1800,
+      "alt": "RE Box T",
+      "position": 4
+    }
+  ]
+}

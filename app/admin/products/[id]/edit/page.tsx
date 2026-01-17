@@ -15,22 +15,22 @@ async function fetchProduct(id: string) {
     console.log('[EDIT PAGE] Fetching product from:', url);
     const res = await fetch(url, { cache: 'no-store' });
     console.log('[EDIT PAGE] Product fetch status:', res.status);
-    
+
     if (!res.ok) {
       const text = await res.text();
       console.error('[EDIT PAGE] Product fetch failed:', res.status, text);
       return null;
     }
-    
+
     const payload = await res.json();
     console.log('[EDIT PAGE] Product payload keys:', Object.keys(payload));
     const data = payload?.product;
-    
+
     if (!data) {
       console.error('[EDIT PAGE] No product in payload');
       return null;
     }
-    
+
     console.log('[EDIT PAGE] Product loaded:', data.title || data.name);
     console.log('[EDIT PAGE] translation_en:', data.translation_en);
     console.log('[EDIT PAGE] translation_bg:', data.translation_bg);
@@ -48,9 +48,9 @@ async function fetchProduct(id: string) {
       ? data.tags
       : typeof data.tags === 'string'
         ? data.tags
-            .split(',')
-            .map((t: string) => t.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean)
         : [];
 
     return {
@@ -113,11 +113,11 @@ async function fetchCategoriesAndTypes() {
   try {
     const url = new URL('/api/admin/products/meta', ADMIN_BASE_URL).toString();
     const res = await fetch(url, { cache: 'no-store' });
-    
+
     if (!res.ok) {
       return { categories: [], productTypes: [] };
     }
-    
+
     const data = await res.json();
     return {
       categories: data?.categories || [],
@@ -133,17 +133,26 @@ async function fetchCategoriesAndTypes() {
 export default async function EditProductPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const productId = params.id;
-  
+
   console.log('[EDIT PAGE] Loading product with ID:', productId);
-  
-    const [product, lists] = await Promise.all([
+
+  const [product, lists, collections] = await Promise.all([
     fetchProduct(productId),
-    fetchCategoriesAndTypes()
+    fetchCategoriesAndTypes(),
+    (async () => {
+      const { query } = await import("@/lib/dbPg");
+      const cols = await query(`SELECT id, title FROM collections ORDER BY title ASC`);
+      const assigned = await query(`SELECT collection_id FROM collection_products WHERE product_id = $1`, [productId]);
+      return {
+        all: cols.rows,
+        assignedIds: assigned.rows.map((a: any) => a.collection_id)
+      };
+    })()
   ]);
 
   console.log('[EDIT PAGE] Product result:', product ? 'FOUND' : 'NOT FOUND');
-    console.log('[EDIT PAGE] Categories count:', lists.categories.length);
-    console.log('[EDIT PAGE] Product types count:', lists.productTypes.length);
+  console.log('[EDIT PAGE] Categories count:', lists.categories.length);
+  console.log('[EDIT PAGE] Product types count:', lists.productTypes.length);
 
   if (!product) {
     return (
@@ -161,6 +170,8 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
       categories={lists.categories}
       productTypes={lists.productTypes}
       activityCategories={lists.activityCategories}
+      collections={collections.all}
+      initialCollectionIds={collections.assignedIds}
     />
   );
 }

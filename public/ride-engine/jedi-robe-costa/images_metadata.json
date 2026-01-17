@@ -1,0 +1,51 @@
+{
+  "product_handle": "jedi-robe-costa",
+  "product_title": "Jedi Robe - Costa",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_3229001201_main_CostaJedi.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229001201_main_CostaJedi.jpg?v=1639786220",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Jedi Robe - Costa",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_3229001201_JediCostaongal1carousel.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229001201_JediCostaongal1carousel.jpg?v=1640121819",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Jedi Robe - Costa",
+      "position": 2
+    },
+    {
+      "index": 2,
+      "filename": "02_3229001201_jedicostaman1carousel.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229001201_jedicostaman1carousel.jpg?v=1640121819",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Jedi Robe - Costa",
+      "position": 3
+    },
+    {
+      "index": 3,
+      "filename": "03_3229001201_JediCostaongal2carousel.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229001201_JediCostaongal2carousel.jpg?v=1640121819",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Jedi Robe - Costa",
+      "position": 4
+    },
+    {
+      "index": 4,
+      "filename": "04_3229001201_jedicostaman2carousel.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/3229001201_jedicostaman2carousel.jpg?v=1640121819",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Jedi Robe - Costa",
+      "position": 5
+    }
+  ]
+}

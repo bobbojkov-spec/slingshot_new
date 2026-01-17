@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-const TOP_LEVEL_SPORTS = ['kites', 'wings', 'foils', 'wake'];
+const TOP_LEVEL_SPORTS = ['kites', 'wing', 'foil', 'wake'];
 
 export async function GET(req: Request) {
   try {
@@ -37,8 +37,8 @@ export async function GET(req: Request) {
     const typeRows =
       hasMenuAssignments
         ? (
-            await query(
-              `
+          await query(
+            `
                 SELECT
                   c.slug as category_slug,
                   pt.id as product_type_id,
@@ -61,12 +61,12 @@ export async function GET(req: Request) {
                 GROUP BY c.slug, c.sort_order, pt.id, pt.slug, pt.sort_order, pt.name, ptt.name, mga.menu_group
                 ORDER BY c.sort_order, pt.sort_order, pt.name
               `,
-              [lang, TOP_LEVEL_SPORTS],
-            )
-          ).rows
+            [lang, TOP_LEVEL_SPORTS],
+          )
+        ).rows
         : (
-            await query(
-              `
+          await query(
+            `
                 SELECT
                   c.slug as category_slug,
                   pt.id as product_type_id,
@@ -87,9 +87,9 @@ export async function GET(req: Request) {
                 GROUP BY c.slug, pt.id, pt.slug, pt.name, ptt.name
                 ORDER BY c.sort_order, pt.sort_order, pt.name
               `,
-              [lang, TOP_LEVEL_SPORTS],
-            )
-          ).rows;
+            [lang, TOP_LEVEL_SPORTS],
+          )
+        ).rows;
 
     const activitiesResult = await query(
       `

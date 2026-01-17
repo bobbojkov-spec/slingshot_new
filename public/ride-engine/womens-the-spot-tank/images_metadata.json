@@ -1,0 +1,24 @@
+{
+  "product_handle": "womens-the-spot-tank",
+  "product_title": "Women's The Spot Tank",
+  "images": [
+    {
+      "index": 0,
+      "filename": "00_39305_main-1.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/39305_main-1.jpg?v=1598647669",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Women's The Spot Tank",
+      "position": 1
+    },
+    {
+      "index": 1,
+      "filename": "01_39305_main-2.jpg",
+      "original_url": "https://cdn.shopify.com/s/files/1/0279/1230/6822/products/39305_main-2.jpg?v=1598647670",
+      "width": 1000,
+      "height": 1000,
+      "alt": "Women's The Spot Tank",
+      "position": 2
+    }
+  ]
+}

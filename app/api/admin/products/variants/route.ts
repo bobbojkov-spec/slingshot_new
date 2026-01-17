@@ -120,6 +120,10 @@ export async function PUT(req: Request) {
       updates.push(`position = $${paramIndex++}`);
       values.push(data.position);
     }
+    if (data.product_color_id !== undefined) {
+      updates.push(`product_color_id = $${paramIndex++}`);
+      values.push(data.product_color_id);
+    }
 
     // Always update updated_at
     updates.push(`updated_at = NOW()`);

@@ -26,8 +26,9 @@ const Header = () => {
   const { language, setLanguage, t } = useLanguage();
   const { data: navigation } = useNavigation();
 
-  // Track which sport is currently being hovered
-  const [activeSport, setActiveSport] = useState<string | null>(null);
+  // Track which sport/menu is currently being hovered
+  // 'ride-engine' is the special key for the Ride Engine menu
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,10 +56,24 @@ const Header = () => {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // Close mega menu when cursor leaves the nav area
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Close mega menu when cursor leaves the nav area with a delay
   const handleNavLeave = () => {
-    setIsMegaOpen(false);
-    setActiveSport(null);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsMegaOpen(false);
+      setActiveMenu(null);
+    }, 150);
+  };
+
+  const handleNavEnter = (sportSlug?: string) => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+
+    if (sportSlug) {
+      setActiveMenu(sportSlug);
+    }
+    setIsMegaOpen(true);
   };
 
   const headerClass = `fixed w-full z-50 transition-all duration-300 bg-deep-navy ${isScrolled ? "shadow-lg" : ""
@@ -73,11 +88,77 @@ const Header = () => {
     setSearchQuery("");
   };
 
-  // Helper to get active sport data
+  // Filter for only the 4 main sports (Slingshot)
+  // Assuming the API returns them, or we filter by known slugs if needed.
+  // User said "list the 4 active CATEGORIES (sports)".
+  // We'll trust navigation.sports but limit if necessary.
+  const slingshotSports = navigation?.sports || [];
+
+  // Helper to get active sport data (if activeMenu is a sport)
   const currentSportData = useMemo(() => {
-    if (!activeSport || !navigation?.sports) return null;
-    return navigation.sports.find(s => s.slug === activeSport);
-  }, [activeSport, navigation]);
+    if (!activeMenu || activeMenu === 'ride-engine' || !navigation?.sports) return null;
+    return navigation.sports.find(s => s.slug === activeMenu);
+  }, [activeMenu, navigation]);
+
+  // Ride Engine Menu Configuration
+  const rideEngineMenu = [
+    {
+      title: "HARNESSES",
+      items: [
+        { name: "Harnesses", handle: "harnesses" },
+        { name: "Spreader Bars", handle: "spreader-bars" },
+        { name: "Parts & Accessories", handle: "harness-parts-accessories" },
+        { name: "Wing Foil Harnesses", handle: "wing-foil-harnesses" }, // Adding explicitly since we have the collection
+      ]
+    },
+    {
+      title: "PERFORMANCE PWC",
+      items: [
+        { name: "PWC Collars", handle: "pwc-collars-pontoons" }, // Verified handle
+        { name: "Sleds", handle: "performance-sleds" }, // Verified handle
+      ]
+    },
+    {
+      title: "INFLATION & ACC",
+      items: [
+        { name: "Pumps", handle: "manual-pumps" }, // Verified handle
+        { name: "Leashes", handle: "leashes" },
+        { name: "Foot Straps", handle: "foot-straps" },
+        { name: "E-Inflation", handle: "e-inflation" },
+      ]
+    },
+    {
+      title: "PROTECTION",
+      items: [
+        { name: "Impact Vests", handle: "impact-vests" },
+        { name: "Helmets", handle: "helmets" },
+        { name: "Hand & Knee", handle: "hand-knee-protection" },
+      ]
+    },
+    {
+      title: "BAGS",
+      items: [
+        { name: "Board Bags", handle: "board-bags" },
+        { name: "Travel Bags", handle: "wheeled-travel-bags" },
+      ]
+    },
+    {
+      title: "WETSUITS",
+      items: [
+        { name: "Mens Wetsuits", handle: "mens-wetsuits" },
+        { name: "Womens Wetsuits", handle: "womens-wetsuits" },
+        { name: "Accessories", handle: "wetsuit-accessories" },
+      ]
+    },
+    {
+      title: "APPAREL",
+      items: [
+        { name: "Apparel", handle: "apparel" },
+        { name: "Technical Jackets", handle: "technical-jackets" },
+        { name: "Ponchos", handle: "robes-ponchos" },
+      ]
+    }
+  ];
 
   return (
     <header className={headerClass}>
@@ -94,130 +175,159 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation 
-                Added h-full and items-center to ensure the container spans the full height of the header.
-                This prevents a gap between the link and the menu which causes the menu to close.
-            */}
-          <div
-            className="hidden lg:flex h-full items-center justify-center"
-            onMouseLeave={handleNavLeave}
-          >
-            <nav className="flex items-center gap-8 h-full">
-              {navigation?.sports?.map((sport) => (
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex h-full items-center justify-center overflow-x-auto scrollbar-hide" onMouseLeave={handleNavLeave}>
+            {/* Horizontal scroll wrapper for medium screens */}
+            <div className="flex items-center justify-center min-w-max">
+              <nav className="flex items-center gap-8 h-full">
+
+                {/* Slingshot Sports */}
+                {slingshotSports.map((sport) => (
+                  <div
+                    key={sport.slug}
+                    className="relative h-full flex items-center"
+                    onMouseEnter={() => handleNavEnter(sport.slug)}
+                    onMouseLeave={handleNavLeave}
+                  >
+                    <Link
+                      href={`/shop?category=${sport.slug}`}
+                      className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 ${activeMenu === sport.slug && isMegaOpen ? "text-accent" : ""
+                        }`}
+                    >
+                      {sport.name}
+                    </Link>
+                  </div>
+                ))}
+
+                {/* Ride Engine Link - Hardcoded as requested */}
                 <div
-                  key={sport.slug}
                   className="relative h-full flex items-center"
-                  onMouseEnter={() => {
-                    setActiveSport(sport.slug);
-                    setIsMegaOpen(true);
-                  }}
+                  onMouseEnter={() => handleNavEnter('ride-engine')}
+                  onMouseLeave={handleNavLeave}
                 >
-                  <button
-                    onClick={() => { }} // No-op or toggle if needed, but hover does the work
-                    className={`nav-link-white h-full flex items-center px-2 cursor-default bg-transparent border-0 ${activeSport === sport.slug && isMegaOpen ? "text-accent" : ""
+                  <Link
+                    href="/shop?brand=Ride%20Engine"
+                    className={`nav-link-white uppercase tracking-[0.3em] font-bold h-full flex items-center px-2 cursor-pointer bg-transparent border-0 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-accent" : ""
                       }`}
                   >
-                    {sport.name}
-                  </button>
+                    RIDEENGINE
+                  </Link>
                 </div>
-              ))}
 
-              {/* Standalone Shop Link */}
-              <Link
-                href="/shop"
-                className="nav-link-white uppercase tracking-[0.3em] text-xs h-full flex items-center px-2"
-                onMouseEnter={handleNavLeave} // Close mega menu if hovering Shop
-              >
-                {t('shop.title')}
-              </Link>
-            </nav>
+              </nav>
+            </div>
+          </div>
 
-            {/* Per-Sport Mega Menu (Full Width) 
-                Added z-40 and fixed positioning. The parent has onMouseLeave, so moving 
-                nav -> menu keeps the mouse inside the value parent.
-            */}
+          {/* Mega Menu Container */}
+          <div
+            className="hidden md:block"
+            onMouseEnter={() => handleNavEnter()}
+            onMouseLeave={handleNavLeave}
+          >
+
+            {/* Mega Menu Content */}
             <div
-              className={`fixed top-20 left-0 right-0 w-full bg-deep-navy/95 backdrop-blur-md border-t border-white/10 shadow-xl transition-all duration-300 origin-top z-40 ${isMegaOpen && activeSport
+              className={`fixed top-20 left-0 right-0 w-full bg-deep-navy/95 backdrop-blur-md border-t border-white/10 shadow-xl transition-all duration-300 origin-top z-40 ${isMegaOpen && activeMenu
                 ? 'opacity-100 translate-y-0 visible'
                 : 'opacity-0 -translate-y-4 invisible pointer-events-none'
                 }`}
             >
               <div className="section-container py-12">
-                <div className="max-w-5xl mx-auto grid grid-cols-3 gap-12">
 
-                  {/* Column 1: Gear (Filtered by Sport) */}
-                  <div>
-                    <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                      {t('menu_group.gear')}
-                    </h3>
-                    <div className="flex flex-col gap-3">
-                      {currentSportData?.productGroups?.gear && currentSportData.productGroups.gear.length > 0 ? (
-                        currentSportData.productGroups.gear.map((type) => (
+                {/* SLINGSHOT SPORTS MENU */}
+                {currentSportData && (
+                  <div className="max-w-5xl mx-auto grid grid-cols-3 gap-12">
+                    {/* Column 1: Gear */}
+                    <div>
+                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                        {t('menu_group.gear')}
+                      </h3>
+                      <div className="flex flex-col gap-3">
+                        {currentSportData.productGroups?.gear?.map((type) => (
                           <Link
-                            key={`${activeSport}-${type.slug}`}
-                            href={`/shop?category=${activeSport}&type=${type.slug}`}
+                            key={`${activeMenu}-${type.slug}`}
+                            href={`/shop?category=${activeMenu}&type=${type.slug}`}
                             className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
                             onClick={() => setIsMegaOpen(false)}
                           >
                             {type.name}
                           </Link>
-                        ))
-                      ) : (
-                        <Typography.Text type="secondary">No gear</Typography.Text>
-                      )}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Column 2: Accessories (Filtered by Sport) */}
-                  <div>
-                    <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                      {t('menu_group.accessories')}
-                    </h3>
-                    <div className="flex flex-col gap-3">
-                      {currentSportData?.productGroups?.accessories && currentSportData.productGroups.accessories.length > 0 ? (
-                        currentSportData.productGroups.accessories.map((type) => (
+                    {/* Column 2: Accessories */}
+                    <div>
+                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                        {t('menu_group.accessories')}
+                      </h3>
+                      <div className="flex flex-col gap-3">
+                        {currentSportData.productGroups?.accessories?.map((type) => (
                           <Link
-                            key={`${activeSport}-${type.slug}`}
-                            href={`/shop?category=${activeSport}&type=${type.slug}`}
+                            key={`${activeMenu}-${type.slug}`}
+                            href={`/shop?category=${activeMenu}&type=${type.slug}`}
                             className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
                             onClick={() => setIsMegaOpen(false)}
                           >
                             {type.name}
                           </Link>
-                        ))
-                      ) : (
-                        <Typography.Text type="secondary">No accessories</Typography.Text>
-                      )}
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Column 3: Categories */}
+                    <div>
+                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                        CATEGORIES
+                      </h3>
+                      <div className="flex flex-col gap-3">
+                        {navigation?.activityCategories?.map((activity) => (
+                          <Link
+                            key={activity.id}
+                            href={`/shop?category=${activeMenu ?? ''}&activity=${activity.slug}`}
+                            className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
+                            onClick={() => setIsMegaOpen(false)}
+                          >
+                            {activity.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                )}
 
-                  {/* Column 3: Categories */}
-                  <div>
-                    <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                      {/* Hardcoded label to fix "HOME.CATEGORIES" translation issue temporarily if requested, or usage of t() */}
-                      CATEGORIES
-                    </h3>
-                    <div className="flex flex-col gap-3">
-                      {navigation?.activityCategories?.map((activity) => (
-                        <Link
-                          key={activity.id}
-                          href={`/shop?category=${activeSport ?? ''}&activity=${activity.slug}`}
-                          className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
-                          onClick={() => setIsMegaOpen(false)}
-                        >
-                          {activity.name}
-                        </Link>
-                      ))}
-                    </div>
+                {/* RIDE ENGINE MENU */}
+                {activeMenu === 'ride-engine' && (
+                  <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-7 gap-8">
+                    {rideEngineMenu.map((category, idx) => (
+                      <div key={idx} className="flex flex-col">
+                        <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
+                          {category.title}
+                        </h3>
+                        <div className="flex flex-col gap-2">
+                          {category.items.map((item, itemIdx) => (
+                            <Link
+                              key={itemIdx}
+                              // Link to the collection page
+                              href={`/collections/${item.handle}`}
+                              className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-sm"
+                              onClick={() => setIsMegaOpen(false)}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                )}
 
-                </div>
               </div>
             </div>
-          </div >
+          </div>
 
           {/* Right Actions */}
-          < div className="flex items-center gap-2 sm:gap-4" >
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => setIsSearchOpen((prev) => !prev)}
               className="touch-target flex items-center justify-center text-white/80 hover:text-accent transition-colors"
@@ -258,12 +368,12 @@ const Header = () => {
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-          </div >
-        </div >
-      </div >
+          </div>
+        </div>
+      </div>
 
       {/* Search Dropdown */}
-      < div
+      <div
         className={`overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
           }`}
       >
@@ -285,15 +395,15 @@ const Header = () => {
             </button>
           </form>
         </div>
-      </div >
+      </div>
 
       {/* Mobile Menu */}
-      < div
+      <div
         className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
           }`}
       >
         <nav className="section-container py-6 flex flex-col gap-4">
-          {navigation?.sports?.map((sport) => (
+          {slingshotSports.map((sport) => (
             <Link
               key={sport.slug}
               href={`/category/${sport.slug}`}
@@ -304,11 +414,11 @@ const Header = () => {
             </Link>
           ))}
           <Link
-            href="/shop"
-            className="nav-link-white text-lg py-2"
+            href="/shop?brand=Ride%20Engine"
+            className="nav-link-white text-lg py-2 font-bold text-accent"
             onClick={() => setIsMenuOpen(false)}
           >
-            {t('shop.title')}
+            RIDEENGINE
           </Link>
 
           <div className="pt-4 mt-2 border-t border-white/10">
@@ -334,8 +444,8 @@ const Header = () => {
             </div>
           </div>
         </nav>
-      </div >
-    </header >
+      </div>
+    </header>
   );
 };
 

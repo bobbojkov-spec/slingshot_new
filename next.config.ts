@@ -4,6 +4,18 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'slingshotsports.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'rideengine.com',
+      },
+    ],
+  },
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

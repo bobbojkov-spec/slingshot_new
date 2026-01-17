@@ -19,6 +19,7 @@ export async function GET(req: Request) {
     const typeSlugs = searchParams.getAll('type'); // e.g., ['boards', 'kites']
     const tagNames = searchParams.getAll('tag'); // e.g. ['Big Air', 'Freeride']
     const availability = searchParams.get('availability'); // 'in_stock' or 'out_of_stock'
+    const brandSlug = searchParams.get('brand'); // e.g., 'ride-engine'
 
     // Build WHERE clause
     const conditions = [`p.status = 'active'`, `c.visible = true`, `c.status = 'active'`, `pt.visible = true`, `pt.status = 'active'`];
@@ -38,9 +39,28 @@ export async function GET(req: Request) {
     }
 
     if (categorySlug) {
-      conditions.push(`c.slug = $${paramIndex}`);
-      params.push(categorySlug);
-      paramIndex++;
+      // Fetch category ID and all descendant IDs (Recursive)
+      const catTreeSql = `
+        WITH RECURSIVE CategoryTree AS (
+          SELECT id FROM categories WHERE slug = $1
+          UNION ALL
+          SELECT c.id FROM categories c
+          INNER JOIN CategoryTree ct ON c.parent_id = ct.id
+        )
+        SELECT id FROM CategoryTree
+      `;
+      const catTreeResult = await query(catTreeSql, [categorySlug]);
+
+      if (catTreeResult.rows.length > 0) {
+        const catIds = catTreeResult.rows.map((r: any) => r.id);
+        const placeholders = catIds.map((_, i) => `$${paramIndex + i}`).join(', ');
+        conditions.push(`p.category_id IN (${placeholders})`);
+        params.push(...catIds);
+        paramIndex += catIds.length;
+      } else {
+        // Category not found, ensure no results
+        conditions.push('1=0');
+      }
     }
 
     if (typeSlugs.length > 0) {
@@ -60,6 +80,12 @@ export async function GET(req: Request) {
       const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
       conditions.push(`p.tags && ARRAY[${placeholders}]::text[]`);
       params.push(...tagNames);
+    }
+
+    if (brandSlug) {
+      conditions.push(`LOWER(REPLACE(p.brand, ' ', '-')) = $${paramIndex}`);
+      params.push(brandSlug.toLowerCase());
+      paramIndex++;
     }
 
     // Availability Filter (Subquery Logic)
@@ -107,7 +133,7 @@ export async function GET(req: Request) {
         p.og_image_url,
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
         (SELECT compare_at_price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as "originalPrice",
-        (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id AND pir.size = 'small' ORDER BY display_order ASC LIMIT 1) as image_path,
+        (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1) as image_path,
         c.slug as category_slug,
         COALESCE(ct.name, c.name) as category_name,
         pt.name as type_name,
@@ -159,7 +185,7 @@ export async function GET(req: Request) {
     // But user request said "Scrolling through products... then we have filters".
     // Let's stick to "Narrowing Down" for now. 
 
-    let facets: { categories: any[], types: any[], tags: any[] } = { categories: [], types: [], tags: [] };
+    let facets: { categories: any[], types: any[], tags: any[], brands: any[] } = { categories: [], types: [], tags: [], brands: [] };
 
     // Get Categories
     const categoriesSql = `
@@ -262,10 +288,30 @@ export async function GET(req: Request) {
     `;
     const tagsResult = await query(tagsSql, tagContextParams);
 
+    // 3. Brands Facet (All brands with product counts)
+    const brandsSql = `
+      SELECT 
+        LOWER(REPLACE(p.brand, ' ', '-')) as slug,
+        p.brand as name,
+        COUNT(distinct p.id) as count
+      FROM products p
+      JOIN categories c ON p.category_id = c.id
+      JOIN product_types pt ON pt.name = p.product_type
+      LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1
+      WHERE ${contextConditionsBase.join(' AND ')}
+      AND p.brand IS NOT NULL 
+      AND p.brand != ''
+      AND ($1::text IS NOT NULL OR true)
+      GROUP BY p.brand
+      ORDER BY p.brand ASC
+    `;
+    const brandsResult = await query(brandsSql, contextParams);
+
     facets = {
       categories: categoriesResult.rows,
       types: typesResult.rows,
-      tags: tagsResult.rows
+      tags: tagsResult.rows,
+      brands: brandsResult.rows
     };
 
     return NextResponse.json({
