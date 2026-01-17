@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import {
+  Breadcrumb,
   Button,
   Card,
   Col,
@@ -18,6 +19,8 @@ import {
   Upload,
   message,
 } from "antd";
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   UploadOutlined,
   DeleteOutlined,
@@ -370,6 +373,12 @@ const ProductImagesAdminClient = ({ productId, initialProductTitle }: ProductIma
 
   return (
     <Space orientation="vertical" size={24} style={{ width: "100%" }}>
+      <Breadcrumb
+        items={[
+          { title: <Link href={useSearchParams().toString() ? `/admin/products?${useSearchParams().toString()}` : '/admin/products'}>Products</Link> },
+          { title: 'Edit Images' }
+        ]}
+      />
       <Card>
         <Space orientation="vertical" size={16} style={{ width: "100%" }}>
           <Typography.Title level={4} style={{ margin: 0 }}>

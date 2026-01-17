@@ -33,23 +33,24 @@ export async function POST(req: Request) {
           product_type = $4,
           tags = $5,
           status = $6,
-          seo_title = $7,
-          seo_description = $8,
-          description_html = $9,
-          description_html2 = $10,
-          specs_html = $11,
-          package_includes = $12,
-          category_id = $13,
-          meta_keywords = $14,
-          og_title = $15,
-          og_description = $16,
-          og_image_url = $17,
-          canonical_url = $18,
-          meta_robots = $19,
-          seo_score = $20,
-          seo_generated_at = $21,
+          video_url = $7,
+          seo_title = $8,
+          seo_description = $9,
+          description_html = $10,
+          description_html2 = $11,
+          specs_html = $12,
+          package_includes = $13,
+          category_id = $14,
+          meta_keywords = $15,
+          og_title = $16,
+          og_description = $17,
+          og_image_url = $18,
+          canonical_url = $19,
+          meta_robots = $20,
+          seo_score = $21,
+          seo_generated_at = $22,
           updated_at = NOW()
-        WHERE id = $22
+        WHERE id = $23
       `,
       [
         info.title ?? null,
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
         info.product_type ?? null,
         normalizedTags,
         info.status ?? null,
+        info.video_url ?? null, // Added video_url param
         info.seo_title ?? null,
         info.seo_description ?? null,
         info.description_html ?? null,
@@ -86,9 +88,10 @@ export async function POST(req: Request) {
         `
           INSERT INTO product_translations (
             product_id, language_code, title, description_html, description_html2,
-            specs_html, package_includes, tags, seo_title, seo_description, updated_at
+            specs_html, package_includes, tags, seo_title, seo_description,
+            meta_keywords, og_title, og_description, updated_at
           )
-          VALUES ($1, 'en', $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+          VALUES ($1, 'en', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
           ON CONFLICT (product_id, language_code)
           DO UPDATE SET
             title = EXCLUDED.title,
@@ -99,6 +102,9 @@ export async function POST(req: Request) {
             tags = EXCLUDED.tags,
             seo_title = EXCLUDED.seo_title,
             seo_description = EXCLUDED.seo_description,
+            meta_keywords = EXCLUDED.meta_keywords,
+            og_title = EXCLUDED.og_title,
+            og_description = EXCLUDED.og_description,
             updated_at = NOW()
         `,
         [
@@ -111,6 +117,9 @@ export async function POST(req: Request) {
           enTags.length > 0 ? enTags : null,
           enTrans.seo_title || null,
           enTrans.seo_description || null,
+          enTrans.meta_keywords || null,
+          enTrans.og_title || null,
+          enTrans.og_description || null,
         ]
       );
     }
@@ -124,9 +133,10 @@ export async function POST(req: Request) {
         `
           INSERT INTO product_translations (
             product_id, language_code, title, description_html, description_html2,
-            specs_html, package_includes, tags, seo_title, seo_description, updated_at
+            specs_html, package_includes, tags, seo_title, seo_description,
+            meta_keywords, og_title, og_description, updated_at
           )
-          VALUES ($1, 'bg', $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+          VALUES ($1, 'bg', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
           ON CONFLICT (product_id, language_code)
           DO UPDATE SET
             title = EXCLUDED.title,
@@ -137,6 +147,9 @@ export async function POST(req: Request) {
             tags = EXCLUDED.tags,
             seo_title = EXCLUDED.seo_title,
             seo_description = EXCLUDED.seo_description,
+            meta_keywords = EXCLUDED.meta_keywords,
+            og_title = EXCLUDED.og_title,
+            og_description = EXCLUDED.og_description,
             updated_at = NOW()
         `,
         [
@@ -149,6 +162,9 @@ export async function POST(req: Request) {
           bgTags.length > 0 ? bgTags : null,
           bgTrans.seo_title || null,
           bgTrans.seo_description || null,
+          bgTrans.meta_keywords || null,
+          bgTrans.og_title || null,
+          bgTrans.og_description || null,
         ]
       );
     }

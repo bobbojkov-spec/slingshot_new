@@ -23,7 +23,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
           (SELECT url FROM product_images pi WHERE pi.product_id = p.id ORDER BY position ASC LIMIT 1)
         ) as image_path,
         p.category_id,
-        p.features -- New Column
+        p.category_id,
+        p.features, -- New Column
+        p.video_url -- New Video Hero URL
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE (p.slug = $1 OR p.id::text = $1) AND p.status = 'active'

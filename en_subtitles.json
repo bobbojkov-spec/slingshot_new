@@ -1,0 +1,427 @@
+[dotenv@17.2.3] injecting env (13) from .env.local -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+[
+  {
+    "slug": "sups",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-wetsuits",
+    "en": null
+  },
+  {
+    "slug": "sweatshirts",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-vehicle-accessories",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-bags",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-harnesses",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-technical-jackets",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-t-shirts",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-harness-parts-accessories",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-helmets",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-foot-straps",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-leashes",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-womens-wetsuits",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-pwc-collars-pontoons",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-inflation-accessories",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-performance-sleds",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-performance-pwc",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-water-wear",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-hats",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-protection",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-hoodies",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-apparel",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-mens-wetsuits",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-board-bags",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-spreader-bars",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-wetsuit-accessories",
+    "en": null
+  },
+  {
+    "slug": "wake-boot-parts",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-manual-pumps",
+    "en": null
+  },
+  {
+    "slug": "foil-masts",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-hyperlock-system",
+    "en": null
+  },
+  {
+    "slug": "foil-parts",
+    "en": null
+  },
+  {
+    "slug": "foil-stabilizers",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-wing-foil-harnesses",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-e-inflation",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-impact-vests",
+    "en": null
+  },
+  {
+    "slug": "shirts",
+    "en": null
+  },
+  {
+    "slug": "kite-bar-parts",
+    "en": null
+  },
+  {
+    "slug": "kites",
+    "en": "High-performance kites for big air, freestyle, and freeride sessions."
+  },
+  {
+    "slug": "surfboards",
+    "en": "Directional surfboards for wave riding."
+  },
+  {
+    "slug": "twin-tips",
+    "en": "Versatile twin tip boards for all-around kiteboarding performance."
+  },
+  {
+    "slug": "trainer-kites",
+    "en": "Learn to kite with trainer kites."
+  },
+  {
+    "slug": "apparel",
+    "en": "Slingshot branded apparel and gear."
+  },
+  {
+    "slug": "big-air",
+    "en": "Gear optimized for big air performance."
+  },
+  {
+    "slug": "kite-foil-boards",
+    "en": "Specialized boards for kite foiling."
+  },
+  {
+    "slug": "kite-main",
+    "en": "High-performance kites for big air, freestyle, and freeride sessions."
+  },
+  {
+    "slug": "bars",
+    "en": "Precision control bars for kiteboarding."
+  },
+  {
+    "slug": "kite-foils",
+    "en": "Complete foil systems for kiteboarding."
+  },
+  {
+    "slug": "kite-accessories",
+    "en": "Essential accessories for your kite setup."
+  },
+  {
+    "slug": "pumps",
+    "en": "High-pressure pumps for inflatable kites."
+  },
+  {
+    "slug": "kite-parts",
+    "en": "Replacement parts and upgrades."
+  },
+  {
+    "slug": "wave-mastery",
+    "en": "Equipment for wave riding excellence."
+  },
+  {
+    "slug": "wings",
+    "en": "High-performance wing foiling wings."
+  },
+  {
+    "slug": "wing-boards",
+    "en": "Performance wing foil boards for all skill levels and conditions."
+  },
+  {
+    "slug": "wing-foils",
+    "en": "Complete foil systems for wing foiling."
+  },
+  {
+    "slug": "wing-accessories",
+    "en": "Essential accessories for wing foiling."
+  },
+  {
+    "slug": "board-mounting-systems",
+    "en": "Mounting systems for foil boards."
+  },
+  {
+    "slug": "wing-flow-state",
+    "en": "Gear for the ultimate flow state experience."
+  },
+  {
+    "slug": "quick-flite",
+    "en": "Fast and easy setup for wing foiling."
+  },
+  {
+    "slug": "wake-main",
+    "en": "Pro-level wakeboards and boots designed for the park and boat. Unrivaled pop, flex, and control."
+  },
+  {
+    "slug": "wake-boots",
+    "en": "Comfortable and supportive wakeboard boots."
+  },
+  {
+    "slug": "wake-foil-boards",
+    "en": "Boards designed for wake foiling."
+  },
+  {
+    "slug": "wake-foils",
+    "en": "Complete foil systems for wake foiling."
+  },
+  {
+    "slug": "wakesurf",
+    "en": "Wakesurf boards for endless waves."
+  },
+  {
+    "slug": "gummy-straps",
+    "en": "Comfortable gummy strap bindings."
+  },
+  {
+    "slug": "wake-parts",
+    "en": "Replacement parts for wake gear."
+  },
+  {
+    "slug": "jibbers",
+    "en": "Boards optimized for cable park jibbing."
+  },
+  {
+    "slug": "cable-quick-start",
+    "en": "Everything you need to start cable riding."
+  },
+  {
+    "slug": "wake-foil-quick-start",
+    "en": "Complete packages for wake foiling beginners."
+  },
+  {
+    "slug": "foil-boards",
+    "en": "Specialized boards for foiling."
+  },
+  {
+    "slug": "foil-packages",
+    "en": "Complete foil packages ready to ride."
+  },
+  {
+    "slug": "web-specials-foil-masts",
+    "en": "Discounted foil masts."
+  },
+  {
+    "slug": "web-specials-kite",
+    "en": "Discounted kite gear and equipment."
+  },
+  {
+    "slug": "web-specials-kites",
+    "en": "Discounted kites."
+  },
+  {
+    "slug": "kite-bars",
+    "en": "Performance control systems"
+  },
+  {
+    "slug": "wing-main",
+    "en": "Cutting-edge hydrofoils, wings, and boards for effortless glide and speed. Push your limits."
+  },
+  {
+    "slug": "wing-sup-boards",
+    "en": "Stand-up paddle boards optimized for wing foiling."
+  },
+  {
+    "slug": "wing-parts",
+    "en": "Replacement parts for wings and foils."
+  },
+  {
+    "slug": "wing-glide-zone",
+    "en": "Equipment for maximum glide performance."
+  },
+  {
+    "slug": "wakeboards",
+    "en": "Industry-leading wakeboards for cable and boat sessions."
+  },
+  {
+    "slug": "wake-accessories",
+    "en": "Essential accessories for wakeboarding."
+  },
+  {
+    "slug": "senders",
+    "en": "Boards built for sending it."
+  },
+  {
+    "slug": "wake-glide-zone",
+    "en": "Gear for smooth wake foiling."
+  },
+  {
+    "slug": "dock-pump",
+    "en": "Gear for dock pumping and wake foiling."
+  },
+  {
+    "slug": "best-gear-for-dock-pumping",
+    "en": "Essential gear for mastering the dock start."
+  },
+  {
+    "slug": "foil-main",
+    "en": "Performance-driven foils for kite, wake, surf, and wing foiling."
+  },
+  {
+    "slug": "foil-front-wings",
+    "en": "High-performance front wings for foiling."
+  },
+  {
+    "slug": "web-specials-foils",
+    "en": "Exclusive specials on foil gear for every riding style and experience level."
+  },
+  {
+    "slug": "web-specials-foil-front-wings",
+    "en": "Discounted foil front wings."
+  },
+  {
+    "slug": "web-specials-foil-stabilizers",
+    "en": "Discounted foil stabilizers."
+  },
+  {
+    "slug": "web-specials-foil-packages",
+    "en": "Discounted complete foil packages."
+  },
+  {
+    "slug": "web-specials-foil-windsurf",
+    "en": "Discounted windsurf foil gear."
+  },
+  {
+    "slug": "web-specials-foil-parts",
+    "en": "Discounted foil replacement parts."
+  },
+  {
+    "slug": "web-specials-kite-bars",
+    "en": "Discounted kite control bars."
+  },
+  {
+    "slug": "new-products",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-pwc-collars-and-pontoons",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-performance-sled",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-hand-and-knee-protection",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-wheeled-travel-board-bags",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-robes-and-ponchos",
+    "en": null
+  },
+  {
+    "slug": "ride-engine-hoodies-and-sweatshirts",
+    "en": null
+  },
+  {
+    "slug": "board-parts",
+    "en": null
+  },
+  {
+    "slug": "sup-parts",
+    "en": null
+  },
+  {
+    "slug": "one-lock",
+    "en": null
+  },
+  {
+    "slug": "championship-freestyle",
+    "en": "Freestyle kites designed for explosive pop, slack, and podium-level performance."
+  },
+  {
+    "slug": "ride-to-fly",
+    "en": "Beginner-friendly kitesurfing foil kites for a smooth, stable, and easy learning experience."
+  },
+  {
+    "slug": "more-from-less",
+    "en": "Minimalist kitesurfing foil kites for optimal efficiency, lift, and control."
+  }
+]

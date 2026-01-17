@@ -71,7 +71,7 @@ Navigation:
 │  │  ├─ Кайтове
 │  │  └─ Кайт барове
 │  ├─ АКСЕСОАРИ
-│  │  └─ Харнеси
+│  │  └─ Трапци
 │  └─ КАТЕГОРИИ
 │     └─ ...
 └─ Уинг
@@ -122,7 +122,7 @@ After applying changes:
 | **Menu Group** | ACCESSORIES | АКСЕСОАРИ |
 | **Product Type** | Kites | Кайтове |
 | **Product Type** | Kite Bars | Кайт барове |
-| **Product Type** | Harnesses | Харнеси |
+| **Product Type** | Harnesses | Трапци |
 
 ---
 

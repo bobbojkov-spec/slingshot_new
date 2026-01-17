@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, Input, Modal, Space, Typography, message, Popconfirm, Image } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Card, Input, Modal, Space, Typography, message, Popconfirm, Image, Checkbox } from 'antd';
+import { PlusOutlined, DeleteOutlined, CheckCircleFilled } from '@ant-design/icons';
 import type { Product } from '../EditProduct';
 
 export default function ColorsTab({
@@ -14,36 +14,46 @@ export default function ColorsTab({
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const colors = draft.product_colors || [];
+    const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
 
-    // Group images for selection
+    const colors = draft.product_colors || [];
     const productImages = draft.images || [];
 
-    const handleCreateColor = async (imagePath: string) => {
+    const toggleSelection = (path: string) => {
+        setSelectedPaths(prev =>
+            prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]
+        );
+    };
+
+    const handleBulkAdd = async () => {
+        if (selectedPaths.length === 0) return;
+
         setLoading(true);
         try {
-            const res = await fetch(`/api/admin/products/${draft.id}/colors`, {
+            const res = await fetch(`/api/admin/products/${draft.id}/colors/bulk`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    image_path: imagePath,
-                    name: '',
-                    display_order: colors.length,
+                    images: selectedPaths
                 }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);
 
-            // We need the full object including presigned url if possible, 
-            // but for now let's just use the selected image's url from the list if available
-            const selectedImg = productImages.find(img => img.storage_path === imagePath);
+            // Add with signed URLs from matching images
+            const newColors = data.colors.map((c: any) => {
+                const matchingImg = productImages.find(img => img.storage_path === c.image_path);
+                return { ...c, url: matchingImg?.thumb_url || matchingImg?.medium_url || matchingImg?.url };
+            });
 
             setDraft(prev => ({
                 ...prev,
-                product_colors: [...(prev.product_colors || []), { ...data.color, url: selectedImg?.url }]
+                product_colors: [...(prev.product_colors || []), ...newColors]
             }));
-            message.success('Color added');
+
+            message.success(`${selectedPaths.length} colors added`);
             setIsModalOpen(false);
+            setSelectedPaths([]);
         } catch (e: any) {
             message.error(e.message);
         } finally {
@@ -52,7 +62,6 @@ export default function ColorsTab({
     };
 
     const handleUpdateName = async (colorId: string, name: string) => {
-        // Optimistic update
         setDraft(prev => ({
             ...prev,
             product_colors: prev.product_colors?.map(c => c.id === colorId ? { ...c, name } : c)
@@ -75,7 +84,6 @@ export default function ColorsTab({
             setDraft(prev => ({
                 ...prev,
                 product_colors: prev.product_colors?.filter(c => c.id !== colorId),
-                // Also clear from variants
                 variants: prev.variants?.map(v => v.product_color_id === colorId ? { ...v, product_color_id: null } : v)
             }));
             message.success('Color deleted');
@@ -88,16 +96,27 @@ export default function ColorsTab({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <Card
                 title="Visual Colors"
-                extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>Add Color</Button>}
+                extra={
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                            setSelectedPaths([]);
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        Add Colors
+                    </Button>
+                }
             >
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 16 }}>
                     {colors.map((color: any) => (
-                        <div key={color.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: 8, textAlign: 'center' }}>
+                        <div key={color.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: 8, textAlign: 'center', background: 'white' }}>
                             <div style={{ width: '100%', aspectRatio: '1', marginBottom: 8, borderRadius: 4, overflow: 'hidden', background: '#f5f5f5' }}>
-                                {/* Provide visual fallback if URL missing (e.g. newly created before refresh) */}
-                                <img src={color.url || color.image_path} alt="color" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                <img src={color.url || color.image_path} alt="color" style={{ width: '100%', height: '100%', objectFit: 'contain' }} title={color.image_path} />
                             </div>
                             <Input
+                                size="small"
                                 placeholder="Color Name"
                                 value={color.name || ''}
                                 onChange={(e) => handleUpdateName(color.id, e.target.value)}
@@ -110,30 +129,57 @@ export default function ColorsTab({
                     ))}
                     {colors.length === 0 && (
                         <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 40, color: '#999' }}>
-                            No colors defined. Click "Add Color" to pick from images.
+                            No colors defined. Click "Add Colors" to pick from gallery.
                         </div>
                     )}
                 </div>
             </Card>
 
             <Modal
-                title="Select Image for Color"
+                title="Select Images for Visual Colors"
                 open={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
-                footer={null}
+                onOk={handleBulkAdd}
+                confirmLoading={loading}
+                okText={`Add ${selectedPaths.length} Selected`}
                 width={800}
             >
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 16 }}>
-                    {productImages.map((img: any) => (
-                        <div
-                            key={img.id}
-                            style={{ cursor: 'pointer', border: '2px solid transparent', borderRadius: 4, overflow: 'hidden' }}
-                            className="hover:border-blue-500"
-                            onClick={() => handleCreateColor(img.storage_path)}
-                        >
-                            <Image src={img.url} preview={false} style={{ width: '100%', aspectRatio: '1', objectFit: 'contain' }} />
-                        </div>
-                    ))}
+                <div style={{ marginBottom: 16, display: 'flex', gap: 12 }}>
+                    <Button onClick={() => setSelectedPaths(productImages.map((img: any) => img.storage_path))}>
+                        Select All
+                    </Button>
+                    <Button onClick={() => setSelectedPaths([])}>
+                        Deselect All
+                    </Button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: 8, padding: '0 0 16px' }}>
+                    {productImages.map((img: any) => {
+                        const isSelected = selectedPaths.includes(img.storage_path);
+                        return (
+                            <div
+                                key={img.id}
+                                style={{
+                                    cursor: 'pointer',
+                                    border: isSelected ? '2px solid #1890ff' : '1px solid #eee',
+                                    borderRadius: 4,
+                                    overflow: 'hidden',
+                                    position: 'relative'
+                                }}
+                                onClick={() => toggleSelection(img.storage_path)}
+                            >
+                                <Image
+                                    src={img.thumb_url || img.medium_url || img.url}
+                                    preview={false}
+                                    style={{ width: '100%', aspectRatio: '1', objectFit: 'contain' }}
+                                />
+                                {isSelected && (
+                                    <div style={{ position: 'absolute', top: 2, right: 2, color: '#1890ff', fontSize: 16 }}>
+                                        <CheckCircleFilled />
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </Modal>
         </div>

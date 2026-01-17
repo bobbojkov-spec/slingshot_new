@@ -9,12 +9,6 @@ import VariantsTab from './tabs/VariantsTab';
 import CoMetaTab from './tabs/CoMetaTab';
 import ColorsTab from './tabs/ColorsTab';
 
-type ActivityCategory = {
-  id: string;
-  name_en: string;
-  name_bg: string;
-  slug: string;
-};
 
 type ProductTranslation = {
   title?: string;
@@ -25,6 +19,9 @@ type ProductTranslation = {
   tags?: string[];
   seo_title?: string;
   seo_description?: string;
+  meta_keywords?: string;
+  og_title?: string;
+  og_description?: string;
 };
 
 type ProductInfo = {
@@ -36,6 +33,7 @@ type ProductInfo = {
   product_type?: string;
   tags?: string[] | string;
   status?: string;
+  video_url?: string;
   availability?: string;
   categoryId?: string;
   categoryName?: string;
@@ -72,15 +70,11 @@ export type Product = {
 export default function EditProduct({
   product,
   categories,
-  productTypes,
-  activityCategories,
   collections,
   initialCollectionIds,
 }: {
   product: Product;
   categories: { id: string; name: string }[];
-  productTypes: string[];
-  activityCategories: ActivityCategory[];
   collections: { id: string; title: string }[];
   initialCollectionIds?: string[];
 }) {
@@ -152,8 +146,6 @@ export default function EditProduct({
                 draft={draft}
                 setDraft={setDraft}
                 categories={categories}
-                productTypes={productTypes}
-                activityCategories={activityCategories}
                 collections={collections}
               />
             ),

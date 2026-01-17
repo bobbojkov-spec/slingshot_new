@@ -13,11 +13,16 @@ interface Product {
 
 interface ProductGridProps {
     products: Product[];
+    columns?: number;
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({ products, columns = 4 }: ProductGridProps) {
+    const gridClass = columns === 3
+        ? "grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12"
+        : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12";
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+        <div className={gridClass}>
             {products.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />
             ))}

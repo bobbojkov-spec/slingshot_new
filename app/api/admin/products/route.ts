@@ -13,11 +13,18 @@ export async function GET() {
           'name', c.name,
           'slug', c.slug,
           'handle', c.handle
-        ) AS category_info
+        ) AS category_info,
+        (
+          SELECT jsonb_agg(jsonb_build_object('id', col.id, 'title', COALESCE(ct.title, col.title)))
+          FROM collection_products cp
+          JOIN collections col ON col.id = cp.collection_id
+          LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = 'en'
+          WHERE cp.product_id = p.id
+        ) as collections
       FROM products p
       LEFT JOIN categories c ON c.id = p.category_id
       ORDER BY p.created_at DESC
-      LIMIT 1000
+      LIMIT 500
     `);
 
     const productIds = productRows.map((row: any) => row.id).filter(Boolean);
@@ -43,7 +50,7 @@ export async function GET() {
 
     const { rows: colorRows = [] } =
       productIds.length > 0
-        ? await query('SELECT id, product_id, name_en AS name, hex_color, position FROM product_colors WHERE product_id = ANY($1) ORDER BY position ASC', [productIds])
+        ? await query('SELECT id, product_id, name, image_path, display_order FROM product_colors WHERE product_id = ANY($1) ORDER BY display_order ASC', [productIds])
         : { rows: [] };
 
     // Generate presigned URLs for all images found
@@ -63,11 +70,21 @@ export async function GET() {
       })
     );
 
-    // Process colors
-    const processedColors = colorRows.map((row: any) => ({
-      ...row,
-      url: null
-    }));
+    // Process colors - sign the image_path if available
+    const processedColors = await Promise.all(
+      colorRows.map(async (row: any) => {
+        try {
+          const url = row.image_path ? await getPresignedUrl(row.image_path) : null;
+          return {
+            ...row,
+            url
+          };
+        } catch (err) {
+          console.error(`Failed to sign URL for color ${row.id}`, err);
+          return { ...row, url: null };
+        }
+      })
+    );
 
     const imagesByProduct = new Map<string, any[]>();
     processedImages.forEach((img: any) => {
@@ -80,7 +97,7 @@ export async function GET() {
     const colorsByProduct = new Map<string, any[]>();
     processedColors.forEach((color: any) => {
       const list = colorsByProduct.get(color.product_id) || [];
-      list.push(color); // Removed the color.url check as we use hex_color primarily
+      list.push(color);
       colorsByProduct.set(color.product_id, list);
     });
 
@@ -101,6 +118,7 @@ export async function GET() {
         imageCount: images.length,
         variants: variantsByProduct.get(product.id) || [],
         product_colors: colorsByProduct.get(product.id) || [],
+        collections: product.collections || [],
       };
     });
 

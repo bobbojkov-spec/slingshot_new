@@ -5,7 +5,7 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 async function run() {
     try {
-        const tables = ['products', 'product_variants', 'collections', 'collection_products'];
+        const tables = ['product_activity_categories', 'categories', 'activity_categories'];
         for (const t of tables) {
             const res = await pool.query(`
             SELECT column_name, data_type 

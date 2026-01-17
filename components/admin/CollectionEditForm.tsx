@@ -157,8 +157,15 @@ export default function CollectionEditForm({
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save collection');
+                const text = await response.text();
+                let errorMsg = 'Failed to save collection';
+                try {
+                    const json = JSON.parse(text);
+                    if (json.error) errorMsg = json.error;
+                } catch {
+                    if (text) errorMsg = text.slice(0, 100);
+                }
+                throw new Error(errorMsg);
             }
 
             // Refresh the page to show updated data

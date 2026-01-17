@@ -10,26 +10,15 @@ import { colorsUrl } from '../colorsApi';
 
 type Option = { label: string; value: string };
 
-type ActivityCategory = {
-  id: string;
-  name_en: string;
-  name_bg: string;
-  slug: string;
-};
-
 export default function InfoTab({
   draft,
   setDraft,
   categories,
-  productTypes,
-  activityCategories,
   collections,
 }: {
   draft: Product;
   setDraft: React.Dispatch<React.SetStateAction<Product>>;
   categories: { id: string; name: string }[];
-  productTypes: string[];
-  activityCategories: ActivityCategory[];
   collections: { id: string; title: string }[];
 }) {
   // Debug: Check what we're receiving
@@ -41,21 +30,6 @@ export default function InfoTab({
     [categories]
   );
 
-  const productTypeOptions = useMemo<Option[]>(
-    () => (productTypes || []).map((t) => ({ label: t, value: t })),
-    [productTypes]
-  );
-
-  const activityOptions = useMemo<Option[]>(
-    () =>
-      (activityCategories || []).map((cat) => ({
-        label: `${cat.name_en} / ${cat.name_bg}`,
-        value: cat.id,
-      })),
-    [activityCategories]
-  );
-
-  const activityCategoryIds = draft.activity_category_ids || [];
 
   const [updatingColorId, setUpdatingColorId] = useState<string | null>(null);
   const productColors = draft.colors || [];
@@ -156,28 +130,31 @@ export default function InfoTab({
         <Input
           value={draft.info?.brand ?? ''}
           style={{ width: '100%', maxWidth: '80vw' }}
-          disabled
-          placeholder="Brand is read-only (no column in products table)"
+          onChange={(e) =>
+            setDraft((prev) => ({
+              ...prev,
+              info: { ...prev.info, brand: e.target.value },
+            }))
+          }
+          placeholder="Brand (e.g. Slingshot, Ride Engine)"
         />
       </div>
 
       <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Product Type</Typography.Text>
-        <Select
+        <Typography.Text strong>Hero Video URL (YouTube)</Typography.Text>
+        <Input
+          value={draft.info?.video_url ?? ''}
           style={{ width: '100%', maxWidth: '80vw' }}
-          options={productTypeOptions}
-          showSearch
-          allowClear
-          placeholder="Select product type"
-          value={draft.info?.product_type || undefined}
-          onChange={(val) =>
+          onChange={(e) =>
             setDraft((prev) => ({
               ...prev,
-              info: { ...prev.info, product_type: val || '' },
+              info: { ...prev.info, video_url: e.target.value },
             }))
           }
+          placeholder="https://www.youtube.com/watch?v=..."
         />
       </div>
+
 
       <div style={{ width: '100%', maxWidth: '80vw' }}>
         <Typography.Text strong>Status</Typography.Text>
@@ -243,36 +220,21 @@ export default function InfoTab({
         </div>
       </div>
 
-      <Divider />
-
       <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Activity Categories</Typography.Text>
-        <Checkbox.Group
-          options={activityOptions}
-          value={activityCategoryIds}
-          onChange={(vals) =>
-            setDraft((prev) => ({
-              ...prev,
-              activity_category_ids: vals as string[],
-            }))
-          }
-          style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8 }}
-        />
-      </div>
-
-      <Divider />
-
-      <div style={{ width: '100%', maxWidth: '80vw' }}>
-        <Typography.Text strong>Collections</Typography.Text>
-        <Select
-          mode="multiple"
-          style={{ width: '100%', maxWidth: '80vw', marginTop: 8 }}
-          placeholder="Select collections"
-          options={collections.map(c => ({ label: c.title, value: c.id }))}
-          value={draft.collection_ids || []}
-          onChange={(vals) => setDraft(prev => ({ ...prev, collection_ids: vals }))}
-          optionFilterProp="label"
-        />
+        <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>Collections</Typography.Text>
+        <Space wrap>
+          {(draft.collection_ids || []).length > 0 ? (
+            (draft.collection_ids || []).map(id => {
+              const col = collections.find(c => c.id === id);
+              return col ? <div key={id} style={{ padding: '4px 12px', background: '#f5f5f5', border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 13 }}>{col.title}</div> : null;
+            })
+          ) : (
+            <Typography.Text type="secondary">Not in any collection</Typography.Text>
+          )}
+        </Space>
+        <Typography.Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
+          Collections are managed from the collections page.
+        </Typography.Text>
       </div>
 
       <Divider />

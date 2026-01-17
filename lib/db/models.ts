@@ -236,3 +236,21 @@ export interface OrderItem {
     unit_price: number;
     total_price: number;
 }
+
+export interface MenuGroup {
+    id: string; // UUID
+    title: string;
+    title_bg?: string;
+    slug?: string;
+    source: 'slingshot' | 'rideengine';
+    sort_order: number;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface MenuGroupCollection {
+    menu_group_id: string;
+    collection_id: string;
+    sort_order: number;
+    created_at: Date;
+}

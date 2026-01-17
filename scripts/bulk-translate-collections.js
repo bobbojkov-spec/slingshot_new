@@ -12,7 +12,7 @@ const openai = new OpenAI({
 });
 
 async function translateContent(text, targetLang = "Bulgarian") {
-    if (!text || text.trim() === '') return null;
+    if (!text || text.trim() === '') return '';
 
     try {
         const response = await openai.chat.completions.create({
@@ -37,33 +37,46 @@ async function translateContent(text, targetLang = "Bulgarian") {
         return response.choices[0].message.content.trim();
     } catch (e) {
         console.error(`Translation failed for: ${text}`, e);
-        return null;
+        return '';
     }
 }
 
 async function run() {
     try {
-        console.log('Fetching Slingshot collections...');
+        console.log('Fetching all collections missing BG translations...');
 
-        // Fetch all Slingshot collections with their English translations
+        // Fetch all collections with their English translations
+        // AND check if they are missing BG title OR BG subtitle
         const res = await pool.query(`
-            SELECT c.id, ct.title, ct.subtitle 
+            SELECT c.id, c.source, ct_en.title as title_en, ct_en.subtitle as subtitle_en,
+                   ct_bg.title as title_bg, ct_bg.subtitle as subtitle_bg
             FROM collections c 
-            JOIN collection_translations ct ON c.id = ct.collection_id 
-            WHERE c.source = 'slingshot' AND ct.language_code = 'en'
+            JOIN collection_translations ct_en ON c.id = ct_en.collection_id AND ct_en.language_code = 'en'
+            LEFT JOIN collection_translations ct_bg ON c.id = ct_bg.collection_id AND ct_bg.language_code = 'bg'
+            WHERE ct_bg.title IS NULL OR ct_bg.title = '' OR ct_bg.subtitle IS NULL OR ct_bg.subtitle = ''
         `);
 
-        console.log(`Found ${res.rows.length} collections to translate.`);
+        console.log(`Found ${res.rows.length} collections needing translation.`);
 
         for (const row of res.rows) {
-            const { id, title, subtitle } = row;
+            const { id, source, title_en, subtitle_en, title_bg, subtitle_bg } = row;
 
-            console.log(`\nTranslating: "${title}"`);
+            console.log(`\nProcessing [${source}] : "${title_en}"`);
 
-            const bgTitle = await translateContent(title);
-            const bgSubtitle = subtitle ? await translateContent(subtitle) : null;
+            let finalTitleBg = title_bg;
+            let finalSubtitleBg = subtitle_bg;
 
-            if (bgTitle) {
+            if (!finalTitleBg || finalTitleBg === '') {
+                console.log(`- Translating Title...`);
+                finalTitleBg = await translateContent(title_en);
+            }
+
+            if (!finalSubtitleBg || finalSubtitleBg === '') {
+                console.log(`- Translating Subtitle...`);
+                finalSubtitleBg = await translateContent(subtitle_en);
+            }
+
+            if (finalTitleBg) {
                 const sql = `
                     INSERT INTO collection_translations (collection_id, language_code, title, subtitle, updated_at)
                     VALUES ($1, 'bg', $2, $3, NOW())
@@ -74,8 +87,8 @@ async function run() {
                         updated_at = NOW()
                 `;
 
-                await pool.query(sql, [id, bgTitle, bgSubtitle]);
-                console.log(`✅ Success: [BG] ${bgTitle} ${bgSubtitle ? `(${bgSubtitle})` : ''}`);
+                await pool.query(sql, [id, finalTitleBg, finalSubtitleBg]);
+                console.log(`✅ Success: [BG] ${finalTitleBg} | ${finalSubtitleBg || '(no subtitle)'}`);
             } else {
                 console.log(`❌ Skipped: Could not translate title.`);
             }

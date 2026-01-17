@@ -42,7 +42,8 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-products-new", icon: <TableOutlined />, labelText: "Products", href: "/admin/products" },
       { key: "catalog-slingshot-collections", icon: <AppstoreOutlined />, labelText: "Slingshot Collections", href: "/admin/collections-slingshot" },
       { key: "catalog-rideengine-collections", icon: <AppstoreOutlined />, labelText: "Ride Engine Collections", href: "/admin/collections-rideengine" },
-      { key: "catalog-collections", icon: <AppstoreOutlined />, labelText: "Collections (Legacy)", href: "/admin/collections" },
+      { key: "catalog-homepage-collections", icon: <AppstoreOutlined />, labelText: "Homepage Collections", href: "/admin/collections-homepage" },
+
       { key: "catalog-categories", icon: <TagsOutlined />, labelText: "Categories", href: "/admin/categories" },
       { key: "catalog-colors", icon: <BgColorsOutlined />, labelText: "Colors", href: "/admin/colors" },
       { key: "catalog-menu-groups", icon: <TagsOutlined />, labelText: "Menu Groups", href: "/admin/menu-groups" },
@@ -50,7 +51,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
     ],
   },
-  { key: "test-image", icon: <FileProtectOutlined />, labelText: "Test Image", href: "/admin/test-image" },
+
   { key: "pages", icon: <FileProtectOutlined />, labelText: "Pages" },
   { key: "shop", icon: <ShoppingCartOutlined />, labelText: "Shop" },
   {

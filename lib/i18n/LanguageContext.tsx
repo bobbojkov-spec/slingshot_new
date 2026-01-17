@@ -30,6 +30,21 @@ export function LanguageProvider({
 
     if (saved) {
       setLanguageState(saved);
+    } else {
+      // No cookie? Check IP.
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          if (data.country_code === 'BG') {
+            setLanguage('bg');
+          } else {
+            setLanguage('en');
+          }
+        })
+        .catch(() => {
+          // Default to EN on error
+          setLanguage('en');
+        });
     }
   }, []);
 

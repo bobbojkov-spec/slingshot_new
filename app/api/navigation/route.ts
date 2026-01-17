@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-const TOP_LEVEL_SPORTS = ['kites', 'wing', 'foil', 'wake'];
 
 export async function GET(req: Request) {
   try {
@@ -21,12 +20,12 @@ export async function GET(req: Request) {
         FROM categories c
         LEFT JOIN category_translations ct
           ON ct.category_id = c.id AND ct.language_code = $1
-        WHERE c.slug = ANY($2)
+        WHERE c.parent_id IS NULL
           AND c.visible = true
           AND c.status = 'active'
         ORDER BY c.sort_order, c.name
       `,
-      [lang, TOP_LEVEL_SPORTS],
+      [lang],
     );
 
     const { rows: menuGroupMeta } = await query(
@@ -53,7 +52,7 @@ export async function GET(req: Request) {
                   ON pt.id = ptt.product_type_id AND ptt.language_code = $1
                 LEFT JOIN menu_group_assignments mga
                   ON mga.category_id = c.id AND mga.product_type_id = pt.id
-                WHERE c.slug = ANY($2)
+                WHERE c.parent_id IS NULL
                   AND c.visible = true
                   AND c.status = 'active'
                   AND pt.visible = true
@@ -61,7 +60,7 @@ export async function GET(req: Request) {
                 GROUP BY c.slug, c.sort_order, pt.id, pt.slug, pt.sort_order, pt.name, ptt.name, mga.menu_group
                 ORDER BY c.sort_order, pt.sort_order, pt.name
               `,
-            [lang, TOP_LEVEL_SPORTS],
+            [lang],
           )
         ).rows
         : (
@@ -79,7 +78,7 @@ export async function GET(req: Request) {
                 JOIN product_types pt ON pt.name = p.product_type
                 LEFT JOIN product_type_translations ptt
                   ON pt.id = ptt.product_type_id AND ptt.language_code = $1
-                WHERE c.slug = ANY($2)
+                WHERE c.parent_id IS NULL
                   AND c.visible = true
                   AND c.status = 'active'
                   AND pt.visible = true
@@ -87,7 +86,7 @@ export async function GET(req: Request) {
                 GROUP BY c.slug, pt.id, pt.slug, pt.name, ptt.name
                 ORDER BY c.sort_order, pt.sort_order, pt.name
               `,
-            [lang, TOP_LEVEL_SPORTS],
+            [lang],
           )
         ).rows;
 
@@ -105,6 +104,16 @@ export async function GET(req: Request) {
       `,
       [lang],
     );
+
+    // Fetch populated Ride Engine collections handles
+    const { rows: rideEngineRows } = await query(`
+      SELECT DISTINCT c.handle
+      FROM collections c
+      JOIN collection_products cp ON c.id = cp.collection_id
+      WHERE c.source = 'rideengine'
+    `);
+
+    const rideEngineHandles = rideEngineRows.map((row: any) => row.handle);
 
     const sportMap = new Map<string, any>();
     sportsRows.forEach((sport: any) => {
@@ -134,12 +143,13 @@ export async function GET(req: Request) {
       });
     });
 
-    const sports = TOP_LEVEL_SPORTS.map((slug) => sportMap.get(slug)).filter(Boolean);
+    const sports = sportsRows.map((row: any) => sportMap.get(row.slug)).filter(Boolean);
 
     return NextResponse.json({
       language: lang,
       sports,
       activityCategories: activitiesResult.rows,
+      rideEngineHandles,
     });
   } catch (error: any) {
     console.error('Failed to load navigation data:', error);

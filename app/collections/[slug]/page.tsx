@@ -1,37 +1,34 @@
 
 import { notFound } from "next/navigation";
-import { ProductGrid } from "@/components/products/ProductGrid";
-import { getCollectionByHandle } from "@/services/collections";
-import { CollectionHero } from "@/components/collections/CollectionHero";
+import { getCollectionBySlug } from "@/services/collections";
+import { CollectionShopClient } from "@/components/collections/CollectionShopClient";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+import { cookies } from "next/headers";
+
 export default async function CollectionPage({ params }: PageProps) {
     const { slug } = await params;
-    const collection = await getCollectionByHandle(slug);
+    const cookieStore = await cookies();
+    const lang = cookieStore.get("lang")?.value || "en";
+    const collection = await getCollectionBySlug(slug, lang);
 
     if (!collection) {
         notFound();
     }
 
-    return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            <CollectionHero
-                title={collection.title}
-                subtitle={collection.subtitle}
-                imageUrl={collection.image_url}
-                videoUrl={collection.video_url}
-            />
+    const breadcrumbs = [
+        { label: 'Shop', href: '/shop' },
+        { label: collection.title }
+    ];
 
-            {/* Products Grid */}
-            <div className="bg-white py-12">
-                <div className="container mx-auto px-4">
-                    <ProductGrid products={collection.products} />
-                </div>
-            </div>
-        </div>
+    return (
+        <CollectionShopClient
+            initialCollection={collection}
+            slug={slug}
+            breadcrumbs={breadcrumbs}
+        />
     );
 }

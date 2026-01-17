@@ -10,35 +10,42 @@ import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+import { FeaturedSection } from '@/components/shop/FeaturedSection';
+import { BestSellersSection } from '@/components/shop/BestSellersSection';
+
 function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const [products, setProducts] = useState([]);
-  const [facets, setFacets] = useState({ categories: [], types: [], tags: [], brands: [] });
+  const [facets, setFacets] = useState({ categories: [], collections: [], types: [], tags: [], brands: [] });
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
+  // If ANY filter is active, we should NOT show the Featured/BestSellers sections
+  // Filters: category, collection, type, tag, brand, q
+  // Page > 1 also hides them
+  const hasFilters =
+    searchParams.has('category') ||
+    searchParams.has('collection') ||
+    searchParams.has('type') ||
+    searchParams.has('tag') ||
+    searchParams.has('brand') ||
+    searchParams.has('q') ||
+    (parseInt(searchParams.get('page') || '1') > 1);
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // If we are in the middle of redirecting to default category, wait?
-        // No, current params are used. If params change, effect re-runs.
-
         const params = new URLSearchParams(searchParams.toString());
-        // If no category yet (initial load before redirect), don't fetch or fetch everything?
-        // Let's fetch whatever params say.
-
         const res = await fetch(`/api/products?${params.toString()}&limit=12`); // 12 items for grid (3x4 or 4x3)
         if (!res.ok) throw new Error('Failed to fetch products');
 
         const data = await res.json();
         setProducts(data.products);
-        setFacets(data.facets || { categories: [], types: [], tags: [] });
+        setFacets(data.facets || { categories: [], collections: [], types: [], tags: [], brands: [] });
         setPagination(data.pagination);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -65,14 +72,20 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      <ShopHero title={searchParams.get('category') || 'Shop'} />
+      {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
+      <ShopHero
+        title={searchParams.get('category') || 'All Products'}
+        breadcrumbs={breadcrumbItems}
+      />
 
       <ShopToolbar facets={facets} totalProducts={pagination.total} />
 
+      {/* Featured & Best Sellers - Context Aware (pass current filters) */}
+      <FeaturedSection searchParams={searchParams} />
+      <BestSellersSection searchParams={searchParams} />
+
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Breadcrumbs items={breadcrumbItems} />
-        </div>
+        {/* Removed external Breadcrumbs since they are now in Hero */}
 
         {error ? (
           <div className="text-center py-20 text-red-500">Error: {error}</div>

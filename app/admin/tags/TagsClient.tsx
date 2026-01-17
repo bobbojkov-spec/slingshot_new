@@ -3,7 +3,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Input, Button, message, Space, Card, Typography } from 'antd';
-import { SaveOutlined, SearchOutlined } from '@ant-design/icons';
+import { SaveOutlined, SearchOutlined, DeleteOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
+import TagProductSelector from '@/components/admin/TagProductSelector';
+const { Modal } = require('antd'); // Using require to avoid potential import issues with some antd setups if they arise, or just standard import
 
 interface TagData {
     en: string;
@@ -16,6 +18,8 @@ export default function TagsClient() {
     const [data, setData] = useState<TagData[]>([]);
     const [searchText, setSearchText] = useState('');
     const [savingKey, setSavingKey] = useState<string | null>(null);
+    const [manageTag, setManageTag] = useState<string | null>(null);
+    const [newTagName, setNewTagName] = useState('');
 
     // Track local edits: map of EN tag -> new BG value
     const [edits, setEdits] = useState<Record<string, string>>({});
@@ -57,8 +61,6 @@ export default function TagsClient() {
 
             if (json.success) {
                 message.success(`Updated ${json.updatedCount} products`);
-                // Refresh local data to confirm or just update state
-                // Let's update state to remove pending edit status
                 setData(prev => prev.map(item => item.en === record.en ? { ...item, bg: newVal } : item));
                 const newEdits = { ...edits };
                 delete newEdits[record.en];
@@ -73,12 +75,54 @@ export default function TagsClient() {
         }
     };
 
+    const handleDelete = (tagEn: string) => {
+        Modal.confirm({
+            title: 'Delete Tag',
+            content: `Are you sure you want to delete the tag "${tagEn}"? This will remove it from ALL products in both English and Bulgarian.`,
+            okText: 'Yes, Delete',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: async () => {
+                try {
+                    const res = await fetch('/api/admin/tags/products', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tagEn }),
+                    });
+                    if (res.ok) {
+                        message.success('Tag deleted successfully');
+                        fetchData();
+                    } else {
+                        message.error('Failed to delete tag');
+                    }
+                } catch (err) {
+                    message.error('Error deleting tag');
+                }
+            }
+        });
+    };
+
+    const handleAddTag = () => {
+        if (!newTagName.trim()) return;
+        const exists = data.find(d => d.en.toLowerCase() === newTagName.trim().toLowerCase());
+        if (exists) {
+            message.warning('Tag already exists');
+            return;
+        }
+
+        // Add a "virtual" tag to the list so we can manage its products
+        const newTag: TagData = { en: newTagName.trim(), bg: '', count: 0 };
+        setData([newTag, ...data]);
+        setNewTagName('');
+        message.success('Tag template created. Now assign products to make it permanent.');
+    };
+
     const columns = [
         {
             title: 'English Tag',
             dataIndex: 'en',
             key: 'en',
-            width: '30%',
+            width: '25%',
             sorter: (a: TagData, b: TagData) => a.en.localeCompare(b.en),
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
                 <div style={{ padding: 8 }}>
@@ -98,7 +142,7 @@ export default function TagsClient() {
             title: 'Bulgarian Translation',
             dataIndex: 'bg',
             key: 'bg',
-            width: '40%',
+            width: '35%',
             render: (text: string, record: TagData) => {
                 const value = edits[record.en] !== undefined ? edits[record.en] : text;
                 const isModified = edits[record.en] !== undefined && edits[record.en] !== record.bg;
@@ -123,11 +167,33 @@ export default function TagsClient() {
             }
         },
         {
-            title: 'Usage Count',
+            title: 'Usage',
             dataIndex: 'count',
             key: 'count',
-            width: '15%',
+            width: '10%',
             sorter: (a: TagData, b: TagData) => a.count - b.count,
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            width: '30%',
+            render: (_: any, record: TagData) => (
+                <Space>
+                    <Button
+                        type="primary"
+                        ghost
+                        icon={<SettingOutlined />}
+                        onClick={() => setManageTag(record.en)}
+                    >
+                        Manage Products
+                    </Button>
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDelete(record.en)}
+                    />
+                </Space>
+            )
         }
     ];
 
@@ -138,7 +204,20 @@ export default function TagsClient() {
 
     return (
         <div style={{ padding: 24 }}>
-            <Typography.Title level={2}>Tag Translations</Typography.Title>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                <Typography.Title level={2} style={{ margin: 0 }}>Tag Management</Typography.Title>
+                <Space>
+                    <Input
+                        placeholder="New tag name..."
+                        value={newTagName}
+                        onChange={e => setNewTagName(e.target.value)}
+                        onPressEnter={handleAddTag}
+                        style={{ width: 200 }}
+                    />
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAddTag}>Add Tag</Button>
+                </Space>
+            </div>
+
             <Input
                 placeholder="Search tags..."
                 prefix={<SearchOutlined />}
@@ -154,6 +233,14 @@ export default function TagsClient() {
                     pagination={{ pageSize: 50 }}
                 />
             </Card>
+
+            {manageTag && (
+                <TagProductSelector
+                    tagEn={manageTag}
+                    onClose={() => setManageTag(null)}
+                    onSave={() => fetchData()}
+                />
+            )}
         </div>
     );
 }

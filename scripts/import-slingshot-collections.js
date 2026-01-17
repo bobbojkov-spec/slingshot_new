@@ -44,25 +44,58 @@ async function importCollections() {
                 // Update existing collection
                 collectionId = existing.rows[0].id;
 
-                await client.query(
-                    `UPDATE collections 
-           SET title = $1, 
-               handle = $2, 
-               image_url = $3,
-               subtitle = $4,
-               updated_at = NOW()
-           WHERE id = $5`,
-                    [
-                        collection.title,
-                        handle,
-                        collection.heroImageUrl,
-                        collection.subtitle,
-                        collectionId
-                    ]
+                // Only update image_url if the current value is an external URL or null
+                // Don't overwrite S3 bucket paths!
+                const currentImageUrl = await client.query(
+                    'SELECT image_url FROM collections WHERE id = $1',
+                    [collectionId]
                 );
+
+                const shouldUpdateImage = !currentImageUrl.rows[0]?.image_url ||
+                    currentImageUrl.rows[0].image_url.startsWith('http');
+
+                if (shouldUpdateImage) {
+                    // Use bucket path if we have the local file, otherwise use external URL
+                    const bucketPath = `collections/${collection.slug}/hero.jpg`;
+
+                    await client.query(
+                        `UPDATE collections 
+               SET title = $1, 
+                   handle = $2, 
+                   image_url = $3,
+                   subtitle = $4,
+                   updated_at = NOW()
+               WHERE id = $5`,
+                        [
+                            collection.title,
+                            handle,
+                            bucketPath, // Always prefer bucket path
+                            collection.subtitle,
+                            collectionId
+                        ]
+                    );
+                } else {
+                    // Keep existing bucket path, just update other fields
+                    await client.query(
+                        `UPDATE collections 
+               SET title = $1, 
+                   handle = $2,
+                   subtitle = $3,
+                   updated_at = NOW()
+               WHERE id = $4`,
+                        [
+                            collection.title,
+                            handle,
+                            collection.subtitle,
+                            collectionId
+                        ]
+                    );
+                }
                 updated++;
             } else {
                 // Insert new collection
+                const bucketPath = `collections/${collection.slug}/hero.jpg`;
+
                 const insertResult = await client.query(
                     `INSERT INTO collections (source, slug, handle, title, image_url, subtitle, visible, sort_order)
            VALUES ($1, $2, $3, $4, $5, $6, true, 0)
@@ -72,7 +105,7 @@ async function importCollections() {
                         collection.slug,
                         handle,
                         collection.title,
-                        collection.heroImageUrl,
+                        bucketPath, // Use bucket path
                         collection.subtitle
                     ]
                 );

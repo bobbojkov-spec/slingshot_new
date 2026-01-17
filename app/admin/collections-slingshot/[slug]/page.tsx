@@ -12,7 +12,7 @@ type PageProps = {
 async function getCollection(slug: string) {
     // Get collection data
     const collectionResult = await query(
-        `SELECT id, source, slug, image_url, visible, sort_order
+        `SELECT id, source, slug, image_url, video_url, visible, sort_order
      FROM collections
      WHERE source = 'slingshot' AND slug = $1`,
         [slug]

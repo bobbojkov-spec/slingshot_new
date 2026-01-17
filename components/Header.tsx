@@ -92,7 +92,8 @@ const Header = () => {
   // Assuming the API returns them, or we filter by known slugs if needed.
   // User said "list the 4 active CATEGORIES (sports)".
   // We'll trust navigation.sports but limit if necessary.
-  const slingshotSports = navigation?.sports || [];
+  // EXCLUDE 'rideengine' explicitly as it has its own hardcoded link
+  const slingshotSports = (navigation?.sports || []).filter(s => s.slug !== 'rideengine');
 
   // Helper to get active sport data (if activeMenu is a sport)
   const currentSportData = useMemo(() => {
@@ -100,65 +101,7 @@ const Header = () => {
     return navigation.sports.find(s => s.slug === activeMenu);
   }, [activeMenu, navigation]);
 
-  // Ride Engine Menu Configuration
-  const rideEngineMenu = [
-    {
-      title: "HARNESSES",
-      items: [
-        { name: "Harnesses", handle: "harnesses" },
-        { name: "Spreader Bars", handle: "spreader-bars" },
-        { name: "Parts & Accessories", handle: "harness-parts-accessories" },
-        { name: "Wing Foil Harnesses", handle: "wing-foil-harnesses" }, // Adding explicitly since we have the collection
-      ]
-    },
-    {
-      title: "PERFORMANCE PWC",
-      items: [
-        { name: "PWC Collars", handle: "pwc-collars-pontoons" }, // Verified handle
-        { name: "Sleds", handle: "performance-sleds" }, // Verified handle
-      ]
-    },
-    {
-      title: "INFLATION & ACC",
-      items: [
-        { name: "Pumps", handle: "manual-pumps" }, // Verified handle
-        { name: "Leashes", handle: "leashes" },
-        { name: "Foot Straps", handle: "foot-straps" },
-        { name: "E-Inflation", handle: "e-inflation" },
-      ]
-    },
-    {
-      title: "PROTECTION",
-      items: [
-        { name: "Impact Vests", handle: "impact-vests" },
-        { name: "Helmets", handle: "helmets" },
-        { name: "Hand & Knee", handle: "hand-knee-protection" },
-      ]
-    },
-    {
-      title: "BAGS",
-      items: [
-        { name: "Board Bags", handle: "board-bags" },
-        { name: "Travel Bags", handle: "wheeled-travel-bags" },
-      ]
-    },
-    {
-      title: "WETSUITS",
-      items: [
-        { name: "Mens Wetsuits", handle: "mens-wetsuits" },
-        { name: "Womens Wetsuits", handle: "womens-wetsuits" },
-        { name: "Accessories", handle: "wetsuit-accessories" },
-      ]
-    },
-    {
-      title: "APPAREL",
-      items: [
-        { name: "Apparel", handle: "apparel" },
-        { name: "Technical Jackets", handle: "technical-jackets" },
-        { name: "Ponchos", handle: "robes-ponchos" },
-      ]
-    }
-  ];
+
 
   return (
     <header className={headerClass}>
@@ -171,12 +114,12 @@ const Header = () => {
               src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png"
             />
             <span className="font-logo font-extrabold text-white text-lg tracking-tight hidden sm:block">
-              BULGARIA
+              BG
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex h-full items-center justify-center overflow-x-auto scrollbar-hide" onMouseLeave={handleNavLeave}>
+          <div className="hidden lg:flex h-full items-center justify-center overflow-x-auto scrollbar-hide" onMouseLeave={handleNavLeave}>
             {/* Horizontal scroll wrapper for medium screens */}
             <div className="flex items-center justify-center min-w-max">
               <nav className="flex items-center gap-8 h-full">
@@ -191,27 +134,27 @@ const Header = () => {
                   >
                     <Link
                       href={`/shop?category=${sport.slug}`}
-                      className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 ${activeMenu === sport.slug && isMegaOpen ? "text-accent" : ""
+                      className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm ${activeMenu === sport.slug && isMegaOpen ? "text-accent" : ""
                         }`}
+                      onClick={() => setIsMegaOpen(false)}
                     >
                       {sport.name}
                     </Link>
                   </div>
                 ))}
 
-                {/* Ride Engine Link - Hardcoded as requested */}
+                {/* Ride Engine Link - Hardcoded as requested - NON-CLICKABLE */}
                 <div
                   className="relative h-full flex items-center"
                   onMouseEnter={() => handleNavEnter('ride-engine')}
                   onMouseLeave={handleNavLeave}
                 >
-                  <Link
-                    href="/shop?brand=Ride%20Engine"
-                    className={`nav-link-white uppercase tracking-[0.3em] font-bold h-full flex items-center px-2 cursor-pointer bg-transparent border-0 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-accent" : ""
+                  <span
+                    className={`h-full flex items-center px-2 cursor-default bg-transparent border-0 uppercase tracking-[0.15em] font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400" : ""
                       }`}
                   >
                     RIDEENGINE
-                  </Link>
+                  </span>
                 </div>
 
               </nav>
@@ -220,7 +163,7 @@ const Header = () => {
 
           {/* Mega Menu Container */}
           <div
-            className="hidden md:block"
+            className="hidden lg:block"
             onMouseEnter={() => handleNavEnter()}
             onMouseLeave={handleNavLeave}
           >
@@ -236,46 +179,53 @@ const Header = () => {
 
                 {/* SLINGSHOT SPORTS MENU */}
                 {currentSportData && (
-                  <div className="max-w-5xl mx-auto grid grid-cols-3 gap-12">
-                    {/* Column 1: Gear */}
-                    <div>
-                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                        {t('menu_group.gear')}
-                      </h3>
-                      <div className="flex flex-col gap-3">
-                        {currentSportData.productGroups?.gear?.map((type) => (
-                          <Link
-                            key={`${activeMenu}-${type.slug}`}
-                            href={`/shop?category=${activeMenu}&type=${type.slug}`}
-                            className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
-                            onClick={() => setIsMegaOpen(false)}
-                          >
-                            {type.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-5 gap-12">
+                    {/* Dynamic Menu Groups */}
+                    {navigation?.slingshotMenuGroups?.map((group) => {
+                      // Filter collections that belong to the current active 'sport' (category)
+                      // Heuristic: Check if collection's category_slugs includes the active sport slug
+                      const filteredCollections = group.collections.filter(c =>
+                        // If no category slugs data logic, show all (fallback). 
+                        // But we have logic.
+                        c.category_slugs?.includes(activeMenu || '')
+                      );
 
-                    {/* Column 2: Accessories */}
-                    <div>
-                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                        {t('menu_group.accessories')}
-                      </h3>
-                      <div className="flex flex-col gap-3">
-                        {currentSportData.productGroups?.accessories?.map((type) => (
-                          <Link
-                            key={`${activeMenu}-${type.slug}`}
-                            href={`/shop?category=${activeMenu}&type=${type.slug}`}
-                            className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
-                            onClick={() => setIsMegaOpen(false)}
-                          >
-                            {type.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
+                      if (filteredCollections.length === 0) return null;
 
-                    {/* Column 3: Categories */}
+                      const groupTitle = (language === 'bg' && group.title_bg) ? group.title_bg : group.title;
+                      const hasSlug = !!group.slug;
+
+                      return (
+                        <div key={group.id} className="flex flex-col">
+                          {hasSlug ? (
+                            <Link href={`/${group.slug}`} className="block mb-6 group/header">
+                              <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 group-hover/header:text-accent font-bold border-b border-white/5 pb-2 transition-colors">
+                                {groupTitle}
+                              </h3>
+                            </Link>
+                          ) : (
+                            <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                              {groupTitle}
+                            </h3>
+                          )}
+
+                          <div className="flex flex-col gap-3">
+                            {filteredCollections.map(col => (
+                              <Link
+                                key={col.id}
+                                href={`/collections/${col.slug}`}
+                                className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
+                                onClick={() => setIsMegaOpen(false)}
+                              >
+                                {col.title}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Static Categories Column (Keep this always?) */}
                     <div>
                       <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
                         CATEGORIES
@@ -299,26 +249,39 @@ const Header = () => {
                 {/* RIDE ENGINE MENU */}
                 {activeMenu === 'ride-engine' && (
                   <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-7 gap-8">
-                    {rideEngineMenu.map((category, idx) => (
-                      <div key={idx} className="flex flex-col">
-                        <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
-                          {category.title}
-                        </h3>
-                        <div className="flex flex-col gap-2">
-                          {category.items.map((item, itemIdx) => (
-                            <Link
-                              key={itemIdx}
-                              // Link to the collection page
-                              href={`/collections/${item.handle}`}
-                              className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-sm"
-                              onClick={() => setIsMegaOpen(false)}
-                            >
-                              {item.name}
+                    {navigation?.rideEngineMenuGroups?.map((group) => {
+                      const groupTitle = (language === 'bg' && group.title_bg) ? group.title_bg : group.title;
+                      const hasSlug = !!group.slug;
+
+                      return (
+                        <div key={group.id} className="flex flex-col">
+                          {hasSlug ? (
+                            <Link href={`/${group.slug}`} className="block mb-4 group/header">
+                              <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent group-hover/header:text-orange-400 font-bold border-b border-white/5 pb-1 transition-colors">
+                                {groupTitle}
+                              </h3>
                             </Link>
-                          ))}
+                          ) : (
+                            <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
+                              {groupTitle}
+                            </h3>
+                          )}
+
+                          <div className="flex flex-col gap-2">
+                            {group.collections?.map((col) => (
+                              <Link
+                                key={col.id}
+                                href={`/collections/${col.slug}`}
+                                className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-sm"
+                                onClick={() => setIsMegaOpen(false)}
+                              >
+                                {col.title}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 

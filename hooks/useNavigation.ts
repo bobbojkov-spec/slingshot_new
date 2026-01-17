@@ -30,10 +30,29 @@ export interface NavigationActivityCategory {
   name_bg: string;
 }
 
+export interface MenuCollection {
+  id: string;
+  title: string;
+  slug: string;
+  image_url?: string;
+  category_slugs?: string[];
+}
+
+export interface MenuGroup {
+  id: string;
+  title: string;
+  title_bg?: string;
+  slug?: string;
+  collections: MenuCollection[];
+}
+
 export interface NavigationData {
   sports: NavigationSport[];
   activityCategories: NavigationActivityCategory[];
   language: string;
+  rideEngineHandles?: string[];
+  slingshotMenuGroups?: MenuGroup[];
+  rideEngineMenuGroups?: MenuGroup[];
 }
 
 export function useNavigation() {
@@ -51,20 +70,26 @@ export function useNavigation() {
 
       try {
         const langParam = language === "bg" ? "bg" : "en";
-        const response = await fetch(`/api/navigation?lang=${langParam}`);
 
-        if (!response.ok) {
-          const message = `Navigation request failed (${response.status})`;
-          if (!cancelled) {
-            setError(message);
-          }
-          console.error(message);
-          return;
-        }
+        // Fetch core navigation and menu structures in parallel
+        const [navRes, slingshotRes, rideEngineRes] = await Promise.all([
+          fetch(`/api/navigation?lang=${langParam}`),
+          fetch(`/api/navigation/menu-structure?source=slingshot`),
+          fetch(`/api/navigation/menu-structure?source=rideengine`)
+        ]);
 
-        const payload: NavigationData = await response.json();
+        if (!navRes.ok) throw new Error('Navigation fetch failed');
+
+        const navData: NavigationData = await navRes.json();
+        const slingshotData = await slingshotRes.json();
+        const rideEngineData = await rideEngineRes.json();
+
         if (!cancelled) {
-          setData(payload);
+          setData({
+            ...navData,
+            slingshotMenuGroups: slingshotData.groups || [],
+            rideEngineMenuGroups: rideEngineData.groups || []
+          });
         }
       } catch (err: any) {
         if (!cancelled) {

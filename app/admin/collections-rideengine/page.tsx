@@ -1,8 +1,10 @@
-import { query } from '@/lib/dbPg';
-import { getPresignedUrl } from '@/lib/railway/storage';
 import CollectionsListClient from '@/components/admin/CollectionsListClient';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { query } from '@/lib/dbPg';
+import { getPresignedUrl } from '@/lib/railway/storage';
+
+export const dynamic = 'force-dynamic';
 
 interface Collection {
     id: string;
@@ -21,7 +23,8 @@ async function getCollectionsBySource(source: string): Promise<Collection[]> {
       c.image_url,
       c.source,
       COALESCE(ct.title, c.title) as title,
-      ct.subtitle
+      ct.subtitle,
+      (SELECT COUNT(*)::int FROM collection_products cp WHERE cp.collection_id = c.id) as product_count
     FROM collections c
     LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = 'en'
     WHERE c.source = $1 AND c.visible = true
@@ -32,12 +35,16 @@ async function getCollectionsBySource(source: string): Promise<Collection[]> {
     // Sign URLs
     const collectionsWithSignedUrls = await Promise.all(result.rows.map(async (c: any) => {
         let signedUrl = c.image_url;
-        if (c.image_url && !c.image_url.startsWith('http') && !c.image_url.startsWith('/')) {
+
+        // Only sign if it's not a full URL OR if it's a known internal bucket path
+        if (c.image_url &&
+            (!c.image_url.startsWith('http') || c.image_url.includes('slingshot-images-dev') || c.image_url.includes('slingshot-raw'))
+        ) {
             try {
-                signedUrl = await getPresignedUrl(c.image_url);
-            } catch (err) {
-                console.error(`Failed to sign URL for collection ${c.slug}`, err);
-                signedUrl = null;
+                const path = c.image_url.startsWith('http') ? new URL(c.image_url).pathname.substring(1) : c.image_url;
+                signedUrl = await getPresignedUrl(path);
+            } catch (error) {
+                console.error(`Failed to sign URL for ${c.slug}:`, error);
             }
         }
         return {
@@ -82,6 +89,13 @@ export default async function RideEngineCollectionsPage() {
                             Manage Ride Engine collection hero images, titles, and subtitles
                         </p>
                     </div>
+                    <Link
+                        href="/admin/collections-rideengine/groups"
+                        className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
+                    >
+                        <span>Manage Menu Groups</span>
+                        <ArrowLeft className="rotate-180" size={16} />
+                    </Link>
                 </div>
             </div>
 

@@ -14,11 +14,12 @@ export interface Collection {
 
 import { getPresignedUrl } from "@/lib/railway/storage";
 
-export async function getCollectionByHandle(handle: string): Promise<Collection | null> {
-    // Fetch collection details
+export async function getCollectionBySlug(slug: string, lang: string = 'en'): Promise<Collection | null> {
+    // Fetch collection details by slug
     const collectionRes = await query(
         `SELECT 
             c.id, 
+            c.slug,
             COALESCE(ct.title, c.title) as title, 
             c.handle, 
             c.description, 
@@ -26,9 +27,9 @@ export async function getCollectionByHandle(handle: string): Promise<Collection 
             c.image_url, 
             c.video_url
      FROM collections c
-     LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = 'en'
-     WHERE c.handle = $1`,
-        [handle]
+     LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
+     WHERE c.slug = $1 AND c.visible = true`,
+        [slug, lang]
     );
 
     if (collectionRes.rows.length === 0) {
@@ -37,13 +38,21 @@ export async function getCollectionByHandle(handle: string): Promise<Collection 
 
     const collection = collectionRes.rows[0];
 
-    // Sign the image URL if it's a relative path
+    // Sign the image URL - prefer full size (1900px) for frontend hero
     let signedImageUrl = collection.image_url;
     if (collection.image_url && !collection.image_url.startsWith('http') && !collection.image_url.startsWith('/')) {
         try {
-            signedImageUrl = await getPresignedUrl(collection.image_url);
+            // Replace /thumb/ with /full/ to get 1900px version for frontend
+            const fullPath = collection.image_url.replace('/thumb/', '/full/');
+            signedImageUrl = await getPresignedUrl(fullPath);
         } catch (err) {
-            console.error(`Failed to sign collection image URL for ${handle}`, err);
+            console.error(`Failed to sign collection image URL for ${slug}`, err);
+            // Fallback to original path
+            try {
+                signedImageUrl = await getPresignedUrl(collection.image_url);
+            } catch (fallbackErr) {
+                console.error(`Fallback signing also failed for ${slug}`);
+            }
         }
     }
     collection.image_url = signedImageUrl;
@@ -53,6 +62,7 @@ export async function getCollectionByHandle(handle: string): Promise<Collection 
     // Using subqueries for image and price to be efficient for listing
     const productsRes = await query(
         `SELECT p.*, 
+             COALESCE(pt_t.title, p.name) as name, 
              COALESCE(
                  (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1),
                  p.og_image_url
@@ -60,9 +70,10 @@ export async function getCollectionByHandle(handle: string): Promise<Collection 
              (SELECT price FROM product_variants WHERE product_id = p.id LIMIT 1) as price
       FROM collection_products cp
       JOIN products p ON cp.product_id = p.id
+      LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2
       WHERE cp.collection_id = $1
       ORDER BY cp.sort_order ASC`,
-        [collection.id]
+        [collection.id, lang]
     );
 
     // Transform to match what frontend expects

@@ -11,6 +11,7 @@ type Collection = {
     subtitle?: string | null;
     image_url?: string | null;
     source: string;
+    product_count?: number;
 };
 
 type CollectionsListClientProps = {
@@ -24,9 +25,10 @@ export default function CollectionsListClient({
     sourceTitle,
     sourceColor
 }: CollectionsListClientProps) {
+    const [collections, setCollections] = useState(initialCollections);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredCollections = initialCollections.filter(c => {
+    const filteredCollections = collections.filter(c => {
         const searchLower = searchTerm.toLowerCase();
         return (
             c.title.toLowerCase().includes(searchLower) ||
@@ -34,6 +36,22 @@ export default function CollectionsListClient({
             (c.subtitle && c.subtitle.toLowerCase().includes(searchLower))
         );
     });
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this collection?')) return;
+        try {
+            const res = await fetch(`/api/admin/collections/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || 'Failed to delete');
+                return;
+            }
+            setCollections(prev => prev.filter(c => c.id !== id));
+        } catch (e) {
+            console.error(e);
+            alert('Error deleting collection');
+        }
+    };
 
     return (
         <div>
@@ -50,7 +68,7 @@ export default function CollectionsListClient({
                     />
                 </div>
                 <p className="text-xs text-gray-500 mt-2 ml-1">
-                    Showing {filteredCollections.length} of {initialCollections.length} collections
+                    Showing {filteredCollections.length} of {collections.length} collections
                 </p>
             </div>
 
@@ -58,7 +76,11 @@ export default function CollectionsListClient({
             {filteredCollections.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredCollections.map((collection) => (
-                        <CollectionCard key={collection.id} collection={collection} />
+                        <CollectionCard
+                            key={collection.id}
+                            collection={collection}
+                            onDelete={collection.product_count === 0 ? () => handleDelete(collection.id) : undefined}
+                        />
                     ))}
                 </div>
             ) : (
