@@ -362,6 +362,14 @@ export default function Page({ params }: { params: Promise<{ category: string; s
         </div>
       )}
 
+      {/* Specs HTML */}
+      {product.specs_html && (
+        <div className="container mx-auto px-4 py-16 border-t border-gray-100">
+          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Specifications</h3>
+          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
+        </div>
+      )}
+
       {/* Package Includes */}
       {product.package_includes && (
         <div className="bg-gray-50 py-16 border-t border-gray-100">
@@ -369,14 +377,6 @@ export default function Page({ params }: { params: Promise<{ category: string; s
             <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Package Includes</h3>
             <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
           </div>
-        </div>
-      )}
-
-      {/* Specs HTML */}
-      {product.specs_html && (
-        <div className="container mx-auto px-4 py-16 border-t border-gray-100">
-          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Specifications</h3>
-          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
         </div>
       )}
 

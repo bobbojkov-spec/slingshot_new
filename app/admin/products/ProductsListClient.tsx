@@ -213,7 +213,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
           defaultValue={record.brand}
           style={{ width: '100%', fontSize: 12 }}
           size="small"
-          bordered={false}
+          variant="borderless"
           className="hover:border hover:border-gray-300 rounded"
           onChange={async (newBrand) => {
             try {

@@ -299,6 +299,29 @@
            bg-primary text-primary-foreground
            font-body text-sm rounded-full;
   }
+
+  /* Scraped Content Styling */
+  .ks-table {
+    @apply w-full border-collapse mb-8 text-left;
+  }
+
+  .ks-table-row {
+    @apply border-b border-border hover:bg-muted/30 transition-colors;
+  }
+
+  .ks-table-cell {
+    @apply p-4 font-body text-sm text-foreground align-middle;
+  }
+
+  .ks-table-header-cell {
+    @apply font-heading font-semibold uppercase text-xs tracking-wider 
+           bg-muted/50 text-muted-foreground;
+  }
+
+  /* Responsive wrapper if needed */
+  .ks-table-wrapper {
+    @apply w-full overflow-x-auto;
+  }
 }
 
 @layer utilities {

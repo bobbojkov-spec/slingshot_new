@@ -41,18 +41,18 @@ export async function POST(req: Request) {
 
         const { rows } = await query(
             `
-        INSERT INTO collections (
-          title, 
-          slug, 
-          source, 
-          sort_order, 
-          visible, 
-          created_at, 
-          updated_at
-        )
-        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-        RETURNING *
-      `,
+                  title, 
+                  slug, 
+                  handle,
+                  source, 
+                  sort_order, 
+                  visible, 
+                  created_at, 
+                  updated_at
+                )
+                VALUES ($1, $2, $2, $3, $4, $5, NOW(), NOW())
+                RETURNING *
+              `,
             [title, slug, source, nextOrder, false] // Default hidden
         );
 

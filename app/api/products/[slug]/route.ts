@@ -144,7 +144,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     // Prefer same type, fallback to category.
     const relatedSql = `
       SELECT 
-        p.id, p.name, p.slug, 
+        p.id, p.name, p.title, p.slug, 
         (
           SELECT storage_path 
           FROM product_images_railway pir 
@@ -167,7 +167,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     const relatedResult = await query(relatedSql, [product.category_id, product.id]);
     const related = await Promise.all(relatedResult.rows.map(async (row: any) => ({
       id: row.id,
-      name: row.name,
+      name: row.title || row.name,
       category: row.category_name,
       category_slug: row.category_slug,
       price: parseFloat(row.price || '0'),
