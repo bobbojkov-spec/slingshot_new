@@ -225,24 +225,7 @@ const Header = () => {
                       );
                     })}
 
-                    {/* Static Categories Column (Keep this always?) */}
-                    <div>
-                      <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                        CATEGORIES
-                      </h3>
-                      <div className="flex flex-col gap-3">
-                        {navigation?.activityCategories?.map((activity: NavigationActivityCategory) => (
-                          <Link
-                            key={activity.id}
-                            href={`/collections/${activity.slug}`}
-                            className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
-                            onClick={() => setIsMegaOpen(false)}
-                          >
-                            {activity.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
+
                   </div>
                 )}
 

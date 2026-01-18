@@ -10,3 +10,5 @@ slingshot-collections/
 rideengine-media/
 public/collections/
 *.json.backup
+
+scraped_data/
