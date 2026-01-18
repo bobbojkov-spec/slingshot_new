@@ -6,7 +6,7 @@ import { Menu, X, Search, ShoppingBag } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { useNavigation } from "@/hooks/useNavigation";
+import { useNavigation, NavigationSport, MenuGroup, MenuCollection, NavigationActivityCategory } from "@/hooks/useNavigation";
 import { Typography } from "antd";
 
 const Header = () => {
@@ -93,7 +93,7 @@ const Header = () => {
   // User said "list the 4 active CATEGORIES (sports)".
   // We'll trust navigation.sports but limit if necessary.
   // EXCLUDE 'rideengine' explicitly as it has its own hardcoded link
-  const slingshotSports = (navigation?.sports || []).filter(s => s.slug !== 'rideengine');
+  const slingshotSports: NavigationSport[] = (navigation?.sports || []).filter(s => s.slug !== 'rideengine');
 
   // Helper to get active sport data (if activeMenu is a sport)
   const currentSportData = useMemo(() => {
@@ -125,7 +125,7 @@ const Header = () => {
               <nav className="flex items-center gap-8 h-full">
 
                 {/* Slingshot Sports */}
-                {slingshotSports.map((sport) => (
+                {slingshotSports.map((sport: NavigationSport) => (
                   <div
                     key={sport.slug}
                     className="relative h-full flex items-center"
@@ -181,10 +181,10 @@ const Header = () => {
                 {currentSportData && (
                   <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-5 gap-12">
                     {/* Dynamic Menu Groups */}
-                    {navigation?.slingshotMenuGroups?.map((group) => {
+                    {navigation?.slingshotMenuGroups?.map((group: MenuGroup) => {
                       // Filter collections that belong to the current active 'sport' (category)
                       // Heuristic: Check if collection's category_slugs includes the active sport slug
-                      const filteredCollections = group.collections.filter(c =>
+                      const filteredCollections = group.collections.filter((c: MenuCollection) =>
                         // If no category slugs data logic, show all (fallback). 
                         // But we have logic.
                         c.category_slugs?.includes(activeMenu || '')
@@ -210,7 +210,7 @@ const Header = () => {
                           )}
 
                           <div className="flex flex-col gap-3">
-                            {filteredCollections.map(col => (
+                            {filteredCollections.map((col: MenuCollection) => (
                               <Link
                                 key={col.id}
                                 href={`/collections/${col.slug}`}
@@ -231,7 +231,7 @@ const Header = () => {
                         CATEGORIES
                       </h3>
                       <div className="flex flex-col gap-3">
-                        {navigation?.activityCategories?.map((activity) => (
+                        {navigation?.activityCategories?.map((activity: NavigationActivityCategory) => (
                           <Link
                             key={activity.id}
                             href={`/shop?category=${activeMenu ?? ''}&activity=${activity.slug}`}
@@ -249,7 +249,7 @@ const Header = () => {
                 {/* RIDE ENGINE MENU */}
                 {activeMenu === 'ride-engine' && (
                   <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-7 gap-8">
-                    {navigation?.rideEngineMenuGroups?.map((group) => {
+                    {navigation?.rideEngineMenuGroups?.map((group: MenuGroup) => {
                       const groupTitle = (language === 'bg' && group.title_bg) ? group.title_bg : group.title;
                       const hasSlug = !!group.slug;
 
@@ -268,7 +268,7 @@ const Header = () => {
                           )}
 
                           <div className="flex flex-col gap-2">
-                            {group.collections?.map((col) => (
+                            {group.collections?.map((col: MenuCollection) => (
                               <Link
                                 key={col.id}
                                 href={`/collections/${col.slug}`}
@@ -366,7 +366,7 @@ const Header = () => {
           }`}
       >
         <nav className="section-container py-6 flex flex-col gap-4">
-          {slingshotSports.map((sport) => (
+          {slingshotSports.map((sport: NavigationSport) => (
             <Link
               key={sport.slug}
               href={`/category/${sport.slug}`}
