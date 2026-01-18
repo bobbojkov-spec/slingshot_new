@@ -1,4 +1,4 @@
-export type ImageVariant = 'thumb' | 'medium' | 'original';
+export type ImageVariant = 'thumb' | 'medium' | 'original' | 'full';
 
 function replaceVariantSegment(url: string, sourceSegment: string, targetSegment: string): string {
   return url.replace(`/${sourceSegment}/`, `/${targetSegment}/`);
@@ -14,7 +14,8 @@ export function getImageVariantUrl(
     return url;
   }
 
-  const sourceSegments: ImageVariant[] = ['original', 'thumb', 'medium'];
+  // Known variant segments in the wild
+  const sourceSegments = ['original', 'thumb', 'medium', 'big', 'full', 'large'];
   for (const source of sourceSegments) {
     if (url.includes(`/${source}/`)) {
       return replaceVariantSegment(url, source, variant);
