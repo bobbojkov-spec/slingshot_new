@@ -34,6 +34,7 @@ type ProductInfo = {
   tags?: string[] | string;
   status?: string;
   video_url?: string;
+  hero_video_url?: string;
   availability?: string;
   categoryId?: string;
   categoryName?: string;

@@ -24,8 +24,31 @@ const BilingualRichText: React.FC<BilingualRichTextProps> = ({
   placeholder,
   showCopyButton = true,
 }) => {
-  const { quill: enQuill, quillRef: enQuillRef } = useQuill();
-  const { quill: bgQuill, quillRef: bgQuillRef } = useQuill();
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ align: [] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ['link', 'image', 'video'],
+      ['clean'],
+      ['table'], // Add table button to toolbar
+    ],
+    table: true, // Enable table module
+  };
+
+  const formats = [
+    'bold', 'italic', 'underline', 'strike',
+    'align', 'list', 'indent',
+    'header',
+    'link', 'image', 'video',
+    'clean',
+    'table' // Allow table format
+  ];
+
+  const { quill: enQuill, quillRef: enQuillRef } = useQuill({ modules, formats });
+  const { quill: bgQuill, quillRef: bgQuillRef } = useQuill({ modules, formats });
 
   // English Quill editor setup
   useEffect(() => {

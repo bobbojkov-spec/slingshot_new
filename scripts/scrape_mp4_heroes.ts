@@ -69,7 +69,7 @@ async function main() {
             }
         });
 
-        for (let i = 0; i < targets.length; i++) {
+        for (let i = 450; i < targets.length; i++) {
             const t = targets[i];
 
             // Skip if already in manifest
@@ -79,6 +79,7 @@ async function main() {
             }
 
             console.log(`[${i + 1}/${targets.length}] Checking ${t.type}: ${t.slug} ...`);
+            await new Promise(r => setTimeout(r, 1000)); // Throttle requests
 
             try {
                 await page.goto(t.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
