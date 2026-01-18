@@ -9,14 +9,29 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { image_url, video_url, visible, sort_order, translations } = body;
+        const { image_url, video_url, visible, sort_order, translations, slug } = body;
 
-        // Update collection
+        // check if slug/handle already exists
+        if (slug) {
+            const existing = await query(
+                `SELECT id FROM collections WHERE (slug = $1 OR handle = $1) AND id != $2`,
+                [slug, id]
+            );
+            if (existing.rows.length > 0) {
+                return NextResponse.json(
+                    { error: 'Slug/Handle already exists. Please choose another one.' },
+                    { status: 400 }
+                );
+            }
+        }
+
+        // Update collection (sync handle with slug)
+        // Using distinct parameters for slug and handle to avoid "inconsistent types deduced" error
         await query(
             `UPDATE collections 
-             SET image_url = $1, video_url = $2, visible = $3, sort_order = $4
-             WHERE id = $5`,
-            [image_url, video_url, visible, sort_order, id]
+             SET image_url = $1, video_url = $2, visible = $3, sort_order = $4, slug = $5, handle = $6
+             WHERE id = $7`,
+            [image_url, video_url, visible, sort_order, slug, slug, id]
         );
 
         // Update Translations (Upsert)

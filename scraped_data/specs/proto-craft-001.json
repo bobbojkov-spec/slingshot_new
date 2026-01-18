@@ -1,0 +1,8 @@
+{
+  "specs_html": "<table class=\"ks-table\">\n          <tbody><tr class=\"ks-table-row\">\n          <td class=\"ks-table-cell ks-table-header-cell\">Volume (L)</td>\n        \n          <td class=\"ks-table-cell ks-table-header-cell\">Length</td>\n        \n          <td class=\"ks-table-cell ks-table-header-cell\">Width</td>\n        \n          <td class=\"ks-table-cell ks-table-header-cell\">Thickness</td>\n        \n          <td class=\"ks-table-cell ks-table-header-cell\">Weight</td>\n        </tr><tr class=\"ks-table-row\">\n          <td class=\"ks-table-cell ks-table-header-cell\">95 L</td>\n        \n        <td class=\"ks-table-cell\" data-unit-values=\"{&quot;0&quot;:&quot;90\\&quot;&quot;,&quot;1&quot;:&quot;229cm&quot;}\" data-unit-type=\"single\">\n          229cm\n        </td>\n      \n        <td class=\"ks-table-cell\" data-unit-values=\"{&quot;0&quot;:&quot;18\\&quot;&quot;,&quot;1&quot;:&quot;45.7cm&quot;}\" data-unit-type=\"single\">\n          45.7cm\n        </td>\n      \n        <td class=\"ks-table-cell\" data-unit-values=\"{&quot;0&quot;:&quot;5 &lt;sup&gt;13&lt;/sup&gt;⁄&lt;sub&gt;16&lt;/sub&gt;\\&quot;&quot;,&quot;1&quot;:&quot;14.7cm&quot;}\" data-unit-type=\"single\">\n          14.7cm\n        </td>\n      \n        <td class=\"ks-table-cell\" data-unit-values=\"{&quot;0&quot;:&quot;11.2lb&quot;,&quot;1&quot;:&quot;5.08kg&quot;}\" data-unit-type=\"single\">\n          5.08kg\n        </td>\n      </tr></tbody>\n        </table>",
+  "package_includes": "<p>Proto Craft 001 Board</p>",
+  "description_html": "",
+  "description_html2": "",
+  "slug": "proto-craft-001",
+  "url": "https://slingshotsports.com/en-eu/products/proto-craft-001"
+}

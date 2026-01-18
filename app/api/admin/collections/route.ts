@@ -41,6 +41,7 @@ export async function POST(req: Request) {
 
         const { rows } = await query(
             `
+                INSERT INTO collections (
                   title, 
                   slug, 
                   handle,
@@ -50,10 +51,10 @@ export async function POST(req: Request) {
                   created_at, 
                   updated_at
                 )
-                VALUES ($1, $2, $2, $3, $4, $5, NOW(), NOW())
+                values ($1, $2, $3, $4, $5, $6, NOW(), NOW())
                 RETURNING *
               `,
-            [title, slug, source, nextOrder, false] // Default hidden
+            [title, slug, slug, source, nextOrder, false] // Default hidden
         );
 
         return NextResponse.json({ collection: rows[0] });

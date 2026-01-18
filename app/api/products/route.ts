@@ -36,8 +36,6 @@ export async function GET(req: Request) {
     if (queryTerm) {
       conditions.push(`(
         p.name ILIKE $${paramIndex} OR 
-        p.description ILIKE $${paramIndex} OR
-        pt_t.title ILIKE $${paramIndex} OR
         array_to_string(p.tags, ' ') ILIKE $${paramIndex}
       )`);
       params.push(`%${queryTerm}%`);

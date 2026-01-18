@@ -36,6 +36,7 @@ export default function CollectionEditForm({
     const [videoUrl, setVideoUrl] = useState(collection.video_url || '');
     const [visible, setVisible] = useState(collection.visible);
     const [sortOrder, setSortOrder] = useState(collection.sort_order);
+    const [slug, setSlug] = useState(collection.slug);
 
     const [translations, setTranslations] = useState(initialTranslations);
 
@@ -148,6 +149,7 @@ export default function CollectionEditForm({
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    slug,
                     image_url: imageUrl,
                     video_url: videoUrl,
                     visible,
@@ -444,6 +446,21 @@ export default function CollectionEditForm({
                                     }`}
                             />
                         </button>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Slug (URL Handle)
+                        </label>
+                        <input
+                            type="text"
+                            value={slug}
+                            onChange={(e) => setSlug(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <p className="mt-2 text-sm text-gray-500">
+                            Unique ID used in the URL. Must be unique across all collections.
+                        </p>
                     </div>
 
                     <div>

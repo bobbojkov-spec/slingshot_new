@@ -133,7 +133,7 @@ const Header = () => {
                     onMouseLeave={handleNavLeave}
                   >
                     <Link
-                      href={sport.customLink || `/shop?category=${sport.slug}`}
+                      href={sport.customLink || `/${sport.slug}`}
                       className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm ${activeMenu === sport.slug && isMegaOpen ? "text-accent" : ""
                         }`}
                       onClick={() => setIsMegaOpen(false)}
@@ -198,7 +198,7 @@ const Header = () => {
                       return (
                         <div key={group.id} className="flex flex-col">
                           {hasSlug ? (
-                            <Link href={`/${group.slug}`} className="block mb-6 group/header">
+                            <Link href={`/collections/${group.slug}`} className="block mb-6 group/header">
                               <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 group-hover/header:text-accent font-bold border-b border-white/5 pb-2 transition-colors">
                                 {groupTitle}
                               </h3>
@@ -234,7 +234,7 @@ const Header = () => {
                         {navigation?.activityCategories?.map((activity: NavigationActivityCategory) => (
                           <Link
                             key={activity.id}
-                            href={`/shop?category=${activeMenu ?? ''}&activity=${activity.slug}`}
+                            href={`/collections/${activity.slug}`}
                             className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
                             onClick={() => setIsMegaOpen(false)}
                           >
