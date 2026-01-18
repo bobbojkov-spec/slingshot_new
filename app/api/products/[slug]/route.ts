@@ -14,8 +14,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         p.id, 
         p.name, 
         p.slug, 
-        p.description, 
+        p.slug, 
+        p.title, -- Added title
+        p.description,
+        p.description_bg,
+        p.name_bg,
         p.product_type,
+        p.brand, -- Added brand
         c.name as category_name,
         c.slug as category_slug,
         COALESCE(
@@ -57,7 +62,29 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       WHERE product_id = $1 AND status = 'active'
       ORDER BY position ASC
     `;
-    // ... (images query remains) ...
+    const imagesSql = `
+      SELECT url as storage_path, position as display_order
+      FROM product_images 
+      WHERE product_id = $1 
+      ORDER BY position ASC
+    `;
+
+    const localImagesSql = `
+      SELECT storage_path as url, display_order as position
+      FROM product_images_railway
+      WHERE product_id = $1
+        AND id IN (
+          SELECT id FROM (
+            SELECT id, ROW_NUMBER() OVER (
+              PARTITION BY bundle_id 
+              ORDER BY CASE size WHEN 'big' THEN 1 WHEN 'original' THEN 2 ELSE 3 END ASC
+            ) as rn 
+            FROM product_images_railway 
+            WHERE product_id = $1
+          ) sub WHERE rn = 1
+        )
+      ORDER BY display_order ASC
+    `;
 
     const colorsSql = `
       SELECT id, name, image_path, display_order
@@ -77,7 +104,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     // ... (image processing remains same)
     const imageRowsRaw = imagesResult.rows;
     const localImageRows = localImagesResult.rows.map((r: any) => ({
-      storage_path: r.url.startsWith('/') ? r.url : `/${r.url}`, // Ensure local paths have leading slash
+      storage_path: r.url, // Use exact path from DB (no leading slash needed for S3 keys)
       display_order: r.position
     }));
     const allImageRows = [...imageRowsRaw, ...localImageRows].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
@@ -114,7 +141,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     const relatedSql = `
       SELECT 
         p.id, p.name, p.slug, 
-        (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id AND pir.size = 'thumb' ORDER BY display_order ASC LIMIT 1) as image_path,
+        (
+          SELECT storage_path 
+          FROM product_images_railway pir 
+          WHERE pir.product_id = p.id AND pir.size IN ('medium', 'big') 
+          ORDER BY CASE WHEN pir.size='medium' THEN 1 ELSE 2 END ASC, display_order ASC 
+          LIMIT 1
+        ) as image_path,
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
          c.name as category_name,
          c.slug as category_slug
@@ -149,9 +182,39 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
     // Images: Fetch from product_images table
     // fallback to og_image_url if no images found?
-    let images = await Promise.all(imageRows.map(async (r: any) =>
-      await getPresignedUrl(r.storage_path)
-    ));
+    let images = await Promise.all(imageRows.map(async (r: any) => {
+      let key = r.storage_path;
+      if (key.startsWith('http')) {
+        // If it's a full URL, we need to extract the key to sign it
+        // Pattern: https://host/bucket/KEY
+        // We'll try to find the bucket name and split after it
+        // Or naively split by 'product-images/' if that's consistent
+        // Or assume the last part of the path is key? No, key implies directory structure.
+
+        try {
+          const urlObj = new URL(key);
+          // key becomes the pathname without the leading slash
+          // BUT if pathname includes bucket, we must remove it.
+          // Railway storage path usually includes bucket in URL but S3 command expects Key relative to bucket.
+          const pathParts = urlObj.pathname.split('/');
+          // pathParts[0] is empty, [1] is bucket, [2+] is Key?
+          // Let's assume bucket is first segment if it matches our config?
+          // For safety, let's look for 'product-images' index
+          const keyIndex = pathParts.indexOf('product-images');
+          if (keyIndex !== -1) {
+            key = pathParts.slice(keyIndex).join('/');
+          } else {
+            // Fallback: Remove first segment (bucket)
+            if (pathParts.length > 2) {
+              key = pathParts.slice(2).join('/');
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing image URL', key, e);
+        }
+      }
+      return await getPresignedUrl(key);
+    }));
     images = images.filter(Boolean); // Remove nulls
 
     const mainImage = product.image_path
@@ -165,6 +228,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     return NextResponse.json({
       product: {
         ...product,
+        name: product.title || product.name, // Use Title as the primary Name
+        title: product.title,
+        brand: product.brand,
         image: mainImage,
         price,
         images,

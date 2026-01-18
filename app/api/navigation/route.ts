@@ -15,6 +15,7 @@ export async function GET(req: Request) {
           c.slug,
           c.handle,
           c.sort_order,
+          c.custom_link,
           COALESCE(ct.name, c.name) as name,
           COALESCE(ct.description, c.description) as description
         FROM categories c
@@ -121,6 +122,7 @@ export async function GET(req: Request) {
         id: sport.id,
         slug: sport.slug,
         handle: sport.handle,
+        customLink: sport.custom_link,
         name: sport.name,
         description: sport.description,
         productGroups: {

@@ -27,7 +27,9 @@ export async function GET(req: Request) {
     const brandSlug = searchParams.get('brand');
 
     // Build WHERE clause
-    const conditions = [`p.status = 'active'`, `c.visible = true`, `c.status = 'active'`];
+    // USER REQUEST: "category NOT visible HIDES just the category from the menu... not all products within."
+    // Removed `c.visible = true` so products in hidden categories (like rideengine) are still visible.
+    const conditions = [`p.status = 'active'`, `c.status = 'active'`];
     const params: any[] = [lang];
     let paramIndex = 2; // $1 is lang
 

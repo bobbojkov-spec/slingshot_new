@@ -30,6 +30,7 @@ type Category = {
   id: string;
   name: string;
   slug?: string;
+  custom_link?: string;
   handle?: string;
   description?: string;
   status?: string;
@@ -58,6 +59,7 @@ export default function CategoriesListClient({
   const [editingKey, setEditingKey] = useState<string>('');
   const [editForm, setEditForm] = useState<{
     slug?: string;
+    custom_link?: string;
     sort_order?: number;
     image_url?: string;
     translation_en: { name: string; description: string };
@@ -77,6 +79,7 @@ export default function CategoriesListClient({
     console.log('🔍 Editing category:', JSON.stringify(record, null, 2));
     setEditForm({
       slug: record.slug,
+      custom_link: record.custom_link,
       sort_order: record.sort_order,
       image_url: record.image_url,
       translation_en: {
@@ -107,6 +110,7 @@ export default function CategoriesListClient({
           categoryId: id,
           data: {
             slug: editForm.slug,
+            custom_link: editForm.custom_link,
             sort_order: editForm.sort_order,
             image_url: editForm.image_url,
           },
@@ -124,6 +128,7 @@ export default function CategoriesListClient({
             ? {
               ...cat,
               slug: editForm.slug,
+              custom_link: editForm.custom_link,
               sort_order: editForm.sort_order,
               image_url: editForm.image_url,
               translation_en: editForm.translation_en,
@@ -288,14 +293,27 @@ export default function CategoriesListClient({
       render: (_: any, record: Category) => {
         if (isEditing(record)) {
           return (
-            <Input
-              value={editForm.slug}
-              onChange={(e) => setEditForm({ ...editForm, slug: e.target.value })}
-              placeholder="auto-generated if empty"
-            />
+            <div className="flex flex-col gap-2">
+              <Input
+                value={editForm.slug}
+                onChange={(e) => setEditForm({ ...editForm, slug: e.target.value })}
+                placeholder="auto-generated if empty"
+              />
+              <Input
+                value={editForm.custom_link}
+                onChange={(e) => setEditForm({ ...editForm, custom_link: e.target.value })}
+                placeholder="Custom Link (e.g. /my-page)"
+                className="text-xs"
+              />
+            </div>
           );
         }
-        return record.slug || record.handle || '—';
+        return (
+          <div className="flex flex-col">
+            <span>{record.slug || record.handle || '—'}</span>
+            {record.custom_link && <span className="text-xs text-blue-500">{record.custom_link}</span>}
+          </div>
+        );
       },
     },
     {
@@ -583,6 +601,9 @@ export default function CategoriesListClient({
           </Form.Item>
           <Form.Item name="slug" label="Slug (URL)">
             <Input placeholder="e.g., electronics (auto-generated if empty)" />
+          </Form.Item>
+          <Form.Item name="custom_link" label="Custom Link (Optional Override)">
+            <Input placeholder="e.g., /slingshot-main-wake" />
           </Form.Item>
           <Form.Item name="description" label="Description">
             <Input.TextArea rows={3} placeholder="Brief description of this category" />

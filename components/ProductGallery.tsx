@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface ProductGalleryProps {
   images: string[];
@@ -93,6 +93,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
           className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 bg-black/95 border-none"
           onKeyDown={handleKeyDown}
         >
+          <DialogTitle className="sr-only">Product Image Zoom</DialogTitle>
           <div className="relative w-full h-full flex items-center justify-center">
             {/* Close button */}
             <button

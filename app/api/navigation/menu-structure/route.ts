@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const source = searchParams.get('source');
 
+        const lang = (searchParams.get('lang') || 'en').toLowerCase() === 'bg' ? 'bg' : 'en';
+
         if (!source) {
             return NextResponse.json({ error: 'Source is required' }, { status: 400 });
         }
@@ -60,12 +62,12 @@ export async function GET(request: NextRequest) {
                 cc.category_slugs
             FROM menu_group_collections mgc
             JOIN collections c ON mgc.collection_id = c.id
-            LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = 'en'
+            LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
             LEFT JOIN CollectionCategories cc ON c.id = cc.collection_id
             WHERE mgc.menu_group_id = ANY($1)
             ORDER BY mgc.sort_order ASC
             `,
-            [groups.map((g: any) => g.id)]
+            [groups.map((g: any) => g.id), lang]
         );
 
         // Map collections to groups

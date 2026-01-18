@@ -133,7 +133,7 @@ const Header = () => {
                     onMouseLeave={handleNavLeave}
                   >
                     <Link
-                      href={`/shop?category=${sport.slug}`}
+                      href={sport.customLink || `/shop?category=${sport.slug}`}
                       className={`nav-link-white h-full flex items-center px-2 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm ${activeMenu === sport.slug && isMegaOpen ? "text-accent" : ""
                         }`}
                       onClick={() => setIsMegaOpen(false)}

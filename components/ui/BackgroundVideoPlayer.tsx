@@ -70,41 +70,27 @@ export default function BackgroundVideoPlayer({ videoUrl, poster, className = ''
                 - playsinline=1: iOS support
                 - rel=0: No related videos from others
              */}
-            <iframe
-                ref={iframeRef}
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&showinfo=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1`}
-                className="absolute w-[300%] h-[300%] top-[-100%] left-[-100%] pointer-events-none object-cover min-w-full min-h-full"
-                // The 300% size is a trick to crop the black bars of 16:9 video on various aspect ratios. 
-                // A better approach might be object-fit: cover equivalent if using a wrapper,
-                // but for iframes, oversizing is the standard hack.
-                // However, let's try a safer CSS approach first or standard full width/height.
-                // Actually, object-cover doesn't work on iframes content.
-                // We'll stick to w-full h-full and user CSS to center/crop if possible, 
-                // or just accept letterboxing if aspect ratio mismatch.
-                // Let's refine the style:
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    // pointerEvents: 'none', // Already in class
-                }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                onLoad={handleLoad}
-            />
-
             {/* Loading / Poster Overlay */}
-            {/* 
-               We keep the poster visible until the video is loaded (or maybe a bit longer to ensure it started playing).
-               However, iframe onLoad fires when the player code loads, not necessarily when video starts.
-               For true 'started playing', we'd need the YouTube Player API.
-               For simplicity, we'll fade out iframe opacity 0->1 or fade out poster.
-            */}
             {isLoading && poster && (
                 <div
-                    className="absolute inset-0 bg-cover bg-center z-10 transition-opacity duration-700"
+                    className="absolute inset-0 bg-cover bg-center z-20 transition-opacity duration-1000"
                     style={{ backgroundImage: `url(${poster})` }}
                 />
             )}
-            {/* Loading Spinner only if no poster? No, usually poster is there. */}
+
+            <div className={`absolute inset-0 transition-opacity duration-1000 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+                <iframe
+                    ref={iframeRef}
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&showinfo=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1`}
+                    className="absolute w-[300%] h-[300%] top-[-100%] left-[-100%] pointer-events-none object-cover min-w-full min-h-full"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    onLoad={handleLoad}
+                />
+            </div>
         </div>
     );
 }

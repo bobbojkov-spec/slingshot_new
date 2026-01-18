@@ -102,8 +102,9 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
 
     const handleSearchKey = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
-            // Reset all filters, only keep 'q'
-            router.push(`${basePath}?q=${encodeURIComponent(searchTerm)}`);
+            // Global Search - Always redirect to Shop with query, resetting other context
+            // User requested: "KEYword search is Always GLOBAL. not a filter."
+            router.push(`/shop?q=${encodeURIComponent(searchTerm)}`);
         }
     };
 

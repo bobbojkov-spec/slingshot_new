@@ -46,7 +46,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, slug, description, sort_order, image_url } = body;
+    const { name, slug, custom_link, description, sort_order, image_url } = body;
 
     if (!name) {
       return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
@@ -61,6 +61,7 @@ export async function POST(req: Request) {
           name, 
           slug, 
           handle,
+          custom_link,
           description, 
           sort_order, 
           image_url,
@@ -69,10 +70,10 @@ export async function POST(req: Request) {
           created_at,
           updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
         RETURNING *
       `,
-      [name, finalSlug, finalSlug, description || null, sort_order || 0, image_url || null, 'active', true]
+      [name, finalSlug, finalSlug, custom_link || null, description || null, sort_order || 0, image_url || null, 'active', true]
     );
 
     return NextResponse.json({ category: rows[0] });
@@ -105,6 +106,10 @@ export async function PUT(req: Request) {
     if (data.slug !== undefined) {
       updates.push(`slug = $${paramIndex++}, handle = $${paramIndex++}`);
       values.push(data.slug, data.slug);
+    }
+    if (data.custom_link !== undefined) {
+      updates.push(`custom_link = $${paramIndex++}`);
+      values.push(data.custom_link);
     }
     if (data.description !== undefined) {
       updates.push(`description = $${paramIndex++}`);

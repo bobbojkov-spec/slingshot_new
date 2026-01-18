@@ -21,6 +21,7 @@ export default async function CollectionPage({ params }: PageProps) {
 
     const breadcrumbs = [
         { label: 'Shop', href: '/shop' },
+        ...(collection.source === 'rideengine' ? [{ label: 'RIDEENGINE', href: '/shop?brand=Ride%20Engine' }] : []),
         { label: collection.title }
     ];
 

@@ -9,6 +9,7 @@ export interface Collection {
     subtitle: string | null;
     image_url: string | null;
     video_url: string | null;
+    source: string; // Added source
     products: any[];
 }
 
@@ -25,7 +26,8 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
             c.description, 
             ct.subtitle,
             c.image_url, 
-            c.video_url
+            c.video_url,
+            c.source
      FROM collections c
      LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
      WHERE c.slug = $1 AND c.visible = true`,

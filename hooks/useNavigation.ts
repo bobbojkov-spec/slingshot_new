@@ -64,51 +64,50 @@ export function useNavigation() {
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchNavigation() {
-      setLoading(true);
-      setError(null);
+    // No change needed to useNavigation structure, it handles lang param.
+    // Checking menu-structure route instead.
 
-      try {
-        const langParam = language === "bg" ? "bg" : "en";
+    try {
+      const langParam = language === "bg" ? "bg" : "en";
 
-        // Fetch core navigation and menu structures in parallel
-        const [navRes, slingshotRes, rideEngineRes] = await Promise.all([
-          fetch(`/api/navigation?lang=${langParam}`),
-          fetch(`/api/navigation/menu-structure?source=slingshot`),
-          fetch(`/api/navigation/menu-structure?source=rideengine`)
-        ]);
+      // Fetch core navigation and menu structures in parallel
+      const [navRes, slingshotRes, rideEngineRes] = await Promise.all([
+        fetch(`/api/navigation?lang=${langParam}`),
+        fetch(`/api/navigation/menu-structure?source=slingshot`),
+        fetch(`/api/navigation/menu-structure?source=rideengine`)
+      ]);
 
-        if (!navRes.ok) throw new Error('Navigation fetch failed');
+      if (!navRes.ok) throw new Error('Navigation fetch failed');
 
-        const navData: NavigationData = await navRes.json();
-        const slingshotData = await slingshotRes.json();
-        const rideEngineData = await rideEngineRes.json();
+      const navData: NavigationData = await navRes.json();
+      const slingshotData = await slingshotRes.json();
+      const rideEngineData = await rideEngineRes.json();
 
-        if (!cancelled) {
-          setData({
-            ...navData,
-            slingshotMenuGroups: slingshotData.groups || [],
-            rideEngineMenuGroups: rideEngineData.groups || []
-          });
-        }
-      } catch (err: any) {
-        if (!cancelled) {
-          console.error("Navigation fetch failed", err?.message || err);
-          setError(err?.message || "Failed to load navigation");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      if (!cancelled) {
+        setData({
+          ...navData,
+          slingshotMenuGroups: slingshotData.groups || [],
+          rideEngineMenuGroups: rideEngineData.groups || []
+        });
+      }
+    } catch (err: any) {
+      if (!cancelled) {
+        console.error("Navigation fetch failed", err?.message || err);
+        setError(err?.message || "Failed to load navigation");
+      }
+    } finally {
+      if (!cancelled) {
+        setLoading(false);
       }
     }
+  }
 
     fetchNavigation();
-    return () => {
-      cancelled = true;
-    };
-  }, [language]);
+  return () => {
+    cancelled = true;
+  };
+}, [language]);
 
-  return { data, loading, error };
+return { data, loading, error };
 }
 
