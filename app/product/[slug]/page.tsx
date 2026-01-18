@@ -365,7 +365,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Specs HTML */}
       {product.specs_html && (
         <div className="container mx-auto px-4 py-16 border-t border-gray-100">
-          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Specifications</h3>
+          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
+            {language === 'bg' ? 'Спецификации' : 'Specifications'}
+          </h3>
           <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
         </div>
       )}
@@ -374,7 +376,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {product.package_includes && (
         <div className="bg-gray-50 py-16 border-t border-gray-100">
           <div className="container mx-auto px-4">
-            <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Package Includes</h3>
+            <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
+              {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
+            </h3>
             <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
           </div>
         </div>
