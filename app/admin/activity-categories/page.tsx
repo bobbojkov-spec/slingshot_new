@@ -3,6 +3,7 @@ import ActivityCategoriesClient from './ActivityCategoriesClient';
 export const revalidate = 0;
 
 const ADMIN_BASE_URL =
+  process.env.NEXT_API_URL ||
   process.env.ADMIN_BASE_URL ||
   process.env.NEXT_PUBLIC_BASE_URL ||
   process.env.NEXT_PUBLIC_APP_URL ||
