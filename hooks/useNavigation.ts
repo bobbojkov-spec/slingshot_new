@@ -102,14 +102,13 @@ export function useNavigation() {
         }
       }
     }
-  }
 
     fetchNavigation();
-  return () => {
-    cancelled = true;
-  };
-}, [language]);
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
 
-return { data, loading, error };
+  return { data, loading, error };
 }
 
