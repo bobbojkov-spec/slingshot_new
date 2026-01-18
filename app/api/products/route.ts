@@ -102,7 +102,7 @@ export async function GET(req: Request) {
             )
         )
       `);
-      params.push(...typeSlugs, ...typeSlugs); // Need params twice for OR
+      params.push(...typeSlugs); // Push once, reuse placeholders
     }
 
 
