@@ -16,6 +16,7 @@ export interface NavigationSport {
   handle?: string;
   name: string;
   description?: string;
+  customLink?: string;
   productGroups: {
     gear: NavigationProductType[];
     accessories: NavigationProductType[];
