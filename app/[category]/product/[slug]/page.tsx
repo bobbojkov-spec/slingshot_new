@@ -41,6 +41,10 @@ interface Product {
   description_bg?: string; // Localized description
   colors?: Array<{ id: string; name: string; url: string; image_path: string }>;
   video_url?: string;
+  description_html?: string;
+  description_html2?: string;
+  specs_html?: string;
+  package_includes?: string;
 }
 
 export default function Page({ params }: { params: Promise<{ category: string; slug: string }> }) {
@@ -224,6 +228,10 @@ export default function Page({ params }: { params: Promise<{ category: string; s
               })()}
             </div>
 
+            {product.description_html && (
+              <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: product.description_html }} />
+            )}
+
             <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_bg || product.description) : product.description }} />
 
@@ -346,6 +354,31 @@ export default function Page({ params }: { params: Promise<{ category: string; s
           </div>
         </div>
       </div>
+
+      {/* Extended Description (Html2) */}
+      {product.description_html2 && (
+        <div className="container mx-auto px-4 py-8 border-t border-gray-100 mb-8">
+          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.description_html2 }} />
+        </div>
+      )}
+
+      {/* Package Includes */}
+      {product.package_includes && (
+        <div className="bg-gray-50 py-16 border-t border-gray-100">
+          <div className="container mx-auto px-4">
+            <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Package Includes</h3>
+            <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
+          </div>
+        </div>
+      )}
+
+      {/* Specs HTML */}
+      {product.specs_html && (
+        <div className="container mx-auto px-4 py-16 border-t border-gray-100">
+          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">Specifications</h3>
+          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
+        </div>
+      )}
 
       {/* Specs */}
       {

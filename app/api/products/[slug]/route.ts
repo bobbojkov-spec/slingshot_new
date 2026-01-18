@@ -30,7 +30,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         p.category_id,
         p.category_id,
         p.features, -- New Column
-        p.video_url -- New Video Hero URL
+        p.video_url, -- New Video Hero URL
+        p.description_html,
+        p.description_html2,
+        p.specs_html,
+        p.package_includes
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE (p.slug = $1 OR p.id::text = $1) AND p.status = 'active'
