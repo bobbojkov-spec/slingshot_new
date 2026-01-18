@@ -38,7 +38,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   return (
     <div className="product-card group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
       <div className="relative">
-        <Link href={`/${product.categorySlug || product.category?.toLowerCase().replace(/ /g, '-') || 'shop'}/product/${product.slug}`}>
+        <Link href={`/product/${product.slug}`}>
           {product.image ? (
             <img
               src={product.image}
@@ -69,7 +69,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <Eye className="w-5 h-5" />
         </button>
       </div>
-      <Link href={`/${product.categorySlug || product.category?.toLowerCase().replace(/ /g, '-') || 'shop'}/product/${product.slug}`} className="block p-4">
+      <Link href={`/product/${product.slug}`} className="block p-4">
         <span className="font-body text-sm text-muted-foreground uppercase tracking-wide">{product.category}</span>
         <h3 className="font-heading font-semibold text-foreground mt-1 mb-2 group-hover:text-accent transition-colors">
           {product.name}

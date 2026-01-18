@@ -47,8 +47,8 @@ interface Product {
   package_includes?: string;
 }
 
-export default function Page({ params }: { params: Promise<{ category: string; slug: string }> }) {
-  const { category, slug } = use(params);
+export default function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,7 +162,7 @@ export default function Page({ params }: { params: Promise<{ category: string; s
             {product.category_name && (
               <>
                 <span>/</span>
-                <Link href={`/shop?category=${product.category_slug || category || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60">{product.category_name}</Link>
+                <Link href={`/shop?category=${product.category_slug || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60">{product.category_name}</Link>
               </>
             )}
             <span>/</span>

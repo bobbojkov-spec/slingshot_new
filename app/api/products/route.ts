@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getPublicImageUrl } from '@/lib/railway/storage';
 import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET(req: Request) {
@@ -170,7 +170,7 @@ export async function GET(req: Request) {
       let imageUrl = row.og_image_url || '/placeholder.jpg';
       if (row.image_path) {
         try {
-          imageUrl = await getPresignedUrl(row.image_path);
+          imageUrl = getPublicImageUrl(row.image_path);
         } catch (e) {
           console.error(`Failed to sign URL for product ${row.id} path ${row.image_path}:`, e);
         }
