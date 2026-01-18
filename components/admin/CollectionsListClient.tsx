@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import CollectionCard from './CollectionCard';
+import AddCollectionModal from './AddCollectionModal';
 
 type Collection = {
     id: string;
@@ -37,6 +38,11 @@ export default function CollectionsListClient({
         );
     });
 
+    const handleAddSuccess = (newCollection: Collection) => {
+        // Add new collection to state and re-sort if necessary (or just prepend)
+        setCollections(prev => [...prev, newCollection]);
+    };
+
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this collection?')) return;
         try {
@@ -55,9 +61,9 @@ export default function CollectionsListClient({
 
     return (
         <div>
-            {/* Search Bar */}
-            <div className="mb-8 max-w-xl">
-                <div className="relative">
+            {/* Search Bar & Add Button */}
+            <div className="mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div className="relative max-w-xl w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
@@ -66,11 +72,17 @@ export default function CollectionsListClient({
                         placeholder="Filter collections by title or slug..."
                         className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
                     />
+                    <p className="text-xs text-gray-500 mt-2 ml-1 absolute">
+                        Showing {filteredCollections.length} of {collections.length} collections
+                    </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 ml-1">
-                    Showing {filteredCollections.length} of {collections.length} collections
-                </p>
+
+                <AddCollectionModal
+                    source={sourceTitle.toLowerCase().replace(' ', '')} // 'Slingshot' -> 'slingshot', 'Ride Engine' -> 'rideengine'
+                    onSuccess={handleAddSuccess}
+                />
             </div>
+            <div className="h-6"></div> {/* Spacer for the absolute positioned count text */}
 
             {/* Grid */}
             {filteredCollections.length > 0 ? (

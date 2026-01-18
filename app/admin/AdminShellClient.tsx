@@ -321,29 +321,7 @@ export default function AdminShellClient({
           </Space>
           {userEmail ? (
             <Space size={8}>
-              <Button
-                size="small"
-                icon={<SyncOutlined />}
-                loading={runningTranslations}
-                onClick={async () => {
-                  if (runningTranslations) return;
-                  setRunningTranslations(true);
-                  try {
-                    const res = await fetch("/api/admin/translations/run", {
-                      method: "POST",
-                    });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data?.error || "Failed to run translations");
-                    message.success("Bulk translation started. This may take a while.");
-                  } catch (err: any) {
-                    message.error(err?.message || "Translation request failed");
-                  } finally {
-                    setRunningTranslations(false);
-                  }
-                }}
-              >
-                Run Translations
-              </Button>
+
               <Typography.Text type="secondary">{userEmail}</Typography.Text>
               <Button size="small" onClick={handleLogout}>
                 Logout
