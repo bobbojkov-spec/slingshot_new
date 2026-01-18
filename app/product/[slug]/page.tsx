@@ -45,6 +45,7 @@ interface Product {
   description_html2?: string;
   specs_html?: string;
   package_includes?: string;
+  hero_video_url?: string;
 }
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -174,10 +175,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
 
       {/* Hero Video Section */}
+      {/* Hero Video Section - Only show if video exists */}
       {
-        product.video_url && (
+        (product.video_url || product.hero_video_url) && (
           <div className="relative h-[60vh] w-full overflow-hidden mb-8 -mt-8">
-            <BackgroundVideoPlayer videoUrl={product.video_url} poster={product.image} />
+            <BackgroundVideoPlayer
+              videoUrl={product.hero_video_url || product.video_url || ''}
+              poster={product.image}
+            />
             <div className="absolute inset-0 bg-black/20 pointer-events-none" />
           </div>
         )
