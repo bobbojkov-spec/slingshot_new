@@ -380,24 +380,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       )}
 
-      {/* Specs */}
-      {
-        product.specs && product.specs.length > 0 && (
-          <div className="bg-gray-50 py-16 mt-16 border-t border-gray-100">
-            <div className="container mx-auto px-4">
-              <h3 className="text-2xl font-black uppercase tracking-tight mb-8">{t.specs}</h3>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {product.specs.map((spec) => (
-                  <div key={spec.label} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <span className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">{spec.label}</span>
-                    <span className="block font-bold text-lg text-gray-900">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
+
 
       {/* Related Products */}
       {
