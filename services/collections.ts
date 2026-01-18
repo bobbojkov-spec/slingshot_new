@@ -21,7 +21,8 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
         `SELECT 
             c.id, 
             c.slug,
-            COALESCE(ct.title, c.title) as title, 
+            COALESCE(NULLIF(ct.title, ''), c.title) as title, 
+            c.handle, 
             c.handle, 
             c.description, 
             ct.subtitle,
@@ -30,7 +31,7 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
             c.source
      FROM collections c
      LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
-     WHERE c.slug = $1 AND c.visible = true`,
+     WHERE (c.slug = $1 OR c.slug = 'collections/' || $1) AND c.visible = true`,
         [slug, lang]
     );
 

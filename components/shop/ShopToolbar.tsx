@@ -118,42 +118,14 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
                     {/* Left Side: Filters Group */}
                     <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
 
-                        {/* Category Selector (Single Select) */}
-                        <div className="relative group border border-gray-300 rounded px-3 py-1 bg-white hover:border-black transition-colors min-w-[150px]">
-                            <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Category</label>
-                            <div className="flex items-center justify-between">
-                                <select
-                                    value={currentCategory || ''}
-                                    onChange={(e) => updateFilterPlain('category', e.target.value)}
-                                    className="appearance-none bg-transparent font-bold uppercase tracking-wider text-sm pr-6 focus:outline-none cursor-pointer w-full text-black"
-                                >
-                                    <option value="">All Categories</option>
-                                    {facets.categories.map(cat => (
-                                        <option key={cat.slug} value={cat.slug}>{cat.name}</option>
-                                    ))}
-                                </select>
-                                <ArrowUpDown className="w-3 h-3 text-gray-400 pointer-events-none absolute right-3 bottom-2.5" />
-                            </div>
-                        </div>
-
-                        {/* Brand Selector - HIDDEN per user request */}
-                        {/* <div className="relative group border border-gray-300 rounded px-3 py-1 bg-white hover:border-black transition-colors min-w-[150px]">
-                            <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Brand</label>
-                            <div className="flex items-center justify-between">
-                                <select
-                                    value={currentBrand || ''}
-                                    onChange={(e) => updateFilterPlain('brand', e.target.value)}
-                                    className="appearance-none bg-transparent font-bold uppercase tracking-wider text-sm pr-6 focus:outline-none cursor-pointer w-full text-black"
-                                >
-                                    <option value="">All Brands</option>
-                                    {facets.brands.map(brand => (
-                                        <option key={brand.slug} value={brand.slug}>{brand.name}</option>
-                                    ))}
-                                </select>
-                                <ArrowUpDown className="w-3 h-3 text-gray-400 pointer-events-none absolute right-3 bottom-2.5" />
-                            </div>
-                        </div> */}
-
+                        {/* Brand (Multi Select) */}
+                        <FilterDropdown
+                            label="Brand"
+                            options={facets.brands || []}
+                            selectedValues={searchParams.getAll('brand')}
+                            onChange={(vals) => updateFilterMulti('brand', vals)}
+                            disabled={!facets.brands || facets.brands.length === 0}
+                        />
 
                         {/* Collection (Multi Select) */}
                         <FilterDropdown
@@ -170,25 +142,14 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
                             options={facets.tags || []}
                             selectedValues={currentTags}
                             onChange={(vals) => updateFilterMulti('tag', vals)}
-                            disabled={facets.tags?.length === 0}
+                            disabled={!facets.tags || facets.tags.length === 0}
                         />
 
                     </div>
 
-                    {/* Right Side: Search (Count Removed) */}
-                    <div className="flex items-center gap-4 w-full xl:w-auto mt-4 xl:mt-0">
-                        {/* Search Input */}
-                        <div className="relative flex-1 xl:w-64">
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleSearchKey}
-                                className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-black transition-colors bg-gray-50 uppercase tracking-wide font-medium placeholder:normal-case"
-                            />
-                            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        </div>
+                    {/* Right Side: Product Count */}
+                    <div className="text-sm font-medium text-gray-500 uppercase tracking-wide shrink-0">
+                        Products: <span className="text-black font-bold">{totalProducts}</span>
                     </div>
 
                 </div>

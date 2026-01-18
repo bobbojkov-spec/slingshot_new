@@ -48,13 +48,13 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
       <div className="flex flex-col gap-4">
         {/* Main Image */}
         <div
-          className="relative bg-secondary/30 rounded-lg p-4 md:p-8 flex items-center justify-center cursor-zoom-in group"
+          className="relative bg-secondary/30 rounded-lg flex items-center justify-center cursor-zoom-in group overflow-hidden"
           onClick={() => setIsZoomOpen(true)}
         >
           <img
             src={images[selectedIndex]}
             alt={`${productName} - Image ${selectedIndex + 1}`}
-            className="max-h-[400px] md:max-h-[500px] object-contain transition-transform duration-300"
+            className="w-full h-auto object-cover transition-transform duration-300"
           />
 
           {/* Zoom hint - desktop/tablet only */}

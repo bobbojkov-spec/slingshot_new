@@ -88,6 +88,8 @@ export default function EditProduct({
 
   const [draft, setDraft] = useState<Product>(() => ({
     ...structuredClone(product),
+    product_colors: product.colors || [], // Map API 'colors' to 'product_colors'
+    colors: product.colors || [], // Keep legacy alias if needed
     collection_ids: initialCollectionIds || []
   }));
 

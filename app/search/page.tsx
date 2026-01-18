@@ -1,54 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ShopToolbar } from '@/components/shop/ShopToolbar';
-import { CollectionHero } from './CollectionHero';
+import { ShopHero } from '@/components/shop/ShopHero';
 import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Collection } from '@/services/collections';
 
-import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-interface BreadcrumbItem {
-    label: string;
-    href?: string;
-}
-
-interface CollectionShopClientProps {
-    initialCollection: Collection;
-    slug: string;
-    breadcrumbs?: BreadcrumbItem[];
-}
-
-export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: CollectionShopClientProps) {
+function SearchContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { language } = useLanguage();
+    const query = searchParams.get('q') || '';
 
-    const [products, setProducts] = useState(initialCollection.products || []);
+    const [products, setProducts] = useState([]);
     const [facets, setFacets] = useState({ categories: [], collections: [], types: [], tags: [], brands: [] });
-    const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: initialCollection.products?.length || 0 });
-    const [loading, setLoading] = useState(false);
+    const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Initial hydration ref to prevent double fetch on mount if language matches
-    // But since we can switch language client-side, we should listen to it.
 
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
                 const params = new URLSearchParams(searchParams.toString());
-
-                // FORCE collection slug
-                params.set('collection', slug);
-                params.set('limit', '12'); // Match API default or desired grid size
-                params.set('lang', language); // Pass language
-
-                const res = await fetch(`/api/products?${params.toString()}`);
+                // Force limit if needed, or keep default
+                const res = await fetch(`/api/products?${params.toString()}&limit=12`);
                 if (!res.ok) throw new Error('Failed to fetch products');
 
                 const data = await res.json();
@@ -62,42 +40,31 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
             }
         };
 
-        // If we have filters, or if we want to ensure pagination/facets are loaded (initialCollection might miss facets?)
-        // initialCollection doesn't have facets in `getCollectionBySlug` result.
-        // So we ALWAYS need to fetch at least once to get Facets?
-        // Or we can load facets separately?
-        // Simpler: Just fetch everything client-side. Server data serves as "Hero" data mainly.
-        // OR: We display initial products while fetching?
-
         fetchProducts();
-
-    }, [searchParams, slug, language]);
+    }, [searchParams]);
 
     const handlePageChange = (newPage: number) => {
         if (newPage < 1 || newPage > pagination.totalPages) return;
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', newPage.toString());
-        router.push(`/collections/${slug}?${params.toString()}`);
+        router.push(`/search?${params.toString()}`);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const breadcrumbItems = [
+        { label: 'Shop', href: '/shop' },
+        { label: `Search: ${pagination.total} results found for "${query}"` },
+    ];
+
     return (
         <div className="min-h-screen bg-white">
-            {/* Hero Section - Static from server data */}
-            <CollectionHero
-                title={initialCollection.title}
-                subtitle={initialCollection.subtitle}
-                imageUrl={initialCollection.image_url}
-                videoUrl={initialCollection.video_url}
-                breadcrumbs={breadcrumbs}
+            <ShopHero
+                title={`Search Results`}
+                breadcrumbs={breadcrumbItems}
+                variant="minimal"
             />
 
-            {/* Toolbar - filtered by current products */}
-            <ShopToolbar
-                facets={{ ...facets, collections: [] }} // Hide collection filter on collection page as it's redundant/confusing
-                totalProducts={pagination.total}
-                basePath={`/collections/${slug}`}
-            />
+            <ShopToolbar facets={facets} totalProducts={pagination.total} />
 
             <div className="container mx-auto px-4 py-8">
 
@@ -108,7 +75,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                     </div>
                 ) : products.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
+                    <div className="text-center py-20 text-gray-500">No products found for "{query}".</div>
                 ) : (
                     <>
                         <ProductGrid products={products} />
@@ -140,5 +107,13 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
             </div>
             <FloatingWarning />
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SearchContent />
+        </Suspense>
     );
 }

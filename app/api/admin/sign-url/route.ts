@@ -10,7 +10,16 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Path is required' }, { status: 400 });
         }
 
-        // If it's already a full URL or absolute path, return as is (security check recommended for prod)
+        // If it's already a full URL, try to extract key
+        const { getKeyFromUrl } = await import('@/lib/railway/storage');
+        const key = getKeyFromUrl(path);
+
+        if (key) {
+            const signedUrl = await getPresignedUrl(key);
+            return NextResponse.json({ url: signedUrl });
+        }
+
+        // If not our key and looks like external URL, return as is
         if (path.startsWith('http') || path.startsWith('/')) {
             return NextResponse.json({ url: path });
         }

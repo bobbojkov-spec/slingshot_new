@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Typography, Space, Button } from 'antd';
 import { useQuill } from 'react-quilljs';
 import { CopyOutlined } from '@ant-design/icons';
@@ -43,36 +43,62 @@ const BilingualRichText: React.FC<BilingualRichTextProps> = ({
     'align', 'list', 'indent',
     'header',
     'link', 'image', 'video',
-    'clean',
     'table' // Allow table format
   ];
 
   const { quill: enQuill, quillRef: enQuillRef } = useQuill({ modules, formats });
   const { quill: bgQuill, quillRef: bgQuillRef } = useQuill({ modules, formats });
 
+  // Refs to track last emitted values to avoid loop
+  // Initialize to null to ensure first render triggers update
+  const lastEnValue = useRef<string | undefined>(undefined);
+  const lastBgValue = useRef<string | undefined>(undefined);
+
   // English Quill editor setup
   useEffect(() => {
     if (enQuill) {
-      enQuill.clipboard.dangerouslyPasteHTML(enValue || '');
-      const handler = () => onEnChange(enQuill.root.innerHTML);
+      if (enValue && enValue !== lastEnValue.current) {
+        enQuill.clipboard.dangerouslyPasteHTML(enValue);
+        lastEnValue.current = enValue;
+      }
+
+      const handler = () => {
+        const html = enQuill.root.innerHTML;
+        if (html !== lastEnValue.current) {
+          lastEnValue.current = html;
+          onEnChange(html);
+        }
+      };
+
       enQuill.on('text-change', handler);
       return () => {
         enQuill.off('text-change', handler);
       };
     }
-  }, [enQuill, onEnChange, enValue]); // Added enValue to dependencies for initial load
+  }, [enQuill, enValue, onEnChange]);
 
   // Bulgarian Quill editor setup
   useEffect(() => {
     if (bgQuill) {
-      bgQuill.clipboard.dangerouslyPasteHTML(bgValue || '');
-      const handler = () => onBgChange(bgQuill.root.innerHTML);
+      if (bgValue && bgValue !== lastBgValue.current) {
+        bgQuill.clipboard.dangerouslyPasteHTML(bgValue);
+        lastBgValue.current = bgValue;
+      }
+
+      const handler = () => {
+        const html = bgQuill.root.innerHTML;
+        if (html !== lastBgValue.current) {
+          lastBgValue.current = html;
+          onBgChange(html);
+        }
+      };
+
       bgQuill.on('text-change', handler);
       return () => {
         bgQuill.off('text-change', handler);
       };
     }
-  }, [bgQuill, onBgChange, bgValue]); // Added bgValue to dependencies for initial load
+  }, [bgQuill, bgValue, onBgChange]);
 
   const handleCopyFromEnglish = () => {
     if (enQuill && bgQuill && enValue) {

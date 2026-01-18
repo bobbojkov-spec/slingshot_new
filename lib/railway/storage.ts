@@ -172,7 +172,7 @@ export async function downloadFile(filePath: string, bucket: string = STORAGE_BU
   });
 
   const response = await client.send(command);
-  
+
   if (!response.Body) {
     throw new Error(`File not found: ${filePath}`);
   }
@@ -269,3 +269,40 @@ export async function fileExists(filePath: string, bucket: string = STORAGE_BUCK
   }
 }
 
+/**
+ * Extract the file key from a public URL if it belongs to our storage
+ */
+export function getKeyFromUrl(url: string): string | null {
+  if (!url) return null;
+
+  try {
+    // 1. Check if it matches our public URL base
+    if (publicUrlBase && url.startsWith(publicUrlBase)) {
+      return url.replace(publicUrlBase + '/', '').replace(STORAGE_BUCKETS.PUBLIC + '/', '');
+    }
+
+    // 2. Check standard S3 patterns
+    const u = new URL(url);
+    // Path style: /bucket/key
+    const parts = u.pathname.split('/');
+    // parts[0] is empty, parts[1] might be bucket
+    if (parts.length >= 3 && parts[1] === STORAGE_BUCKETS.PUBLIC) {
+      return parts.slice(2).join('/');
+    }
+    // Virtual host style: bucket.s3.../key (not common with what we generated, but possible)
+    if (u.hostname.startsWith(STORAGE_BUCKETS.PUBLIC)) {
+      return u.pathname.substring(1);
+    }
+
+    // 3. Fallback: if we generated it via our getPublicImageUrl, it follows a pattern
+    // The user's error URL was: https://s3.us-east-1.amazonaws.com/slingshotnewimages-hw-tht/hero-videos/...
+    if (u.pathname.includes(`/${STORAGE_BUCKETS.PUBLIC}/`)) {
+      const idx = u.pathname.indexOf(`/${STORAGE_BUCKETS.PUBLIC}/`);
+      return u.pathname.substring(idx + `/${STORAGE_BUCKETS.PUBLIC}/`.length);
+    }
+
+    return null;
+  } catch (e) {
+    return null;
+  }
+}

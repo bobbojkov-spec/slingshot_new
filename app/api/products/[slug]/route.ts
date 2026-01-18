@@ -30,11 +30,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         p.category_id,
         p.category_id,
         p.features, -- New Column
-        p.video_url, -- New Video Hero URL
+        p.video_url, -- Youtube URL
+        p.hero_video_url, -- Uploaded MP4 URL
         p.description_html,
         p.description_html2,
         p.specs_html,
-        p.package_includes
+        p.package_includes,
+        p.subtitle,
+        p.sku
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE (p.slug = $1 OR p.id::text = $1) AND p.status = 'active'
@@ -46,6 +49,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     }
 
     const product = productResult.rows[0];
+
+    // Sign Hero Video URL if it's a private upload
+    if (product.hero_video_url) {
+      const { getKeyFromUrl } = await import('@/lib/railway/storage');
+      const key = getKeyFromUrl(product.hero_video_url);
+      if (key) {
+        try {
+          product.hero_video_url = await getPresignedUrl(key);
+        } catch (e) {
+          console.error('Failed to sign hero video url', e);
+        }
+      }
+    }
 
     // 2. Fetch Variants (for pricing and options)
     const variantsSql = `

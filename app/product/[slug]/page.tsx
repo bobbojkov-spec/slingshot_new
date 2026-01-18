@@ -18,8 +18,8 @@ interface Product {
   category: string;
   price: number;
   description: string;
-  brand?: string; // Added brand
-  sizes?: string[]; // Legacy field
+  brand?: string;
+  sizes?: string[];
   variants?: Array<{
     id: string;
     title: string;
@@ -37,8 +37,8 @@ interface Product {
   category_slug?: string;
   product_type?: string;
   features?: string[];
-  name_bg?: string; // Localized name
-  description_bg?: string; // Localized description
+  name_bg?: string;
+  description_bg?: string;
   colors?: Array<{ id: string; name: string; url: string; image_path: string }>;
   video_url?: string;
   description_html?: string;
@@ -46,6 +46,8 @@ interface Product {
   specs_html?: string;
   package_includes?: string;
   hero_video_url?: string;
+  sku?: string;
+  subtitle?: string;
 }
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -66,6 +68,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       if (!slug) return;
       setLoading(true);
       try {
+        // Fetch product from API which now handles video URL signing
         const res = await fetch(`/api/products/${slug}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
@@ -76,12 +79,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         if (data.product.colors && data.product.colors.length > 0) {
           setSelectedColorId(data.product.colors[0].id);
         }
-
-        // Handle both new variants structure and legacy sizes
-        // const availableSizes = data.product.variants?.map((v: any) => v.title) || data.product.sizes || [];
-        // if (availableSizes.length > 0) {
-        //   setSelectedSize(availableSizes[0]);
-        // }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error loading product');
       } finally {
@@ -94,7 +91,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const handleAddToInquiry = () => {
     if (!product) return;
 
-    // Find specific variant if size/color selected
     let variantId = product.id;
     let price = product.price;
 
@@ -138,7 +134,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Breadcrumb Strip - Consistent with Shop/Collection pages */}
+      {/* Breadcrumb Strip */}
       <div className="bg-white border-b border-gray-100 sticky top-[header-height] z-20">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500 py-3">
@@ -146,14 +142,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <span>/</span>
             <Link href="/shop" className="hover:text-black transition-colors text-black/60">Shop</Link>
 
-            {(product.brand === 'Ride Engine' || product.brand === 'RideEngine' || product.brand === 'rideengine') && (
+            {(product.brand?.toLowerCase() === 'ride engine' || product.brand?.toLowerCase() === 'rideengine') && (
               <>
                 <span>/</span>
                 <Link href="/shop?brand=Ride%20Engine" className="hover:text-black transition-colors text-black/60">RIDEENGINE</Link>
               </>
             )}
 
-            {(product.brand === 'Slingshot' || product.brand === 'slingshot') && (
+            {(product.brand?.toLowerCase() === 'slingshot') && (
               <>
                 <span>/</span>
                 <Link href="/shop?brand=Slingshot" className="hover:text-black transition-colors text-black/60">SLINGSHOT</Link>
@@ -172,10 +168,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       </div>
 
-
-
       {/* Hero Video Section */}
-      {/* Hero Video Section - Only show if video exists */}
       {
         (product.video_url || product.hero_video_url) && (
           <div className="relative h-[60vh] w-full overflow-hidden mb-8 -mt-8">
@@ -188,7 +181,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         )
       }
 
-      <div className="container mx-auto px-4 pt-[50px]">
+      <div className="container mx-auto px-4 pt-[90px]">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
 
           {/* Gallery */}
@@ -200,7 +193,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 if (!selectedColorId || !product.colors) return 0;
                 const color = product.colors.find(c => c.id === selectedColorId);
                 if (!color) return 0;
-                // match by exact URL
                 const idx = product.images.findIndex(img => img === color.url);
                 return idx !== -1 ? idx : 0;
               })()}
@@ -210,9 +202,20 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
             <span className="text-sm font-bold tracking-[0.2em] text-accent mb-2 uppercase">{product.category_name}</span>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">
+            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
+
+            {product.subtitle && (
+              <h3 className="text-xl font-black uppercase tracking-wide mb-2 text-black leading-tight">
+                {product.subtitle}
+              </h3>
+            )}
+
+            {product.sku && (
+              <p className="text-xs text-black/60 font-mono mb-6">{`SKU: ${product.sku}`}</p>
+            )}
+
             <div className="text-2xl font-bold mb-4">
               {(() => {
                 if (selectedSize && product.variants) {
@@ -269,7 +272,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                       key={color.id}
                       onClick={() => {
                         setSelectedColorId(color.id);
-                        // Filter variants for the new color and check if selected size matches
                         const colorVariants = product.variants?.filter(v => v.product_color_id === color.id) || [];
                         const availableSizes = colorVariants.map(v => v.title);
                         if (selectedSize && !availableSizes.includes(selectedSize)) {
@@ -302,13 +304,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
                 <div className="flex gap-2 flex-wrap">
                   {(() => {
-                    // Filter variants if color is selected
                     let displayVariants = product.variants || [];
                     if (selectedColorId) {
                       displayVariants = displayVariants.filter(v => v.product_color_id === selectedColorId);
                     }
 
-                    // Fallback for legacy sizes or no variants
                     const sizes = displayVariants.length > 0
                       ? displayVariants.map(v => v.title)
                       : (product.sizes || []);
@@ -389,8 +389,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       )}
 
-
-
       {/* Related Products */}
       {
         related.length > 0 && (
@@ -400,7 +398,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           </div>
         )
       }
-    </div >
+    </div>
   );
 }
-

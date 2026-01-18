@@ -24,7 +24,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
                 `INSERT INTO product_colors (product_id, name, image_path, display_order)
          VALUES ($1, $2, $3, $4)
          RETURNING *`,
-                [id, '', image_path, nextOrder++]
+                [id, 'New Color', image_path, nextOrder++]
             );
             insertedColors.push(res.rows[0]);
         }

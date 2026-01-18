@@ -66,6 +66,8 @@ async function fetchProduct(id: string) {
         product_type: data.product_type ?? '',
         tags: infoTags,
         status: data.status ?? '',
+        hero_video_url: data.hero_video_url ?? '',
+        video_url: data.video_url ?? '',
         categoryId: data.category?.id ?? data.category_id ?? data.category ?? null,
         categoryName: data.category?.name ?? '',
         description_html: data.description_html ?? '',
@@ -116,36 +118,25 @@ async function fetchProduct(id: string) {
   }
 }
 
-async function fetchCategories() {
-  try {
-    const url = new URL('/api/admin/products/meta', ADMIN_BASE_URL).toString();
-    const res = await fetch(url, { cache: 'no-store' });
-
-    if (!res.ok) {
-      return { categories: [] };
-    }
-
-    const data = await res.json();
-    return {
-      categories: data?.categories || [],
-    };
-  } catch (error) {
-    console.error('[EDIT PAGE] Failed to load product categories', error);
-    return { categories: [] };
-  }
-}
-
 export default async function EditProductPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const productId = params.id;
 
   console.log('[EDIT PAGE] Loading product with ID:', productId);
 
-  const [product, categories, collections] = await Promise.all([
+  /* 
+   * FETCHING DIRECTLY FROM DB (Server Component) 
+   * Avoids internal API fetch issues.
+   */
+  const { query } = await import("@/lib/dbPg");
+
+  const [product, categoriesList, collections] = await Promise.all([
     fetchProduct(productId),
-    fetchCategories(),
     (async () => {
-      const { query } = await import("@/lib/dbPg");
+      const res = await query('SELECT id, name FROM categories ORDER BY name');
+      return res.rows;
+    })(),
+    (async () => {
       const cols = await query(`SELECT id, title FROM collections ORDER BY title ASC`);
       const assigned = await query(`SELECT collection_id FROM collection_products WHERE product_id = $1`, [productId]);
       return {
@@ -156,7 +147,7 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
   ]);
 
   console.log('[EDIT PAGE] Product result:', product ? 'FOUND' : 'NOT FOUND');
-  console.log('[EDIT PAGE] Categories count:', categories.categories.length);
+  console.log('[EDIT PAGE] Categories count:', categoriesList.length);
 
   if (!product) {
     return (
@@ -171,7 +162,7 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
   return (
     <EditProduct
       product={product}
-      categories={categories.categories}
+      categories={categoriesList}
       collections={collections.all}
       initialCollectionIds={collections.assignedIds}
     />

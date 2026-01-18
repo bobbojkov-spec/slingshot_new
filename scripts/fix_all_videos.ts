@@ -45,7 +45,7 @@ async function main() {
 
                 const videoId = await page.evaluate(function () {
                     // Helper defined inside browser context
-                    function isValidId(id) {
+                    function isValidId(id: string) {
                         if (!id) return false;
                         return /^[a-zA-Z0-9_-]{11}$/.test(id);
                     }
@@ -54,7 +54,7 @@ async function main() {
                     const dataDiv = document.querySelector('div[data-video-id]');
                     if (dataDiv) {
                         const id = dataDiv.getAttribute('data-video-id');
-                        if (isValidId(id)) return id;
+                        if (id && isValidId(id)) return id;
                     }
 
                     // 2. Youtube Iframes
@@ -70,7 +70,7 @@ async function main() {
                     // 3. YouTube Links (excluding generic channel)
                     const links = Array.from(document.querySelectorAll('a[href*="youtube.com"], a[href*="youtu.be"]'));
                     for (const link of links) {
-                        const href = link.href;
+                        const href = (link as HTMLAnchorElement).href;
                         // Skip generic channels immediately
                         if (href.includes('user/slingshotsports') || href.includes('/channel/')) continue;
 
@@ -103,10 +103,10 @@ async function main() {
                         await query(`UPDATE collections SET video_url = NULL WHERE id = $2`, [null, t.id]);
                     }
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error(`   ERROR scanning ${t.slug}: ${err.message}`);
                 // Try to recover page if it crashed
-                if (err.message.includes('target closed') || err.message.includes('Session closed')) {
+                if (err.message && (err.message.includes('target closed') || err.message.includes('Session closed'))) {
                     await page.reload();
                 }
             }

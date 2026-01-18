@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Checkbox, Input, Select, Space, Typography, Divider, message, Upload, Button, Row, Col } from 'antd';
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import type { Product } from '../EditProduct';
@@ -120,15 +120,22 @@ export default function InfoTab({
           <Col span={8}>
             <div style={{ marginBottom: 16 }}>
               <Typography.Text strong>Brand</Typography.Text>
-              <Input
-                value={draft.info?.brand ?? ''}
-                onChange={(e) =>
+              <Select
+                style={{ width: '100%' }}
+                options={[
+                  { label: 'Slingshot', value: 'Slingshot' },
+                  { label: 'Ride Engine', value: 'Ride Engine' },
+                  { label: 'Moon Patrol', value: 'Moon Patrol' },
+                ]}
+                value={draft.info?.brand ?? undefined}
+                onChange={(val) =>
                   setDraft((prev) => ({
                     ...prev,
-                    info: { ...prev.info, brand: e.target.value },
+                    info: { ...prev.info, brand: val },
                   }))
                 }
-                placeholder="Brand"
+                allowClear
+                placeholder="Select Brand"
               />
             </div>
           </Col>
@@ -179,6 +186,11 @@ export default function InfoTab({
                   <Button icon={<UploadOutlined />} loading={uploadingVideo} />
                 </Upload>
               </div>
+              {draft.info?.hero_video_url && (
+                <div style={{ marginTop: 4 }}>
+                  <VideoPreviewLink url={draft.info.hero_video_url} />
+                </div>
+              )}
             </div>
           </Col>
           <Col span={8}>
@@ -277,5 +289,32 @@ export default function InfoTab({
       />
 
     </Space>
+  );
+}
+
+function VideoPreviewLink({ url }: { url: string }) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!url) return;
+    // Check if it needs signing
+    if (url.includes('slingshot')) { // Simple check if it's our bucket
+      fetch(`/api/admin/sign-url?path=${encodeURIComponent(url)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.url) setSignedUrl(data.url);
+        })
+        .catch(() => setSignedUrl(url));
+    } else {
+      setSignedUrl(url);
+    }
+  }, [url]);
+
+  if (!signedUrl) return null;
+
+  return (
+    <Typography.Link href={signedUrl} target="_blank" style={{ fontSize: 12 }}>
+      Preview Uploaded Video
+    </Typography.Link>
   );
 }
