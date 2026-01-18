@@ -82,7 +82,12 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
     const products = await Promise.all(productsRes.rows.map(async (p: any) => {
         let imageUrl = p.image_path;
         if (p.image_path && !p.image_path.startsWith('http')) {
-            imageUrl = await getPresignedUrl(p.image_path);
+            try {
+                imageUrl = await getPresignedUrl(p.image_path);
+            } catch (err) {
+                console.error(`Failed to sign product image URL for ${p.slug}:`, err);
+                // Fallback to null or original path if needed, but safe to keep as is (will use placeholder in client)
+            }
         }
 
         return {
