@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getPresignedUrl, getKeyFromUrl } from '@/lib/railway/storage';
 import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET(req: Request) {
@@ -204,6 +204,16 @@ export async function GET(req: Request) {
 
     const products = await Promise.all(productsResult.rows.map(async (row: any) => {
       let imageUrl = row.og_image_url || '/placeholder.jpg';
+
+      const legacyKey = getKeyFromUrl(imageUrl);
+      if (legacyKey) {
+        try {
+          imageUrl = await getPresignedUrl(legacyKey);
+        } catch (e) {
+          console.warn('Failed to sign legacy URL:', e);
+        }
+      }
+
       if (row.image_path) {
         try {
           imageUrl = await getPresignedUrl(row.image_path);
