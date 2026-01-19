@@ -74,8 +74,9 @@ function ShopContent() {
     <div className="min-h-screen bg-white">
       {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
       <ShopHero
-        title={searchParams.get('category') || 'All Products'}
+        title={searchParams.get('q') ? `Search: ${searchParams.get('q')}` : (searchParams.get('category') || 'All Products')}
         breadcrumbs={breadcrumbItems}
+        variant={hasFilters ? 'minimal' : 'default'}
       />
 
       <ShopToolbar facets={facets} totalProducts={pagination.total} />
