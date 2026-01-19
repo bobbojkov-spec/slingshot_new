@@ -21,8 +21,8 @@ export default function TagsClient() {
     const [manageTag, setManageTag] = useState<string | null>(null);
     const [newTagName, setNewTagName] = useState('');
 
-    // Track local edits: map of EN tag -> new BG value
-    const [edits, setEdits] = useState<Record<string, string>>({});
+    // Track local edits: map of OLD EN tag -> { en: newEn, bg: newBg }
+    const [edits, setEdits] = useState<Record<string, { en?: string, bg?: string }>>({});
 
     const fetchData = async () => {
         setLoading(true);
@@ -44,24 +44,33 @@ export default function TagsClient() {
     }, []);
 
     const handleSave = async (record: TagData) => {
-        const newVal = edits[record.en];
-        if (newVal === undefined || newVal === record.bg) {
+        const localEdit = edits[record.en];
+        if (!localEdit) return;
+
+        const newEn = localEdit.en !== undefined ? localEdit.en : record.en;
+        const newBg = localEdit.bg !== undefined ? localEdit.bg : record.bg;
+
+        if (newEn === record.en && newBg === record.bg) {
             // no change
             return;
         }
 
         setSavingKey(record.en);
         try {
-            const res = await fetch('/api/admin/tags/update', {
+            const res = await fetch('/api/admin/tags', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oldTagEn: record.en, newTagBg: newVal }),
+                body: JSON.stringify({
+                    oldTagEn: record.en,
+                    newTagEn: newEn !== record.en ? newEn : undefined,
+                    newTagBg: newBg
+                }),
             });
             const json = await res.json();
 
             if (json.success) {
                 message.success(`Updated ${json.updatedCount} products`);
-                setData(prev => prev.map(item => item.en === record.en ? { ...item, bg: newVal } : item));
+                setData(prev => prev.map(item => item.en === record.en ? { ...item, en: newEn, bg: newBg } : item));
                 const newEdits = { ...edits };
                 delete newEdits[record.en];
                 setEdits(newEdits);
@@ -154,6 +163,19 @@ export default function TagsClient() {
             ),
             onFilter: (value: any, record: TagData) =>
                 record.en.toLowerCase().includes(value.toLowerCase()),
+            render: (text: string, record: TagData) => {
+                const value = edits[record.en]?.en !== undefined ? edits[record.en].en : text;
+                const isModified = edits[record.en]?.en !== undefined && edits[record.en].en !== record.en;
+
+                return (
+                    <Input
+                        value={value}
+                        onChange={(e) => setEdits({ ...edits, [record.en]: { ...edits[record.en], en: e.target.value } })}
+                        onPressEnter={() => handleSave(record)}
+                        style={{ backgroundColor: isModified ? '#fffbe6' : undefined, fontWeight: isModified ? 'bold' : 'normal' }}
+                    />
+                );
+            }
         },
         {
             title: 'Bulgarian Translation',
@@ -161,16 +183,18 @@ export default function TagsClient() {
             key: 'bg',
             width: '35%',
             render: (text: string, record: TagData) => {
-                const value = edits[record.en] !== undefined ? edits[record.en] : text;
-                const isModified = edits[record.en] !== undefined && edits[record.en] !== record.bg;
+                const value = edits[record.en]?.bg !== undefined ? edits[record.en].bg : text;
+                const isModifiedEn = edits[record.en]?.en !== undefined && edits[record.en].en !== record.en;
+                const isModifiedBg = edits[record.en]?.bg !== undefined && edits[record.en].bg !== record.bg;
+                const isModified = isModifiedEn || isModifiedBg;
 
                 return (
                     <Space.Compact style={{ width: '100%' }}>
                         <Input
                             value={value}
-                            onChange={(e) => setEdits({ ...edits, [record.en]: e.target.value })}
+                            onChange={(e) => setEdits({ ...edits, [record.en]: { ...edits[record.en], bg: e.target.value } })}
                             onPressEnter={() => handleSave(record)}
-                            style={{ backgroundColor: isModified ? '#fffbe6' : undefined }}
+                            style={{ backgroundColor: isModifiedBg ? '#fffbe6' : undefined }}
                         />
                         <Button
                             type={isModified ? 'primary' : 'default'}

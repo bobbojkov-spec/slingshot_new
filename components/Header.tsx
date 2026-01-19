@@ -8,7 +8,6 @@ import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useNavigationContext } from "@/contexts/NavigationContext";
 import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
-import { Typography } from "antd";
 import { MobileMenu } from "./layout/MobileMenu";
 
 const Header = () => {

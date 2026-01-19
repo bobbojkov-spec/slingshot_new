@@ -134,9 +134,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">Product not found</div>;
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative pt-20">
       {/* Breadcrumb Strip */}
-      <div className="bg-white border-b border-gray-100 sticky top-[header-height] z-20">
+      <div className="bg-white border-b border-gray-100 sticky top-20 z-20">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500 py-3">
             <Link href="/" className="hover:text-black transition-colors text-black/60">Home</Link>

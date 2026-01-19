@@ -73,43 +73,64 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true });
         }
 
-        // Default: Update Translation (legacy prop names supported for minimal frontend change, or we adapt frontend)
-        // Frontend sends: { oldTagEn, newTagBg }
-        const { oldTagEn, newTagBg } = body;
+        // Default: Update Translation or Rename EN
+        // Frontend sends: { oldTagEn, newTagBg, newTagEn }
+        const { oldTagEn, newTagBg, newTagEn } = body;
 
-        if (!oldTagEn || newTagBg === undefined) {
+        if (!oldTagEn) {
             return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
         }
+
+        const effectiveNewTagEn = newTagEn || oldTagEn;
 
         // 1. Update Master Table
         await query(`
             UPDATE tags 
-            SET name_bg = $2, updated_at = NOW()
-            WHERE name_en = $1
-        `, [oldTagEn, newTagBg]);
+            SET name_en = $1, name_bg = $2, slug = $3, updated_at = NOW()
+            WHERE name_en = $4
+        `, [
+            effectiveNewTagEn,
+            newTagBg,
+            effectiveNewTagEn.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            oldTagEn
+        ]);
 
-        // 2. Propagate to Product Translations (BG)
-        // Find all products with this EN tag, and update their BG tag array at corresponding index?
-        // OR better: Just update the `tags` array in `product_translations` where language='bg'.
-        // But `tags` is just text array. We need to match by index from EN array?
-        // This is complex. 
-        // SIMPLIFICATION: We rely on the Sync. 
-        // If we update the master definition, the products still hold the OLD value?
-        // Yes, `product_translations` stores the actual strings.
-        // We should try to update them.
+        // 2. Propagate Rename to products.tags and product_translations.tags
+        if (newTagEn && newTagEn !== oldTagEn) {
+            // Update base products
+            await query(`
+                UPDATE products 
+                SET tags = array_replace(tags, $1, $2)
+                WHERE $1 = ANY(tags)
+            `, [oldTagEn, newTagEn]);
 
-        // Fetch products with this tag
+            // Update translations (EN)
+            await query(`
+                UPDATE product_translations 
+                SET tags = array_replace(tags, $1, $2)
+                WHERE language_code = 'en' AND $1 = ANY(tags)
+            `, [oldTagEn, newTagEn]);
+
+            // Update translations (BG) - if the EN string leaked into BG array
+            await query(`
+                UPDATE product_translations 
+                SET tags = array_replace(tags, $1, $2)
+                WHERE language_code = 'bg' AND $1 = ANY(tags)
+            `, [oldTagEn, newTagEn]);
+        }
+
+        // 3. Update Bulgarian Translations in product_translations
         const { rows: products } = await query(`
             SELECT p.id, pt_en.tags as tags_en, pt_bg.tags as tags_bg
             FROM products p
             JOIN product_translations pt_en ON p.id = pt_en.product_id AND pt_en.language_code = 'en'
             LEFT JOIN product_translations pt_bg ON p.id = pt_bg.product_id AND pt_bg.language_code = 'bg'
             WHERE $1 = ANY(pt_en.tags)
-        `, [oldTagEn]);
+        `, [effectiveNewTagEn]);
 
         let updatedCount = 0;
         for (const prod of products) {
-            const indices = (prod.tags_en || []).map((t: string, i: number) => t === oldTagEn ? i : -1).filter((i: number) => i !== -1);
+            const indices = (prod.tags_en || []).map((t: string, i: number) => t === effectiveNewTagEn ? i : -1).filter((i: number) => i !== -1);
             if (!indices.length) continue;
 
             let tagsBg = [...(prod.tags_bg || [])];
