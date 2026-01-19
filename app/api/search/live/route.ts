@@ -53,7 +53,7 @@ export async function GET(req: Request) {
              FROM products p
              LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2,
              LATERAL unnest(COALESCE(pt_t.tags, p.tags)) as t(tag)
-             WHERE t.tag ILIKE $1
+             WHERE t.tag ILIKE $1 AND p.status = 'active'
              LIMIT 8`,
             [searchTerm, lang]
         );

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getAdminCategoriesList } from '@/lib/categories-admin';
 
 // Helper to slugify text
 function slugify(text: string): string {
@@ -18,20 +19,7 @@ function slugify(text: string): string {
 // GET all categories
 export async function GET() {
   try {
-    const { rows } = await query(`
-      SELECT 
-        c.*,
-        (SELECT CAST(COUNT(*) AS INTEGER) FROM products p WHERE p.category_id = c.id) as product_count,
-        (SELECT json_build_object('name', ct.name, 'description', ct.description)
-         FROM category_translations ct 
-         WHERE ct.category_id = c.id AND ct.language_code = 'en') as translation_en,
-        (SELECT json_build_object('name', ct.name, 'description', ct.description)
-         FROM category_translations ct 
-         WHERE ct.category_id = c.id AND ct.language_code = 'bg') as translation_bg
-      FROM categories c
-      ORDER BY c.name ASC
-    `);
-
+    const rows = await getAdminCategoriesList();
     return NextResponse.json({ categories: rows });
   } catch (error: any) {
     console.error('Failed to load categories:', error);

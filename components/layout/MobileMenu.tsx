@@ -159,22 +159,27 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                     <span className="font-body text-xs text-white/40 uppercase tracking-wider mb-2 block">
                         {t("header.languageLabel")}
                     </span>
-                    <div className="flex items-center gap-2 mb-8"> {/* Added explicit margin bottom */}
-                        <button
-                            className={`text-sm uppercase tracking-wide transition-colors ${language === "bg" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                                }`}
-                            onClick={() => setLanguage("bg")}
-                        >
-                            BG
-                        </button>
-                        <span className="text-white/40">/</span>
-                        <button
-                            className={`text-sm uppercase tracking-wide transition-colors ${language === "en" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                                }`}
-                            onClick={() => setLanguage("en")}
-                        >
-                            EN
-                        </button>
+                    <div className="flex items-center gap-1 mb-8">
+                        <div className="bg-white/5 border border-white/10 rounded-md p-1 flex items-center shadow-sm">
+                            <button
+                                className={`px-3 py-1 text-xs font-bold rounded transition-all ${language === "bg"
+                                    ? "bg-white text-deep-navy shadow-sm"
+                                    : "text-white/50 hover:text-white"
+                                    }`}
+                                onClick={() => setLanguage("bg", true)}
+                            >
+                                BG
+                            </button>
+                            <button
+                                className={`px-3 py-1 text-xs font-bold rounded transition-all ${language === "en"
+                                    ? "bg-white text-deep-navy shadow-sm"
+                                    : "text-white/50 hover:text-white"
+                                    }`}
+                                onClick={() => setLanguage("en", true)}
+                            >
+                                EN
+                            </button>
+                        </div>
                     </div>
                 </div>
             </nav>

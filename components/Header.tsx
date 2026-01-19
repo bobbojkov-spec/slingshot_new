@@ -346,22 +346,27 @@ const Header = () => {
               <ShoppingBag className="w-5 h-5" />
             </button>
 
-            <div className="hidden lg:flex items-center gap-1">
-              <button
-                onClick={() => setLanguage("bg")}
-                className={`text-sm uppercase tracking-wide transition-colors ${language === "bg" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                  }`}
-              >
-                BG
-              </button>
-              <span className="text-white/40">/</span>
-              <button
-                onClick={() => setLanguage("en")}
-                className={`text-sm uppercase tracking-wide transition-colors ${language === "en" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                  }`}
-              >
-                EN
-              </button>
+            <div className="hidden lg:flex items-center ml-2">
+              <div className="bg-white/5 border border-white/10 rounded-md p-1 flex items-center shadow-sm">
+                <button
+                  onClick={() => setLanguage("bg", true)}
+                  className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${language === "bg"
+                    ? "bg-white text-deep-navy shadow-sm"
+                    : "text-white/50 hover:text-white hover:bg-white/5"
+                    }`}
+                >
+                  BG
+                </button>
+                <button
+                  onClick={() => setLanguage("en", true)}
+                  className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${language === "en"
+                    ? "bg-white text-deep-navy shadow-sm"
+                    : "text-white/50 hover:text-white hover:bg-white/5"
+                    }`}
+                >
+                  EN
+                </button>
+              </div>
             </div>
 
             <button

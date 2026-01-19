@@ -7,7 +7,7 @@ export type Language = "en" | "bg";
 
 type LanguageContextType = {
   language: Language;
-  setLanguage: (lang: Language) => void;
+  setLanguage: (lang: Language, reload?: boolean) => void;
   t: (key: string) => string;
 };
 
@@ -48,9 +48,12 @@ export function LanguageProvider({
     }
   }, []);
 
-  const setLanguage = (lang: Language) => {
+  const setLanguage = (lang: Language, reload = false) => {
     document.cookie = `lang=${lang}; path=/; max-age=31536000`;
     setLanguageState(lang);
+    if (reload) {
+      window.location.reload();
+    }
   };
 
   const t = (key: string) => {
