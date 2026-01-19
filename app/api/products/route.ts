@@ -141,7 +141,8 @@ export async function GET(req: Request) {
 
       if (!options.skipTag && tagNames.length > 0) {
         const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
-        conditions.push(`p.tags && ARRAY[${placeholders}]::text[]`);
+        // Filter by either original tags or translated tags
+        conditions.push(`(p.tags && ARRAY[${placeholders}]::text[] OR pt_t.tags && ARRAY[${placeholders}]::text[])`);
         params.push(...tagNames);
       }
 
@@ -222,10 +223,9 @@ export async function GET(req: Request) {
         }
       }
       let badge = null;
-      const createdAt = new Date(row.created_at);
-      const isNew = (Date.now() - createdAt.getTime()) < 60 * 24 * 60 * 60 * 1000;
       const hasNewTag = row.tags && Array.isArray(row.tags) && row.tags.includes('New');
-      if (isNew || hasNewTag) badge = 'New';
+      // Simple logic for new, can be refined
+      if (hasNewTag) badge = 'New';
 
       return {
         id: row.id,
@@ -246,34 +246,13 @@ export async function GET(req: Request) {
 
     // FACETS ------------------------------------------------------------------
 
-    // 2. Categories Facet (Always based on base Filters? Or filters excluding Category?)
-    // Typically Categories is a drill-down. If I select a category, I see it.
-    // Use FULL filters.
-    const categoriesQP = buildQueryParts({}); // Keeping full filters for now
-    // Actually, usually you want to see SIBLING categories. 
-    // But since we removed the Category Filter from UI in Search, this is less relevant, 
-    // but the API still returns it. Let's leave as is (filtered).
-    const categoriesSql = `
-      SELECT c.slug, COALESCE(ct.name, c.name) as name, COUNT(distinct p.id) as count
-      FROM categories c
-      LEFT JOIN products p ON p.category_id = c.id AND p.status = 'active'
-      LEFT JOIN category_translations ct ON ct.category_id = c.id AND ct.language_code = $1
-      WHERE c.visible = true AND c.status = 'active'
-      -- We need to intersect with current query... this logic above was slightly different (group by c).
-      -- Simplified: Just return categories that have matching products with current filters.
-      -- BUT the previous query was joining on P with P.status='active'. 
-      -- Now we want to apply 'mainQP' to P?
-      -- The previous query had 'WHERE c.visible...'. It didn't apply query filters!
-      -- That means Categories facet was STATIC? No, it used 'p.category_id = c.id'.
-      -- But it didn't filter p by query! 
-      -- Let's upgrade it to respect query filters.
-    `;
-    // Re-writing Categories properly:
+    // 2. Categories Facet
     const catFacetsSql = `
         SELECT c.slug, COALESCE(ct.name, c.name) as name, COUNT(distinct p.id) as count
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         LEFT JOIN category_translations ct ON ct.category_id = c.id AND ct.language_code = $1
+        LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1
         WHERE ${mainQP.whereClause}
         AND c.id IS NOT NULL
         GROUP BY c.slug, c.name, ct.name, c.sort_order
@@ -307,10 +286,9 @@ export async function GET(req: Request) {
     const tagsSql = `
       SELECT t.tag as name, t.tag as slug, COUNT(distinct p.id) as count
       FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      LEFT JOIN product_types pt ON pt.name = p.product_type
-      LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1,
-      LATERAL unnest(p.tags) as t(tag)
+      LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1
+      LEFT JOIN categories c ON p.category_id = c.id,
+      LATERAL unnest(COALESCE(pt_t.tags, p.tags)) as t(tag)
       WHERE ${tagsQP.whereClause}
       AND ($1::text IS NOT NULL OR true)
       GROUP BY t.tag
@@ -322,52 +300,14 @@ export async function GET(req: Request) {
     // 5. Collections Facet (Skip Collection Filter)
     const collectionsQP = buildQueryParts({ skipCollection: true });
 
-    // Determine Source Filter based on Brand (if present in brandsQP which excludes brand? NO.)
-    // We should use the SELECTED brand to filter collections if desired. 
-    // The user said: "if I search PUMP i got result from both brands! both should be listed".
-    // If I select Brand A, I expect to see collections for Brand A?
-    // BUT 'collectionsQP' skips 'collection' filter, does NOT skip 'brand' filter.
-    // So 'collectionsQP' respects the Brand Filter.
-    // So if I filter Brand=Slingshot, I only see Slingshot collections. Correct.
-
-    // Logic for Source Filter based on selected brands
     let sourceFilter = [`'slingshot'`, `'rideengine'`];
     if (brandSlugs.length > 0) {
-      // If only Ride Engine selected
       const hasRE = brandSlugs.some(b => b === 'ride-engine' || b === 'rideengine');
       const hasSS = brandSlugs.some(b => b === 'slingshot');
       if (hasRE && !hasSS) sourceFilter = [`'rideengine'`];
       if (hasSS && !hasRE) sourceFilter = [`'slingshot'`];
-      // If both, keep both.
     }
     const sourceCondition = `col.source IN (${sourceFilter.join(', ')})`;
-
-    const collectionFacetSql = `
-        SELECT 
-            col.slug, 
-            COALESCE(ct.title, col.title) as name, 
-            COUNT(distinct p.id) as count
-        FROM collections col
-        JOIN collection_products cp ON col.id = cp.collection_id
-        JOIN products p ON cp.product_id = p.id
-        LEFT JOIN categories c ON p.category_id = c.id
-        LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $1
-        WHERE col.visible = true 
-        AND ${sourceCondition}
-        AND p.status = 'active'
-        -- Apply query filters to products
-        AND p.id IN (SELECT p2.id FROM products p2 LEFT JOIN categories c2 ON p2.category_id = c2.id WHERE ${collectionsQP.whereClause.replace(/p\./g, 'p2.').replace(/c\./g, 'c2.')})
-        HAVING COUNT(distinct p.id) > 0
-        ORDER BY col.title ASC
-    `;
-    // Optimization: The IN clause is heavy. 
-    // Better: Join the same conditions on 'p'. 
-    // Since 'collectionsQP.whereClause' uses 'p' and 'c' alias, we can just dump it here?
-    // But we are in a different FROM context (col join cp join p).
-    // Yes, 'p' is products. 'c' is available via join above?
-    // Added 'LEFT JOIN categories c'.
-    // Now we can use collectionsQP.whereClause directly?
-    // Yes.
 
     const collectionFacetSqlOptimized = `
         SELECT 
@@ -378,6 +318,7 @@ export async function GET(req: Request) {
         JOIN collection_products cp ON col.id = cp.collection_id
         JOIN products p ON cp.product_id = p.id
         LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1
         LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $1
         WHERE col.visible = true 
         AND ${sourceCondition}

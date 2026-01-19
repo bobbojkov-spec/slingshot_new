@@ -27,6 +27,20 @@ const nextConfig: NextConfig = {
     return config;
   },
   turbopack: {},
+  async redirects() {
+    return [
+      {
+        source: '/rideengine',
+        destination: '/shop?brand=ride-engine',
+        permanent: true,
+      },
+      {
+        source: '/slingshot',
+        destination: '/shop?brand=slingshot',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
