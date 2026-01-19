@@ -22,7 +22,6 @@ export default async function RideEngineCollectionsPage() {
     // Fetch the hero configuration from the homepage collection named 'rideengine-collections'
     // This allows admins to edit the Title/Subtitle and Video/Image in the admin panel
     const heroCollection = await getCollectionBySlug('rideengine-collections', lang);
-    console.log('DEBUG: slugs/rideengine-collections', heroCollection);
 
     const heroData = {
         title: heroCollection?.title || "RIDE ENGINE COLLECTIONS",

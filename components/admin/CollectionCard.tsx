@@ -29,13 +29,6 @@ export default function CollectionCard({
     // The directory names match the source values exactly: 'slingshot', 'rideengine', 'homepage'
     const source = collection.source;
 
-    // Determine content to display based on viewLang
-    // If BG is selected, prefer BG. Fallback to EN if missing.
-    // Actually user wants to SEE missing ones? "most of them are not correctly translated... see the titles"
-    // So if BG is selected and it's missing, showing "Missing Translation" or falling back to EN with a marker might be better.
-    // For now, let's just show the raw BG value if present, or fallback to EN with (EN) suffix/style?
-    // Or just strictly what is in that column.
-
     // User said: "flip the switch, see the titles"
     // Let's fallback to EN but maybe indicate it's a fallback? 
     // Or better: If viewLang is BG, show title_bg. If title_bg is empty, show title_en (or "No BG Title").
@@ -87,22 +80,6 @@ export default function CollectionCard({
                     {/* Product Count Badge */}
                     <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded border border-white/20">
                         {collection.product_count ?? 0}
-                    </div>
-                </div>
-
-                {/* Translation Tooltip (Floating Mini Window) */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 p-4">
-                    <div className="bg-black/80 backdrop-blur-md rounded-lg p-3 text-xs text-white shadow-xl max-w-full w-full space-y-2 border border-white/10">
-                        <div>
-                            <span className="text-[10px] uppercase font-bold text-gray-400 block mb-0.5">English</span>
-                            <p className="font-semibold truncate">{collection.title_en || '-'}</p>
-                            {collection.subtitle_en && <p className="text-gray-300 truncate text-[10px]">{collection.subtitle_en}</p>}
-                        </div>
-                        <div className="border-t border-white/10 pt-2">
-                            <span className="text-[10px] uppercase font-bold text-gray-400 block mb-0.5">Bulgarian</span>
-                            <p className="font-semibold truncate">{collection.title_bg || '-'}</p>
-                            {collection.subtitle_bg && <p className="text-gray-300 truncate text-[10px]">{collection.subtitle_bg}</p>}
-                        </div>
                     </div>
                 </div>
 
