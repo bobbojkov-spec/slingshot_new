@@ -7,7 +7,15 @@ export async function GET() {
     try {
         const { rows } = await query(`
             SELECT name_en as en, name_bg as bg, 
-            (SELECT COUNT(*) FROM products p, unnest(p.tags) as t WHERE t = tags.name_en AND p.status = 'active') as count
+            (
+                SELECT COUNT(DISTINCT p.id) 
+                FROM products p
+                LEFT JOIN product_translations pt ON p.id = pt.product_id
+                WHERE p.status = 'active' AND (
+                    tags.name_en = ANY(p.tags) OR 
+                    tags.name_en = ANY(pt.tags)
+                )
+            ) as count
             FROM tags 
             ORDER BY name_en ASC
         `);
