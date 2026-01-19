@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getPresignedUrl, getKeyFromUrl } from '@/lib/railway/storage';
 import { PRODUCT_IMAGES_RAILWAY_TABLE } from '@/lib/productImagesRailway';
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -202,40 +202,22 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
     // Images: Fetch from product_images table
     // fallback to og_image_url if no images found?
+    // Images: Fetch from product_images table
     let images = await Promise.all(imageRows.map(async (r: any) => {
       let key = r.storage_path;
-      if (key.startsWith('http')) {
-        // If it's a full URL, we need to extract the key to sign it
-        // Pattern: https://host/bucket/KEY
-        // We'll try to find the bucket name and split after it
-        // Or naively split by 'product-images/' if that's consistent
-        // Or assume the last part of the path is key? No, key implies directory structure.
+      // Use helper to extract key if it's a full URL
+      const extractedKey = getKeyFromUrl(key);
+      if (extractedKey) key = extractedKey;
 
-        try {
-          const urlObj = new URL(key);
-          // key becomes the pathname without the leading slash
-          // BUT if pathname includes bucket, we must remove it.
-          // Railway storage path usually includes bucket in URL but S3 command expects Key relative to bucket.
-          const pathParts = urlObj.pathname.split('/');
-          // pathParts[0] is empty, [1] is bucket, [2+] is Key?
-          // Let's assume bucket is first segment if it matches our config?
-          // For safety, let's look for 'product-images' index
-          const keyIndex = pathParts.indexOf('product-images');
-          if (keyIndex !== -1) {
-            key = pathParts.slice(keyIndex).join('/');
-          } else {
-            // Fallback: Remove first segment (bucket)
-            if (pathParts.length > 2) {
-              key = pathParts.slice(2).join('/');
-            }
-          }
-        } catch (e) {
-          console.error('Error parsing image URL', key, e);
-        }
-      }
+      console.log(`[ProductImage] Signing key: "${key}" (original: "${r.storage_path}")`);
+
       return await getPresignedUrl(key);
     }));
     images = images.filter(Boolean); // Remove nulls
+
+    if (product.image_path) {
+      console.log(`[ProductMainImage] Signing key: "${product.image_path}"`);
+    }
 
     const mainImage = product.image_path
       ? await getPresignedUrl(product.image_path)

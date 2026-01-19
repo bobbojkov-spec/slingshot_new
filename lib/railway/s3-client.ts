@@ -22,22 +22,22 @@ export const STORAGE_BUCKETS = {
 
 // Get S3 client for public or private bucket
 function getS3Client(isPublic: boolean = true): S3Client {
-    const endpoint = process.env.S3_ENDPOINT || 'https://storage.railway.app';
-    const region = process.env.S3_REGION || 'auto';
+    const endpoint = process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT_URL || 'https://storage.railway.app';
+    const region = process.env.S3_REGION || process.env.AWS_DEFAULT_REGION || 'auto';
 
     const accessKeyId = isPublic
-        ? process.env.S3_ACCESS_KEY_ID_PUBLIC
+        ? (process.env.S3_ACCESS_KEY_ID_PUBLIC || process.env.AWS_ACCESS_KEY_ID)
         : process.env.S3_ACCESS_KEY_ID_PRIVATE;
 
     const secretAccessKey = isPublic
-        ? process.env.S3_SECRET_ACCESS_KEY_PUBLIC
+        ? (process.env.S3_SECRET_ACCESS_KEY_PUBLIC || process.env.AWS_SECRET_ACCESS_KEY)
         : process.env.S3_SECRET_ACCESS_KEY_PRIVATE;
 
     if (!accessKeyId || !secretAccessKey) {
         throw new Error(
             `S3 credentials not set for ${isPublic ? 'public' : 'private'} bucket. ` +
-            `Please set S3_ACCESS_KEY_ID_${isPublic ? 'PUBLIC' : 'PRIVATE'} and ` +
-            `S3_SECRET_ACCESS_KEY_${isPublic ? 'PUBLIC' : 'PRIVATE'} in .env.local`
+            `Please set S3_ACCESS_KEY_ID_${isPublic ? 'PUBLIC' : 'PRIVATE'} (or AWS_ACCESS_KEY_ID) and ` +
+            `S3_SECRET_ACCESS_KEY_${isPublic ? 'PUBLIC' : 'PRIVATE'} (or AWS_SECRET_ACCESS_KEY) in .env.local`
         );
     }
 
@@ -55,13 +55,13 @@ function getS3Client(isPublic: boolean = true): S3Client {
 // Get bucket name (public or private)
 function getBucketName(isPublic: boolean = true): string {
     const bucket = isPublic
-        ? process.env.S3_BUCKET_PUBLIC
+        ? (process.env.S3_BUCKET_PUBLIC || process.env.AWS_S3_BUCKET_NAME || process.env.BUCKET)
         : process.env.S3_BUCKET_PRIVATE;
 
     if (!bucket) {
         throw new Error(
             `S3 bucket name not set for ${isPublic ? 'public' : 'private'} bucket. ` +
-            `Please set S3_BUCKET_${isPublic ? 'PUBLIC' : 'PRIVATE'} in .env.local`
+            `Please set S3_BUCKET_${isPublic ? 'PUBLIC' : 'PRIVATE'} (or AWS_S3_BUCKET_NAME) in .env.local`
         );
     }
 

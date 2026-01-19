@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { query } from '@/lib/dbPg';
 import { listBlocksForPage, PageBlockRecord } from '@/lib/pagesNewBlocksDb';
 import { convertToProxyUrl } from '@/lib/utils/image-url';
@@ -10,18 +12,43 @@ const isPositiveInt = (value: unknown) => {
     return Number.isFinite(numberValue) && Number.isInteger(numberValue) && numberValue >= 1;
 };
 
-const normalizeBlockData = (block: PageBlockRecord) => ({
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+    },
+});
+
+const signUrl = async (key: string | null | undefined) => {
+    if (!key) return null;
+    if (key.startsWith('http') || key.startsWith('/')) {
+        return convertToProxyUrl(key);
+    }
+    try {
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+        });
+        return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    } catch (error) {
+        console.error('Error signing URL:', error);
+        return convertToProxyUrl(key);
+    }
+};
+
+const normalizeBlockData = async (block: PageBlockRecord) => ({
     id: String(block.id),
     pageId: String(block.page_id),
     type: block.type,
     position: typeof block.position === 'number' ? block.position : 0,
     enabled: block.enabled !== false,
     data: block.data ?? {},
-    galleryImages: (block.gallery_images ?? []).map((image) => ({
+    galleryImages: await Promise.all((block.gallery_images ?? []).map(async (image) => ({
         mediaId: image.media_id,
         position: typeof image.position === 'number' ? image.position : 0,
-        url: convertToProxyUrl(image.url) ?? PLACEHOLDER_IMAGE,
-    })),
+        url: (await signUrl(image.url)) ?? PLACEHOLDER_IMAGE,
+    }))),
 });
 
 const extractMediaIds = (block: PageBlockRecord): number[] => {
@@ -148,11 +175,11 @@ export async function GET(
             for (const mediaRow of mediaRows) {
                 const id = typeof mediaRow.id === 'number' ? mediaRow.id : Number(mediaRow.id);
                 const url = typeof mediaRow.url === 'string' ? mediaRow.url : null;
-                mediaMap[id] = convertToProxyUrl(url) ?? PLACEHOLDER_IMAGE;
+                mediaMap[id] = (await signUrl(url)) ?? PLACEHOLDER_IMAGE;
             }
         }
 
-        const transformedBlocks = validBlocks.map(normalizeBlockData);
+        const transformedBlocks = await Promise.all(validBlocks.map(normalizeBlockData));
 
         return NextResponse.json({
             ok: true,
