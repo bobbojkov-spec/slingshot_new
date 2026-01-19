@@ -7,7 +7,7 @@ import { ShopToolbar } from '@/components/shop/ShopToolbar';
 import { CollectionHero } from './CollectionHero';
 import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Layers } from 'lucide-react';
 import { Collection } from '@/services/collections';
 import Link from 'next/link';
 

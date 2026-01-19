@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { getImageVariantUrl } from '@/lib/utils/imagePaths';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getPresignedUrl, getKeyFromUrl } from '@/lib/railway/storage';
 
 export async function GET(_: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;

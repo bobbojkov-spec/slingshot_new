@@ -4,6 +4,7 @@ import { query } from "@/lib/dbPg";
 export interface Collection {
     id: string;
     title: string;
+    slug: string;
     handle: string;
     description: string | null;
     subtitle: string | null;
