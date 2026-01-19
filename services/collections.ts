@@ -160,7 +160,7 @@ export async function getCollectionsByBrand(brand: string, lang: string = 'en'):
             (SELECT COUNT(*)::int FROM collection_products cp WHERE cp.collection_id = c.id) as product_count
         FROM collections c
         LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
-        WHERE c.source = $1 AND c.visible = true
+        WHERE c.source ILIKE $1 AND c.visible = true
         AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
         ORDER BY c.sort_order ASC, c.title ASC`,
         [brand, lang]
