@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getPresignedUrl } from '@/lib/railway/storage';
 
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const q = searchParams.get('q');
+        const requestedLang = (searchParams.get('lang') || 'en').toLowerCase();
+        const lang = requestedLang === 'bg' ? 'bg' : 'en';
 
         // Minimum 3 chars to search
         if (!q || q.length < 3) {
@@ -14,45 +17,42 @@ export async function GET(req: Request) {
         const searchTerm = `%${q}%`;
 
         // 1. Search Products (limit 5)
-        // Improve relevancy: match start of string first, then contains
-        const productsSql = `
-      SELECT name, slug, image 
-      FROM products 
-      WHERE (name ILIKE $1 OR sku ILIKE $1) AND status = 'active'
-      ORDER BY 
-        CASE WHEN name ILIKE $2 THEN 1 ELSE 2 END, 
-        name ASC 
-      LIMIT 5
-    `;
-        // $2 is just the query without %, to check "starts with" usually, 
-        // but here let's simplify strict ordering for now.
-        // Actually simpler: just ILIKE.
-
         const productsPromise = query(
-            `SELECT name, slug, sku, image FROM products 
-       WHERE (name ILIKE $1 OR sku ILIKE $1) AND status = 'active' 
-       LIMIT 5`,
-            [searchTerm]
+            `SELECT 
+                p.id,
+                COALESCE(pt_t.title, p.name) as name, 
+                p.slug, 
+                p.sku,
+                (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'thumb' THEN 1 ELSE 2 END ASC LIMIT 1) as image_path
+             FROM products p
+             LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2
+             WHERE (p.name ILIKE $1 OR p.sku ILIKE $1 OR pt_t.title ILIKE $1) AND p.status = 'active'
+             LIMIT 5`,
+            [searchTerm, lang]
         );
 
         // 2. Search Collections (limit 5)
         const collectionsPromise = query(
-            `SELECT title, slug FROM collections 
-       WHERE title ILIKE $1 AND hidden = false
-       LIMIT 5`,
-            [searchTerm]
+            `SELECT 
+                COALESCE(ct.title, col.title) as title, 
+                col.slug 
+             FROM collections col
+             LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $2
+             WHERE (col.title ILIKE $1 OR ct.title ILIKE $1) AND col.visible = true
+             LIMIT 5`,
+            [searchTerm, lang]
         );
 
-        // 3. Search Tags (limit 5)
+        // 3. Search Tags (limit 8) - Unnest from products matching query
         const tagsPromise = query(
-            `SELECT name, slug FROM tags 
-       WHERE name ILIKE $1 
-       LIMIT 5`,
-            [searchTerm]
-        ).catch(err => {
-            console.error('Tags search failed:', err);
-            return { rows: [] };
-        });
+            `SELECT DISTINCT t.tag as name, t.tag as slug
+             FROM products p
+             LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2,
+             LATERAL unnest(COALESCE(pt_t.tags, p.tags)) as t(tag)
+             WHERE t.tag ILIKE $1
+             LIMIT 8`,
+            [searchTerm, lang]
+        );
 
         const [productsRes, collectionsRes, tagsRes] = await Promise.all([
             productsPromise,
@@ -60,8 +60,26 @@ export async function GET(req: Request) {
             tagsPromise
         ]);
 
+        // Sign product images
+        const products = await Promise.all(productsRes.rows.map(async (prod: any) => {
+            let imageUrl = '/placeholder.jpg';
+            if (prod.image_path) {
+                try {
+                    imageUrl = await getPresignedUrl(prod.image_path);
+                } catch (e) {
+                    console.error('Failed to sign live search image', e);
+                }
+            }
+            return {
+                name: prod.name,
+                slug: prod.slug,
+                sku: prod.sku,
+                image: imageUrl
+            };
+        }));
+
         return NextResponse.json({
-            products: productsRes.rows,
+            products,
             collections: collectionsRes.rows,
             tags: tagsRes.rows
         });

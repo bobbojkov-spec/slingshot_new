@@ -58,6 +58,26 @@ const Header = () => {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
+  useEffect(() => {
+    const debounceId = setTimeout(async () => {
+      if (searchQuery.length >= 3) {
+        try {
+          const res = await fetch(`/api/search/live?q=${encodeURIComponent(searchQuery)}&lang=${language}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSuggestions(data);
+          }
+        } catch (err) {
+          console.error("Live search failed", err);
+        }
+      } else {
+        setSuggestions({ products: [], collections: [], tags: [] });
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceId);
+  }, [searchQuery, language]);
+
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Close mega menu when cursor leaves the nav area with a delay
@@ -333,58 +353,33 @@ const Header = () => {
                 ref={searchInputRef}
                 type="text"
                 value={searchQuery}
-                onChange={(event) => {
-                  const val = event.target.value;
-                  setSearchQuery(val);
-
-                  // Live Search Logic
-                  if (val.length >= 3) {
-                    // Debounce ideally, but for now direct fetch for responsiveness check
-                    // Using a simple timeout to avoid spamming
-                    const timeoutId = setTimeout(async () => {
-                      try {
-                        const res = await fetch(`/api/search/live?q=${encodeURIComponent(val)}`);
-                        if (res.ok) {
-                          const data = await res.json();
-                          setSuggestions(data);
-                        }
-                      } catch (err) {
-                        console.error('Live search failed', err);
-                      }
-                    }, 300);
-                    // Clear previous timeout if simple var (need ref or state for robust debounce, 
-                    // but React updates handle rapid state changes. For a true debounce we need useEffect)
-                  } else {
-                    setSuggestions({ products: [], collections: [], tags: [] });
-                  }
-                }}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t("header.searchPlaceholder")}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
               />
               <button
                 type="submit"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-accent transition-colors"
-                style={{ top: '24px' }}
               >
                 <Search className="w-5 h-5" />
               </button>
 
               {/* LIVE SUGGESTIONS DROPDOWN */}
               {(suggestions.products.length > 0 || suggestions.collections.length > 0 || (suggestions.tags && suggestions.tags.length > 0)) && (
-                <div className="mt-4 w-full bg-white rounded-md shadow-2xl py-4 z-50 text-black overflow-hidden animate-fade-in max-h-[60vh] overflow-y-auto">
-                  <div className="flex flex-col">
+                <div className="mt-4 w-full bg-white rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-h-[70vh] overflow-y-auto border border-gray-100">
+                  <div className="flex flex-col gap-8">
 
                     {/* TAGS */}
                     {suggestions.tags && suggestions.tags.length > 0 && (
-                      <div className="mb-4 px-6">
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tags</h4>
+                      <div className="px-6">
+                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Suggestions</h4>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.slug}
-                              href={`/search?q=${encodeURIComponent(tag.name)}`}
+                              href={`/search?tag=${encodeURIComponent(tag.name)}`}
                               onClick={() => setIsSearchOpen(false)}
-                              className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium text-gray-700 transition-colors"
+                              className="px-3 py-1.5 bg-gray-50 hover:bg-accent hover:text-white rounded-md text-sm font-medium text-gray-700 transition-all border border-gray-100"
                             >
                               {tag.name}
                             </Link>
@@ -393,42 +388,74 @@ const Header = () => {
                       </div>
                     )}
 
-                    {/* COLLECTIONS */}
-                    {suggestions.collections.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="px-6 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Collections</h4>
-                        {suggestions.collections.map((col: any) => (
-                          <Link
-                            key={col.slug}
-                            href={`/collections/${col.slug}`}
-                            onClick={() => setIsSearchOpen(false)}
-                            className="block px-6 py-2 hover:bg-gray-50 text-sm font-medium text-gray-800 transition-colors"
-                          >
-                            {col.title}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-6">
+                      {/* COLLECTIONS */}
+                      {suggestions.collections.length > 0 && (
+                        <div>
+                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Collections</h4>
+                          <div className="space-y-1">
+                            {suggestions.collections.map((col: any) => (
+                              <Link
+                                key={col.slug}
+                                href={`/collections/${col.slug}`}
+                                onClick={() => setIsSearchOpen(false)}
+                                className="flex items-center group py-2"
+                              >
+                                <span className="text-sm font-medium text-gray-800 group-hover:text-accent transition-colors underline-offset-4 group-hover:underline">
+                                  {col.title}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-                    {/* PRODUCTS */}
-                    {suggestions.products.length > 0 && (
-                      <div>
-                        <h4 className="px-6 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Products</h4>
-                        {suggestions.products.map((prod: any) => (
-                          <Link
-                            key={prod.slug}
-                            href={`/product/${prod.slug}`}
-                            onClick={() => setIsSearchOpen(false)}
-                            className="block px-6 py-2 hover:bg-gray-50 transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="text-sm font-bold text-gray-900">{prod.name}</span>
-                              {prod.sku && <span className="text-xs text-gray-400 font-mono">{prod.sku}</span>}
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                      {/* PRODUCTS */}
+                      {suggestions.products.length > 0 && (
+                        <div>
+                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Products</h4>
+                          <div className="space-y-4">
+                            {suggestions.products.map((prod: any) => (
+                              <Link
+                                key={prod.slug}
+                                href={`/product/${prod.slug}`}
+                                onClick={() => setIsSearchOpen(false)}
+                                className="flex items-center gap-4 group"
+                              >
+                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-100 p-1">
+                                  <img
+                                    src={prod.image || '/placeholder.jpg'}
+                                    alt={prod.name}
+                                    className="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-110"
+                                  />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-sm font-bold text-gray-900 truncate group-hover:text-accent transition-colors leading-tight">
+                                    {prod.name}
+                                  </span>
+                                  {prod.sku && (
+                                    <span className="text-[10px] text-gray-400 font-mono mt-0.5">
+                                      {prod.sku}
+                                    </span>
+                                  )}
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* View full results link if matching results exist */}
+                    <div className="border-t border-gray-100 pt-4 px-6 flex justify-center">
+                      <Link
+                        href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                        onClick={() => setIsSearchOpen(false)}
+                        className="text-sm font-bold text-accent hover:text-orange-600 transition-colors uppercase tracking-widest flex items-center gap-2"
+                      >
+                        View all results <Search className="w-3 h-3" />
+                      </Link>
+                    </div>
 
                   </div>
                 </div>
