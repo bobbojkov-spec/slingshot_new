@@ -19,13 +19,33 @@ type Collection = {
 
 export default function CollectionCard({
     collection,
+    viewLang = 'en',
     onDelete
 }: {
     collection: Collection;
+    viewLang?: 'en' | 'bg';
     onDelete?: () => void;
 }) {
     // The directory names match the source values exactly: 'slingshot', 'rideengine', 'homepage'
     const source = collection.source;
+
+    // Determine content to display based on viewLang
+    // If BG is selected, prefer BG. Fallback to EN if missing.
+    // Actually user wants to SEE missing ones? "most of them are not correctly translated... see the titles"
+    // So if BG is selected and it's missing, showing "Missing Translation" or falling back to EN with a marker might be better.
+    // For now, let's just show the raw BG value if present, or fallback to EN with (EN) suffix/style?
+    // Or just strictly what is in that column.
+
+    // User said: "flip the switch, see the titles"
+    // Let's fallback to EN but maybe indicate it's a fallback? 
+    // Or better: If viewLang is BG, show title_bg. If title_bg is empty, show title_en (or "No BG Title").
+
+    let displayTitle = viewLang === 'bg' ? (collection.title_bg || collection.title) : (collection.title_en || collection.title);
+    let displaySubtitle = viewLang === 'bg' ? collection.subtitle_bg : collection.subtitle_en;
+
+    // If we are in BG mode and there IS no specific BG title, maybe we should visually indicate it?
+    // CollectionCard implementation logic...
+    const isFallback = viewLang === 'bg' && !collection.title_bg;
 
     return (
         <div className="relative group">
@@ -56,12 +76,12 @@ export default function CollectionCard({
 
                 {/* Content */}
                 <div className="absolute inset-x-0 bottom-0 p-4 z-10">
-                    <h3 className="text-white font-semibold text-lg line-clamp-2 mb-1">
-                        {collection.title}
+                    <h3 className={`font-semibold text-lg line-clamp-2 mb-1 ${isFallback ? 'text-orange-200 italic' : 'text-white'}`}>
+                        {displayTitle}
                     </h3>
-                    {collection.subtitle && (
+                    {displaySubtitle && (
                         <p className="text-white/80 text-sm line-clamp-2">
-                            {collection.subtitle}
+                            {displaySubtitle}
                         </p>
                     )}
                     {/* Product Count Badge */}
