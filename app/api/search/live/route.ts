@@ -40,7 +40,9 @@ export async function GET(req: Request) {
              FROM collections col
              JOIN menu_group_collections mgc ON col.id = mgc.collection_id
              LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $2
-             WHERE (col.title ILIKE $1 OR ct.title ILIKE $1) AND col.visible = true
+             WHERE (col.title ILIKE $1 OR ct.title ILIKE $1) 
+               AND col.visible = true
+               AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = col.id)
              LIMIT 5`,
             [searchTerm, lang]
         );
