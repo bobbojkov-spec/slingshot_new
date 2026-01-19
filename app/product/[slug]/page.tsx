@@ -48,6 +48,7 @@ interface Product {
   hero_video_url?: string;
   sku?: string;
   subtitle?: string;
+  hero_image_url?: string;
 }
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -168,18 +169,23 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       </div>
 
-      {/* Hero Video Section */}
-      {
-        (product.video_url || product.hero_video_url) && (
-          <div className="relative h-[60vh] w-full overflow-hidden mb-8 -mt-8">
+      {/* Hero Section (Only if dedicated content exists) */}
+      {(product.hero_video_url || product.hero_image_url) && (
+        <div className="relative h-[60vh] w-full overflow-hidden mb-8 -mt-8">
+          {product.hero_video_url ? (
             <BackgroundVideoPlayer
-              videoUrl={product.hero_video_url || product.video_url || ''}
-              poster={product.image}
+              videoUrl={product.hero_video_url}
+              poster={product.hero_image_url || product.image}
             />
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-          </div>
-        )
-      }
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${product.hero_image_url})` }}
+            />
+          )}
+          <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+        </div>
+      )}
 
       <div className="container mx-auto px-4 pt-[90px]">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">

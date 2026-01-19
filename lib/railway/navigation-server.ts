@@ -2,6 +2,10 @@ import { query } from '@/lib/db';
 import { getPresignedUrl } from '@/lib/railway/storage';
 import { NavigationData, NavigationSport, MenuGroup, MenuCollection } from '@/hooks/useNavigation';
 
+// Simple memory cache
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const navCache: Record<string, { data: NavigationData, expires: number }> = {};
+
 export async function getNavigationData(lang: string = 'en') {
     const { rows: sportsRows } = await query(
         `
@@ -75,7 +79,7 @@ export async function getNavigationData(lang: string = 'en') {
         AND c.status = 'active'
         AND pt.visible = true
         AND pt.status = 'active'
-      GROUP BY c.slug, pt.id, pt.slug, pt.name, ptt.name
+      GROUP BY c.slug, pt.id, pt.slug, pt.name, ptt.name, c.sort_order, pt.sort_order
       ORDER BY c.sort_order, pt.sort_order, pt.name
       `,
             [lang],
@@ -161,19 +165,28 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
     );
 
     const collectionsByGroup = new Map<string, any[]>();
-    for (const row of collectionsRows) {
-        if (!collectionsByGroup.has(row.menu_group_id)) collectionsByGroup.set(row.menu_group_id, []);
 
+    // Parallelize pre-signed URL generation
+    const signedRows = await Promise.all(collectionsRows.map(async (row) => {
         let imageUrl = row.image_url;
         if (imageUrl && !imageUrl.startsWith('http')) {
-            try { imageUrl = await getPresignedUrl(imageUrl); } catch (e) { }
+            try {
+                imageUrl = await getPresignedUrl(imageUrl);
+            } catch (e) {
+                console.error(`Failed to sign URL for collection ${row.slug}:`, e);
+            }
         }
+        return { ...row, imageUrl };
+    }));
+
+    for (const row of signedRows) {
+        if (!collectionsByGroup.has(row.menu_group_id)) collectionsByGroup.set(row.menu_group_id, []);
 
         collectionsByGroup.get(row.menu_group_id)?.push({
             id: row.id,
             title: row.title,
             slug: row.slug,
-            image_url: imageUrl,
+            image_url: row.imageUrl,
             category_slugs: row.category_slugs || []
         });
     }
@@ -188,15 +201,28 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
 }
 
 export async function getFullNavigation(lang: string = 'en'): Promise<NavigationData> {
+    const now = Date.now();
+    if (navCache[lang] && navCache[lang].expires > now) {
+        return navCache[lang].data;
+    }
+
     const [nav, slingshot, rideEngine] = await Promise.all([
         getNavigationData(lang),
         getMenuStructure('slingshot', lang),
         getMenuStructure('rideengine', lang)
     ]);
 
-    return {
+    const data = {
         ...nav,
         slingshotMenuGroups: slingshot,
         rideEngineMenuGroups: rideEngine,
     } as NavigationData;
+
+    // Update cache
+    navCache[lang] = {
+        data,
+        expires: now + CACHE_DURATION
+    };
+
+    return data;
 }

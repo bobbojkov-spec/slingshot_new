@@ -53,13 +53,13 @@ function SearchContent() {
 
     const breadcrumbItems = [
         { label: 'Shop', href: '/shop' },
-        { label: `Search: ${pagination.total} results found for "${query}"` },
+        { label: `Search for "${query}" results: ${pagination.total}` },
     ];
 
     return (
         <div className="min-h-screen bg-white">
             <ShopHero
-                title={`Search Results`}
+                title="Search"
                 breadcrumbs={breadcrumbItems}
                 variant="minimal"
             />

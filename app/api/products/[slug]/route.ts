@@ -37,7 +37,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         p.specs_html,
         p.package_includes,
         p.subtitle,
-        p.sku
+        p.sku,
+        p.hero_image_url
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE (p.slug = $1 OR p.id::text = $1) AND p.status = 'active'
@@ -52,14 +53,21 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
     // Sign Hero Video URL if it's a private upload
     if (product.hero_video_url) {
-      const { getKeyFromUrl } = await import('@/lib/railway/storage');
-      const key = getKeyFromUrl(product.hero_video_url);
-      if (key) {
-        try {
-          product.hero_video_url = await getPresignedUrl(key);
-        } catch (e) {
-          console.error('Failed to sign hero video url', e);
-        }
+      const key = getKeyFromUrl(product.hero_video_url) || product.hero_video_url;
+      try {
+        product.hero_video_url = await getPresignedUrl(key);
+      } catch (e) {
+        console.error('Failed to sign hero video url', e);
+      }
+    }
+
+    // Sign Hero Image URL if present
+    if (product.hero_image_url) {
+      const key = getKeyFromUrl(product.hero_image_url) || product.hero_image_url;
+      try {
+        product.hero_image_url = await getPresignedUrl(key);
+      } catch (e) {
+        console.error('Failed to sign hero image url', e);
       }
     }
 

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProductSelector from '@/components/admin/ProductSelector';
+import CollectionSelector from '@/components/admin/CollectionSelector';
+import { Layers } from 'lucide-react';
 
 type CollectionEditFormProps = {
     collection: {
@@ -29,8 +31,10 @@ export default function CollectionEditForm({
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showProductSelector, setShowProductSelector] = useState(false);
+    const [showCollectionSelector, setShowCollectionSelector] = useState(false);
     const [productCount, setProductCount] = useState<number>(0);
     const [products, setProducts] = useState<any[]>([]);
+    const [childCollections, setChildCollections] = useState<any[]>([]);
 
     const [imageUrl, setImageUrl] = useState(collection.image_url || '');
     const [videoUrl, setVideoUrl] = useState(collection.video_url || '');
@@ -51,6 +55,14 @@ export default function CollectionEditForm({
             })
             .catch(console.error);
     }, [collection.id]);
+    useEffect(() => {
+        if (collection.source === 'homepage') {
+            fetch(`/api/admin/collections/${collection.id}/children`)
+                .then(r => r.json())
+                .then(data => setChildCollections(data.collections || []))
+                .catch(console.error);
+        }
+    }, [collection.id, collection.source]);
 
     const updateTranslation = (lang: 'en' | 'bg', field: 'title' | 'subtitle', value: string) => {
         setTranslations(prev => ({
@@ -423,6 +435,50 @@ export default function CollectionEditForm({
                 </div>
             </div>
 
+            {/* Nested Collections Section (Only for Homepage/Meta collections) */}
+            {collection.source === 'homepage' && (
+                <div className="mb-8">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        Nested Collections ({childCollections.length})
+                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Menu Aggregation</span>
+                    </h2>
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                        <div className="flex gap-6">
+                            <div className="flex-1">
+                                {childCollections.length > 0 ? (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                        {childCollections.map((col) => (
+                                            <div
+                                                key={col.id}
+                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100"
+                                            >
+                                                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100 text-gray-400 flex-shrink-0">
+                                                    <Layers size={20} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-bold text-gray-900 truncate">{col.title}</p>
+                                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest">{col.slug}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No nested collections assigned</p>
+                                )}
+                            </div>
+                            <div className="flex items-start">
+                                <button
+                                    onClick={() => setShowCollectionSelector(true)}
+                                    className="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 transition-colors whitespace-nowrap"
+                                >
+                                    Manage Collections
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Settings Section */}
             <div className="mb-8">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
@@ -511,6 +567,19 @@ export default function CollectionEditForm({
                                 setProducts(prods);
                                 setProductCount(prods.length);
                             })
+                            .catch(console.error);
+                    }}
+                />
+            )}
+            {/* Collection Selector Modal */}
+            {showCollectionSelector && (
+                <CollectionSelector
+                    parentId={collection.id}
+                    onClose={() => setShowCollectionSelector(false)}
+                    onSave={() => {
+                        fetch(`/api/admin/collections/${collection.id}/children`)
+                            .then(r => r.json())
+                            .then(data => setChildCollections(data.collections || []))
                             .catch(console.error);
                     }}
                 />

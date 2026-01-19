@@ -11,6 +11,7 @@ export interface Collection {
     video_url: string | null;
     source: string; // Added source
     products: any[];
+    child_collections?: any[];
 }
 
 import { getPresignedUrl } from "@/lib/railway/storage";
@@ -100,8 +101,47 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
         };
     }));
 
+    // Fetch child collections (meta-collection feature)
+    // Only show child collections that have at least one product
+    const childrenRes = await query(
+        `SELECT 
+            c.id,
+            c.slug,
+            c.image_url,
+            COALESCE(ct.title, c.title) as title,
+            ct.subtitle
+         FROM collections c
+         INNER JOIN collection_listings cl ON cl.child_id = c.id
+         LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $2
+         WHERE cl.parent_id = $1
+           AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
+         ORDER BY cl.sort_order ASC, title ASC`,
+        [collection.id, lang]
+    );
+
+    const child_collections = await Promise.all(childrenRes.rows.map(async (c: any) => {
+        let signedUrl = c.image_url;
+        if (c.image_url && !c.image_url.startsWith('http') && !c.image_url.startsWith('/')) {
+            try {
+                // Use middle.webp for category listing thumbnails
+                const thumbPath = c.image_url.replace('/full/', '/middle/').replace('/thumb/', '/middle/');
+                signedUrl = await getPresignedUrl(thumbPath);
+            } catch (err) {
+                console.error(`Failed to sign child collection image URL for ${c.slug}`, err);
+                try {
+                    signedUrl = await getPresignedUrl(c.image_url);
+                } catch (e) { }
+            }
+        }
+        return {
+            ...c,
+            image_url: signedUrl
+        };
+    }));
+
     return {
         ...collection,
-        products
+        products,
+        child_collections
     };
 }

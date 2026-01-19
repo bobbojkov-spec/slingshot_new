@@ -105,7 +105,11 @@ export const translations = {
     "menu_group.accessories": "ACCESSORIES",
     "menu_group.categories": "CATEGORIES",
     "breadcrumbs.home": "Home",
-    "breadcrumbs.shop": "Shop"
+    "breadcrumbs.shop": "Shop",
+    "search.suggestions": "Suggestions",
+    "search.collections": "Collections",
+    "search.products": "Products",
+    "search.view_results": "View all results"
   },
   bg: {
     "header.nav.kites": "Кайтове",
@@ -213,7 +217,11 @@ export const translations = {
     "menu_group.accessories": "АКСЕСОАРИ",
     "menu_group.categories": "КАТЕГОРИИ",
     "breadcrumbs.home": "Начало",
-    "breadcrumbs.shop": "Магазин"
+    "breadcrumbs.shop": "Магазин",
+    "search.suggestions": "Предложения",
+    "search.collections": "Колекции",
+    "search.products": "Продукти",
+    "search.view_results": "Виж резултатите"
   }
 };
 

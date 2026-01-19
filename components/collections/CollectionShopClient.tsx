@@ -9,6 +9,7 @@ import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Collection } from '@/services/collections';
+import Link from 'next/link';
 
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -92,12 +93,51 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                 breadcrumbs={breadcrumbs}
             />
 
-            {/* Toolbar - filtered by current products */}
-            <ShopToolbar
-                facets={{ ...facets, collections: [] }} // Hide collection filter on collection page as it's redundant/confusing
-                totalProducts={pagination.total}
-                basePath={`/collections/${slug}`}
-            />
+            {/* Child Collections Grid (Meta-collection feature) */}
+            {initialCollection.child_collections && initialCollection.child_collections.length > 0 && (
+                <div className="container mx-auto px-4 py-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {initialCollection.child_collections.map((child: any) => (
+                            <Link
+                                key={child.id}
+                                href={`/collections/${child.slug}`}
+                                className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                            >
+                                {child.image_url ? (
+                                    <img
+                                        src={child.image_url}
+                                        alt={child.title}
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                                        <Layers className="w-12 h-12" />
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
+                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 group-hover:text-accent transition-colors">
+                                        {child.title}
+                                    </h3>
+                                    {child.subtitle && (
+                                        <p className="text-sm text-gray-300 line-clamp-2 max-w-[80%] opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                                            {child.subtitle}
+                                        </p>
+                                    )}
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Toolbar - only if there are products or we are loading */}
+            {(products.length > 0 || (loading && !initialCollection.child_collections?.length)) && (
+                <ShopToolbar
+                    facets={{ ...facets, collections: [] }}
+                    totalProducts={pagination.total}
+                    basePath={`/collections/${slug}`}
+                />
+            )}
 
             <div className="container mx-auto px-4 py-8">
 
@@ -108,7 +148,9 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                     </div>
                 ) : products.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
+                    !initialCollection.child_collections?.length && (
+                        <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
+                    )
                 ) : (
                     <>
                         <ProductGrid products={products} />

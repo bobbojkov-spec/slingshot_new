@@ -34,6 +34,16 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       return NextResponse.json({ product: null }, { status: 404 });
     }
 
+    // Sign Hero Image URL if present
+    if (product.hero_image_url) {
+      const key = getKeyFromUrl(product.hero_image_url) || product.hero_image_url;
+      try {
+        product.hero_image_url = await getPresignedUrl(key);
+      } catch (e) {
+        console.error('Failed to sign hero image url', e);
+      }
+    }
+
     const [
       { rows: imageRows = [] },
       { rows: variantRows = [] },

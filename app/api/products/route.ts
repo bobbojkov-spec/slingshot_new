@@ -118,7 +118,14 @@ export async function GET(req: Request) {
       let paramIndex = 2;
 
       if (queryTerm) {
-        conditions.push(`(p.name ILIKE $${paramIndex} OR p.sku ILIKE $${paramIndex} OR array_to_string(p.tags, ' ') ILIKE $${paramIndex})`);
+        conditions.push(`(
+          p.name ILIKE $${paramIndex} OR 
+          p.title ILIKE $${paramIndex} OR 
+          pt_t.title ILIKE $${paramIndex} OR 
+          p.sku ILIKE $${paramIndex} OR 
+          p.handle ILIKE $${paramIndex} OR
+          array_to_string(p.tags, ' ') ILIKE $${paramIndex}
+        )`);
         params.push(`%${queryTerm}%`);
         paramIndex++;
       }
@@ -184,6 +191,8 @@ export async function GET(req: Request) {
         COALESCE(pt_t.title, p.name) as name,
         p.slug,
         p.og_image_url,
+        p.hero_image_url,
+        p.hero_video_url,
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
         (SELECT compare_at_price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as "originalPrice",
         (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1) as image_path,
@@ -240,6 +249,16 @@ export async function GET(req: Request) {
         type: row.type_name,
         typeSlug: row.type_slug,
         inStock: (parseInt(row.total_inventory || '0') > 0),
+        hero_image_url: await (async () => {
+          if (!row.hero_image_url) return null;
+          const key = getKeyFromUrl(row.hero_image_url) || row.hero_image_url;
+          try { return await getPresignedUrl(key); } catch (e) { return row.hero_image_url; }
+        })(),
+        hero_video_url: await (async () => {
+          if (!row.hero_video_url) return null;
+          const key = getKeyFromUrl(row.hero_video_url) || row.hero_video_url;
+          try { return await getPresignedUrl(key); } catch (e) { return row.hero_video_url; }
+        })(),
       };
     }));
 

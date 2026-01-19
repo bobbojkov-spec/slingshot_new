@@ -67,6 +67,7 @@ function ShopContent() {
 
   const breadcrumbItems = [
     { label: 'Shop', href: '/shop' },
+    ...(searchParams.get('q') ? [{ label: `Search for "${searchParams.get('q')}" results: ${pagination.total}` }] : []),
     ...(searchParams.get('category') ? [{ label: searchParams.get('category')!.toUpperCase() }] : []),
   ];
 
@@ -74,7 +75,7 @@ function ShopContent() {
     <div className="min-h-screen bg-white">
       {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
       <ShopHero
-        title={searchParams.get('q') ? `Search: ${searchParams.get('q')}` : (searchParams.get('category') || 'All Products')}
+        title={searchParams.get('q') ? 'Search' : (searchParams.get('category') || 'All Products')}
         breadcrumbs={breadcrumbItems}
         variant={hasFilters ? 'minimal' : 'default'}
       />

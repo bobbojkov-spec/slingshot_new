@@ -26,8 +26,9 @@ export async function GET(req: Request) {
                 (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'thumb' THEN 1 ELSE 2 END ASC LIMIT 1) as image_path
              FROM products p
              LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2
-             WHERE (p.name ILIKE $1 OR p.sku ILIKE $1 OR pt_t.title ILIKE $1) AND p.status = 'active'
-             LIMIT 5`,
+             WHERE (p.name ILIKE $1 OR p.title ILIKE $1 OR p.sku ILIKE $1 OR p.handle ILIKE $1 OR pt_t.title ILIKE $1) AND p.status = 'active'
+             ORDER BY p.name ASC
+             LIMIT 10`,
             [searchTerm, lang]
         );
 

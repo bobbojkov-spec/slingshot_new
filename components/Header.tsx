@@ -22,6 +22,8 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [preloadedData, setPreloadedData] = useState<{ collections: any[], tags: string[] }>({ collections: [], tags: [] });
   const [suggestions, setSuggestions] = useState<{ products: any[], collections: any[], tags: any[] }>({ products: [], collections: [], tags: [] });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { open } = useCart();
@@ -47,6 +49,21 @@ const Header = () => {
   }, [isSearchOpen]);
 
   useEffect(() => {
+    const preload = async () => {
+      try {
+        const res = await fetch('/api/search/preload');
+        if (res.ok) {
+          const data = await res.json();
+          setPreloadedData(data);
+        }
+      } catch (err) {
+        console.error("Preload failed", err);
+      }
+    };
+    preload();
+  }, []);
+
+  useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsSearchOpen(false);
@@ -60,23 +77,57 @@ const Header = () => {
 
   useEffect(() => {
     const debounceId = setTimeout(async () => {
-      if (searchQuery.length >= 3) {
-        try {
-          const res = await fetch(`/api/search/live?q=${encodeURIComponent(searchQuery)}&lang=${language}`);
-          if (res.ok) {
-            const data = await res.json();
-            setSuggestions(data);
+      if (searchQuery.length >= 2) {
+        // Local filtering for tags and collections (instant)
+        const q = searchQuery.toLowerCase();
+
+        const filteredTags = preloadedData.tags
+          .filter(t => t.toLowerCase().includes(q))
+          .map(t => ({ name: t, slug: t }))
+          .slice(0, 8);
+
+        const filteredCollections = preloadedData.collections
+          .filter(c => (c.title_en?.toLowerCase().includes(q) || c.title_bg?.toLowerCase().includes(q)))
+          .map(c => ({
+            title: language === 'bg' ? (c.title_bg || c.title_en) : (c.title_en || c.title_bg),
+            slug: c.slug
+          }))
+          .slice(0, 5);
+
+        // Update local suggestions first
+        setSuggestions(prev => ({
+          ...prev,
+          tags: filteredTags,
+          collections: filteredCollections
+        }));
+
+        // Fetch products (live)
+        if (searchQuery.length >= 3) {
+          setIsSearchLoading(true);
+          try {
+            const res = await fetch(`/api/search/live?q=${encodeURIComponent(searchQuery)}&lang=${language}`);
+            if (res.ok) {
+              const data = await res.json();
+              setSuggestions({
+                products: data.products,
+                collections: filteredCollections.length > 0 ? filteredCollections : data.collections,
+                tags: filteredTags.length > 0 ? filteredTags : data.tags
+              });
+            }
+          } catch (err) {
+            console.error("Live search failed", err);
+          } finally {
+            setIsSearchLoading(false);
           }
-        } catch (err) {
-          console.error("Live search failed", err);
         }
       } else {
         setSuggestions({ products: [], collections: [], tags: [] });
+        setIsSearchLoading(false);
       }
     }, 300);
 
     return () => clearTimeout(debounceId);
-  }, [searchQuery, language]);
+  }, [searchQuery, language, preloadedData]);
 
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -104,7 +155,7 @@ const Header = () => {
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}&lang=${language}`;
     }
     setIsSearchOpen(false);
     setSearchQuery("");
@@ -341,9 +392,8 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Search Dropdown */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-hidden transition-all duration-500 ease-in-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? "max-h-[80vh] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
           }`}
       >
         <div className="section-container py-4">
@@ -360,26 +410,31 @@ const Header = () => {
               <button
                 type="submit"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-accent transition-colors"
+                disabled={isSearchLoading}
               >
-                <Search className="w-5 h-5" />
+                {isSearchLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Search className="w-5 h-5" />
+                )}
               </button>
 
               {/* LIVE SUGGESTIONS DROPDOWN */}
               {(suggestions.products.length > 0 || suggestions.collections.length > 0 || (suggestions.tags && suggestions.tags.length > 0)) && (
-                <div className="mt-4 w-full bg-white rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-h-[70vh] overflow-y-auto border border-gray-100">
+                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-h-[70vh] overflow-y-auto border border-gray-200">
                   <div className="flex flex-col gap-8">
 
                     {/* TAGS */}
                     {suggestions.tags && suggestions.tags.length > 0 && (
                       <div className="px-6">
-                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Suggestions</h4>
+                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.suggestions")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.slug}
-                              href={`/search?tag=${encodeURIComponent(tag.name)}`}
+                              href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
                               onClick={() => setIsSearchOpen(false)}
-                              className="px-3 py-1.5 bg-gray-50 hover:bg-accent hover:text-white rounded-md text-sm font-medium text-gray-700 transition-all border border-gray-100"
+                              className="px-5 py-2.5 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-black text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
                             >
                               {tag.name}
                             </Link>
@@ -392,7 +447,7 @@ const Header = () => {
                       {/* COLLECTIONS */}
                       {suggestions.collections.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Collections</h4>
+                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.collections")}</h4>
                           <div className="space-y-1">
                             {suggestions.collections.map((col: any) => (
                               <Link
@@ -413,7 +468,7 @@ const Header = () => {
                       {/* PRODUCTS */}
                       {suggestions.products.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Products</h4>
+                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.products")}</h4>
                           <div className="space-y-4">
                             {suggestions.products.map((prod: any) => (
                               <Link
@@ -422,7 +477,7 @@ const Header = () => {
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center gap-4 group"
                               >
-                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-100 p-1">
+                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-200 p-1">
                                   <img
                                     src={prod.image || '/placeholder.jpg'}
                                     alt={prod.name}
@@ -449,11 +504,11 @@ const Header = () => {
                     {/* View full results link if matching results exist */}
                     <div className="border-t border-gray-100 pt-4 px-6 flex justify-center">
                       <Link
-                        href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                        href={`/search?q=${encodeURIComponent(searchQuery)}&lang=${language}`}
                         onClick={() => setIsSearchOpen(false)}
                         className="text-sm font-bold text-accent hover:text-orange-600 transition-colors uppercase tracking-widest flex items-center gap-2"
                       >
-                        View all results <Search className="w-3 h-3" />
+                        {t("search.view_results")} <Search className="w-3 h-3" />
                       </Link>
                     </div>
 

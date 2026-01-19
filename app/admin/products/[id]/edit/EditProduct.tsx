@@ -38,6 +38,7 @@ type ProductInfo = {
   availability?: string;
   categoryId?: string;
   categoryName?: string;
+  hero_image_url?: string;
   description_html?: string;
   description_html2?: string;
   specs_html?: string;

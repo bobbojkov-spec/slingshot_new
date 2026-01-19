@@ -125,7 +125,6 @@ export default function InfoTab({
                 options={[
                   { label: 'Slingshot', value: 'Slingshot' },
                   { label: 'Ride Engine', value: 'Ride Engine' },
-                  { label: 'Moon Patrol', value: 'Moon Patrol' },
                 ]}
                 value={draft.info?.brand ?? undefined}
                 onChange={(val) =>
@@ -217,6 +216,69 @@ export default function InfoTab({
         </Row>
       </div>
 
+      {/* Row 2.5: Hero Image (Desktop/Wide) */}
+      <div>
+        <Row gutter={16}>
+          <Col span={24}>
+            <div style={{ marginBottom: 16 }}>
+              <Typography.Text strong>Hero Image (Desktop/Wide)</Typography.Text>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Input
+                  prefix={<UploadOutlined />}
+                  value={draft.info?.hero_image_url ?? ''}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      info: { ...prev.info, hero_image_url: e.target.value },
+                    }))
+                  }
+                  placeholder="https://.../hero.jpg"
+                />
+                <Upload
+                  beforeUpload={async (file) => {
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      formData.append('folder', 'hero-images');
+
+                      const res = await fetch('/api/admin/upload', {
+                        method: 'POST',
+                        body: formData,
+                      });
+
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+                      setDraft((prev) => ({
+                        ...prev,
+                        info: { ...prev.info, hero_image_url: data.url },
+                      }));
+                      message.success('Hero image uploaded');
+                    } catch (error: any) {
+                      message.error(error.message || 'Upload failed');
+                    }
+                    return false;
+                  }}
+                  showUploadList={false}
+                  accept="image/*"
+                >
+                  <Button icon={<UploadOutlined />} />
+                </Upload>
+              </div>
+              {draft.info?.hero_image_url && (
+                <div style={{ marginTop: 8 }}>
+                  <img
+                    src={draft.info.hero_image_url}
+                    alt="Hero Preview"
+                    style={{ maxHeight: 200, borderRadius: 8, border: '1px solid #ddd' }}
+                  />
+                </div>
+              )}
+            </div>
+          </Col>
+        </Row>
+      </div>
+
       <div style={{ marginBottom: 16 }}>
         <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>Collections</Typography.Text>
         <Space wrap>
@@ -288,7 +350,7 @@ export default function InfoTab({
         onBgChange={(val) => updateTranslationBG('package_includes', val)}
       />
 
-    </Space>
+    </Space >
   );
 }
 

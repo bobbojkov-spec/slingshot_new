@@ -67,6 +67,7 @@ async function fetchProduct(id: string) {
         tags: infoTags,
         status: data.status ?? '',
         hero_video_url: data.hero_video_url ?? '',
+        hero_image_url: data.hero_image_url ?? '',
         video_url: data.video_url ?? '',
         categoryId: data.category?.id ?? data.category_id ?? data.category ?? null,
         categoryName: data.category?.name ?? '',
