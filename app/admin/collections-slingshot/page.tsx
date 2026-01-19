@@ -22,13 +22,17 @@ async function getCollectionsBySource(source: string): Promise<Collection[]> {
       c.slug,
       c.image_url,
       c.source,
-      COALESCE(ct.title, c.title) as title,
-      ct.subtitle,
+      COALESCE(ct_en.title, c.title) as title,
+      ct_en.title as title_en,
+      ct_en.subtitle as subtitle_en,
+      ct_bg.title as title_bg,
+      ct_bg.subtitle as subtitle_bg,
       (SELECT COUNT(*)::int FROM collection_products cp WHERE cp.collection_id = c.id) as product_count
     FROM collections c
-    LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = 'en'
+    LEFT JOIN collection_translations ct_en ON c.id = ct_en.collection_id AND ct_en.language_code = 'en'
+    LEFT JOIN collection_translations ct_bg ON c.id = ct_bg.collection_id AND ct_bg.language_code = 'bg'
     WHERE c.source = $1 AND c.visible = true
-    ORDER BY c.sort_order ASC, ct.title ASC`,
+    ORDER BY c.sort_order ASC, ct_en.title ASC`,
         [source]
     );
 
@@ -56,7 +60,12 @@ async function getCollectionsBySource(source: string): Promise<Collection[]> {
         }
         return {
             ...c,
-            image_url: signedUrl
+            image_url: signedUrl,
+            // Ensure fields are part of the object
+            title_en: c.title_en || c.title, // Fallback to main title if en missing? Or just show what's there
+            subtitle_en: c.subtitle_en,
+            title_bg: c.title_bg,
+            subtitle_bg: c.subtitle_bg
         };
     }));
 

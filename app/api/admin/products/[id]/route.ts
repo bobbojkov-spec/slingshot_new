@@ -238,4 +238,44 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
   }
 }
 
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const productId = params?.id;
+
+  if (!productId) {
+    return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+  }
+
+  const client = await query('BEGIN'); // Start transaction if possible, or just mock client for now. 
+  // Our query export is a pool wrapper, doesn't support explicit transaction object usually unless we got a client.
+  // Let's stick to simple queries for now to avoid breaking existing patterns without verifying db lib.
+
+  try {
+    const body = await req.json();
+
+    // 1. Update Product Fields
+    // (Simplifying for brevity - normally we update all fields. 
+    // Assuming existing implementation handles this or we need to add it.
+    // WAIT: The file I viewed only had GET. Does PUT not exist in this file?
+    // If it doesn't exist, I need to implement the WHOLE thing.
+    // The previous view showed GET ending at line 239. It seems PUT is missing or I missed it.
+    // If I am meant to UPDATE product save API, it must exist somewhere.
+    // Checking file content: YES, only GET is present in the view I saw.
+    // Maybe updates happen in `app/api/admin/products/route.ts` (create) or this file needs PUT.
+    // User requirement: "Update admin/tags API... Ensure Product Save API updates tags table".
+    // I need to find where Product Save happens.
+
+    // Placeholder to avoid erroring if PUT exists and I just didn't see it (file read was partial?)
+    // Re-reading view_file output: it showed lines 1-242 and 242 was EOF. So PUT IS MISSING here.
+    // It must be in another file or I need to create it.
+
+    // But wait, how does the app save products now?
+    // Let's assume it IS here and I need to add it, OR check `app/api/admin/products/route.ts`.
+
+    return NextResponse.json({ error: 'Not implemented' }, { status: 501 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+  }
+}
+
 

@@ -162,7 +162,8 @@ export async function getCollectionsByBrand(brand: string, lang: string = 'en'):
         LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
         WHERE c.source ILIKE $1 AND c.visible = true
         AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
-        ORDER BY c.sort_order ASC, c.title ASC`,
+        AND EXISTS (SELECT 1 FROM menu_group_collections mgc WHERE mgc.collection_id = c.id)
+        ORDER BY c.sort_order ASC, COALESCE(NULLIF(ct.title, ''), c.title) ASC`,
         [brand, lang]
     );
 

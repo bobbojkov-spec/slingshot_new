@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../__Blueprints_Docs"
+		},
+		{
+			"path": "../bridge"
 		}
 	],
 	"settings": {}

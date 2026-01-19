@@ -189,7 +189,7 @@ const Header = () => {
               width={160}
               height={40}
             />
-            <span className="font-logo font-extrabold text-white text-lg tracking-tight hidden sm:block">
+            <span className="font-logo font-extrabold text-orange-500/45 text-lg tracking-tight ml-1">
               BG
             </span>
           </Link>

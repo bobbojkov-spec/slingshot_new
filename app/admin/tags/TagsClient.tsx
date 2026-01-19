@@ -78,16 +78,17 @@ export default function TagsClient() {
     const handleDelete = (tagEn: string) => {
         Modal.confirm({
             title: 'Delete Tag',
-            content: `Are you sure you want to delete the tag "${tagEn}"? This will remove it from ALL products in both English and Bulgarian.`,
+            content: `Are you sure you want to delete the tag "${tagEn}"? This will remove it from the master list and ALL products.`,
             okText: 'Yes, Delete',
             okType: 'danger',
             cancelText: 'No',
             onOk: async () => {
                 try {
-                    const res = await fetch('/api/admin/tags/products', {
-                        method: 'DELETE',
+                    // Updated to use the single route with action
+                    const res = await fetch('/api/admin/tags', {
+                        method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ tagEn }),
+                        body: JSON.stringify({ action: 'delete', name_en: tagEn }),
                     });
                     if (res.ok) {
                         message.success('Tag deleted successfully');
@@ -102,7 +103,7 @@ export default function TagsClient() {
         });
     };
 
-    const handleAddTag = () => {
+    const handleAddTag = async () => {
         if (!newTagName.trim()) return;
         const exists = data.find(d => d.en.toLowerCase() === newTagName.trim().toLowerCase());
         if (exists) {
@@ -110,11 +111,27 @@ export default function TagsClient() {
             return;
         }
 
-        // Add a "virtual" tag to the list so we can manage its products
-        const newTag: TagData = { en: newTagName.trim(), bg: '', count: 0 };
-        setData([newTag, ...data]);
-        setNewTagName('');
-        message.success('Tag template created. Now assign products to make it permanent.');
+        try {
+            const res = await fetch('/api/admin/tags', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'create',
+                    name_en: newTagName.trim(),
+                    name_bg: ''
+                }),
+            });
+
+            if (res.ok) {
+                message.success('Tag created successfully');
+                setNewTagName('');
+                fetchData();
+            } else {
+                message.error('Failed to create tag');
+            }
+        } catch (e) {
+            message.error('Error creating tag');
+        }
     };
 
     const columns = [

@@ -148,8 +148,22 @@ export async function GET(req: Request) {
 
       if (!options.skipTag && tagNames.length > 0) {
         const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
-        // Filter by either original tags or translated tags
-        conditions.push(`(p.tags && ARRAY[${placeholders}]::text[] OR pt_t.tags && ARRAY[${placeholders}]::text[])`);
+        // Filter by source tags (p.tags), current lang tags (pt_t.tags), OR fixed EN tags (pt_en_fixed.tags)
+        // Since we can't easily reference 'pt_en_fixed' inside buildQueryParts before it's joined, 
+        // we must simplify or ensure the JOIN is always present if filtering by tag.
+
+        // Actually, we pass these conditions to the main query string, so aliases MUST match.
+        // I will add the JOIN to the main Queries (countSql, productsSql, facets) globally or conditionally.
+        // For safety, I'll update the JOINs in the query strings below to include pt_en_fixed OR just subquery?
+        // Subquery is safer for scope.
+
+        // EXISTS logic is better to avoid massive JOIN fanout if not needed, but array operators are okay.
+        // Let's use specific condition:
+        conditions.push(`(
+          p.tags && ARRAY[${placeholders}]::text[] OR 
+          pt_t.tags && ARRAY[${placeholders}]::text[] OR
+          EXISTS (SELECT 1 FROM product_translations pt_sub WHERE pt_sub.product_id = p.id AND pt_sub.language_code = 'en' AND pt_sub.tags && ARRAY[${placeholders}]::text[])
+        )`);
         params.push(...tagNames);
       }
 

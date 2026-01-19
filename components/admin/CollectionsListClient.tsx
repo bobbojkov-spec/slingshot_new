@@ -13,6 +13,10 @@ type Collection = {
     image_url?: string | null;
     source: string;
     product_count?: number;
+    title_en?: string;
+    subtitle_en?: string | null;
+    title_bg?: string;
+    subtitle_bg?: string | null;
 };
 
 type CollectionsListClientProps = {

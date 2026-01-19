@@ -75,6 +75,7 @@ export default function CollectionEditForm({
     };
 
     const [uploading, setUploading] = useState(false);
+    const [videoUploading, setVideoUploading] = useState(false);
     const [displayUrl, setDisplayUrl] = useState(collection.signed_image_url || collection.image_url || '');
     const [imageError, setImageError] = useState(false);
 
@@ -148,6 +149,45 @@ export default function CollectionEditForm({
         } finally {
             setUploading(false);
             // Reset the input so the same file can be selected again
+            e.target.value = '';
+        }
+    };
+
+    const handleVideoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setVideoUploading(true);
+        setError(null);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('collectionId', collection.id);
+
+        try {
+            const response = await fetch('/api/admin/collections/hero/upload-video', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Video upload failed');
+            }
+
+            const data = await response.json();
+
+            // Store the full URL or path as needed. Usually we store the path if using signed URLs later,
+            // or just the raw URL if public. The route returns { url, path }.
+            // For video, we might store the path if we want to sign it, OR the public URL if buckets are public.
+            // Based on image logic, we store PATH.
+            setVideoUrl(data.path);
+
+        } catch (err: any) {
+            setError(err.message);
+            console.error('Video upload error:', err);
+        } finally {
+            setVideoUploading(false);
             e.target.value = '';
         }
     };
@@ -302,6 +342,30 @@ export default function CollectionEditForm({
                                     placeholder="https://www.youtube.com/watch?v=... or .mp4"
                                     className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 />
+                                <div className="mt-2">
+                                    <label className="relative inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition-all cursor-pointer border border-gray-200">
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="video/*"
+                                            onChange={handleVideoFileChange}
+                                            disabled={videoUploading}
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            {videoUploading ? (
+                                                <div className="w-3 h-3 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
+                                            ) : (
+                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                </svg>
+                                            )}
+                                            {videoUploading ? 'Uploading Video...' : 'Upload Video File'}
+                                        </div>
+                                    </label>
+                                    <p className="mt-1 text-[10px] text-gray-500">
+                                        Uploads MP4/WebM to storage and fills the URL field. Supported max size: 500MB (Railway Limit).
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -76,6 +76,25 @@ export async function POST(req: Request) {
       const enTrans = product.translation_en;
       const enTags = Array.isArray(enTrans.tags) ? enTrans.tags : [];
 
+      // Sync tags to master table
+      if (enTags.length > 0) {
+        try {
+          for (const tag of enTags) {
+            if (typeof tag === 'string' && tag.trim()) {
+              const cleanTag = tag.trim();
+              const slug = cleanTag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+              await query(`
+                INSERT INTO tags (name_en, slug)
+                VALUES ($1, $2)
+                ON CONFLICT (name_en) DO NOTHING
+              `, [cleanTag, slug]);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to sync tags to master table during product update', err);
+        }
+      }
+
       await query(
         `
           INSERT INTO product_translations (
