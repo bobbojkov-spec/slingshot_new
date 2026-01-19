@@ -85,6 +85,8 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
                     alt={title}
                     className="absolute inset-0 w-full h-full object-cover"
                     onError={() => setImageError(true)}
+                    loading="eager"
+                    style={{ aspectRatio: '16/9' }}
                 />
                 <div className="absolute inset-0 bg-black/40 z-10" />
                 <div className="relative z-20 h-full flex items-center">

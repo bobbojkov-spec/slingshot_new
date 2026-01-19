@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useNavigationContext } from "@/contexts/NavigationContext";
 
 export interface NavigationProductType {
   id: string;
@@ -57,59 +57,7 @@ export interface NavigationData {
 }
 
 export function useNavigation() {
-  const { language } = useLanguage();
-  const [data, setData] = useState<NavigationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchNavigation() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const langParam = language === "bg" ? "bg" : "en";
-
-        // Fetch core navigation and menu structures in parallel
-        const [navRes, slingshotRes, rideEngineRes] = await Promise.all([
-          fetch(`/api/navigation?lang=${langParam}`),
-          fetch(`/api/navigation/menu-structure?source=slingshot&lang=${langParam}`),
-          fetch(`/api/navigation/menu-structure?source=rideengine&lang=${langParam}`)
-        ]);
-
-        if (!navRes.ok) throw new Error('Navigation fetch failed');
-
-        const navData: NavigationData = await navRes.json();
-        const slingshotData = await slingshotRes.json();
-        const rideEngineData = await rideEngineRes.json();
-
-        if (!cancelled) {
-          setData({
-            ...navData,
-            slingshotMenuGroups: slingshotData.groups || [],
-            rideEngineMenuGroups: rideEngineData.groups || []
-          });
-        }
-      } catch (err: any) {
-        if (!cancelled) {
-          console.error("Navigation fetch failed", err?.message || err);
-          setError(err?.message || "Failed to load navigation");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchNavigation();
-    return () => {
-      cancelled = true;
-    };
-  }, [language]);
-
+  const { data, loading, error } = useNavigationContext();
   return { data, loading, error };
 }
 

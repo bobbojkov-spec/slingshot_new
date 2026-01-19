@@ -6,7 +6,8 @@ import { Menu, X, Search, ShoppingBag } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { useNavigation, NavigationSport, MenuGroup, MenuCollection, NavigationActivityCategory } from "@/hooks/useNavigation";
+import { useNavigationContext } from "@/contexts/NavigationContext";
+import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
 import { Typography } from "antd";
 
 const Header = () => {
@@ -25,7 +26,7 @@ const Header = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { open } = useCart();
   const { language, setLanguage, t } = useLanguage();
-  const { data: navigation } = useNavigation();
+  const { data: navigation } = useNavigationContext();
 
   // Track which sport/menu is currently being hovered
   // 'ride-engine' is the special key for the Ride Engine menu
@@ -113,6 +114,8 @@ const Header = () => {
               alt="Slingshot"
               className="h-10 w-auto"
               src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png"
+              width={160}
+              height={40}
             />
             <span className="font-logo font-extrabold text-white text-lg tracking-tight hidden sm:block">
               BG

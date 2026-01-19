@@ -12,10 +12,13 @@ export async function GET(req: NextRequest) {
             env: {
                 bucketPublic: STORAGE_BUCKETS.PUBLIC,
                 bucketRaw: STORAGE_BUCKETS.RAW,
-                region: process.env.RAILWAY_STORAGE_REGION,
-                hasEndpoint: !!process.env.RAILWAY_STORAGE_ENDPOINT,
-                hasAccessKey: !!process.env.RAILWAY_STORAGE_ACCESS_KEY_ID,
-                hasSecretKey: !!process.env.RAILWAY_STORAGE_SECRET_ACCESS_KEY,
+                region: process.env.RAILWAY_STORAGE_REGION || process.env.AWS_DEFAULT_REGION,
+                hasRailwayEndpoint: !!process.env.RAILWAY_STORAGE_ENDPOINT,
+                hasAWSEndpoint: !!process.env.AWS_ENDPOINT_URL,
+                hasRailwayAccessKey: !!process.env.RAILWAY_STORAGE_ACCESS_KEY_ID,
+                hasAWSAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+                hasRailwaySecretKey: !!process.env.RAILWAY_STORAGE_SECRET_ACCESS_KEY,
+                hasAWSSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY,
             },
             listFiles: [],
             pathCheck: null

@@ -272,37 +272,58 @@ export async function fileExists(filePath: string, bucket: string = STORAGE_BUCK
 /**
  * Extract the file key from a public URL if it belongs to our storage
  */
-export function getKeyFromUrl(url: string): string | null {
+export function getKeyFromUrl(url: string | null | undefined): string | null {
   if (!url) return null;
 
   try {
-    // 1. Check if it matches our public URL base
-    if (publicUrlBase && url.startsWith(publicUrlBase)) {
-      return url.replace(publicUrlBase + '/', '').replace(STORAGE_BUCKETS.PUBLIC + '/', '');
-    }
-
-    // 2. Check standard S3 patterns
     const u = new URL(url);
-    // Path style: /bucket/key
-    const parts = u.pathname.split('/');
-    // parts[0] is empty, parts[1] might be bucket
-    if (parts.length >= 3 && parts[1] === STORAGE_BUCKETS.PUBLIC) {
-      return parts.slice(2).join('/');
-    }
-    // Virtual host style: bucket.s3.../key (not common with what we generated, but possible)
-    if (u.hostname.startsWith(STORAGE_BUCKETS.PUBLIC)) {
-      return u.pathname.substring(1);
+    let key = "";
+
+    const publicBucket = STORAGE_BUCKETS.PUBLIC;
+    const currentEndpoint = storageEndpoint;
+    const currentUrlBase = publicUrlBase ? `${publicUrlBase}/${publicBucket}` : (currentEndpoint ? `${currentEndpoint}/${publicBucket}` : null);
+
+    // 1. Check if it matches our public URL base
+    if (currentUrlBase && url.startsWith(currentUrlBase)) {
+      key = url.slice(currentUrlBase.length + 1);
+    } else {
+      // 2. Check standard S3 patterns
+      const pathname = u.pathname;
+      const parts = pathname.split('/');
+
+      // Path style: /bucket/key or /key
+      if (parts.length >= 3 && parts[1] === publicBucket) {
+        key = parts.slice(2).join('/');
+      } else {
+        key = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+      }
     }
 
-    // 3. Fallback: if we generated it via our getPublicImageUrl, it follows a pattern
-    // The user's error URL was: https://s3.us-east-1.amazonaws.com/slingshotnewimages-hw-tht/hero-videos/...
-    if (u.pathname.includes(`/${STORAGE_BUCKETS.PUBLIC}/`)) {
-      const idx = u.pathname.indexOf(`/${STORAGE_BUCKETS.PUBLIC}/`);
-      return u.pathname.substring(idx + `/${STORAGE_BUCKETS.PUBLIC}/`.length);
+    if (!key) return null;
+
+    // Remove common prefixes that shouldn't be in the final S3 key
+    const prefixesToRemove = [
+      publicBucket || "",
+      "slingshotnewimages-hw-tht",
+      "product-images",
+    ].filter(Boolean);
+
+    let cleaning = true;
+    while (cleaning) {
+      cleaning = false;
+      for (const prefix of prefixesToRemove) {
+        if (key.startsWith(`${prefix}/`)) {
+          key = key.slice(prefix.length + 1);
+          cleaning = true;
+          break;
+        }
+      }
     }
 
-    return null;
+    return key;
   } catch (e) {
-    return null;
+    console.error('Error parsing URL key:', e);
+    // If it's not a URL, it might already be a key
+    return url.startsWith('/') ? url.slice(1) : url;
   }
 }
