@@ -145,3 +145,53 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
         child_collections
     };
 }
+
+export async function getCollectionsByBrand(brand: string, lang: string = 'en'): Promise<Collection[]> {
+    // Fetch all collections for a specific brand (source)
+    const result = await query(
+        `SELECT 
+            c.id,
+            c.slug,
+            c.image_url,
+            c.source,
+            COALESCE(NULLIF(ct.title, ''), c.title) as title,
+            ct.subtitle,
+            (SELECT COUNT(*)::int FROM collection_products cp WHERE cp.collection_id = c.id) as product_count
+        FROM collections c
+        LEFT JOIN collection_translations ct ON c.id = ct.collection_id AND ct.language_code = $2
+        WHERE c.source = $1 AND c.visible = true
+        AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
+        ORDER BY c.sort_order ASC, c.title ASC`,
+        [brand, lang]
+    );
+
+    // Sign URLs - similar logic to getCollectionBySlug
+    const collectionsWithSignedUrls = await Promise.all(result.rows.map(async (c: any) => {
+        let signedUrl = c.image_url;
+
+        // Only sign if it's not a full URL OR if it's a known internal bucket path
+        if (c.image_url && !c.image_url.startsWith('http') && !c.image_url.startsWith('/')) {
+            try {
+                // Use middle.webp for listing thumbnails if possible
+                const thumbPath = c.image_url.includes('/thumb/')
+                    ? c.image_url.replace('/thumb/', '/middle/')
+                    : c.image_url;
+
+                signedUrl = await getPresignedUrl(thumbPath);
+            } catch (error) {
+                console.error(`Failed to sign URL for ${c.slug}:`, error);
+                // Try fallback to original
+                try {
+                    signedUrl = await getPresignedUrl(c.image_url);
+                } catch (e) { }
+            }
+        }
+        return {
+            ...c,
+            image_url: signedUrl,
+            products: [] // Empty products array to match interface
+        };
+    }));
+
+    return collectionsWithSignedUrls as Collection[];
+}

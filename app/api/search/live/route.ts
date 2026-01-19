@@ -28,7 +28,7 @@ export async function GET(req: Request) {
              LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2
              WHERE (p.name ILIKE $1 OR p.title ILIKE $1 OR p.sku ILIKE $1 OR p.handle ILIKE $1 OR pt_t.title ILIKE $1) AND p.status = 'active'
              ORDER BY p.name ASC
-             LIMIT 10`,
+             LIMIT 20`,
             [searchTerm, lang]
         );
 

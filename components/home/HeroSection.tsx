@@ -29,12 +29,12 @@ const HeroSection = () => {
           </h1>
           <p className="text-subhero text-white/80 mb-8 max-w-lg">{t("hero.description")}</p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/shop" className="btn-primary group">
-              {t("hero.cta.shopNow")}
+            <Link href="/slingshot-collections" className="btn-primary group">
+              {t("hero.cta.s-collection")}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link href="/shop?category=kites" className="btn-secondary">
-              {t("hero.cta.explore")}
+            <Link href="/rideengine-collections" className="btn-secondary">
+              {t("hero.cta.r-collection")}
             </Link>
           </div>
         </div>

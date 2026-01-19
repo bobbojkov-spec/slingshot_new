@@ -12,6 +12,8 @@ export const translations = {
     "header.languageSwitch": "BG / EN",
     "header.searchPlaceholder": "Search gear",
     "hero.badge": "Official Slingshot Distributor",
+    "hero.cta.r-collection": "View Ride Engine Collections",
+    "hero.cta.s-collection": "View Slingshot Collections",
     "hero.title.line1": "RIDE THE",
     "hero.title.accent": "WIND",
     "hero.description":
@@ -130,6 +132,8 @@ export const translations = {
       "Първокласно оборудване за кайтборд, уинг фойлинг и уейкборд. Проектирано за представяне, създадено за приключения.",
     "hero.cta.shopNow": "Пазарувай сега",
     "hero.cta.explore": "Разгледай кайтове",
+    "hero.cta.r-collection": "Всички Ride Engine Колекции",
+    "hero.cta.s-collection": "Всички Slingshot Колекции",
     "categories.browseLabel": "Разгледай",
     "categories.sectionTitle": "Пазарувай по категория",
     "categories.names.kites": "Кайтове",
