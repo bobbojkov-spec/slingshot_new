@@ -17,6 +17,7 @@ interface BrandCollectionsClientProps {
         title: string;
         subtitle?: string;
         imageUrl?: string | null;
+        videoUrl?: string | null;
     };
     breadcrumbs?: BreadcrumbItem[];
     brandColor?: string; // Optional accent color
@@ -30,6 +31,7 @@ export function BrandCollectionsClient({ collections, heroData, breadcrumbs, bra
                 title={heroData.title}
                 subtitle={heroData.subtitle}
                 imageUrl={heroData.imageUrl || null}
+                videoUrl={heroData.videoUrl || null}
                 breadcrumbs={breadcrumbs}
             />
 

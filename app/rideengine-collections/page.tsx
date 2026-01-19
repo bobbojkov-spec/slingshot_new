@@ -1,5 +1,5 @@
 
-import { getCollectionsByBrand } from "@/services/collections";
+import { getCollectionsByBrand, getCollectionBySlug } from "@/services/collections";
 import { BrandCollectionsClient } from "@/components/collections/BrandCollectionsClient";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
@@ -19,10 +19,15 @@ export default async function RideEngineCollectionsPage() {
     // Fetch collections for 'rideengine' brand
     const collections = await getCollectionsByBrand('rideengine', lang);
 
+    // Fetch the hero configuration from the homepage collection named 'rideengine-collections'
+    // This allows admins to edit the Title/Subtitle and Video/Image in the admin panel
+    const heroCollection = await getCollectionBySlug('rideengine-collections', lang);
+
     const heroData = {
-        title: "RIDE ENGINE COLLECTIONS",
-        subtitle: "Explore our complete range of Ride Engine gear.",
-        imageUrl: null // No specific hero image for this aggregated page yet
+        title: heroCollection?.title || "RIDE ENGINE COLLECTIONS",
+        subtitle: heroCollection?.subtitle || "Explore our complete range of Ride Engine gear.",
+        imageUrl: heroCollection?.image_url || null,
+        videoUrl: heroCollection?.video_url || null
     };
 
     const breadcrumbs = [
