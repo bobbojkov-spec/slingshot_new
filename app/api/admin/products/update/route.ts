@@ -22,68 +22,54 @@ export async function POST(req: Request) {
         : null;
     const normalizedTags = parsedTags && parsedTags.length > 0 ? parsedTags : null;
 
-    // Update main product table
-    await query(
-      `
-        UPDATE products
-        SET
-          title = $1,
-          name = $2,
-          handle = $3,
-          product_type = $4,
-          tags = $5,
-          status = $6,
-          video_url = $7,
-          hero_video_url = $8,
-          hero_image_url = $9,
-          brand = $10,
-          seo_title = $11,
-          seo_description = $12,
-          description_html = $13,
-          description_html2 = $14,
-          specs_html = $15,
-          package_includes = $16,
-          category_id = $17,
-          meta_keywords = $18,
-          og_title = $19,
-          og_description = $20,
-          og_image_url = $21,
-          canonical_url = $22,
-          meta_robots = $23,
-          seo_score = $24,
-          seo_generated_at = $25,
-          updated_at = NOW()
-        WHERE id = $26
-      `,
-      [
-        info.title ?? null,
-        info.name ?? info.title ?? null,
-        info.handle ?? null,
-        info.product_type ?? null,
-        normalizedTags,
-        info.status ?? null,
-        info.video_url ?? null,
-        info.hero_video_url ?? null,
-        info.hero_image_url ?? null,
-        info.brand ?? null,
-        info.seo_title ?? null,
-        info.seo_description ?? null,
-        info.description_html ?? null,
-        info.description_html2 ?? null,
-        info.specs_html ?? null,
-        info.package_includes ?? null,
-        info.categoryId ?? null,
-        info.meta_keywords ?? null,
-        info.og_title ?? null,
-        info.og_description ?? null,
-        info.og_image_url ?? null,
-        info.canonical_url ?? null,
-        info.meta_robots ?? null,
-        info.seo_score ?? null,
-        info.seo_generated_at ?? null,
-        product.id,
-      ]
-    );
+    // Dynamic Update Query Construction
+    const updateFields: any = {};
+    if (info.title !== undefined) updateFields.title = info.title;
+    if (info.name !== undefined) updateFields.name = info.name || info.title; // Fallback logic preserved
+    if (info.handle !== undefined) updateFields.handle = info.handle;
+    if (info.product_type !== undefined) updateFields.product_type = info.product_type;
+    if (info.tags !== undefined) updateFields.tags = normalizedTags; // Use derived value
+    if (info.status !== undefined) updateFields.status = info.status;
+    if (info.video_url !== undefined) updateFields.video_url = info.video_url;
+    if (info.hero_video_url !== undefined) updateFields.hero_video_url = info.hero_video_url;
+    if (info.hero_image_url !== undefined) updateFields.hero_image_url = info.hero_image_url;
+    if (info.brand !== undefined) updateFields.brand = info.brand;
+    if (info.seo_title !== undefined) updateFields.seo_title = info.seo_title;
+    if (info.seo_description !== undefined) updateFields.seo_description = info.seo_description;
+    if (info.description_html !== undefined) updateFields.description_html = info.description_html;
+    if (info.description_html2 !== undefined) updateFields.description_html2 = info.description_html2;
+    if (info.specs_html !== undefined) updateFields.specs_html = info.specs_html;
+    if (info.package_includes !== undefined) updateFields.package_includes = info.package_includes;
+    if (info.categoryId !== undefined) updateFields.category_id = info.categoryId;
+    if (info.meta_keywords !== undefined) updateFields.meta_keywords = info.meta_keywords;
+    if (info.og_title !== undefined) updateFields.og_title = info.og_title;
+    if (info.og_description !== undefined) updateFields.og_description = info.og_description;
+    if (info.og_image_url !== undefined) updateFields.og_image_url = info.og_image_url;
+    if (info.canonical_url !== undefined) updateFields.canonical_url = info.canonical_url;
+    if (info.meta_robots !== undefined) updateFields.meta_robots = info.meta_robots;
+    if (info.seo_score !== undefined) updateFields.seo_score = info.seo_score;
+    if (info.seo_generated_at !== undefined) updateFields.seo_generated_at = info.seo_generated_at;
+
+    // Always update updated_at
+    updateFields.updated_at = new Date();
+
+    const setClauses: string[] = [];
+    const params: any[] = [];
+    let paramIdx = 1;
+
+    Object.entries(updateFields).forEach(([col, val]) => {
+      setClauses.push(`${col} = $${paramIdx}`);
+      params.push(val);
+      paramIdx++;
+    });
+
+    if (setClauses.length > 0) {
+      params.push(product.id);
+      await query(
+        `UPDATE products SET ${setClauses.join(', ')} WHERE id = $${paramIdx}`,
+        params
+      );
+    }
 
     // Update or insert English translation
     if (product.translation_en) {
