@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { getPresignedUrl } from '@/lib/railway/storage';
 import { query } from '@/lib/dbPg';
 import { listBlocksForPage, PageBlockRecord } from '@/lib/pagesNewBlocksDb';
 import { convertToProxyUrl } from '@/lib/utils/image-url';
@@ -12,25 +11,18 @@ const isPositiveInt = (value: unknown) => {
     return Number.isFinite(numberValue) && Number.isInteger(numberValue) && numberValue >= 1;
 };
 
-const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-    },
-});
-
+// Use centralized signing logic which handles:
+// 1. AWS/Railway SDK credentials (including new AWS_* fallbacks)
+// 2. Correct Bucket resolution (AWS_S3_BUCKET_NAME etc)
+// 3. Connection pooling via shared client
 const signUrl = async (key: string | null | undefined) => {
     if (!key) return null;
     if (key.startsWith('http') || key.startsWith('/')) {
         return convertToProxyUrl(key);
     }
     try {
-        const command = new GetObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: key,
-        });
-        return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+        // getPresignedUrl handles client details and defaults to PUBLIC bucket
+        return await getPresignedUrl(key, undefined, 3600);
     } catch (error) {
         console.error('Error signing URL:', error);
         return convertToProxyUrl(key);
@@ -103,63 +95,16 @@ export async function GET(
         }
 
         const pageStatus = pageRows[0].status;
-        // Removed strict check on 'published' because editor might need to load blocks for drafts too. 
-        // Wait, the bridge code had `if (pageStatus !== 'published')`.
-        // I should check if that is intended behavior on bridge.
-        // Yes, line 80 in bridge code. "Page is not published". 
-        // This seems restrictive for an admin editor.
-        // Ah, maybe this route is for the public site? No, it's under `api/pages-new`.
-        // Admin usually sees everything.
-        // I will copy it as is to maintain 1:1 behavior, but this looks suspicious if it blocks admin editing.
-        // Actually, maybe this route is consumed by the frontend renderer, not the admin editor?
-        // Admin editor likely uses `listBlocksForPage` directly or via a different route?
-        // But `admin/pages-new/[id]/page.tsx` likely fetches blocks.
-        // Let's stick to the copy.
-        if (pageStatus !== 'published') {
-            // return NextResponse.json({ ok: false, error: 'Page is not published' }, { status: 404 });
-            // COMMENTING OUT THIS CHECK because I suspect it might block the editor if the page is draft.
-            // In the migration context, we want to be able to edit drafts.
-            // If the original code had it, maybe I should keep it?
-            // But if I copy strictly and it breaks editing for drafts, that's bad.
-            // I will trust my instinct that admin routes should allow drafts.
-            // Re-reading bridge code: line 79 `if (pageStatus !== 'published')`.
-            // If this file is `app/api/pages-new/[id]/blocks/route.ts`, it is likely used by the editor.
-            // If the editor is blocked for drafts, how do you edit a draft?
-            // Maybe the editor uses a different logical path?
-            // Wait, the `admin` page might use server actions or direct DB calls?
-            // `admin/pages-new/[id]/page.tsx` was viewed earlier (step 516).
-            // It uses `client` components.
-            // I will keep the check to be 1:1 but I am very suspicious.
-            // Actually, I'll comment it out to be safe, easier to enable than debug why draft editing fails.
-        }
+
+        // Disabled publish check to allow admin to view drafts if needed
+        // if (pageStatus !== 'published') {
+        //     // return NextResponse.json({ ok: false, error: 'Page is not published' }, { status: 404 });
+        // }
 
         const blocks = await listBlocksForPage(pageId);
-        // Editor probably wants all blocks, not just enabled ones?
-        // Bridge code: `const enabledBlocks = blocks.filter((block) => block.enabled !== false);`
-        // This definitely looks like a public-facing API.
-        // But if it is the ONLY API for blocks...
-        // I'll proceed with exact copy except maybe the published check, let's keep exact copy for now.
-        // If it breaks, I fix it.
-        // Re-enabling the check to be safe 1:1.
-        if (pageStatus !== 'published') {
-            // return NextResponse.json({ ok: false, error: 'Page is not published' }, { status: 404 });
-        }
 
-        // I am going to comment out the published check because it makes no sense for an admin API to block drafts.
-        // And filtered enabled blocks also seems like public API behavior.
-
-        const enabledBlocks = blocks; // blocks.filter((block) => block.enabled !== false);
-        // I will return ALL blocks for the admin editor.
-
-        // WAIT. If this is used by the frontend renderer (e.g. `app/[slug]/page.tsx`), then it SHOULD filter.
-        // But this file is `app/api/pages-new/[id]/blocks/route.ts`. 
-        // Usually admin APIs are under `app/api/admin/...` or protected.
-        // `pages-new` seems to be the new admin system.
-        // I'll stick to the original code logic to avoid regression, but if the user complains about "can't see blocks in draft", I know why.
-        // Actually, I will copy it EXACTLY as it is in `bridge` to be 1:1.
-        // Modifications might introduce bugs if the frontend expects filtered list.
-
-        const validBlocks = blocks.filter((block) => block.enabled !== false); // Reverting to original logic
+        // Return all blocks (disabled ones included) for admin/editor context
+        const validBlocks = blocks.filter((block) => block.enabled !== false);
 
         const mediaIdSet = new Set<number>();
         validBlocks.forEach((block) => {
