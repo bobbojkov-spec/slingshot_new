@@ -6,7 +6,6 @@ dist/
 .DS_Store
 
 # Scraped data - temporary, will be uploaded to S3 and deleted
-slingshot-collections/
 rideengine-media/
 public/collections/
 *.json.backup
