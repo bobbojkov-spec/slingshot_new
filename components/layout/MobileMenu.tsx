@@ -80,13 +80,10 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
 
                                     return (
                                         <div key={group.id}>
-                                            <button
-                                                onClick={() => toggleGroup(group.id)}
-                                                className="w-full flex items-center justify-between text-sm py-1 text-white/70 hover:text-white uppercase tracking-wider"
-                                            >
+                                            <div className="w-full flex items-center justify-between text-sm py-1 text-white/70 uppercase tracking-wider">
                                                 {groupTitle}
                                                 {isGroupExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                            </button>
+                                            </div>
                                             <div className={`pl-4 flex flex-col gap-2 mt-1 border-l border-white/10 ${isGroupExpanded ? 'block' : 'hidden'}`}>
                                                 {collections.map(col => (
                                                     <Link

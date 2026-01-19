@@ -37,11 +37,23 @@ export async function POST(request: NextRequest) {
 
     await ensureFirstAdmin(email, password);
     const admin = await getAdminUserByEmail(email);
+
     if (!admin || !admin.is_active) {
       return NextResponse.json(
         { error: 'Admin not found or inactive' },
         INVALID_ADMIN_RESP
       );
+    }
+
+    if (admin.password_hash) {
+      const { verifyPassword } = await import('@/lib/auth/admin-login');
+      const isValid = await verifyPassword(password || '', admin.password_hash);
+      if (!isValid) {
+        return NextResponse.json(
+          { error: 'Invalid password' },
+          INVALID_ADMIN_RESP
+        );
+      }
     }
 
     const cookieStore = await cookies();

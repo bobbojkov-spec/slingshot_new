@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/server';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('admin_profiles')
-      .select('user_id, email, role, is_active, created_at, last_login_at, activated_at, deactivated_at');
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ users: data || [] });
+    const result = await query(
+      `SELECT id as user_id, email, name, role, is_active, created_at, last_login_at
+       FROM admin_users
+       ORDER BY created_at DESC`
+    );
+    return NextResponse.json({ users: result.rows });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err?.message || 'Internal error' }, { status: 500 });

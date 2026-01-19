@@ -6,12 +6,13 @@ export const SESSION_COOKIE_NAME = 'admin_session';
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 export interface AdminUserRecord {
-    id: string;
-    email: string;
-    name?: string | null;
-    role?: string | null;
-    is_active: boolean;
-  }
+  id: string;
+  email: string;
+  password_hash?: string;
+  name?: string | null;
+  role?: string | null;
+  is_active: boolean;
+}
 
 export interface AdminSessionData {
   userId: string;
@@ -45,16 +46,20 @@ export function buildSessionData(user: AdminUserRecord, deviceId: string): Admin
 export const DEV_BOOTSTRAP_ENABLED = process.env.DEV_ADMIN_BOOTSTRAP === 'true';
 
 export async function getAdminUserByEmail(email: string): Promise<AdminUserRecord | null> {
-    const lowerEmail = email.toLowerCase().trim();
-    const result = await query(
-      `SELECT id, email, is_active
+  const lowerEmail = email.toLowerCase().trim();
+  const result = await query(
+    `SELECT id, email, password_hash, name, role, is_active
        FROM admin_users
        WHERE lower(email) = $1
        LIMIT 1`,
-      [lowerEmail]
-    );
-    return result.rows[0] ?? null;
-  }
+    [lowerEmail]
+  );
+  return result.rows[0] ?? null;
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
 
 export async function isDeviceVerified(email: string, deviceId: string): Promise<boolean> {
   try {

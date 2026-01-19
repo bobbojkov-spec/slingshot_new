@@ -1,22 +1,11 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/server';
+import { query } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 export const runtime = 'nodejs';
 
-function requireSuperAdmin(req: Request) {
-  const role = req.headers.get('x-admin-role');
-  if (!role || role !== 'super_admin') {
-    return NextResponse.json({ success: false, error: 'Unauthorized: Super admin access required' }, { status: 401 });
-  }
-  return null;
-}
-
 export async function POST(req: Request) {
   try {
-    const guard = requireSuperAdmin(req);
-    if (guard) return guard;
-
     const { id, new_password } = await req.json();
     if (!id || !new_password) {
       return NextResponse.json({ success: false, error: 'user_id and new_password are required' }, { status: 400 });
@@ -27,13 +16,15 @@ export async function POST(req: Request) {
 
     const password_hash = await bcrypt.hash(new_password, 12);
 
-    const { error } = await supabaseAdmin
-      .from('admin_users')
-      .update({ password_hash, password_updated_at: new Date().toISOString() })
-      .eq('id', id);
+    const result = await query(
+      `UPDATE admin_users 
+       SET password_hash = $1, updated_at = now() 
+       WHERE id = $2`,
+      [password_hash, id]
+    );
 
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    if (result.rowCount === 0) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });

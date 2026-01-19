@@ -208,14 +208,12 @@ const Header = () => {
                     onMouseEnter={() => handleNavEnter(sport.slug)}
                     onMouseLeave={handleNavLeave}
                   >
-                    <Link
-                      href={sport.customLink || `/${sport.slug}`}
-                      className={`nav-link-white h-full flex items-center px-3 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
+                    <span
+                      className={`nav-link-white h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
                         }`}
-                      onClick={() => setIsMegaOpen(false)}
                     >
                       {sport.name}
-                    </Link>
+                    </span>
                   </div>
                 ))}
 
@@ -272,17 +270,9 @@ const Header = () => {
 
                       return (
                         <div key={group.id} className="flex flex-col">
-                          {hasSlug ? (
-                            <Link href={`/collections/${group.slug}`} className="block mb-6 group/header">
-                              <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 group-hover/header:text-accent font-bold border-b border-white/5 pb-2 transition-colors">
-                                {groupTitle}
-                              </h3>
-                            </Link>
-                          ) : (
-                            <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
-                              {groupTitle}
-                            </h3>
-                          )}
+                          <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                            {groupTitle}
+                          </h3>
 
                           <div className="flex flex-col gap-3">
                             {filteredCollections.map((col: MenuCollection) => (
@@ -313,17 +303,9 @@ const Header = () => {
 
                       return (
                         <div key={group.id} className="flex flex-col">
-                          {hasSlug ? (
-                            <Link href={`/${group.slug}`} className="block mb-4 group/header">
-                              <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent group-hover/header:text-orange-400 font-bold border-b border-white/5 pb-1 transition-colors">
-                                {groupTitle}
-                              </h3>
-                            </Link>
-                          ) : (
-                            <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
-                              {groupTitle}
-                            </h3>
-                          )}
+                          <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
+                            {groupTitle}
+                          </h3>
 
                           <div className="flex flex-col gap-2">
                             {group.collections?.map((col: MenuCollection) => (

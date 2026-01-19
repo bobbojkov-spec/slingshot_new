@@ -7,8 +7,10 @@ ensureEnv();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   // Railway PostgreSQL requires SSL
-  ssl: process.env.DATABASE_URL?.includes('railway') || process.env.DATABASE_URL?.includes('rlwy.net') 
-    ? { rejectUnauthorized: false } 
+  ssl: process.env.DATABASE_URL?.includes('railway') ||
+    process.env.DATABASE_URL?.includes('rlwy.net') ||
+    process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
     : undefined,
 });
 
@@ -19,6 +21,22 @@ export async function query(text: string, params?: any[]) {
   const duration = Date.now() - start;
   console.log('Executed query', { text, duration, rows: res.rowCount });
   return res;
+}
+
+// Helper for transactions
+export async function transaction<T>(callback: (client: any) => Promise<T>) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 // Helper to get a client from the pool
