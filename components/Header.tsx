@@ -126,7 +126,7 @@ const Header = () => {
           <div className="hidden lg:flex h-full items-center justify-center overflow-x-auto scrollbar-hide" onMouseLeave={handleNavLeave}>
             {/* Horizontal scroll wrapper for medium screens */}
             <div className="flex items-center justify-center min-w-max h-full">
-              <nav className="flex items-center gap-8 h-full">
+              <nav className="flex items-center gap-4 h-full">
 
                 {/* Slingshot Sports */}
                 {slingshotSports.map((sport: NavigationSport) => (
@@ -138,7 +138,7 @@ const Header = () => {
                   >
                     <Link
                       href={sport.customLink || `/${sport.slug}`}
-                      className={`nav-link-white h-full flex items-center px-6 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
+                      className={`nav-link-white h-full flex items-center px-3 cursor-pointer bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
                         }`}
                       onClick={() => setIsMegaOpen(false)}
                     >
@@ -154,7 +154,7 @@ const Header = () => {
                   onMouseLeave={handleNavLeave}
                 >
                   <span
-                    className={`h-full flex items-center px-6 cursor-default bg-transparent border-0 uppercase tracking-[0.15em] font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
+                    className={`h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-[0.15em] font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
                       }`}
                   >
                     RIDEENGINE
