@@ -9,6 +9,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useNavigationContext } from "@/contexts/NavigationContext";
 import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
 import { Typography } from "antd";
+import { MobileMenu } from "./layout/MobileMenu";
 
 const Header = () => {
   const pathname = usePathname();
@@ -521,53 +522,11 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
-          }`}
-      >
-        <nav className="section-container py-6 flex flex-col gap-4">
-          {slingshotSports.map((sport: NavigationSport) => (
-            <Link
-              key={sport.slug}
-              href={`/category/${sport.slug}`}
-              className="nav-link-white text-lg py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {sport.name}
-            </Link>
-          ))}
-          <Link
-            href="/shop?brand=Ride%20Engine"
-            className="nav-link-white text-lg py-2 font-bold text-accent"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            RIDEENGINE
-          </Link>
-
-          <div className="pt-4 mt-2 border-t border-white/10">
-            <span className="font-body text-xs text-white/40 uppercase tracking-wider mb-2 block">
-              {t("header.languageLabel")}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                className={`text-sm uppercase tracking-wide transition-colors ${language === "bg" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                  }`}
-                onClick={() => setLanguage("bg")}
-              >
-                BG
-              </button>
-              <span className="text-white/40">/</span>
-              <button
-                className={`text-sm uppercase tracking-wide transition-colors ${language === "en" ? "text-white font-semibold" : "text-white/70 hover:text-accent"
-                  }`}
-                onClick={() => setLanguage("en")}
-              >
-                EN
-              </button>
-            </div>
-          </div>
-        </nav>
-      </div>
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        navigation={navigation}
+      />
     </header>
   );
 };

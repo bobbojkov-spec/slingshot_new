@@ -32,12 +32,13 @@ export async function GET(req: Request) {
             [searchTerm, lang]
         );
 
-        // 2. Search Collections (limit 5)
+        // 2. Search Collections (limit 5) - UPDATED: Only show collections present in the Mega Menu
         const collectionsPromise = query(
-            `SELECT 
+            `SELECT DISTINCT
                 COALESCE(ct.title, col.title) as title, 
                 col.slug 
              FROM collections col
+             JOIN menu_group_collections mgc ON col.id = mgc.collection_id
              LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $2
              WHERE (col.title ILIKE $1 OR ct.title ILIKE $1) AND col.visible = true
              LIMIT 5`,
