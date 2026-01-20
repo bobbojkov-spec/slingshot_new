@@ -33,7 +33,7 @@ import {
     DragOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import MediaPicker from '@/components/MediaPicker';
+import MediaPicker from '@/components/admin/MediaPicker';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
 
 const { TextArea } = Input;

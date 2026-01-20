@@ -31,7 +31,7 @@ import {
     DragOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import MediaPicker from '@/components/MediaPicker';
+import MediaPicker from '@/components/admin/MediaPicker';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 import SimpleEditor from '@/components/SimpleEditor';

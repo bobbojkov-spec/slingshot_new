@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getPresignedUrl } from '@/lib/railway/storage';
 
 // GET /api/admin/tags/products?tag=...
 // Returns all products that currently have this exact tag (in EN)
@@ -15,16 +16,29 @@ export async function GET(req: Request) {
         const { rows } = await query(`
             SELECT 
                 p.id,
-                COALESCE(pt_en.title, p.title) as name,
+                COALESCE(pt_en.title, p.name) as name,
                 p.handle as slug,
                 COALESCE(pt_en.tags, p.tags) as tags,
-                (SELECT medium_path FROM product_images WHERE product_id = p.id AND is_hero = true LIMIT 1) as thumbnail_url
+                (
+                    SELECT storage_path 
+                    FROM product_images_railway 
+                    WHERE product_id = p.id AND size = 'thumb' 
+                    ORDER BY display_order ASC 
+                    LIMIT 1
+                ) as storage_path
             FROM products p
             LEFT JOIN product_translations pt_en ON p.id = pt_en.product_id AND pt_en.language_code = 'en'
-            WHERE $1 = ANY(COALESCE(pt_en.tags, p.tags))
+            WHERE $1 = ANY(p.tags) 
+               OR EXISTS (SELECT 1 FROM product_translations pt WHERE pt.product_id = p.id AND $1 = ANY(pt.tags))
         `, [tag]);
 
-        return NextResponse.json({ products: rows });
+        // Sign thumbnail URLs
+        const productsWithSignedUrls = await Promise.all(rows.map(async (p: any) => ({
+            ...p,
+            thumbnail_url: p.storage_path ? await getPresignedUrl(p.storage_path) : null
+        })));
+
+        return NextResponse.json({ products: productsWithSignedUrls });
     } catch (error: any) {
         console.error('Failed to fetch tag products', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -47,8 +61,8 @@ export async function PUT(req: Request) {
         const { rows: currentProducts } = await query(`
             SELECT p.id 
             FROM products p
-            LEFT JOIN product_translations pt_en ON p.id = pt_en.product_id AND pt_en.language_code = 'en'
-            WHERE $1 = ANY(COALESCE(pt_en.tags, p.tags))
+            WHERE $1 = ANY(p.tags) 
+               OR EXISTS (SELECT 1 FROM product_translations pt WHERE pt.product_id = p.id AND $1 = ANY(pt.tags))
         `, [tagEn]);
 
         const currentIds = new Set(currentProducts.map(p => p.id));

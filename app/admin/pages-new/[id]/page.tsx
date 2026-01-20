@@ -34,10 +34,10 @@ import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 import { calculateSEOScore } from '@/lib/seo/calculate-seo-score';
 import SimpleEditor from '@/components/SimpleEditor';
-import MediaPicker from '@/components/MediaPicker';
+import MediaPicker from '@/components/admin/MediaPicker';
 import GalleryMediaPicker, {
     GalleryMediaSelection,
-} from '@/components/GalleryMediaPicker';
+} from '@/components/admin/GalleryMediaPicker';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
 import type { PageRecord } from '../../../../types/page';
 
