@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 type FacetItem = {
     slug?: string;
     name?: string;
