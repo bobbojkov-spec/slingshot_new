@@ -51,7 +51,7 @@ const CategoryGrid = () => {
             >
               <img
                 src={category.image}
-                alt={t(`categories.names.${category.key}`)}
+                alt={`${t(`categories.names.${category.key}`)} Gear - Slingshot Bulgaria`}
                 className="image-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="category-card-overlay" />

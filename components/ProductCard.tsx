@@ -42,7 +42,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           {product.image ? (
             <img
               src={product.image}
-              alt={product.name}
+              alt={`${product.name} ${product.category} - Slingshot Bulgaria`}
               className="product-card-image transition-transform duration-300 group-hover:scale-105"
             />
           ) : (

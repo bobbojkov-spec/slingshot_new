@@ -50,10 +50,13 @@ export function ShopHero({ title, breadcrumbs, variant = 'default' }: ShopHeroPr
 
     return (
         <div className="relative w-full h-[30vh] min-h-[200px] bg-gray-900 flex items-center justify-center overflow-hidden mb-0">
-            <div
-                className="absolute inset-0 bg-cover bg-center opacity-60"
-                style={{ backgroundImage: "url('https://slingshotsports.com/cdn/shop/collections/Kite_Collection_Header_2.jpg?v=1684347895')" }}
-            />
+            <div className="absolute inset-0">
+                <img
+                    src="https://slingshotsports.com/cdn/shop/collections/Kite_Collection_Header_2.jpg?v=1684347895"
+                    alt={`${title} - Slingshot Bulgaria Shop Category`}
+                    className="w-full h-full object-cover opacity-60"
+                />
+            </div>
             <div className="absolute inset-0 bg-black/30" />
 
             <div className="relative z-10 text-center text-white px-4 section-container">

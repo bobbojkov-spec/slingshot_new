@@ -82,7 +82,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
             <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
                 <img
                     src={imageUrl}
-                    alt={title}
+                    alt={`${title} Collection - Slingshot Bulgaria`}
                     className="absolute inset-0 w-full h-full object-cover"
                     onError={() => setImageError(true)}
                     loading="eager"

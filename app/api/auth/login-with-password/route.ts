@@ -2,18 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
   buildSessionData,
-  createLoginCode,
-  cleanupExpiredLoginCodes,
-  generateCode,
   getAdminUserByEmail,
-  getCodeExpiry,
-  hashCode,
-  isDeviceVerified,
-  shouldUseDeviceVerification,
   SESSION_MAX_AGE_SECONDS,
   SESSION_COOKIE_NAME,
+  ensureAdminTables,
 } from '@/lib/auth/admin-login';
-import { sendLoginCodeEmail } from '@/lib/email/send';
 import { ensureFirstAdmin } from '@/lib/auth/admin-login';
 
 export const runtime = 'nodejs';
@@ -35,8 +28,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await ensureFirstAdmin(email, password);
+    console.log('[login] Starting login for:', email);
+
+    try {
+      await ensureAdminTables();
+      console.log('[login] Tables ensured');
+    } catch (tableErr: any) {
+      console.error('[login] ensureAdminTables failed:', tableErr.message);
+      throw tableErr;
+    }
+
+    try {
+      await ensureFirstAdmin(email, password);
+      console.log('[login] First admin check done');
+    } catch (adminErr: any) {
+      console.error('[login] ensureFirstAdmin failed:', adminErr.message);
+      throw adminErr;
+    }
+
     const admin = await getAdminUserByEmail(email);
+    console.log('[login] Admin found:', !!admin);
 
     if (!admin || !admin.is_active) {
       return NextResponse.json(
@@ -69,59 +80,17 @@ export async function POST(request: NextRequest) {
       });
     };
 
-    if (!shouldUseDeviceVerification()) {
-      storeSession();
-      return NextResponse.json({
-        success: true,
-        message: 'Logged in successfully',
-        verified: true,
-        user: {
-          id: admin.id,
-          email: admin.email,
-          name: admin.name,
-          role: admin.role,
-        },
-      });
-    }
-
-    const alreadyVerified = await isDeviceVerified(admin.email, deviceId);
-
-    if (alreadyVerified) {
-      storeSession();
-      return NextResponse.json({
-        success: true,
-        message: 'Logged in successfully',
-        verified: true,
-        user: {
-          id: admin.id,
-          email: admin.email,
-          name: admin.name,
-          role: admin.role,
-        },
-      });
-    }
-
-    const code = generateCode();
-    const codeHash = hashCode(code);
-    const expiresAt = getCodeExpiry();
-
-    await createLoginCode(admin.email, deviceId, codeHash, expiresAt);
-    await cleanupExpiredLoginCodes();
-
-    let emailSent = false;
-    try {
-      await sendLoginCodeEmail(admin.email, code, expiresAt.toISOString());
-      emailSent = true;
-    } catch (emailError: any) {
-      console.warn('Failed to send login code email:', emailError?.message || emailError);
-    }
-
+    storeSession();
     return NextResponse.json({
       success: true,
-      message: emailSent ? 'Verification code sent to your inbox' : 'Verification code generated',
-      verified: false,
-      requiresVerification: true,
-      code: process.env.EXPOSE_LOGIN_CODE === 'true' ? code : undefined,
+      message: 'Logged in successfully',
+      verified: true,
+      user: {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role,
+      },
     });
   } catch (error: any) {
     console.error('login-with-password error:', error);

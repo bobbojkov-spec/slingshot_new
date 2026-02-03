@@ -26,6 +26,7 @@ const CODE_TTL_MINUTES = 10;
 const VERIFY_ENV_FLAG = process.env.ADMIN_DEVICE_VERIFICATION_ENABLED === 'true';
 
 export function shouldUseDeviceVerification(): boolean {
+  if (process.env.NODE_ENV !== 'production') return false;
   return VERIFY_ENV_FLAG;
 }
 
@@ -43,7 +44,8 @@ export function buildSessionData(user: AdminUserRecord, deviceId: string): Admin
   };
 }
 
-export const DEV_BOOTSTRAP_ENABLED = process.env.DEV_ADMIN_BOOTSTRAP === 'true';
+export const DEV_BOOTSTRAP_ENABLED =
+  process.env.NODE_ENV !== 'production' || process.env.DEV_ADMIN_BOOTSTRAP === 'true';
 
 export async function getAdminUserByEmail(email: string): Promise<AdminUserRecord | null> {
   const lowerEmail = email.toLowerCase().trim();
@@ -55,6 +57,41 @@ export async function getAdminUserByEmail(email: string): Promise<AdminUserRecor
     [lowerEmail]
   );
   return result.rows[0] ?? null;
+}
+
+export async function ensureAdminTables(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') return;
+  await query(
+    `CREATE TABLE IF NOT EXISTS admin_users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        name TEXT,
+        role TEXT DEFAULT 'admin',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        last_login_at TIMESTAMPTZ
+      )`
+  );
+
+  // Add missing columns if table already exists (handles schema migrations)
+  await query(`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS name TEXT`);
+  await query(`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'admin'`);
+  await query(`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ`);
+
+  await query(
+    `CREATE TABLE IF NOT EXISTS admin_login_codes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email TEXT NOT NULL,
+        code_hash TEXT NOT NULL,
+        device_fingerprint TEXT NOT NULL,
+        expires_at TIMESTAMPTZ NOT NULL,
+        used_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`
+  );
+  await query(`CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(lower(email))`);
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {

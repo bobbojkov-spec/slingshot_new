@@ -182,7 +182,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-3 shrink-0">
             <img
-              alt="Slingshot"
+              alt="Slingshot Bulgaria Official Logo"
               className="h-10 w-auto"
               src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png"
               width={160}
@@ -467,7 +467,7 @@ const Header = () => {
                                 <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-200 p-1">
                                   <img
                                     src={prod.image || '/placeholder.jpg'}
-                                    alt={prod.name}
+                                    alt={`${prod.name} - Slingshot Bulgaria Gear`}
                                     className="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-110"
                                   />
                                 </div>

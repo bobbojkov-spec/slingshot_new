@@ -4,13 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "../_Global_Memory"
-		},
-		{
 			"path": "../__Blueprints_Docs"
 		},
 		{
-			"path": "../bridge"
+			"path": "../_Global_Memory"
 		}
 	],
 	"settings": {}

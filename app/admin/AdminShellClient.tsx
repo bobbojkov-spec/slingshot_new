@@ -9,14 +9,13 @@ import {
   SettingOutlined,
   ShoppingCartOutlined,
   SolutionOutlined,
-  SyncOutlined,
   TableOutlined,
   TagsOutlined,
   TeamOutlined,
   BgColorsOutlined,
   GlobalOutlined,
 } from "@ant-design/icons";
-import { Button, Drawer, Layout, Menu, Space, Spin, Typography, message } from "antd";
+import { Button, Drawer, Layout, Menu, Space, Typography } from "antd";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -49,6 +48,8 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-menu-groups", icon: <TagsOutlined />, labelText: "Menu Groups", href: "/admin/menu-groups" },
       // { key: "catalog-activity-categories", icon: <TagsOutlined />, labelText: "Activity Categories", href: "/admin/activity-categories" },
       { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
+      { key: "catalog-shop-by-cat", icon: <AppstoreOutlined />, labelText: "Shop by CAT", href: "/admin/homepage-categories" },
+      { key: "catalog-shop-by-kw", icon: <TagsOutlined />, labelText: "Shop by KW", href: "/admin/homepage-keywords" },
     ],
   },
 
@@ -106,15 +107,6 @@ function initialOpenKeysForSelectedKey(selectedKey: string) {
   return parts.length > 1 ? [parts[0]] : [];
 }
 
-function sameStringArray(a: string[], b: string[]) {
-  if (a === b) return true;
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
-}
-
 export default function AdminShellClient({
   children,
 }: {
@@ -127,10 +119,9 @@ export default function AdminShellClient({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
-  const router = useRouter();
   const pathname = usePathname();
+  const router = useRouter();
   const isLoginPage = pathname?.startsWith("/admin/login");
-  const [runningTranslations, setRunningTranslations] = useState(false);
   const siderLabelCh = useMemo(() => maxLabelChars(ADMIN_MENU), []);
   const adminShellStyle = useMemo(
     () =>
@@ -176,81 +167,36 @@ export default function AdminShellClient({
       setAuthChecked(true);
       return;
     }
-
-    let cancelled = false;
-
-    const verifySession = async () => {
-      try {
-        const res = await fetch('/api/auth/me');
-        const payload = await res.json();
-
-        if (cancelled) return;
-
-        if (res.ok && payload?.authenticated) {
-          setUserEmail(payload.user?.email || null);
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user) {
+          setUserEmail(data.user.email);
         } else {
-          setUserEmail(null);
           router.replace('/admin/login');
         }
-      } catch (error) {
-        console.error('session check failed', error);
-        if (!cancelled) {
-          setUserEmail(null);
-          router.replace('/admin/login');
-        }
-      } finally {
-        if (!cancelled) {
-          setAuthChecked(true);
-        }
-      }
-    };
-
-    verifySession();
-
-    return () => {
-      cancelled = true;
-    };
+        setAuthChecked(true);
+      })
+      .catch(() => {
+        router.replace('/admin/login');
+        setAuthChecked(true);
+      });
   }, [isLoginPage, router]);
-
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (error) {
-      console.error('logout failed', error);
-    }
-    setUserEmail(null);
-    router.push('/admin/login');
-  };
-
-  // For non-login pages, block UI until auth check completes / redirects
-  if (!isLoginPage && !authChecked) {
-    return (
-      <Layout style={{ minHeight: "100vh" }}>
-        <Content
-          style={{
-            margin: "24px",
-            minHeight: 360,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Spin />
-        </Content>
-      </Layout>
-    );
-  }
-
-  // If not logged in (redirect pending), render nothing to avoid flashing content
-  if (!isLoginPage && authChecked && !userEmail) {
-    return null;
-  }
 
   // Login page renders without sidebar/header
   if (isLoginPage) {
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Content style={{ margin: "24px", minHeight: 360 }}>{children}</Content>
+      </Layout>
+    );
+  }
+
+  // Show nothing while checking auth (prevents flash)
+  if (!authChecked || !userEmail) {
+    return (
+      <Layout style={{ minHeight: "100vh", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography.Text type="secondary">Loading...</Typography.Text>
       </Layout>
     );
   }
@@ -321,9 +267,17 @@ export default function AdminShellClient({
           </Space>
           {userEmail ? (
             <Space size={8}>
-
               <Typography.Text type="secondary">{userEmail}</Typography.Text>
-              <Button size="small" onClick={handleLogout}>
+              <Button
+                size="small"
+                onClick={() => {
+                  fetch('/api/auth/logout', { method: 'POST' })
+                    .then(() => {
+                      setUserEmail(null);
+                      router.replace('/admin/login');
+                    });
+                }}
+              >
                 Logout
               </Button>
             </Space>

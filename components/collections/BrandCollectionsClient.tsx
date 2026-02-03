@@ -48,7 +48,7 @@ export function BrandCollectionsClient({ collections, heroData, breadcrumbs, bra
                                 {collection.image_url ? (
                                     <img
                                         src={collection.image_url}
-                                        alt={collection.title}
+                                        alt={`${collection.title} Collection - Slingshot Bulgaria`}
                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
                                 ) : (

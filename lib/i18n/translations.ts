@@ -111,7 +111,14 @@ export const translations = {
     "search.suggestions": "Suggestions",
     "search.collections": "Collections",
     "search.products": "Products",
-    "search.view_results": "View all results"
+    "search.view_results": "View all results",
+    "shopByCategories.browseLabel": "Browse",
+    "shopByCategories.title": "Shop by Top Categories",
+    "shopByKeywords.browseLabel": "Discover",
+    "shopByKeywords.title": "Shop by Keyword",
+    "shopByKeywords.hint": "Click any keyword to explore related products",
+    "newProducts.label": "Latest",
+    "newProducts.title": "New Arrivals"
   },
   bg: {
     "header.nav.kites": "Кайтове",
@@ -225,7 +232,14 @@ export const translations = {
     "search.suggestions": "Предложения",
     "search.collections": "Колекции",
     "search.products": "Продукти",
-    "search.view_results": "Виж резултатите"
+    "search.view_results": "Виж резултатите",
+    "shopByCategories.browseLabel": "Разгледай",
+    "shopByCategories.title": "Пазарувай по категории",
+    "shopByKeywords.browseLabel": "Открий",
+    "shopByKeywords.title": "Пазарувай по ключови думи",
+    "shopByKeywords.hint": "Кликнете върху ключова дума, за да разгледате свързани продукти",
+    "newProducts.label": "Най-нови",
+    "newProducts.title": "Нови продукти"
   }
 };
 

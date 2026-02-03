@@ -53,7 +53,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
         >
           <img
             src={images[selectedIndex]}
-            alt={`${productName} - Image ${selectedIndex + 1}`}
+            alt={`${productName} - Slingshot Bulgaria Official Image ${selectedIndex + 1}`}
             className="w-full h-auto object-cover transition-transform duration-300"
           />
 
@@ -78,7 +78,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
               >
                 <img
                   src={image}
-                  alt={`${productName} thumbnail ${index + 1}`}
+                  alt={`${productName} - Slingshot Bulgaria Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
               </button>
@@ -124,7 +124,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
             {/* Zoomed image */}
             <img
               src={images[selectedIndex]}
-              alt={`${productName} - Image ${selectedIndex + 1}`}
+              alt={`${productName} - Slingshot Bulgaria Full View Image ${selectedIndex + 1}`}
               className="max-w-full max-h-full object-contain p-8"
             />
 
@@ -149,7 +149,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
                   >
                     <img
                       src={image}
-                      alt={`Thumbnail ${index + 1}`}
+                      alt={`${productName} - Slingshot Bulgaria Preview ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>

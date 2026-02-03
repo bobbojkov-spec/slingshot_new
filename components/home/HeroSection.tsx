@@ -11,7 +11,7 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         <img
           src="/lovable-uploads/hero-wave.jpg"
-          alt="Kitesurfing action"
+          alt="Slingshot Bulgaria - Premium Kitesurfing Action"
           className="image-cover"
         />
         <div className="hero-overlay" />
