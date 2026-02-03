@@ -309,14 +309,35 @@ export default function InfoTab({
         placeholder="Product name"
       />
 
-      <BilingualTags
-        label="Tags"
-        enValue={draft.translation_en?.tags}
-        bgValue={draft.translation_bg?.tags}
-        onEnChange={(val) => updateTranslationEN('tags', val)}
-        onBgChange={(val) => updateTranslationBG('tags', val)}
-        placeholder="Add tags"
-      />
+      {/* Tags are now managed centrally in Tag Manager */}
+      <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 4 }}>
+        <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>
+          Tags (Read-only)
+        </Typography.Text>
+        <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+          Tags are now managed centrally from the <a href="/admin/tags" target="_blank">Tag Manager</a>.
+          Please use the Tag Manager to add or remove tags from this product.
+        </Typography.Text>
+        <div>
+          {draft.translation_en?.tags && draft.translation_en.tags.length > 0 ? (
+            draft.translation_en.tags.map((tag: string, idx: number) => (
+              <span key={idx} style={{
+                display: 'inline-block',
+                padding: '4px 8px',
+                margin: '0 8px 8px 0',
+                backgroundColor: '#e6f7ff',
+                border: '1px solid #91d5ff',
+                borderRadius: 4,
+                fontSize: 12
+              }}>
+                {tag}
+              </span>
+            ))
+          ) : (
+            <Typography.Text type="secondary">No tags assigned</Typography.Text>
+          )}
+        </div>
+      </div>
 
       <BilingualRichText
         label="Description HTML"

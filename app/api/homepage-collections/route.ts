@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
       WHERE c.visible = true
       ORDER BY hfc.sort_order ASC
-      LIMIT 8
+      LIMIT 12
     `, [lang]);
 
     // Sign image URLs

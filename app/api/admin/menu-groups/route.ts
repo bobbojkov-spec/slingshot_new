@@ -7,19 +7,21 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const source = searchParams.get('source');
 
-    if (!source) {
-      return NextResponse.json({ error: 'Source is required' }, { status: 400 });
-    }
+    const queryStr = source
+      ? `SELECT 
+            mg.*,
+            (SELECT COUNT(*)::int FROM menu_group_collections mgc WHERE mgc.menu_group_id = mg.id) as collection_count
+         FROM menu_groups mg
+         WHERE mg.source = $1
+         ORDER BY mg.sort_order ASC, mg.title ASC`
+      : `SELECT 
+            mg.*,
+            (SELECT COUNT(*)::int FROM menu_group_collections mgc WHERE mgc.menu_group_id = mg.id) as collection_count
+         FROM menu_groups mg
+         ORDER BY mg.source ASC, mg.sort_order ASC, mg.title ASC`;
 
-    const result = await query(
-      `SELECT 
-                mg.*,
-                (SELECT COUNT(*)::int FROM menu_group_collections mgc WHERE mgc.menu_group_id = mg.id) as collection_count
-             FROM menu_groups mg
-             WHERE mg.source = $1
-             ORDER BY mg.sort_order ASC, mg.title ASC`,
-      [source]
-    );
+    const queryParams = source ? [source] : [];
+    const result = await query(queryStr, queryParams);
 
     return NextResponse.json({ groups: result.rows });
   } catch (error: any) {

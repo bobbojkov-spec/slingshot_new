@@ -42,7 +42,7 @@ export default function ShopByCategories() {
             <section className="section-padding bg-background">
                 <div className="section-container">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                        {[...Array(8)].map((_, i) => (
+                        {[...Array(12)].map((_, i) => (
                             <div
                                 key={i}
                                 className="aspect-[4/3] bg-gray-200 rounded-xl animate-pulse"

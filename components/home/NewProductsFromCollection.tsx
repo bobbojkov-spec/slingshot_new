@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ProductImage {
@@ -27,87 +26,29 @@ function shuffleAndLimit<T>(array: T[], limit: number): T[] {
     return shuffled.slice(0, limit);
 }
 
-// Individual product card with image carousel
-function ProductCarouselCard({ product }: { product: Product }) {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const { language } = useLanguage();
-
-    const nextImage = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev >= product.images.length - 1 ? 0 : prev + 1
-        );
-    }, [product.images.length]);
-
-    const prevImage = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev <= 0 ? product.images.length - 1 : prev - 1
-        );
-    }, [product.images.length]);
-
-    const currentImage = product.images[currentImageIndex];
-
+// Individual product card - text only as requested
+function ProductCard({ product }: { product: Product }) {
     return (
         <Link
             href={`/product/${product.slug}`}
-            className="group block relative aspect-square overflow-hidden rounded-xl bg-gray-100"
+            className="group relative aspect-square overflow-hidden rounded-xl bg-deep-navy border border-white/10 hover:border-accent/30 transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center p-6 text-center shadow-lg"
         >
-            {/* Image */}
-            {currentImage ? (
-                <img
-                    src={currentImage.src}
-                    alt={currentImage.alt || product.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-            ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                    No Image
-                </div>
-            )}
-
-            {/* Dark gradient stripe at bottom (60-70% dark blue) */}
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-deep-navy/90 via-deep-navy/70 to-transparent" />
-
-            {/* Product name over the stripe */}
-            <div className="absolute inset-x-0 bottom-0 p-4 lg:p-6">
-                <h3 className="font-heading font-semibold text-white text-lg lg:text-xl group-hover:text-accent transition-colors line-clamp-2">
-                    {product.name}
-                </h3>
+            {/* Minimal Background Pattern */}
+            <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
             </div>
 
-            {/* Image navigation arrows (only if multiple images) */}
-            {product.images.length > 1 && (
-                <>
-                    <button
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center 
-              opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-deep-navy" />
-                    </button>
-                    <button
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center 
-              opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
-                    >
-                        <ChevronRight className="w-5 h-5 text-deep-navy" />
-                    </button>
+            {/* Product name */}
+            <h3 className="font-heading font-semibold text-white text-lg lg:text-xl group-hover:text-accent transition-colors relative z-10">
+                {product.name}
+            </h3>
 
-                    {/* Image dots indicator */}
-                    <div className="absolute bottom-20 lg:bottom-24 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {product.images.map((_, idx) => (
-                            <span
-                                key={idx}
-                                className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? "bg-white" : "bg-white/40"
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
+            {/* View Button (subtle) */}
+            <div className="mt-6 px-5 py-2 rounded-full border border-white/20 text-white/70 text-xs font-medium uppercase tracking-widest group-hover:bg-white group-hover:text-deep-navy group-hover:border-white transition-all duration-300 relative z-10">
+                View Product
+            </div>
+
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
         </Link>
     );
 }
@@ -127,36 +68,15 @@ export default function NewProductsFromCollection() {
                     // Get random 4 products from the collection
                     const randomProducts = shuffleAndLimit(data.products || [], 4);
 
-                    // Fetch full product details including all images for each product
-                    const productsWithImages = await Promise.all(
-                        randomProducts.map(async (p: any) => {
-                            // Fetch product details to get all images
-                            const productRes = await fetch(`/api/products/${p.slug}?lang=${language}`);
-                            let allImages = [];
-                            if (productRes.ok) {
-                                const productData = await productRes.json();
-                                if (productData.images && productData.images.length > 0) {
-                                    allImages = productData.images;
-                                } else if (productData.product?.images) {
-                                    allImages = productData.product.images;
-                                }
-                            }
+                    // Just use the basic product data from the collection fetch
+                    const productsList = randomProducts.map((p: any) => ({
+                        id: p.id,
+                        name: p.name,
+                        slug: p.slug,
+                        images: [] // Images no longer needed
+                    }));
 
-                            // Fallback to single image if no carousel images available
-                            if (allImages.length === 0 && p.image) {
-                                allImages = [{ src: p.image, alt: p.name }];
-                            }
-
-                            return {
-                                id: p.id,
-                                name: p.name,
-                                slug: p.slug,
-                                images: allImages
-                            };
-                        })
-                    );
-
-                    setProducts(productsWithImages);
+                    setProducts(productsList);
                 }
             } catch (error) {
                 console.error("Error fetching new products:", error);
@@ -199,10 +119,9 @@ export default function NewProductsFromCollection() {
                     <h2 className="h2 text-foreground">{t("newProducts.title")}</h2>
                 </div>
 
-                {/* Products Grid - Desktop: 4 columns, Mobile: 1 column (4 rows) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {products.map((product) => (
-                        <ProductCarouselCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             </div>

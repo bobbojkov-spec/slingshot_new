@@ -1,4 +1,4 @@
-import MenuGroupsClient from "./MenuGroupsClient";
+import MenuGroupsListClient from "@/components/admin/MenuGroupsListClient";
 
 export const revalidate = 0;
 
@@ -15,14 +15,13 @@ export default async function MenuGroupsPage() {
     const res = await fetch(`${ADMIN_BASE_URL}/api/admin/menu-groups`, { cache: "no-store" });
     if (!res.ok) {
       console.error("Failed to load menu groups", res.status);
-      return <MenuGroupsClient categories={[]} />;
+      return <MenuGroupsListClient initialGroups={[]} source="all" />;
     }
 
     const data = await res.json();
-    return <MenuGroupsClient categories={data?.categories || []} />;
+    return <MenuGroupsListClient initialGroups={data?.groups || []} source="all" />;
   } catch (error) {
     console.error("Failed to load menu groups", error);
-    return <MenuGroupsClient categories={[]} />;
+    return <MenuGroupsListClient initialGroups={[]} source="all" />;
   }
 }
-

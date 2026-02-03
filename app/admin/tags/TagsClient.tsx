@@ -2,24 +2,37 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Table, Input, Button, message, Space, Card, Typography } from 'antd';
-import { SaveOutlined, SearchOutlined, DeleteOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
+import { Table, Input, Button, message, Space, Card, Typography, Badge, Tooltip, Modal, Select } from 'antd';
+import { SaveOutlined, SearchOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, SyncOutlined, MergeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import TagProductSelector from '@/components/admin/TagProductSelector';
-const { Modal } = require('antd'); // Using require to avoid potential import issues with some antd setups if they arise, or just standard import
+const { Option } = Select;
 
 interface TagData {
     en: string;
     bg: string;
     count: number;
+    slug: string;
+    inMasterTable: boolean;
+}
+
+interface TagStats {
+    totalCount: number;
+    masterCount: number;
+    productOnlyCount: number;
 }
 
 export default function TagsClient() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TagData[]>([]);
+    const [stats, setStats] = useState<TagStats | null>(null);
     const [searchText, setSearchText] = useState('');
     const [savingKey, setSavingKey] = useState<string | null>(null);
     const [manageTag, setManageTag] = useState<string | null>(null);
     const [newTagName, setNewTagName] = useState('');
+    const [syncing, setSyncing] = useState(false);
+    const [mergeModalVisible, setMergeModalVisible] = useState(false);
+    const [sourceTagForMerge, setSourceTagForMerge] = useState<string>('');
+    const [targetTagForMerge, setTargetTagForMerge] = useState<string>('');
 
     // Track local edits: map of OLD EN tag -> { en: newEn, bg: newBg }
     const [edits, setEdits] = useState<Record<string, { en?: string, bg?: string }>>({});
@@ -31,6 +44,11 @@ export default function TagsClient() {
             const json = await res.json();
             if (json.tags) {
                 setData(json.tags);
+                setStats({
+                    totalCount: json.totalCount,
+                    masterCount: json.masterCount,
+                    productOnlyCount: json.productOnlyCount
+                });
             }
         } catch (error) {
             message.error('Failed to load tags');
@@ -43,6 +61,29 @@ export default function TagsClient() {
         fetchData();
     }, []);
 
+    const handleSync = async () => {
+        setSyncing(true);
+        try {
+            const res = await fetch('/api/admin/tags', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'sync' }),
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                message.success(json.message);
+                fetchData();
+            } else {
+                message.error(json.error || 'Sync failed');
+            }
+        } catch (err) {
+            message.error('Error syncing tags');
+        } finally {
+            setSyncing(false);
+        }
+    };
+
     const handleSave = async (record: TagData) => {
         const localEdit = edits[record.en];
         if (!localEdit) return;
@@ -51,7 +92,6 @@ export default function TagsClient() {
         const newBg = localEdit.bg !== undefined ? localEdit.bg : record.bg;
 
         if (newEn === record.en && newBg === record.bg) {
-            // no change
             return;
         }
 
@@ -69,8 +109,8 @@ export default function TagsClient() {
             const json = await res.json();
 
             if (json.success) {
-                message.success(`Updated ${json.updatedCount} products`);
-                setData(prev => prev.map(item => item.en === record.en ? { ...item, en: newEn, bg: newBg } : item));
+                message.success(`Updated ${json.updatedCount || 0} products`);
+                setData(prev => prev.map(item => item.en === record.en ? { ...item, en: newEn, bg: newBg, inMasterTable: true } : item));
                 const newEdits = { ...edits };
                 delete newEdits[record.en];
                 setEdits(newEdits);
@@ -93,7 +133,6 @@ export default function TagsClient() {
             cancelText: 'No',
             onOk: async () => {
                 try {
-                    // Updated to use the single route with action
                     const res = await fetch('/api/admin/tags', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -110,6 +149,42 @@ export default function TagsClient() {
                 }
             }
         });
+    };
+
+    const handleMerge = async () => {
+        if (!sourceTagForMerge || !targetTagForMerge) {
+            message.error('Please select both source and target tags');
+            return;
+        }
+        if (sourceTagForMerge === targetTagForMerge) {
+            message.error('Source and target cannot be the same');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/admin/tags', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'merge',
+                    sourceTag: sourceTagForMerge,
+                    targetTag: targetTagForMerge
+                }),
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                message.success(json.message);
+                setMergeModalVisible(false);
+                setSourceTagForMerge('');
+                setTargetTagForMerge('');
+                fetchData();
+            } else {
+                message.error(json.error || 'Merge failed');
+            }
+        } catch (err) {
+            message.error('Error merging tags');
+        }
     };
 
     const handleAddTag = async () => {
@@ -144,6 +219,23 @@ export default function TagsClient() {
     };
 
     const columns = [
+        {
+            title: 'Status',
+            key: 'status',
+            width: '10%',
+            render: (_: any, record: TagData) => (
+                record.inMasterTable ?
+                    <Badge status="success" text="Synced" /> :
+                    <Tooltip title="This tag exists in products but not in master table. Click Sync to add it.">
+                        <Badge status="warning" text={<span style={{ color: '#fa8c16' }}>Unsynced <InfoCircleOutlined /></span>} />
+                    </Tooltip>
+            ),
+            filters: [
+                { text: 'Synced', value: true },
+                { text: 'Unsynced', value: false },
+            ],
+            onFilter: (value: any, record: TagData) => record.inMasterTable === value,
+        },
         {
             title: 'English Tag',
             dataIndex: 'en',
@@ -181,7 +273,7 @@ export default function TagsClient() {
             title: 'Bulgarian Translation',
             dataIndex: 'bg',
             key: 'bg',
-            width: '35%',
+            width: '25%',
             render: (text: string, record: TagData) => {
                 const value = edits[record.en]?.bg !== undefined ? edits[record.en].bg : text;
                 const isModifiedEn = edits[record.en]?.en !== undefined && edits[record.en].en !== record.en;
@@ -208,6 +300,17 @@ export default function TagsClient() {
             }
         },
         {
+            title: 'Slug',
+            dataIndex: 'slug',
+            key: 'slug',
+            width: '15%',
+            render: (slug: string) => (
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {slug || '-'}
+                </Typography.Text>
+            )
+        },
+        {
             title: 'Usage',
             dataIndex: 'count',
             key: 'count',
@@ -217,7 +320,7 @@ export default function TagsClient() {
         {
             title: 'Actions',
             key: 'actions',
-            width: '30%',
+            width: '15%',
             render: (_: any, record: TagData) => (
                 <Space>
                     <Button
@@ -225,13 +328,15 @@ export default function TagsClient() {
                         ghost
                         icon={<SettingOutlined />}
                         onClick={() => setManageTag(record.en)}
+                        size="small"
                     >
-                        Manage Products
+                        Products
                     </Button>
                     <Button
                         danger
                         icon={<DeleteOutlined />}
                         onClick={() => handleDelete(record.en)}
+                        size="small"
                     />
                 </Space>
             )
@@ -246,7 +351,58 @@ export default function TagsClient() {
     return (
         <div style={{ padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <Typography.Title level={2} style={{ margin: 0 }}>Tag Management</Typography.Title>
+                <div>
+                    <Typography.Title level={2} style={{ margin: 0 }}>Tag Management</Typography.Title>
+                    {stats && (
+                        <Space size="large" style={{ marginTop: 8 }}>
+                            <Typography.Text type="secondary">
+                                Total: <strong>{stats.totalCount}</strong>
+                            </Typography.Text>
+                            <Typography.Text type="secondary">
+                                Synced: <strong style={{ color: '#52c41a' }}>{stats.masterCount}</strong>
+                            </Typography.Text>
+                            {stats.productOnlyCount > 0 && (
+                                <Typography.Text type="secondary">
+                                    Unsynced: <strong style={{ color: '#fa8c16' }}>{stats.productOnlyCount}</strong>
+                                </Typography.Text>
+                            )}
+                        </Space>
+                    )}
+                </div>
+                <Space>
+                    <Button
+                        icon={<MergeOutlined />}
+                        onClick={() => setMergeModalVisible(true)}
+                    >
+                        Merge Tags
+                    </Button>
+                    <Button
+                        type="primary"
+                        icon={<SyncOutlined spin={syncing} />}
+                        onClick={handleSync}
+                        loading={syncing}
+                    >
+                        Sync to Master Table
+                    </Button>
+                </Space>
+            </div>
+
+            <Card style={{ marginBottom: 16 }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                    <Typography.Text type="secondary">
+                        <InfoCircleOutlined /> Tags marked as "Unsynced" exist in products but are not yet in the master table.
+                        Click "Sync to Master Table" to add them, or edit them to add Bulgarian translations.
+                    </Typography.Text>
+                </Space>
+            </Card>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <Input
+                    placeholder="Search tags..."
+                    prefix={<SearchOutlined />}
+                    style={{ maxWidth: 400 }}
+                    onChange={e => setSearchText(e.target.value)}
+                />
                 <Space>
                     <Input
                         placeholder="New tag name..."
@@ -259,12 +415,6 @@ export default function TagsClient() {
                 </Space>
             </div>
 
-            <Input
-                placeholder="Search tags..."
-                prefix={<SearchOutlined />}
-                style={{ marginBottom: 16, maxWidth: 400 }}
-                onChange={e => setSearchText(e.target.value)}
-            />
             <Card>
                 <Table
                     loading={loading}
@@ -272,6 +422,7 @@ export default function TagsClient() {
                     columns={columns}
                     rowKey="en"
                     pagination={{ pageSize: 50 }}
+                    rowClassName={(record) => !record.inMasterTable ? 'unsynced-row' : ''}
                 />
             </Card>
 
@@ -282,6 +433,59 @@ export default function TagsClient() {
                     onSave={() => fetchData()}
                 />
             )}
+
+            {/* Merge Modal */}
+            <Modal
+                title="Merge Tags"
+                open={mergeModalVisible}
+                onOk={handleMerge}
+                onCancel={() => {
+                    setMergeModalVisible(false);
+                    setSourceTagForMerge('');
+                    setTargetTagForMerge('');
+                }}
+                okText="Merge"
+                okButtonProps={{ danger: true }}
+            >
+                <Space direction="vertical" style={{ width: '100%' }}>
+                    <Typography.Paragraph>
+                        Merge one tag into another. All products with the source tag will have it replaced with the target tag.
+                    </Typography.Paragraph>
+
+                    <div>
+                        <Typography.Text strong>Source Tag (will be removed):</Typography.Text>
+                        <Select
+                            style={{ width: '100%', marginTop: 8 }}
+                            placeholder="Select tag to merge from..."
+                            value={sourceTagForMerge || undefined}
+                            onChange={setSourceTagForMerge}
+                            showSearch
+                            options={data.map(t => ({ value: t.en, label: `${t.en} (${t.count} products)` }))}
+                        />
+                    </div>
+
+                    <div style={{ marginTop: 16 }}>
+                        <Typography.Text strong>Target Tag (will be kept):</Typography.Text>
+                        <Select
+                            style={{ width: '100%', marginTop: 8 }}
+                            placeholder="Select tag to merge into..."
+                            value={targetTagForMerge || undefined}
+                            onChange={setTargetTagForMerge}
+                            showSearch
+                            options={data.map(t => ({ value: t.en, label: `${t.en} (${t.count} products)` }))}
+                        />
+                    </div>
+                </Space>
+            </Modal>
+
+            <style jsx global>{`
+                .unsynced-row {
+                    background-color: #fff7e6;
+                }
+                .unsynced-row:hover > td {
+                    background-color: #ffe7ba !important;
+                }
+            `}</style>
         </div>
     );
 }
