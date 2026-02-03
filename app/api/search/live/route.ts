@@ -43,7 +43,7 @@ export async function GET(req: Request) {
              WHERE (col.title ILIKE $1 OR ct.title ILIKE $1) 
                AND col.visible = true
                AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = col.id)
-             LIMIT 5`,
+             LIMIT 12`,
             [searchTerm, lang]
         );
 
@@ -53,8 +53,7 @@ export async function GET(req: Request) {
                 CASE WHEN $2 = 'bg' AND tg.name_bg IS NOT NULL AND tg.name_bg != '' 
                      THEN tg.name_bg 
                      ELSE tg.name_en 
-                END as name, 
-                tg.name_en as slug
+                END as name
              FROM tags tg
              WHERE (tg.name_en ILIKE $1 OR tg.name_bg ILIKE $1)
              AND EXISTS (

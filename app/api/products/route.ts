@@ -147,21 +147,26 @@ export async function GET(req: Request) {
       }
 
       if (!options.skipTag && tagNames.length > 0) {
-        // Tag filter: URL contains English tag names (name_en from tags table)
-        // Products may store tags in English or Bulgarian in their tags array
-        // Use the tags table to match: find tags where name_en matches URL param,
-        // then check if product's tags contain name_en OR name_bg from that row
-        const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
+        // Tag filter: Accept tag names in EITHER English OR Bulgarian
+        // Look up tags by name_en OR name_bg, then check if product has matching tags
+        const lowerTags = tagNames.map(t => t.toLowerCase());
+
+        // Create placeholders for name_en check
+        const placeholdersEn = lowerTags.map(() => `$${paramIndex++}`).join(', ');
+        // Create placeholders for name_bg check (separate indices)
+        const placeholdersBg = lowerTags.map(() => `$${paramIndex++}`).join(', ');
+
         conditions.push(`EXISTS (
           SELECT 1 FROM tags tg
-          WHERE LOWER(tg.name_en) IN (${placeholders})
+          WHERE (LOWER(tg.name_en) IN (${placeholdersEn}) OR LOWER(tg.name_bg) IN (${placeholdersBg}))
           AND (
             p.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
             pt_t.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
             EXISTS (SELECT 1 FROM product_translations pt_sub WHERE pt_sub.product_id = p.id AND pt_sub.language_code = 'en' AND pt_sub.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[])
           )
         )`);
-        params.push(...tagNames.map(t => t.toLowerCase()));
+        // Push params twice (once for each IN clause)
+        params.push(...lowerTags, ...lowerTags);
       }
 
       if (!options.skipBrand && brandSlugs.length > 0) {
@@ -315,7 +320,6 @@ export async function GET(req: Request) {
     const tagsQP = buildQueryParts({ skipTag: true });
     const tagsSql = `
       SELECT 
-        tg.name_en as slug,
         CASE WHEN $1 = 'bg' AND tg.name_bg IS NOT NULL AND tg.name_bg != '' 
              THEN tg.name_bg 
              ELSE tg.name_en 

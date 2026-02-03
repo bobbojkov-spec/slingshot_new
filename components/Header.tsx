@@ -95,7 +95,7 @@ const Header = () => {
             title: language === 'bg' ? (c.title_bg || c.title_en) : (c.title_en || c.title_bg),
             slug: c.slug
           }))
-          .slice(0, 5);
+          .slice(0, 12);
 
         // Update local suggestions first
         setSuggestions(prev => ({
@@ -421,8 +421,8 @@ const Header = () => {
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
-                              key={tag.slug}
-                              href={`/search?tag=${encodeURIComponent(tag.slug)}&lang=${language}`}
+                              key={tag.name}
+                              href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
                               onClick={() => setIsSearchOpen(false)}
                               className="px-5 py-2.5 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-black text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
                             >
