@@ -1,140 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPresignedUrl } from '@/lib/railway/storage';
-import { query } from '@/lib/dbPg';
-import { listBlocksForPage, PageBlockRecord } from '@/lib/pagesNewBlocksDb';
-import { convertToProxyUrl } from '@/lib/utils/image-url';
+import { query } from '@/lib/db';
 
-const PLACEHOLDER_IMAGE = '/api/images/original/placeholder.jpg';
-
-const isPositiveInt = (value: unknown) => {
-    const numberValue = typeof value === 'number' ? value : Number(value);
-    return Number.isFinite(numberValue) && Number.isInteger(numberValue) && numberValue >= 1;
-};
-
-// Use centralized signing logic which handles:
-// 1. AWS/Railway SDK credentials (including new AWS_* fallbacks)
-// 2. Correct Bucket resolution (AWS_S3_BUCKET_NAME etc)
-// 3. Connection pooling via shared client
-const signUrl = async (key: string | null | undefined) => {
-    if (!key) return null;
-    if (key.startsWith('http') || key.startsWith('/')) {
-        return convertToProxyUrl(key);
-    }
-    try {
-        // getPresignedUrl handles client details and defaults to PUBLIC bucket
-        return await getPresignedUrl(key, undefined, 3600);
-    } catch (error) {
-        console.error('Error signing URL:', error);
-        return convertToProxyUrl(key);
-    }
-};
-
-const normalizeBlockData = async (block: PageBlockRecord) => ({
-    id: String(block.id),
-    pageId: String(block.page_id),
-    type: block.type,
-    position: typeof block.position === 'number' ? block.position : 0,
-    enabled: block.enabled !== false,
-    data: block.data ?? {},
-    galleryImages: await Promise.all((block.gallery_images ?? []).map(async (image) => ({
-        mediaId: image.media_id,
-        position: typeof image.position === 'number' ? image.position : 0,
-        url: (await signUrl(image.url)) ?? PLACEHOLDER_IMAGE,
-    }))),
-});
-
-const extractMediaIds = (block: PageBlockRecord): number[] => {
-    const ids: number[] = [];
-    const data = block.data;
-    if (data && typeof data === 'object') {
-        const backgroundImage = (data as any).background_image;
-        if (backgroundImage && typeof backgroundImage === 'object') {
-            const mediaId = Number(backgroundImage.media_id);
-            if (Number.isFinite(mediaId)) {
-                ids.push(mediaId);
-            }
-        }
-        if ((data as any).image_id !== undefined) {
-            const imageId = Number((data as any).image_id);
-            if (Number.isFinite(imageId)) {
-                ids.push(imageId);
-            }
-        }
-    }
-    return ids;
+const parseId = (id?: string) => {
+    if (!id) throw new Error('Missing id');
+    const numId = Number(id);
+    if (Number.isNaN(numId) || numId <= 0) throw new Error('Invalid id');
+    return numId;
 };
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    context: { params: Promise<{ id: string }> }
 ) {
-    const resolvedParams = await params;
-    const { id } = resolvedParams;
-
-    if (!id) {
-        return NextResponse.json(
-            { ok: false, error: 'Missing id' },
-            { status: 400 }
-        );
-    }
-
     try {
-        void request;
-        const pageId = Number(id);
-        if (!isPositiveInt(pageId)) {
-            return NextResponse.json({ ok: false, error: 'Invalid pageId' }, { status: 400 });
-        }
+        const { id } = await context.params;
+        const pageId = parseId(id);
 
-        const { rows: pageRows } = await query(
-            'SELECT id, status FROM pages WHERE id = $1 LIMIT 1',
+        const { rows } = await query(
+            `SELECT id, page_id, type, position, data, enabled, created_at, updated_at
+       FROM page_blocks
+       WHERE page_id = $1
+       ORDER BY position ASC`,
             [pageId]
         );
 
-        if (!pageRows.length) {
-            return NextResponse.json({ ok: false, error: 'Page not found' }, { status: 404 });
-        }
-
-        const pageStatus = pageRows[0].status;
-
-        // Disabled publish check to allow admin to view drafts if needed
-        // if (pageStatus !== 'published') {
-        //     // return NextResponse.json({ ok: false, error: 'Page is not published' }, { status: 404 });
-        // }
-
-        const blocks = await listBlocksForPage(pageId);
-
-        // Return all blocks (disabled ones included) for admin/editor context
-        const validBlocks = blocks.filter((block) => block.enabled !== false);
-
-        const mediaIdSet = new Set<number>();
-        validBlocks.forEach((block) => {
-            extractMediaIds(block).forEach((id) => mediaIdSet.add(id));
-        });
-
-        const mediaMap: Record<number, string> = {};
-        if (mediaIdSet.size) {
-            const { rows: mediaRows } = await query(
-                'SELECT id, url FROM media_files WHERE id = ANY($1)',
-                [Array.from(mediaIdSet)]
-            );
-            for (const mediaRow of mediaRows) {
-                const id = typeof mediaRow.id === 'number' ? mediaRow.id : Number(mediaRow.id);
-                const url = typeof mediaRow.url === 'string' ? mediaRow.url : null;
-                mediaMap[id] = (await signUrl(url)) ?? PLACEHOLDER_IMAGE;
-            }
-        }
-
-        const transformedBlocks = await Promise.all(validBlocks.map(normalizeBlockData));
-
-        return NextResponse.json({
-            ok: true,
-            data: transformedBlocks,
-            media: mediaMap,
-        });
+        return NextResponse.json({ ok: true, data: rows });
     } catch (error) {
-        console.error('pages-new blocks GET failed:', error);
+        console.error('BLOCKS GET FAILED:', error);
         return NextResponse.json(
             { ok: false, error: 'Failed to load blocks' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await context.params;
+        const pageId = parseId(id);
+        const payload = await request.json();
+
+        const type = payload.type;
+        if (!['HERO', 'TEXT', 'TEXT_IMAGE', 'GALLERY', 'YOUTUBE', 'FEATURED_PRODUCTS'].includes(type)) {
+            return NextResponse.json(
+                { ok: false, error: 'Invalid block type' },
+                { status: 400 }
+            );
+        }
+
+        // Get next position
+        const { rows: posRows } = await query(
+            'SELECT COALESCE(MAX(position), 0) AS max_pos FROM page_blocks WHERE page_id = $1',
+            [pageId]
+        );
+        const nextPosition = Number(posRows[0]?.max_pos ?? 0) + 1;
+
+        const data = payload.data || {};
+
+        const { rows } = await query(
+            `INSERT INTO page_blocks (page_id, type, position, data, enabled)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, page_id, type, position, data, enabled, created_at, updated_at`,
+            [pageId, type, nextPosition, JSON.stringify(data), true]
+        );
+
+        return NextResponse.json({ ok: true, data: rows[0] });
+    } catch (error) {
+        console.error('BLOCKS POST FAILED:', error);
+        return NextResponse.json(
+            { ok: false, error: 'Failed to create block' },
             { status: 500 }
         );
     }

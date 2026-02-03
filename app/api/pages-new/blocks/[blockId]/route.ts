@@ -1,54 +1,97 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteBlock, updateBlock } from '@/lib/pagesNewBlocksDb';
+import { query } from '@/lib/db';
 
-const success = (data: unknown) => NextResponse.json({ ok: true, data });
-
-const failure = (message: string, status = 400) =>
-    NextResponse.json({ ok: false, error: message }, { status });
-
-const parseBlockId = (blockId?: string) => {
-    if (!blockId) {
-        throw new Error('Missing blockId');
-    }
-
-    const numBlockId = Number(blockId);
-    if (Number.isNaN(numBlockId) || numBlockId <= 0) {
-        throw new Error('Invalid blockId');
-    }
-
-    return numBlockId;
+const parseId = (id?: string) => {
+    if (!id) throw new Error('Missing id');
+    const numId = Number(id);
+    if (Number.isNaN(numId) || numId <= 0) throw new Error('Invalid id');
+    return numId;
 };
+
+export async function GET(
+    request: NextRequest,
+    context: { params: Promise<{ blockId: string }> }
+) {
+    try {
+        const { blockId } = await context.params;
+        const numId = parseId(blockId);
+
+        const { rows } = await query(
+            `SELECT id, page_id, type, position, data, enabled, created_at, updated_at
+       FROM page_blocks WHERE id = $1`,
+            [numId]
+        );
+
+        if (!rows.length) {
+            return NextResponse.json(
+                { ok: false, error: 'Block not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ ok: true, data: rows[0] });
+    } catch (error) {
+        return NextResponse.json(
+            { ok: false, error: 'Failed to load block' },
+            { status: 500 }
+        );
+    }
+}
 
 export async function PATCH(
     request: NextRequest,
     context: { params: Promise<{ blockId: string }> }
 ) {
-    const { blockId } = await context.params;
-
-    if (!blockId) {
-        return NextResponse.json(
-            { ok: false, error: 'Missing blockId' },
-            { status: 400 }
-        );
-    }
-
     try {
-        const parsedBlockId = parseBlockId(blockId);
+        const { blockId } = await context.params;
+        const numId = parseId(blockId);
         const payload = await request.json();
-        const updates: { data?: Record<string, unknown>; enabled?: boolean } = {};
+
+        const updates: string[] = [];
+        const values: unknown[] = [];
+        let paramIndex = 1;
 
         if (payload.data !== undefined) {
-            updates.data = payload.data;
+            updates.push(`data = $${paramIndex++}`);
+            values.push(JSON.stringify(payload.data));
         }
 
         if (payload.enabled !== undefined) {
-            updates.enabled = Boolean(payload.enabled);
+            updates.push(`enabled = $${paramIndex++}`);
+            values.push(Boolean(payload.enabled));
         }
 
-        const block = await updateBlock(parsedBlockId, updates);
-        return success(block);
+        if (updates.length === 0) {
+            return NextResponse.json(
+                { ok: false, error: 'No updates provided' },
+                { status: 400 }
+            );
+        }
+
+        values.push(numId);
+
+        const { rows } = await query(
+            `UPDATE page_blocks
+       SET ${updates.join(', ')}, updated_at = NOW()
+       WHERE id = $${paramIndex}
+       RETURNING id, page_id, type, position, data, enabled, created_at, updated_at`,
+            values
+        );
+
+        if (!rows.length) {
+            return NextResponse.json(
+                { ok: false, error: 'Block not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ ok: true, data: rows[0] });
     } catch (error) {
-        return failure(error instanceof Error ? error.message : 'Failed to update block', 500);
+        console.error('BLOCK PATCH FAILED:', error);
+        return NextResponse.json(
+            { ok: false, error: 'Failed to update block' },
+            { status: 500 }
+        );
     }
 }
 
@@ -56,13 +99,27 @@ export async function DELETE(
     request: NextRequest,
     context: { params: Promise<{ blockId: string }> }
 ) {
-    const { blockId } = await context.params;
-
     try {
-        const parsedBlockId = parseBlockId(blockId);
-        await deleteBlock(parsedBlockId);
-        return success({ id: parsedBlockId });
+        const { blockId } = await context.params;
+        const numId = parseId(blockId);
+
+        const { rows } = await query(
+            'DELETE FROM page_blocks WHERE id = $1 RETURNING id',
+            [numId]
+        );
+
+        if (!rows.length) {
+            return NextResponse.json(
+                { ok: false, error: 'Block not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ ok: true, data: { id: numId } });
     } catch (error) {
-        return failure(error instanceof Error ? error.message : 'Failed to delete block', 500);
+        return NextResponse.json(
+            { ok: false, error: 'Failed to delete block' },
+            { status: 500 }
+        );
     }
 }

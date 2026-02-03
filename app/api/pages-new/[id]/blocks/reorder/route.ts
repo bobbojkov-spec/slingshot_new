@@ -1,42 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { reorderBlocks } from '@/lib/pagesNewBlocksDb';
+import { query } from '@/lib/db';
 
-const success = (data: unknown) => NextResponse.json({ ok: true, data });
-const failure = (message: string, status = 400) =>
-    NextResponse.json({ ok: false, error: message }, { status });
-
-const parsePageId = (id?: string) => {
-    if (!id) {
-        throw new Error('Missing pageId');
-    }
-
-    const pageId = Number(id);
-    if (Number.isNaN(pageId) || pageId <= 0) {
-        throw new Error('Invalid pageId');
-    }
-
-    return pageId;
+const parseId = (id?: string) => {
+    if (!id) throw new Error('Missing id');
+    const numId = Number(id);
+    if (Number.isNaN(numId) || numId <= 0) throw new Error('Invalid id');
+    return numId;
 };
 
 export async function POST(
     request: NextRequest,
-    context: { params: Promise<{ id?: string }> }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await context.params;
-        const pageId = parsePageId(id);
+        const pageId = parseId(id);
         const payload = await request.json();
-        const orderedBlockIds = Array.isArray(payload?.orderedBlockIds)
-            ? payload.orderedBlockIds.map((id: string | number) => Number(id))
-            : [];
 
-        if (!orderedBlockIds.length) {
-            return failure('Ordered block list is required');
+        const blockIds = Array.isArray(payload.blockIds) ? payload.blockIds : [];
+
+        if (blockIds.length === 0) {
+            return NextResponse.json(
+                { ok: false, error: 'No block IDs provided' },
+                { status: 400 }
+            );
         }
 
-        const blocks = await reorderBlocks(pageId, orderedBlockIds);
-        return success(blocks);
+        // Update positions
+        await query('BEGIN');
+
+        for (let i = 0; i < blockIds.length; i++) {
+            await query(
+                'UPDATE page_blocks SET position = $1 WHERE id = $2 AND page_id = $3',
+                [i + 1, blockIds[i], pageId]
+            );
+        }
+
+        await query('COMMIT');
+
+        return NextResponse.json({ ok: true, data: { reordered: blockIds.length } });
     } catch (error) {
-        return failure(error instanceof Error ? error.message : 'Failed to reorder blocks', 500);
+        await query('ROLLBACK');
+        console.error('BLOCKS REORDER FAILED:', error);
+        return NextResponse.json(
+            { ok: false, error: 'Failed to reorder blocks' },
+            { status: 500 }
+        );
     }
 }

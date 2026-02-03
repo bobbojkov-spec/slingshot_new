@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../_Global_Memory"
+		},
+		{
+			"path": "../bridge"
 		}
 	],
 	"settings": {}
