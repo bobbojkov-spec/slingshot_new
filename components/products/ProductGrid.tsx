@@ -19,7 +19,7 @@ interface ProductGridProps {
 export function ProductGrid({ products, columns = 4 }: ProductGridProps) {
     const gridClass = columns === 3
         ? "grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12"
-        : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12";
+        : "grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-12";
 
     return (
         <div className={gridClass}>

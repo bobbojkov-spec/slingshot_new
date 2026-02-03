@@ -72,12 +72,6 @@ export async function GET(req: Request) {
         params.push(...collectionSlugs);
       }
 
-      if (!options.skipTag && tagNames.length > 0) {
-        const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
-        conditions.push(`p.tags && ARRAY[${placeholders}]::text[]`);
-        params.push(...tagNames);
-      }
-
       if (!options.skipBrand && brandSlugs.length > 0) {
         // Multi-brand support
         const placeholders = brandSlugs.map(() => `$${paramIndex++}`).join(', ');
@@ -147,26 +141,27 @@ export async function GET(req: Request) {
       }
 
       if (!options.skipTag && tagNames.length > 0) {
-        // Tag filter: Accept tag names in EITHER English OR Bulgarian
-        // Look up tags by name_en OR name_bg, then check if product has matching tags
+        // Tag filter: accept tag slugs or localized names
         const lowerTags = tagNames.map(t => t.toLowerCase());
 
-        // Create placeholders for name_en check
+        const placeholdersSlug = lowerTags.map(() => `$${paramIndex++}`).join(', ');
         const placeholdersEn = lowerTags.map(() => `$${paramIndex++}`).join(', ');
-        // Create placeholders for name_bg check (separate indices)
         const placeholdersBg = lowerTags.map(() => `$${paramIndex++}`).join(', ');
 
         conditions.push(`EXISTS (
           SELECT 1 FROM tags tg
-          WHERE (LOWER(tg.name_en) IN (${placeholdersEn}) OR LOWER(tg.name_bg) IN (${placeholdersBg}))
+          WHERE (
+            LOWER(tg.slug) IN (${placeholdersSlug})
+            OR LOWER(tg.name_en) IN (${placeholdersEn})
+            OR LOWER(tg.name_bg) IN (${placeholdersBg})
+          )
           AND (
             p.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
             pt_t.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
             EXISTS (SELECT 1 FROM product_translations pt_sub WHERE pt_sub.product_id = p.id AND pt_sub.language_code = 'en' AND pt_sub.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[])
           )
         )`);
-        // Push params twice (once for each IN clause)
-        params.push(...lowerTags, ...lowerTags);
+        params.push(...lowerTags, ...lowerTags, ...lowerTags);
       }
 
       if (!options.skipBrand && brandSlugs.length > 0) {
@@ -320,6 +315,7 @@ export async function GET(req: Request) {
     const tagsQP = buildQueryParts({ skipTag: true });
     const tagsSql = `
       SELECT 
+        tg.slug as slug,
         CASE WHEN $1 = 'bg' AND tg.name_bg IS NOT NULL AND tg.name_bg != '' 
              THEN tg.name_bg 
              ELSE tg.name_en 
@@ -332,7 +328,7 @@ export async function GET(req: Request) {
       JOIN tags tg ON LOWER(tg.name_en) = LOWER(t.tag) OR LOWER(tg.name_bg) = LOWER(t.tag)
       WHERE ${tagsQP.whereClause}
       AND ($1::text IS NOT NULL OR true)
-      GROUP BY tg.name_en, tg.name_bg
+      GROUP BY tg.slug, tg.name_en, tg.name_bg
       ORDER BY count DESC
       LIMIT 50
     `;

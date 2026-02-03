@@ -70,14 +70,20 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </button>
       </div>
       <Link href={`/product/${product.slug}`} className="block p-4">
-        <span className="font-body text-sm text-muted-foreground uppercase tracking-wide">{product.category}</span>
-        <h3 className="font-heading font-semibold text-foreground mt-1 mb-2 group-hover:text-accent transition-colors">
+        <h3 className="font-heading font-semibold text-lg md:text-xl text-foreground mb-2 group-hover:text-accent transition-colors">
           {product.name}
         </h3>
+        <span className="font-body text-base text-muted-foreground uppercase tracking-wide block mb-3">
+          {product.category}
+        </span>
         <div className="flex items-center gap-2">
-          <span className="price-display">€{product.price.toLocaleString()}</span>
-          {product.originalPrice && (
-            <span className="price-original">€{product.originalPrice.toLocaleString()}</span>
+          <span className="price-display">
+            ${parseFloat(product.price.toString()).toFixed(2)}
+          </span>
+          {product.originalPrice && parseFloat(product.originalPrice.toString()) > parseFloat(product.price.toString()) && (
+            <span className="price-original">
+              (${parseFloat(product.originalPrice.toString()).toFixed(2)})
+            </span>
           )}
         </div>
       </Link>

@@ -177,6 +177,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
           LIMIT 1
         ) as image_path,
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
+        (SELECT compare_at_price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as original_price,
          c.name as category_name,
          c.slug as category_slug
       FROM products p
@@ -184,10 +185,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       WHERE p.category_id = $1 
       AND p.id != $2
       AND p.status = 'active'
-      ORDER BY RANDOM() -- Randomize for better discovery? Or use ID desc.
+      ORDER BY RANDOM()
       LIMIT 4
     `;
-    // Note: RANDOM() is efficient enough for small catalog.
     const relatedResult = await query(relatedSql, [product.category_id, product.id]);
     const related = await Promise.all(relatedResult.rows.map(async (row: any) => ({
       id: row.id,
@@ -195,6 +195,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       category: row.category_name,
       category_slug: row.category_slug,
       price: parseFloat(row.price || '0'),
+      originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
       image: row.image_path ? await getPresignedUrl(row.image_path) : null,
       slug: row.slug
     })));

@@ -222,23 +222,49 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               <p className="text-xs text-black/60 font-mono mb-6">{`SKU: ${product.sku}`}</p>
             )}
 
-            <div className="text-2xl font-bold mb-4">
+            <div className="flex items-center gap-3 mb-6">
               {(() => {
+                let currentPrice: number | null = null;
+                let originalPrice: number | null = null;
+                let displayPrice: string = "";
+
                 if (selectedSize && product.variants) {
                   const v = product.variants.find(v => v.title === selectedSize);
-                  if (v) return `€${v.price.toLocaleString()}`;
+                  if (v) {
+                    currentPrice = v.price;
+                    originalPrice = v.compareAtPrice;
+                  }
                 }
-                if (product.variants && product.variants.length > 0) {
+
+                if (!currentPrice && product.variants && product.variants.length > 0) {
                   const prices = product.variants.map(v => v.price).filter(p => !isNaN(p));
                   if (prices.length > 0) {
                     const min = Math.min(...prices);
                     const max = Math.max(...prices);
-                    return min === max
-                      ? `€${min.toLocaleString()}`
-                      : `€${min.toLocaleString()} - €${max.toLocaleString()}`;
+                    displayPrice = min === max ? `$${min.toFixed(2)}` : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+
+                    // For the range view, we'll show the compare_at_price of the cheapest variant if it has one
+                    const cheapestVariant = [...product.variants].sort((a, b) => a.price - b.price)[0];
+                    if (cheapestVariant && cheapestVariant.compareAtPrice && cheapestVariant.compareAtPrice > cheapestVariant.price) {
+                      originalPrice = cheapestVariant.compareAtPrice;
+                    }
                   }
+                } else if (!currentPrice) {
+                  displayPrice = `$${(product.price || 0).toFixed(2)}`;
+                } else {
+                  displayPrice = `$${currentPrice.toFixed(2)}`;
                 }
-                return `€${product.price ? product.price.toLocaleString() : '0'}`;
+
+                return (
+                  <>
+                    <span className="text-3xl font-black tracking-tight text-foreground">{displayPrice}</span>
+                    {originalPrice && originalPrice > (currentPrice || product.price) && (
+                      <span className="text-xl text-muted-foreground line-through font-medium">
+                        (${originalPrice.toFixed(2)})
+                      </span>
+                    )}
+                  </>
+                );
               })()}
             </div>
 

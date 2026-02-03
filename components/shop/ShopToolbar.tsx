@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, Search, ArrowUpDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { FilterDropdown } from './FilterDropdown';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface FacetItem {
     slug: string;
@@ -28,6 +29,12 @@ interface ShopToolbarProps {
 export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopToolbarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { language, t } = useLanguage();
+
+    const tagOptions = (facets.tags || []).map(tag => ({
+        ...tag,
+        slug: tag.slug || tag.name
+    }));
 
     // Local state for Search
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
@@ -120,7 +127,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
 
                         {/* Brand (Multi Select) */}
                         <FilterDropdown
-                            label="Brand"
+                            label={language === 'bg' ? 'Марка' : 'Brand'}
                             options={facets.brands || []}
                             selectedValues={searchParams.getAll('brand')}
                             onChange={(vals) => updateFilterMulti('brand', vals)}
@@ -129,7 +136,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
 
                         {/* Collection (Multi Select) */}
                         <FilterDropdown
-                            label="Collection"
+                            label={language === 'bg' ? 'Колекция' : 'Collection'}
                             options={facets.collections || []}
                             selectedValues={currentCollections}
                             onChange={(vals) => updateFilterMulti('collection', vals)}
@@ -138,18 +145,19 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
 
                         {/* Tags (Multi Select) */}
                         <FilterDropdown
-                            label="Tags / Features"
-                            options={facets.tags || []}
+                            label={language === 'bg' ? 'Тагове / Характеристики' : 'Tags / Features'}
+                            options={tagOptions}
                             selectedValues={currentTags}
                             onChange={(vals) => updateFilterMulti('tag', vals)}
-                            disabled={!facets.tags || facets.tags.length === 0}
+                            disabled={!tagOptions || tagOptions.length === 0}
                         />
 
                     </div>
 
                     {/* Right Side: Product Count */}
                     <div className="text-sm font-medium text-gray-500 uppercase tracking-wide shrink-0">
-                        Products: <span className="text-black font-bold">{totalProducts}</span>
+                        {language === 'bg' ? 'Продукти' : 'Products'}:{' '}
+                        <span className="text-black font-bold">{totalProducts}</span>
                     </div>
 
                 </div>

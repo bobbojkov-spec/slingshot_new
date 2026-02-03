@@ -69,7 +69,7 @@ function ProductCarouselCard({ product }: { product: Product }) {
             )}
 
             {/* Dark gradient stripe at bottom */}
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-deep-navy/90 via-deep-navy/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-deep-navy via-deep-navy/70 to-transparent" />
 
             {/* Product name over the stripe */}
             <div className="absolute inset-x-0 bottom-0 p-4 lg:p-6">

@@ -9,12 +9,14 @@ import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ShopOverview from '@/components/shop/ShopOverview';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 
 
 function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { language } = useLanguage();
 
   const [products, setProducts] = useState([]);
   const [facets, setFacets] = useState({ categories: [], collections: [], types: [], tags: [], brands: [] });
@@ -39,6 +41,7 @@ function ShopContent() {
       setLoading(true);
       try {
         const params = new URLSearchParams(searchParams.toString());
+        params.set('lang', language);
         const res = await fetch(`/api/products?${params.toString()}&limit=12`); // 12 items for grid (3x4 or 4x3)
         if (!res.ok) throw new Error('Failed to fetch products');
 
@@ -54,7 +57,7 @@ function ShopContent() {
     };
 
     fetchProducts();
-  }, [searchParams]);
+  }, [searchParams, language]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > pagination.totalPages) return;

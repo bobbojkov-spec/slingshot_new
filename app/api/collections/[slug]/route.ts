@@ -51,7 +51,8 @@ export async function GET(
         p.status,
         pt.title as name_translated,
         pt.tags as tags_translated,
-        (SELECT price FROM product_variants WHERE product_id = p.id ORDER BY price ASC LIMIT 1) as price,
+        (SELECT price FROM product_variants WHERE product_id = p.id ORDER BY position ASC LIMIT 1) as price,
+        (SELECT compare_at_price FROM product_variants WHERE product_id = p.id ORDER BY position ASC LIMIT 1) as original_price,
         (
           SELECT storage_path
           FROM product_images_railway

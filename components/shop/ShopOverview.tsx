@@ -95,7 +95,7 @@ export default function ShopOverview() {
     }, [language]);
 
     const displayKeywords = useMemo(() => keywords.slice(0, 12), [keywords]);
-    const displayCollections = useMemo(() => collections.slice(0, 8), [collections]);
+    const displayCollections = useMemo(() => collections.slice(0, 12), [collections]);
     const displayBrands = useMemo(() => brands.slice(0, 2), [brands]);
     const displayFeatured = useMemo(() => featuredProducts.slice(0, 8), [featuredProducts]);
 
@@ -156,12 +156,12 @@ export default function ShopOverview() {
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-deep-navy">Filter by Collection</h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {displayCollections.map((collection) => (
                         <Link
                             key={collection.id}
                             href={`/shop?collection=${encodeURIComponent(collection.slug)}`}
-                            className="group relative aspect-[4/3] rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
+                            className="group relative aspect-[16/9] rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
                         >
                             {collection.image_url ? (
                                 <img
@@ -174,9 +174,14 @@ export default function ShopOverview() {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                             <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-sm font-semibold uppercase tracking-tight">
+                                <h4 className="text-white text-base md:text-lg font-semibold uppercase tracking-tight">
                                     {collection.title}
                                 </h4>
+                                {collection.subtitle && (
+                                    <p className="text-white/80 text-xs md:text-sm mt-1 line-clamp-2">
+                                        {collection.subtitle}
+                                    </p>
+                                )}
                             </div>
                         </Link>
                     ))}
