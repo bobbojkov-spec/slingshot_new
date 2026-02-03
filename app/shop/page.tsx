@@ -10,8 +10,7 @@ import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { FeaturedSection } from '@/components/shop/FeaturedSection';
-import { BestSellersSection } from '@/components/shop/BestSellersSection';
+
 
 function ShopContent() {
   const searchParams = useSearchParams();
@@ -82,9 +81,7 @@ function ShopContent() {
 
       <ShopToolbar facets={facets} totalProducts={pagination.total} />
 
-      {/* Featured & Best Sellers - Context Aware (pass current filters) */}
-      <FeaturedSection searchParams={searchParams} />
-      <BestSellersSection searchParams={searchParams} />
+
 
       <div className="container mx-auto px-4 py-8">
         {/* Removed external Breadcrumbs since they are now in Hero */}
