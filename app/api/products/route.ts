@@ -147,24 +147,21 @@ export async function GET(req: Request) {
       }
 
       if (!options.skipTag && tagNames.length > 0) {
+        // Tag filter: URL contains English tag names (name_en from tags table)
+        // Products may store tags in English or Bulgarian in their tags array
+        // Use the tags table to match: find tags where name_en matches URL param,
+        // then check if product's tags contain name_en OR name_bg from that row
         const placeholders = tagNames.map(() => `$${paramIndex++}`).join(', ');
-        // Filter by source tags (p.tags), current lang tags (pt_t.tags), OR fixed EN tags (pt_en_fixed.tags)
-        // Since we can't easily reference 'pt_en_fixed' inside buildQueryParts before it's joined, 
-        // we must simplify or ensure the JOIN is always present if filtering by tag.
-
-        // Actually, we pass these conditions to the main query string, so aliases MUST match.
-        // I will add the JOIN to the main Queries (countSql, productsSql, facets) globally or conditionally.
-        // For safety, I'll update the JOINs in the query strings below to include pt_en_fixed OR just subquery?
-        // Subquery is safer for scope.
-
-        // EXISTS logic is better to avoid massive JOIN fanout if not needed, but array operators are okay.
-        // Let's use specific condition:
-        conditions.push(`(
-          p.tags && ARRAY[${placeholders}]::text[] OR 
-          pt_t.tags && ARRAY[${placeholders}]::text[] OR
-          EXISTS (SELECT 1 FROM product_translations pt_sub WHERE pt_sub.product_id = p.id AND pt_sub.language_code = 'en' AND pt_sub.tags && ARRAY[${placeholders}]::text[])
+        conditions.push(`EXISTS (
+          SELECT 1 FROM tags tg
+          WHERE LOWER(tg.name_en) IN (${placeholders})
+          AND (
+            p.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
+            pt_t.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
+            EXISTS (SELECT 1 FROM product_translations pt_sub WHERE pt_sub.product_id = p.id AND pt_sub.language_code = 'en' AND pt_sub.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[])
+          )
         )`);
-        params.push(...tagNames);
+        params.push(...tagNames.map(t => t.toLowerCase()));
       }
 
       if (!options.skipBrand && brandSlugs.length > 0) {
@@ -317,14 +314,21 @@ export async function GET(req: Request) {
     // 4. Tags Facet (Skip Tag Filter)
     const tagsQP = buildQueryParts({ skipTag: true });
     const tagsSql = `
-      SELECT t.tag as name, t.tag as slug, COUNT(distinct p.id) as count
+      SELECT 
+        tg.name_en as slug,
+        CASE WHEN $1 = 'bg' AND tg.name_bg IS NOT NULL AND tg.name_bg != '' 
+             THEN tg.name_bg 
+             ELSE tg.name_en 
+        END as name,
+        COUNT(distinct p.id) as count
       FROM products p
       LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $1
       LEFT JOIN categories c ON p.category_id = c.id,
       LATERAL unnest(COALESCE(pt_t.tags, p.tags)) as t(tag)
+      JOIN tags tg ON LOWER(tg.name_en) = LOWER(t.tag) OR LOWER(tg.name_bg) = LOWER(t.tag)
       WHERE ${tagsQP.whereClause}
       AND ($1::text IS NOT NULL OR true)
-      GROUP BY t.tag
+      GROUP BY tg.name_en, tg.name_bg
       ORDER BY count DESC
       LIMIT 50
     `;

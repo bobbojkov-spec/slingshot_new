@@ -13,6 +13,7 @@ function SearchContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const query = searchParams.get('q') || '';
+    const tag = searchParams.getAll('tag').join(', ');
 
     const [products, setProducts] = useState([]);
     const [facets, setFacets] = useState({ categories: [], collections: [], types: [], tags: [], brands: [] });
@@ -51,9 +52,15 @@ function SearchContent() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const searchLabel = query
+        ? `Search for "${query}": ${pagination.total} results`
+        : tag
+            ? `Tag: ${tag} (${pagination.total} results)`
+            : `${pagination.total} results`;
+
     const breadcrumbItems = [
         { label: 'Shop', href: '/shop' },
-        { label: `Search for "${query}" results: ${pagination.total}` },
+        { label: searchLabel },
     ];
 
     return (
@@ -75,7 +82,9 @@ function SearchContent() {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                     </div>
                 ) : products.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500">No products found for "{query}".</div>
+                    <div className="text-center py-20 text-gray-500">
+                        {query ? `No products found for "${query}".` : tag ? `No products found for tag "${tag}".` : 'No products found.'}
+                    </div>
                 ) : (
                     <>
                         <ProductGrid products={products} />

@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import CartDrawer from "@/components/CartDrawer";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import GA4RouteTracker from "@/components/GA4RouteTracker";
 import { headers } from "next/headers";
 import type { Language } from "@/lib/i18n/LanguageContext";
 import { getFullNavigation } from "@/lib/railway/navigation-server";
@@ -73,7 +75,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="canonical" href={canonicalUrl} />
       </head>
       <body>
+        <GoogleAnalytics />
         <Providers initialLanguage={initialLanguage} initialNavigation={initialNavigation}>
+          <GA4RouteTracker />
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-1">

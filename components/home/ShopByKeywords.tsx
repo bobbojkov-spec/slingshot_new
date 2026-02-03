@@ -94,7 +94,7 @@ export default function ShopByKeywords() {
                         return (
                             <Link
                                 key={keyword.slug}
-                                href={`/search?tag=${encodeURIComponent(displayName)}&lang=${language}`}
+                                href={`/search?tag=${encodeURIComponent(keyword.name_en)}&lang=${language}`}
                                 className="group px-5 py-2.5 bg-white text-deep-navy rounded-full font-medium text-sm 
                   shadow-md hover:shadow-lg hover:bg-accent hover:text-white 
                   transition-all duration-300 inline-flex"

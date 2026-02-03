@@ -257,6 +257,157 @@ Use the same port pair in your hosting platform so `/` always serves `frontend-n
 
 Database changes are handled manually via SQL / TablePlus.
 
+---
+
+## 12. Google Analytics 4 (GA4) Integration
+
+This project includes full Google Analytics 4 tracking for comprehensive website statistics.
+
+### Setup
+
+#### Environment Variables
+
+Add the following to your `.env.local` file:
+
+```bash
+NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-RCW3Z1EN0T
+```
+
+For production, add this environment variable to your Railway deployment settings.
+
+#### What's Tracked
+
+The GA4 implementation automatically tracks:
+
+1. **Pageviews** - Every route change in the Next.js App Router
+2. **Custom Events** - Via the helper API (see usage below)
+3. **E-commerce Events** - Product views, add to cart, purchases, etc.
+4. **User Engagement** - Searches, form submissions, video interactions
+
+### Implementation Details
+
+The GA4 integration consists of:
+
+- **`lib/ga4.ts`** - Type-safe helper library with tracking functions
+- **`components/GoogleAnalytics.tsx`** - Script loader component
+- **`components/GA4RouteTracker.tsx`** - Automatic pageview tracking
+- **`app/layout.tsx`** - Integration point in root layout
+
+### Usage Examples
+
+#### Track Custom Events
+
+```typescript
+import { event } from '@/lib/ga4';
+
+// Simple event
+event('button_click', { button_name: 'subscribe' });
+
+// Search event
+import { engagement } from '@/lib/ga4';
+engagement.search('kitesurf board');
+```
+
+#### Track E-commerce Events
+
+```typescript
+import { ecommerce } from '@/lib/ga4';
+
+// Product view
+ecommerce.viewItem({
+  currency: 'BGN',
+  value: 1299.99,
+  items: [{
+    item_id: 'SLING-001',
+    item_name: 'Slingshot Kite 12m',
+    item_category: 'Kites',
+    item_brand: 'Slingshot',
+    price: 1299.99,
+    quantity: 1
+  }]
+});
+
+// Add to cart
+ecommerce.addToCart({
+  currency: 'BGN',
+  value: 1299.99,
+  items: [/* same format as above */]
+});
+
+// Purchase
+ecommerce.purchase({
+  transaction_id: 'ORDER-12345',
+  currency: 'BGN',
+  value: 1299.99,
+  tax: 259.99,
+  shipping: 0,
+  items: [/* same format as above */]
+});
+```
+
+#### Track User Engagement
+
+```typescript
+import { engagement } from '@/lib/ga4';
+
+// Form submission
+engagement.submitForm('contact_form');
+
+// Link click
+engagement.clickLink('/products/kites', 'View All Kites');
+
+// Video interaction
+engagement.videoPlay('Slingshot 2024 Product Overview');
+engagement.videoComplete('Slingshot 2024 Product Overview');
+```
+
+### Verification
+
+#### Local Development
+
+1. Start the development server: `npm run dev`
+2. Open browser DevTools Console
+3. Navigate between pages
+4. Look for `[GA4] Pageview tracked: /path` messages
+
+#### Production Verification
+
+1. Visit [Google Analytics](https://analytics.google.com/)
+2. Navigate to **Reports** → **Realtime**
+3. Open your website in a new tab
+4. Verify events appear in the Realtime report
+5. Use **DebugView** for detailed event inspection:
+   - Go to **Admin** → **DebugView**
+   - Events will appear with full parameter details
+
+### Best Practices
+
+1. **Always check if GA4 is enabled** - The helper functions do this automatically
+2. **Use descriptive event names** - Follow GA4 naming conventions (lowercase, underscores)
+3. **Include relevant parameters** - Add context to events for better insights
+4. **Test in DebugView** - Verify events before deploying to production
+5. **Respect user privacy** - GA4 is loaded only when the measurement ID is configured
+
+### Troubleshooting
+
+**Events not showing up?**
+- Check that `NEXT_PUBLIC_GA4_MEASUREMENT_ID` is set correctly
+- Verify the measurement ID starts with `G-`
+- Check browser console for errors
+- Ensure ad blockers are disabled during testing
+
+**Pageviews not tracking?**
+- The `GA4RouteTracker` component must be mounted in the layout
+- Check that `send_page_view: false` is set in the GA4 config
+- Manual pageview events are sent on route changes
+
+**Double counting pageviews?**
+- Ensure `send_page_view: false` is set in GoogleAnalytics component
+- Only one `GA4RouteTracker` should be mounted (in root layout)
+
+---
+
+
 
 # Welcome to your Lovable project
 
