@@ -45,10 +45,7 @@ const footerOptions = [
 ];
 
 const formatDisplayDate = (value: string | null) => {
-    if (!value) {
-        return '-';
-    }
-
+    if (!value) return '-';
     const date = new Date(value);
     const pad = (num: number) => String(num).padStart(2, '0');
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()}`;
@@ -61,12 +58,11 @@ export default function PagesNewAdminPage() {
     const [showEdit, setShowEdit] = useState(false);
     const [selectedPage, setSelectedPage] = useState<PageRecord | null>(null);
     const [submitting, setSubmitting] = useState(false);
-    const [createForm] = Form.useForm<{ title: string; slug: string }>();
+    const [createForm] = Form.useForm<{ title: string; slug: string; order?: number }>();
     const [editForm] = Form.useForm<EditFormValues>();
 
     const fetchPages = async () => {
         setLoading(true);
-
         try {
             const response = await fetch('/api/pages-new');
             const payload = await response.json();
@@ -93,15 +89,12 @@ export default function PagesNewAdminPage() {
         setShowCreate(true);
     };
 
-    const handleCreate = async (values: { title: string; slug: string }) => {
+    const handleCreate = async (values: { title: string; slug: string; order?: number }) => {
         setSubmitting(true);
-
         try {
             const response = await fetch('/api/pages-new', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values),
             });
 
@@ -140,12 +133,9 @@ export default function PagesNewAdminPage() {
     };
 
     const handleEdit = async (values: EditFormValues) => {
-        if (!selectedPage) {
-            return;
-        }
+        if (!selectedPage) return;
 
         setSubmitting(true);
-
         try {
             const payload = {
                 title: values.title,
@@ -162,9 +152,7 @@ export default function PagesNewAdminPage() {
 
             const response = await fetch(`/api/pages-new/${selectedPage.id}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
 
@@ -220,7 +208,7 @@ export default function PagesNewAdminPage() {
             dataIndex: 'order',
             key: 'order',
             width: 80,
-            render: (value: number | null, record: PageRecord) => <span>{value ?? '—'}</span>,
+            render: (value: number | null) => <span>{value ?? '—'}</span>,
         },
         {
             title: 'Name',
@@ -244,7 +232,7 @@ export default function PagesNewAdminPage() {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            render: (status: string | null, record: PageRecord) => (
+            render: (status: string | null) => (
                 <Tag color={status === 'published' ? 'green' : 'default'}>
                     {(status || 'draft').toUpperCase()}
                 </Tag>
@@ -254,30 +242,30 @@ export default function PagesNewAdminPage() {
             title: 'Header',
             dataIndex: 'show_header',
             key: 'show_header',
-            render: (value: boolean | null, record: PageRecord) => <Checkbox checked={Boolean(value)} disabled />,
+            render: (value: boolean | null) => <Checkbox checked={Boolean(value)} disabled />,
         },
         {
             title: 'Dropdown',
             dataIndex: 'show_dropdown',
             key: 'show_dropdown',
-            render: (value: boolean | null, record: PageRecord) => <Checkbox checked={Boolean(value)} disabled />,
+            render: (value: boolean | null) => <Checkbox checked={Boolean(value)} disabled />,
         },
         {
             title: 'Footer',
             dataIndex: 'footer_column',
             key: 'footer_column',
-            render: (value: number | null, record: PageRecord) => <span>{value ?? '—'}</span>,
+            render: (value: number | null) => <span>{value ?? '—'}</span>,
         },
         {
             title: 'Updated',
             dataIndex: 'updated_at',
             key: 'updated_at',
-            render: (value: string | null, record: PageRecord) => <span>{formatDisplayDate(value)}</span>,
+            render: (value: string | null) => <span>{formatDisplayDate(value)}</span>,
         },
         {
             title: 'Actions',
             key: 'actions',
-            width: 80,
+            width: 120,
             align: 'center',
             render: (_: unknown, record: PageRecord) => (
                 <Space size="small">
@@ -285,7 +273,6 @@ export default function PagesNewAdminPage() {
                         type="link"
                         icon={<EditOutlined />}
                         onClick={() => openEditModal(record)}
-                        style={{ color: '#1890ff' }}
                     >
                         Edit
                     </Button>
@@ -295,7 +282,6 @@ export default function PagesNewAdminPage() {
                             danger
                             icon={<DeleteOutlined />}
                             onClick={() => handleDelete(record)}
-                            aria-label={`Delete ${record.title}`}
                         />
                     )}
                 </Space>
@@ -305,14 +291,7 @@ export default function PagesNewAdminPage() {
 
     return (
         <div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 16,
-                }}
-            >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <h2 style={{ margin: 0 }}>Pages</h2>
                 <Button icon={<PlusOutlined />} type="primary" onClick={openCreateModal}>
                     Add Page
@@ -334,34 +313,15 @@ export default function PagesNewAdminPage() {
                 confirmLoading={submitting}
                 onCancel={() => setShowCreate(false)}
                 onOk={() => createForm.submit()}
-                destroyOnHidden
-                forceRender
             >
-                <Form
-                    layout="vertical"
-                    form={createForm}
-                    onFinish={handleCreate}
-                    requiredMark="optional"
-                >
-                    <Form.Item
-                        name="title"
-                        label="Title"
-                        rules={[{ required: true, message: 'Title is required' }]}
-                    >
+                <Form layout="vertical" form={createForm} onFinish={handleCreate}>
+                    <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
                         <Input placeholder="Title" />
                     </Form.Item>
-                    <Form.Item
-                        name="slug"
-                        label="Slug"
-                        rules={[{ required: true, message: 'Slug is required' }]}
-                    >
-                        <Input placeholder="Slug" />
+                    <Form.Item name="slug" label="Slug" rules={[{ required: true, message: 'Slug is required' }]}>
+                        <Input placeholder="slug-name" />
                     </Form.Item>
-                    <Form.Item
-                        name="order"
-                        label="Order"
-                        rules={[{ type: 'number', min: 1, message: 'Order must be at least 1' }]}
-                    >
+                    <Form.Item name="order" label="Order">
                         <InputNumber min={1} style={{ width: '100%' }} />
                     </Form.Item>
                 </Form>
@@ -376,117 +336,85 @@ export default function PagesNewAdminPage() {
                     setSelectedPage(null);
                 }}
                 onOk={() => editForm.submit()}
-                destroyOnHidden
-                forceRender
+                width={600}
             >
-                <Form layout="vertical" form={editForm} onFinish={handleEdit} requiredMark="optional">
-                    <Form.Item
-                        name="title"
-                        label="Title"
-                        rules={[{ required: true, message: 'Title is required' }]}
-                    >
-                        <Input placeholder="Title" />
+                <Form layout="vertical" form={editForm} onFinish={handleEdit}>
+                    <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+                        <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="slug"
-                        label="Slug"
-                        rules={[{ required: true, message: 'Slug is required' }]}
-                    >
-                        <Input placeholder="Slug" />
+                    <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+                        <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="status"
-                        label="Status"
-                        rules={[{ required: true, message: 'Status is required' }]}
-                    >
+                    <Form.Item name="status" label="Status" rules={[{ required: true }]}>
                         <Select options={statusOptions} />
                     </Form.Item>
+                    <Form.Item name="order" label="Order">
+                        <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
 
-                    <section style={{ marginTop: 24 }}>
-                        <h3 style={{ marginBottom: 16 }}>Page Settings</h3>
+                    <h3 style={{ marginTop: 24, marginBottom: 16 }}>Navigation Settings</h3>
 
-                        <Form.Item name="show_header" valuePropName="checked">
-                            <Checkbox>Show in Header</Checkbox>
-                        </Form.Item>
-                        <Form.Item
-                            shouldUpdate={(prev, curr) => prev.show_header !== curr.show_header}
-                            noStyle
-                        >
-                            {({ getFieldValue }) =>
-                                getFieldValue('show_header') ? (
-                                    <Form.Item
-                                        name="header_order"
-                                        label="Header Order"
-                                        rules={[
-                                            { required: true, message: 'Header order is required' },
-                                            { type: 'number', min: 1, message: 'Must be at least 1' },
-                                        ]}
-                                    >
-                                        <InputNumber min={1} style={{ width: '100%' }} />
-                                    </Form.Item>
-                                ) : null
-                            }
-                        </Form.Item>
+                    <Form.Item name="show_header" valuePropName="checked">
+                        <Checkbox>Show in Header</Checkbox>
+                    </Form.Item>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prev, curr) => prev.show_header !== curr.show_header}
+                    >
+                        {({ getFieldValue }) =>
+                            getFieldValue('show_header') ? (
+                                <Form.Item
+                                    name="header_order"
+                                    label="Header Order"
+                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
+                                >
+                                    <InputNumber min={1} style={{ width: '100%' }} />
+                                </Form.Item>
+                            ) : null
+                        }
+                    </Form.Item>
 
-                        <Form.Item name="show_dropdown" valuePropName="checked">
-                            <Checkbox>Show in Dropdown</Checkbox>
-                        </Form.Item>
-                        <Form.Item
-                            shouldUpdate={(prev, curr) => prev.show_dropdown !== curr.show_dropdown}
-                            noStyle
-                        >
-                            {({ getFieldValue }) =>
-                                getFieldValue('show_dropdown') ? (
-                                    <Form.Item
-                                        name="dropdown_order"
-                                        label="Dropdown Order"
-                                        rules={[
-                                            { required: true, message: 'Dropdown order is required' },
-                                            { type: 'number', min: 1, message: 'Must be at least 1' },
-                                        ]}
-                                    >
-                                        <InputNumber min={1} style={{ width: '100%' }} />
-                                    </Form.Item>
-                                ) : null
-                            }
-                        </Form.Item>
+                    <Form.Item name="show_dropdown" valuePropName="checked">
+                        <Checkbox>Show in Dropdown</Checkbox>
+                    </Form.Item>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prev, curr) => prev.show_dropdown !== curr.show_dropdown}
+                    >
+                        {({ getFieldValue }) =>
+                            getFieldValue('show_dropdown') ? (
+                                <Form.Item
+                                    name="dropdown_order"
+                                    label="Dropdown Order"
+                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
+                                >
+                                    <InputNumber min={1} style={{ width: '100%' }} />
+                                </Form.Item>
+                            ) : null
+                        }
+                    </Form.Item>
 
-                        <Form.Item name="footer_column" label="Footer Column">
-                            <Select<number | ''> options={footerOptions} />
-                        </Form.Item>
-                        <Form.Item
-                            shouldUpdate={(prev, curr) => prev.footer_column !== curr.footer_column}
-                            noStyle
-                        >
-                            {({ getFieldValue }) =>
-                                getFieldValue('footer_column') ? (
-                                    <Form.Item
-                                        name="footer_order"
-                                        label="Footer Order"
-                                        rules={[
-                                            { required: true, message: 'Footer order is required' },
-                                            { type: 'number', min: 1, message: 'Must be at least 1' },
-                                        ]}
-                                    >
-                                        <InputNumber min={1} style={{ width: '100%' }} />
-                                    </Form.Item>
-                                ) : null
-                            }
-                        </Form.Item>
-                    </section>
+                    <Form.Item name="footer_column" label="Footer Column">
+                        <Select<number | ''> options={footerOptions} />
+                    </Form.Item>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prev, curr) => prev.footer_column !== curr.footer_column}
+                    >
+                        {({ getFieldValue }) =>
+                            getFieldValue('footer_column') ? (
+                                <Form.Item
+                                    name="footer_order"
+                                    label="Footer Order"
+                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
+                                >
+                                    <InputNumber min={1} style={{ width: '100%' }} />
+                                </Form.Item>
+                            ) : null
+                        }
+                    </Form.Item>
                 </Form>
             </Modal>
-            <style jsx>{`
-        .page-link {
-          color: #1890ff;
-          text-decoration: underline;
-          transition: color 0.2s ease, text-decoration 0.2s ease;
-        }
-
-        .page-link:hover {
-          color: #40a9ff;
-        }
-      `}</style>
         </div>
     );
 }
