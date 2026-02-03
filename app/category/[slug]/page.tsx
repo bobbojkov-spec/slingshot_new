@@ -4,6 +4,8 @@ import { use } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
+import { buildBreadcrumbSchema } from "@/lib/seo/business";
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -77,11 +79,25 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
   const description =
     language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
 
+  const breadcrumbItems = [
+    { label: language === "bg" ? "Начало" : "Home", href: "/" },
+    { label: language === "bg" ? "Магазин" : "Shop", href: "/shop" },
+    { label: categoryName }
+  ];
+
+  const breadcrumbSchema = buildBreadcrumbSchema(
+    typeof window === "undefined" ? "" : window.location.origin,
+    breadcrumbItems
+  );
+
   return (
     <div className="min-h-screen bg-background">
+      {typeof window !== "undefined" && (
+        <SchemaJsonLd data={breadcrumbSchema} />
+      )}
       <Header />
       <main className="pt-20">
-        <section className="relative h-[50vh] lg:h-[60vh]">
+        <section className="category-hero relative">
           <img src={categoryInfo.heroImage} alt={categoryName} className="image-cover" />
           <div className="hero-overlay" />
           <div className="absolute inset-0 flex items-center">
@@ -140,17 +156,17 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
         <section className="bg-secondary/30 section-padding">
           <div className="section-container">
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-background rounded-xl p-6">
+              <div className="bg-background rounded-lg p-6">
                 <h3 className="font-heading font-semibold mb-2">Free Shipping</h3>
                 <p className="font-body text-sm text-muted-foreground">On all orders over 200 BGN</p>
               </div>
-              <div className="bg-background rounded-xl p-6">
+              <div className="bg-background rounded-lg p-6">
                 <h3 className="font-heading font-semibold mb-2">Expert Advice</h3>
                 <p className="font-body text-sm text-muted-foreground">
                   Our team of experienced riders will help you
                 </p>
               </div>
-              <div className="bg-background rounded-xl p-6">
+              <div className="bg-background rounded-lg p-6">
                 <h3 className="font-heading font-semibold mb-2">2 Year Warranty</h3>
                 <p className="font-body text-sm text-muted-foreground">On all Slingshot products</p>
               </div>

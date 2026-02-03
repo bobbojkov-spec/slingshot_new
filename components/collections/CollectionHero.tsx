@@ -49,7 +49,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     // Video Hero (YouTube or Direct)
     if (videoUrl) {
         return (
-            <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden bg-black">
+            <div className="hero-media relative w-full overflow-hidden bg-black">
                 <BackgroundVideoPlayer
                     videoUrl={videoUrl}
                     poster={imageUrl}
@@ -79,7 +79,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     // Image Hero
     if (imageUrl && !imageError) {
         return (
-            <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
+            <div className="hero-media relative w-full overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={`${title} Collection - Slingshot Bulgaria`}

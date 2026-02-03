@@ -218,7 +218,7 @@ export default function ShopOverview() {
                 {displayFeatured.length === 0 ? (
                     <p className="text-gray-500">No featured products selected yet.</p>
                 ) : (
-                    <ProductGrid products={displayFeatured} columns={4} />
+                    <ProductGrid products={displayFeatured.slice(0, 8)} columns={4} />
                 )}
             </section>
         </div>

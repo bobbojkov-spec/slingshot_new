@@ -8,6 +8,8 @@ import { ShopHero } from '@/components/shop/ShopHero';
 import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
+import { buildBreadcrumbSchema } from '@/lib/seo/business';
 
 function SearchContent() {
     const searchParams = useSearchParams();
@@ -63,8 +65,14 @@ function SearchContent() {
         { label: searchLabel },
     ];
 
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window === 'undefined' ? '' : window.location.origin);
+    const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
+
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-zinc-100 pt-20">
+            {baseUrl && (
+                <SchemaJsonLd data={breadcrumbSchema} />
+            )}
             <ShopHero
                 title="Search"
                 breadcrumbs={breadcrumbItems}
@@ -73,7 +81,7 @@ function SearchContent() {
 
             <ShopToolbar facets={facets} totalProducts={pagination.total} />
 
-            <div className="container mx-auto px-4 py-8">
+            <div className="section-container py-8">
 
                 {error ? (
                     <div className="text-center py-20 text-red-500">Error: {error}</div>

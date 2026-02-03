@@ -9,6 +9,7 @@ import GA4RouteTracker from "@/components/GA4RouteTracker";
 import { headers } from "next/headers";
 import type { Language } from "@/lib/i18n/LanguageContext";
 import { getFullNavigation } from "@/lib/railway/navigation-server";
+import { buildLocalBusinessSchema, buildWebSiteSchema } from "@/lib/seo/business";
 
 export const metadata: Metadata = {
   title: "Slingshot Bulgaria",
@@ -63,6 +64,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const protocol = host.includes("localhost") ? "http" : "https";
   const canonicalUrl = `${protocol}://${host}`;
 
+  const webSiteSchema = buildWebSiteSchema(canonicalUrl);
+  const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);
+
   return (
     <html lang={initialLanguage}>
       <head>
@@ -73,6 +77,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
         <link rel="canonical" href={canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
       </head>
       <body>
         <GoogleAnalytics />

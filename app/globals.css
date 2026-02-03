@@ -55,6 +55,31 @@
 
     --radius: 0.5rem;
 
+    /* Layout + Typography Tokens */
+    --touch-target-size: 48px;
+    --hero-section-min-height: 70vh;
+    --hero-section-min-height-lg: 85vh;
+    --hero-media-height: 60vh;
+    --hero-media-min-height: 400px;
+    --shop-hero-height: 30vh;
+    --shop-hero-min-height: 200px;
+    --category-hero-height: 50vh;
+    --category-hero-height-lg: 60vh;
+    --text-2xs: 0.625rem;
+    --tracking-xl: 0.15em;
+    --tracking-xxl: 0.2em;
+    --tracking-xxxl: 0.3em;
+    --tracking-ultra: 0.5em;
+    --prose-table-width: 100%;
+    --search-panel-max-height: 80vh;
+    --search-dropdown-max-height: 70vh;
+    --product-title-min: 0.875rem;
+    --product-title-max: 1.125rem;
+    --product-price-min: 0.875rem;
+    --product-price-max: 1rem;
+    --product-subtitle-min: 0.75rem;
+    --product-subtitle-max: 0.875rem;
+
     /* Hero Gradient Overlay */
     --hero-gradient: linear-gradient(to right,
         hsl(207 72% 11% / 0.85) 0%,
@@ -121,7 +146,7 @@
   .h1 {
     @apply font-heading font-bold tracking-tight;
     font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1.1;
+    line-height: 1.2;
   }
 
   h2,
@@ -150,7 +175,34 @@
 
   /* Hero Section */
   .hero-section {
-    @apply relative w-full min-h-[70vh] lg:min-h-[85vh] flex items-center;
+    @apply relative w-full flex items-center;
+    min-height: var(--hero-section-min-height);
+  }
+
+  @media (min-width: 1024px) {
+    .hero-section {
+      min-height: var(--hero-section-min-height-lg);
+    }
+  }
+
+  .hero-media {
+    height: var(--hero-media-height);
+    min-height: var(--hero-media-min-height);
+  }
+
+  .shop-hero {
+    height: var(--shop-hero-height);
+    min-height: var(--shop-hero-min-height);
+  }
+
+  .category-hero {
+    height: var(--category-hero-height);
+  }
+
+  @media (min-width: 1024px) {
+    .category-hero {
+      height: var(--category-hero-height-lg);
+    }
   }
 
   .hero-overlay {
@@ -301,11 +353,13 @@
 
   /* Prose Table Styles (Rich Text Content) */
   .prose table {
-    @apply w-[80%] border-collapse my-8 text-left;
+    @apply border-collapse my-8 text-left;
+    width: var(--prose-table-width);
   }
 
   .prose>table {
-    @apply w-[80%] border-collapse my-8 text-left;
+    @apply border-collapse my-8 text-left;
+    width: var(--prose-table-width);
   }
 
   .prose th {
@@ -327,7 +381,7 @@
   .text-hero {
     @apply font-heading font-bold uppercase tracking-tight;
     font-size: clamp(2.5rem, 6vw, 5rem);
-    line-height: 1.05;
+    line-height: 1.2;
   }
 
   .text-subhero {
@@ -355,7 +409,52 @@
 
   /* Touch Targets */
   .touch-target {
-    @apply min-h-[44px] min-w-[44px];
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+  }
+
+  .text-2xs {
+    font-size: var(--text-2xs);
+    line-height: 1.2;
+  }
+
+  .tracking-xl {
+    letter-spacing: var(--tracking-xl);
+  }
+
+  .tracking-xxl {
+    letter-spacing: var(--tracking-xxl);
+  }
+
+  .tracking-xxxl {
+    letter-spacing: var(--tracking-xxxl);
+  }
+
+  .tracking-ultra {
+    letter-spacing: var(--tracking-ultra);
+  }
+
+  .product-title {
+    font-size: clamp(var(--product-title-min), 0.7rem + 0.6vw, var(--product-title-max));
+    line-height: 1.2;
+  }
+
+  .product-price {
+    font-size: clamp(var(--product-price-min), 0.7rem + 0.4vw, var(--product-price-max));
+    line-height: 1.2;
+  }
+
+  .product-subtitle {
+    font-size: clamp(var(--product-subtitle-min), 0.65rem + 0.35vw, var(--product-subtitle-max));
+    line-height: 1.2;
+  }
+
+  .max-panel-height {
+    max-height: var(--search-panel-max-height);
+  }
+
+  .max-dropdown-height {
+    max-height: var(--search-dropdown-max-height);
   }
 
   /* Animated Underline */

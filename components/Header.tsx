@@ -226,7 +226,7 @@ const Header = () => {
                   onMouseLeave={handleNavLeave}
                 >
                   <span
-                    className={`h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-[0.15em] font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
+                    className={`h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-xl font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
                       }`}
                   >
                     RIDEENGINE
@@ -272,7 +272,7 @@ const Header = () => {
 
                       return (
                         <div key={group.id} className="flex flex-col">
-                          <h3 className="text-xs tracking-[0.3em] uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
+                          <h3 className="text-xs tracking-xxxl uppercase text-white/50 mb-6 font-bold border-b border-white/5 pb-2">
                             {groupTitle}
                           </h3>
 
@@ -305,7 +305,7 @@ const Header = () => {
 
                       return (
                         <div key={group.id} className="flex flex-col">
-                          <h3 className="text-[10px] tracking-[0.2em] uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
+                          <h3 className="text-2xs tracking-xxl uppercase text-accent mb-4 font-bold border-b border-white/5 pb-1">
                             {groupTitle}
                           </h3>
 
@@ -352,7 +352,7 @@ const Header = () => {
               <div className="bg-white/5 border border-white/10 rounded-md p-1 flex items-center shadow-sm">
                 <button
                   onClick={() => setLanguage("bg", true)}
-                  className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${language === "bg"
+                  className={`px-2 py-0.5 text-2xs font-bold rounded transition-all ${language === "bg"
                     ? "bg-white text-deep-navy shadow-sm"
                     : "text-white/50 hover:text-white hover:bg-white/5"
                     }`}
@@ -361,7 +361,7 @@ const Header = () => {
                 </button>
                 <button
                   onClick={() => setLanguage("en", true)}
-                  className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${language === "en"
+                  className={`px-2 py-0.5 text-2xs font-bold rounded transition-all ${language === "en"
                     ? "bg-white text-deep-navy shadow-sm"
                     : "text-white/50 hover:text-white hover:bg-white/5"
                     }`}
@@ -383,7 +383,7 @@ const Header = () => {
       </div>
 
       <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? "max-h-[80vh] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
+        className={`overflow-hidden transition-all duration-500 ease-in-out bg-deep-navy border-t border-white/10 ${isSearchOpen ? "max-panel-height opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-4"
           }`}
       >
         <div className="section-container py-4">
@@ -411,13 +411,13 @@ const Header = () => {
 
               {/* LIVE SUGGESTIONS DROPDOWN */}
               {(suggestions.products.length > 0 || suggestions.collections.length > 0 || (suggestions.tags && suggestions.tags.length > 0)) && (
-                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-h-[70vh] overflow-y-auto border border-gray-200">
+                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-dropdown-height overflow-y-auto border border-gray-200">
                   <div className="flex flex-col gap-8">
 
                     {/* TAGS */}
                     {suggestions.tags && suggestions.tags.length > 0 && (
                       <div className="px-6">
-                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.suggestions")}</h4>
+                        <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.suggestions")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
@@ -437,7 +437,7 @@ const Header = () => {
                       {/* COLLECTIONS */}
                       {suggestions.collections.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.collections")}</h4>
+                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.collections")}</h4>
                           <div className="space-y-1">
                             {suggestions.collections.map((col: any) => (
                               <Link
@@ -458,7 +458,7 @@ const Header = () => {
                       {/* PRODUCTS */}
                       {suggestions.products.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">{t("search.products")}</h4>
+                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.products")}</h4>
                           <div className="space-y-4">
                             {suggestions.products.map((prod: any) => (
                               <Link
@@ -479,7 +479,7 @@ const Header = () => {
                                     {prod.name}
                                   </span>
                                   {prod.sku && (
-                                    <span className="text-[10px] text-gray-400 font-mono mt-0.5">
+                                    <span className="text-2xs text-gray-400 font-mono mt-0.5">
                                       {prod.sku}
                                     </span>
                                   )}

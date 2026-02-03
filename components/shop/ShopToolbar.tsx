@@ -116,7 +116,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
     };
 
     return (
-        <div className="bg-white border-y border-gray-200 sticky top-20 z-30 shadow-sm transition-all duration-300">
+        <div className="bg-zinc-100 border-y border-gray-200 sticky top-20 z-30 shadow-sm transition-all duration-300">
             <div className="container mx-auto px-4 py-4">
 
                 {/* Full Toolbar Row */}

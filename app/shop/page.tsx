@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ShopOverview from '@/components/shop/ShopOverview';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
+import { buildBreadcrumbSchema } from '@/lib/seo/business';
 
 
 
@@ -73,8 +75,14 @@ function ShopContent() {
     ...(searchParams.get('category') ? [{ label: searchParams.get('category')!.toUpperCase() }] : []),
   ];
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window === 'undefined' ? '' : window.location.origin);
+  const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-zinc-100 pt-20">
+      {baseUrl && (
+        <SchemaJsonLd data={breadcrumbSchema} />
+      )}
       {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
       <ShopHero
         title={searchParams.get('q') ? 'Search' : (searchParams.get('category') || 'All Products')}
@@ -84,9 +92,7 @@ function ShopContent() {
 
       <ShopToolbar facets={facets} totalProducts={pagination.total} />
 
-
-
-      <div className="container mx-auto px-4 py-8">
+      <div className="section-container py-12">
         {/* Removed external Breadcrumbs since they are now in Hero */}
 
         {!hasFilters && !loading && !error && (

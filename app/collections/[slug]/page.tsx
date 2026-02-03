@@ -2,6 +2,8 @@
 import { notFound } from "next/navigation";
 import { getCollectionBySlug } from "@/services/collections";
 import { CollectionShopClient } from "@/components/collections/CollectionShopClient";
+import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
+import { buildBreadcrumbSchema } from "@/lib/seo/business";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -25,11 +27,21 @@ export default async function CollectionPage({ params }: PageProps) {
         { label: collection.title }
     ];
 
+    const breadcrumbSchema = buildBreadcrumbSchema(
+        process.env.NEXT_PUBLIC_SITE_URL || "",
+        breadcrumbs
+    );
+
     return (
-        <CollectionShopClient
-            initialCollection={collection}
-            slug={slug}
-            breadcrumbs={breadcrumbs}
-        />
+        <>
+            {process.env.NEXT_PUBLIC_SITE_URL && (
+                <SchemaJsonLd data={breadcrumbSchema} />
+            )}
+            <CollectionShopClient
+                initialCollection={collection}
+                slug={slug}
+                breadcrumbs={breadcrumbs}
+            />
+        </>
     );
 }

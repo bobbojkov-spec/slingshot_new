@@ -16,7 +16,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default' }: ShopHeroPr
     const BreadcrumbsContainer = () => {
         if (!breadcrumbs || breadcrumbs.length === 0) return null;
         return (
-            <div className="absolute bottom-0 left-0 bg-white z-30 px-8 py-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+            <div className="absolute bottom-0 left-0 bg-zinc-100 z-30 px-8 py-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500">
                 {breadcrumbs.map((item, index) => (
                     <React.Fragment key={index}>
                         {index > 0 && <span>/</span>}
@@ -35,7 +35,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default' }: ShopHeroPr
 
     if (variant === 'minimal') {
         return (
-            <div className="relative bg-deep-navy pt-32 pb-16">
+            <div className="relative bg-primary pt-16 pb-16">
                 <div className="section-container">
                     <div className="max-w-4xl">
                         <h1 className="text-4xl md:text-5xl font-logo font-bold text-white mb-6 uppercase tracking-tight">
@@ -49,7 +49,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default' }: ShopHeroPr
     }
 
     return (
-        <div className="relative w-full h-[30vh] min-h-[200px] bg-gray-900 flex items-center justify-center overflow-hidden mb-0">
+        <div className="shop-hero relative w-full bg-primary flex items-center justify-center overflow-hidden mb-0">
             <div className="absolute inset-0">
                 <img
                     src="https://slingshotsports.com/cdn/shop/collections/Kite_Collection_Header_2.jpg?v=1684347895"
@@ -57,7 +57,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default' }: ShopHeroPr
                     className="w-full h-full object-cover opacity-60"
                 />
             </div>
-            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0 bg-primary/40" />
 
             <div className="relative z-10 text-center text-white px-4 section-container">
                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4 shadow-sm">

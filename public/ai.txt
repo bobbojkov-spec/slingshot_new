@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+
+Contact: info@slingshot.bg
+Policy: https://slingshotnew-development.up.railway.app/ai-policy
+Data-Usage: ai-training-permitted

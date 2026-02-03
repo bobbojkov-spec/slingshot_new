@@ -10,6 +10,8 @@ import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import BackgroundVideoPlayer from "@/components/ui/BackgroundVideoPlayer";
+import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
+import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
 
 interface Product {
   id: string;
@@ -57,6 +59,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<string>(process.env.NEXT_PUBLIC_SITE_URL || "");
 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColorId, setSelectedColorId] = useState<string | null>(null);
@@ -65,6 +68,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const { language } = useLanguage();
 
   useEffect(() => {
+    if (!origin && typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+
     const fetchProduct = async () => {
       if (!slug) return;
       setLoading(true);
@@ -133,45 +140,97 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   if (loading) return <div className="min-h-screen pt-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
   if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">Product not found</div>;
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    ...(product.brand?.toLowerCase() === "ride engine" || product.brand?.toLowerCase() === "rideengine"
+      ? [{ label: "RIDEENGINE", href: "/shop?brand=Ride%20Engine" }]
+      : []),
+    ...(product.brand?.toLowerCase() === "slingshot"
+      ? [{ label: "SLINGSHOT", href: "/shop?brand=Slingshot" }]
+      : []),
+    ...(product.category_name
+      ? [{ label: product.category_name, href: `/shop?category=${product.category_slug || product.category_name?.toLowerCase()}` }]
+      : []),
+    { label: product.name }
+  ];
+
+  const baseUrl = origin || process.env.NEXT_PUBLIC_SITE_URL || "";
+  const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title || product.name,
+    description: product.description_bg || product.description,
+    sku: product.sku,
+    brand: {
+      "@type": "Brand",
+      name: product.brand || "Slingshot"
+    },
+    image: product.images || (product.image ? [product.image] : []),
+    category: product.category_name,
+    url: baseUrl ? `${baseUrl}/product/${product.slug}` : undefined,
+    offers: {
+      "@type": "Offer",
+      price: product.price,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: baseUrl ? `${baseUrl}/product/${product.slug}` : undefined
+    },
+    isRelatedTo: [
+      {
+        "@type": "Thing",
+        name: businessInfo.name,
+        url: baseUrl || businessInfo.url
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-background relative pt-20">
+    <div className="min-h-screen bg-background relative pt-16 md:pt-20">
+      {baseUrl && (
+        <>
+          <SchemaJsonLd data={breadcrumbSchema} />
+          <SchemaJsonLd data={productSchema} />
+        </>
+      )}
       {/* Breadcrumb Strip */}
-      <div className="bg-white border-b border-gray-100 sticky top-20 z-20">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500 py-3">
-            <Link href="/" className="hover:text-black transition-colors text-black/60">Home</Link>
+      <div className="bg-white border-b border-gray-100 sticky top-16 md:top-20 z-20">
+        <div className="section-container">
+          <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs font-medium uppercase tracking-wider text-gray-500 py-2 md:py-3 overflow-x-auto">
+            <Link href="/" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">Home</Link>
             <span>/</span>
-            <Link href="/shop" className="hover:text-black transition-colors text-black/60">Shop</Link>
+            <Link href="/shop" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">Shop</Link>
 
             {(product.brand?.toLowerCase() === 'ride engine' || product.brand?.toLowerCase() === 'rideengine') && (
               <>
                 <span>/</span>
-                <Link href="/shop?brand=Ride%20Engine" className="hover:text-black transition-colors text-black/60">RIDEENGINE</Link>
+                <Link href="/shop?brand=Ride%20Engine" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">RIDEENGINE</Link>
               </>
             )}
 
             {(product.brand?.toLowerCase() === 'slingshot') && (
               <>
                 <span>/</span>
-                <Link href="/shop?brand=Slingshot" className="hover:text-black transition-colors text-black/60">SLINGSHOT</Link>
+                <Link href="/shop?brand=Slingshot" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">SLINGSHOT</Link>
               </>
             )}
 
             {product.category_name && (
               <>
                 <span>/</span>
-                <Link href={`/shop?category=${product.category_slug || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60">{product.category_name}</Link>
+                <Link href={`/shop?category=${product.category_slug || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{product.category_name}</Link>
               </>
             )}
-            <span>/</span>
-            <span className="text-black font-bold">{product.name}</span>
+            <span className="hidden md:inline">/</span>
+            <span className="text-black font-bold hidden md:inline whitespace-nowrap">{product.name}</span>
           </div>
         </div>
       </div>
 
       {/* Hero Section (Only if dedicated content exists) */}
       {(product.hero_video_url || product.hero_image_url) && (
-        <div className="relative h-[60vh] w-full overflow-hidden mb-8 -mt-8">
+        <div className="hero-media relative w-full overflow-hidden mb-8 -mt-8">
           {product.hero_video_url ? (
             <BackgroundVideoPlayer
               videoUrl={product.hero_video_url}
@@ -187,8 +246,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       )}
 
-      <div className="container mx-auto px-4 pt-[90px]">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+      <div className="section-container pt-6 md:pt-12 lg:pt-24">
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-16">
 
           {/* Gallery */}
           <div className="animate-fade-in">
@@ -207,22 +266,22 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <span className="text-sm font-bold tracking-[0.2em] text-accent mb-2 uppercase">{product.category_name}</span>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
+            <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-1 md:mb-2 uppercase">{product.category_name}</span>
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter mb-1 md:mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
 
             {product.subtitle && (
-              <h3 className="text-xl font-black uppercase tracking-wide mb-2 text-black leading-tight">
+              <h3 className="text-base md:text-xl font-black uppercase tracking-wide mb-2 text-black leading-tight">
                 {product.subtitle}
               </h3>
             )}
 
             {product.sku && (
-              <p className="text-xs text-black/60 font-mono mb-6">{`SKU: ${product.sku}`}</p>
+              <p className="text-[10px] md:text-xs text-black/60 font-mono mb-4 md:mb-6">{`SKU: ${product.sku}`}</p>
             )}
 
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
               {(() => {
                 let currentPrice: number | null = null;
                 let originalPrice: number | null = null;
@@ -257,9 +316,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
                 return (
                   <>
-                    <span className="text-3xl font-black tracking-tight text-foreground">{displayPrice}</span>
+                    <span className="text-2xl md:text-3xl font-black tracking-tight text-foreground">{displayPrice}</span>
                     {originalPrice && originalPrice > (currentPrice || product.price) && (
-                      <span className="text-xl text-muted-foreground line-through font-medium">
+                      <span className="text-lg md:text-xl text-muted-foreground line-through font-medium">
                         (${originalPrice.toFixed(2)})
                       </span>
                     )}
@@ -296,9 +355,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {/* Visual Color Selector */}
             {product.colors && product.colors.length > 0 && (
-              <div className="mb-8">
+              <div className="mb-6 md:mb-8">
                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{language === 'bg' ? 'Цвят' : 'Color'}</span>
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3 flex-wrap">
                   {product.colors.map((color) => (
                     <button
                       key={color.id}
@@ -311,7 +370,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                         }
                       }}
                       title={color.name}
-                      className={`w-12 h-12 rounded-md border-2 overflow-hidden relative transition-all ${selectedColorId === color.id ? 'border-black ring-1 ring-black ring-offset-2' : 'border-transparent hover:border-gray-300'
+                      className={`w-14 h-14 md:w-12 md:h-12 rounded border-2 overflow-hidden relative transition-all ${selectedColorId === color.id ? 'border-black ring-1 ring-black ring-offset-2' : 'border-transparent hover:border-gray-300'
                         }`}
                     >
                       <img
@@ -332,7 +391,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {/* Sizes/Variants */}
             {((product.variants && product.variants.length > 0) || (product.sizes && product.sizes.length > 0)) && (
-              <div className="mb-8">
+              <div className="mb-6 md:mb-8">
                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
                 <div className="flex gap-2 flex-wrap">
                   {(() => {
@@ -353,9 +412,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                       <button
                         key={`${size}-${idx}`}
                         onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 rounded border text-sm font-medium transition-all ${selectedSize === size
-                          ? "border-black bg-black text-white"
-                          : "border-gray-200 hover:border-black text-gray-700"
+                        className={`px-3 md:px-4 py-2 md:py-2.5 rounded border text-sm font-medium transition-all min-w-[60px] md:min-w-0 ${selectedSize === size
+                            ? "border-black bg-black text-white"
+                            : "border-gray-200 hover:border-black text-gray-700"
                           }`}
                       >
                         {size}
@@ -367,23 +426,23 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             )}
 
             {/* Add to Cart */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-gray-100">
-              <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-auto pt-6 md:pt-8 border-t border-gray-100">
+              <div className="flex items-center border border-gray-300 rounded overflow-hidden w-full sm:w-fit justify-center">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                  className="px-6 md:px-4 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
-                <span className="font-medium w-12 text-center">{quantity}</span>
+                <span className="font-medium w-16 md:w-12 text-center text-lg md:text-base">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                  className="px-6 md:px-4 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
               </div>
-              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-3 px-8 hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 rounded">
+              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-4 md:py-3 px-8 hover:bg-gray-900 active:bg-gray-800 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base">
                 <ShoppingBag className="w-5 h-5" /> {t.addToInquiry}
               </button>
             </div>
@@ -394,14 +453,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
       {/* Extended Description (Html2) */}
       {product.description_html2 && (
-        <div className="container mx-auto px-4 py-8 border-t border-gray-100 mb-8">
+        <div className="section-container py-8 border-t border-gray-100 mb-8">
           <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.description_html2 }} />
         </div>
       )}
 
       {/* Specs HTML */}
       {product.specs_html && (
-        <div className="container mx-auto px-4 py-16 border-t border-gray-100">
+        <div className="section-container py-16 border-t border-gray-100">
           <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
             {language === 'bg' ? 'Спецификации' : 'Specifications'}
           </h3>
@@ -412,7 +471,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Package Includes */}
       {product.package_includes && (
         <div className="bg-gray-50 py-16 border-t border-gray-100">
-          <div className="container mx-auto px-4">
+          <div className="section-container">
             <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
               {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
             </h3>
@@ -424,7 +483,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Related Products */}
       {
         related.length > 0 && (
-          <div className="container mx-auto px-4 py-16 border-t border-gray-100">
+          <div className="section-container py-16 border-t border-gray-100">
             <h2 className="text-3xl font-black uppercase tracking-tight mb-12 text-center">{t.related}</h2>
             <ProductGrid products={related} />
           </div>
