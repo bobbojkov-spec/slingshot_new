@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPresignedUrl } from '@/lib/railway/storage';
+import { getKeyFromUrl, getPresignedUrl } from '@/lib/railway/storage';
 
 export async function GET(req: NextRequest) {
     try {
@@ -10,10 +10,20 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Path is required' }, { status: 400 });
         }
 
-        // If it's already a full URL, try to extract key
-        const { getKeyFromUrl } = await import('@/lib/railway/storage');
-        const key = getKeyFromUrl(path);
+        // If it's already a full URL, try to extract bucket + key
+        if (path.startsWith('http')) {
+            try {
+                const parsed = new URL(path);
+                const [bucket, ...rest] = parsed.pathname.replace(/^\//, '').split('/');
+                const keyFromPath = rest.join('/') || getKeyFromUrl(path) || path;
+                const signedUrl = await getPresignedUrl(keyFromPath, bucket || undefined);
+                return NextResponse.json({ url: signedUrl });
+            } catch (error) {
+                // fall through to generic handling
+            }
+        }
 
+        const key = getKeyFromUrl(path);
         if (key) {
             const signedUrl = await getPresignedUrl(key);
             return NextResponse.json({ url: signedUrl });

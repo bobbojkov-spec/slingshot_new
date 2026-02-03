@@ -3,12 +3,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { Breadcrumbs } from '@/components/shop/Breadcrumbs';
 import { ShopToolbar } from '@/components/shop/ShopToolbar';
 import { ShopHero } from '@/components/shop/ShopHero';
 import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import ShopOverview from '@/components/shop/ShopOverview';
 
 
 
@@ -86,6 +86,10 @@ function ShopContent() {
       <div className="container mx-auto px-4 py-8">
         {/* Removed external Breadcrumbs since they are now in Hero */}
 
+        {!hasFilters && !loading && !error && (
+          <ShopOverview />
+        )}
+
         {error ? (
           <div className="text-center py-20 text-red-500">Error: {error}</div>
         ) : loading ? (
@@ -96,10 +100,10 @@ function ShopContent() {
           <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
         ) : (
           <>
-            <ProductGrid products={products} />
+            {hasFilters && <ProductGrid products={products} />}
 
             {/* Pagination */}
-            {pagination.totalPages > 1 && (
+            {hasFilters && pagination.totalPages > 1 && (
               <div className="flex justify-center items-center mt-12 space-x-4">
                 <Button
                   variant="outline"

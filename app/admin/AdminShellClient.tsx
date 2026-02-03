@@ -50,6 +50,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
       { key: "catalog-shop-by-cat", icon: <AppstoreOutlined />, labelText: "Shop by CAT", href: "/admin/homepage-categories" },
       { key: "catalog-shop-by-kw", icon: <TagsOutlined />, labelText: "Shop by KW", href: "/admin/homepage-keywords" },
+      { key: "catalog-shop-settings", icon: <SettingOutlined />, labelText: "Shop Settings", href: "/admin/shop-settings" },
     ],
   },
 
