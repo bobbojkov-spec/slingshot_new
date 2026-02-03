@@ -388,7 +388,7 @@ export default function TagsClient() {
             </div>
 
             <Card style={{ marginBottom: 16 }}>
-                <Space direction="vertical" style={{ width: '100%' }}>
+                <Space orientation="vertical" style={{ width: '100%' }}>
                     <Typography.Text type="secondary">
                         <InfoCircleOutlined /> Tags marked as "Unsynced" exist in products but are not yet in the master table.
                         Click "Sync to Master Table" to add them, or edit them to add Bulgarian translations.
@@ -447,7 +447,7 @@ export default function TagsClient() {
                 okText="Merge"
                 okButtonProps={{ danger: true }}
             >
-                <Space direction="vertical" style={{ width: '100%' }}>
+                <Space orientation="vertical" style={{ width: '100%' }}>
                     <Typography.Paragraph>
                         Merge one tag into another. All products with the source tag will have it replaced with the target tag.
                     </Typography.Paragraph>

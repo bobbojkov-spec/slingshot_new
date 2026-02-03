@@ -30,9 +30,37 @@ export async function GET(request: NextRequest) {
       LIMIT 12
     `, [lang]);
 
+    let rawCollections = result.rows;
+
+    // If less than 12, fill with other visible collections
+    if (rawCollections.length < 12) {
+      const remainingCount = 12 - rawCollections.length;
+      const featuredIds = rawCollections.map(r => r.collection_id).filter(id => id);
+
+      const fillResult = await query(`
+        SELECT 
+          c.id as collection_id,
+          c.title as title_en,
+          c.slug,
+          c.source,
+          c.image_url,
+          c.subtitle as subtitle_en,
+          ct.title as title_translated,
+          ct.subtitle as subtitle_translated
+        FROM collections c
+        LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
+        WHERE c.visible = true
+        ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
+        ORDER BY c.created_at DESC
+        LIMIT $2
+      `, [lang, remainingCount]);
+
+      rawCollections = [...rawCollections, ...fillResult.rows];
+    }
+
     // Sign image URLs
     const collections = await Promise.all(
-      result.rows.map(async (row) => {
+      rawCollections.map(async (row) => {
         let signedImageUrl = null;
         if (row.image_url) {
           // Convert to middle size for grid display
