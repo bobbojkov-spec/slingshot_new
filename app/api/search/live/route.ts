@@ -47,13 +47,25 @@ export async function GET(req: Request) {
             [searchTerm, lang]
         );
 
-        // 3. Search Tags (limit 8) - Unnest from products matching query
+        // 3. Search Tags (limit 8) - Search in tags table for both EN and BG names
         const tagsPromise = query(
-            `SELECT DISTINCT t.tag as name, t.tag as slug
-             FROM products p
-             LEFT JOIN product_translations pt_t ON pt_t.product_id = p.id AND pt_t.language_code = $2,
-             LATERAL unnest(COALESCE(pt_t.tags, p.tags)) as t(tag)
-             WHERE t.tag ILIKE $1 AND p.status = 'active'
+            `SELECT DISTINCT 
+                CASE WHEN $2 = 'bg' AND tg.name_bg IS NOT NULL AND tg.name_bg != '' 
+                     THEN tg.name_bg 
+                     ELSE tg.name_en 
+                END as name, 
+                tg.name_en as slug
+             FROM tags tg
+             WHERE (tg.name_en ILIKE $1 OR tg.name_bg ILIKE $1)
+             AND EXISTS (
+                SELECT 1 FROM products p
+                LEFT JOIN product_translations pt ON pt.product_id = p.id
+                WHERE p.status = 'active' 
+                AND (
+                    p.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
+                    pt.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[]
+                )
+             )
              LIMIT 8`,
             [searchTerm, lang]
         );

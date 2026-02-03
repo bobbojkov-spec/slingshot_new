@@ -23,7 +23,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [preloadedData, setPreloadedData] = useState<{ collections: any[], tags: string[] }>({ collections: [], tags: [] });
+  const [preloadedData, setPreloadedData] = useState<{ collections: any[], tags: { name_en: string, name_bg: string }[] }>({ collections: [], tags: [] });
   const [suggestions, setSuggestions] = useState<{ products: any[], collections: any[], tags: any[] }>({ products: [], collections: [], tags: [] });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { open } = useCart();
@@ -82,8 +82,11 @@ const Header = () => {
         const q = searchQuery.toLowerCase();
 
         const filteredTags = preloadedData.tags
-          .filter(t => t.toLowerCase().includes(q))
-          .map(t => ({ name: t, slug: t }))
+          .filter(t => t.name_en.toLowerCase().includes(q) || t.name_bg.toLowerCase().includes(q))
+          .map(t => ({
+            name: language === 'bg' ? t.name_bg : t.name_en,
+            slug: t.name_en // Always use English for URL slug
+          }))
           .slice(0, 8);
 
         const filteredCollections = preloadedData.collections
@@ -419,7 +422,7 @@ const Header = () => {
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.slug}
-                              href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
+                              href={`/search?tag=${encodeURIComponent(tag.slug)}&lang=${language}`}
                               onClick={() => setIsSearchOpen(false)}
                               className="px-5 py-2.5 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-black text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
                             >

@@ -19,28 +19,30 @@ export async function GET() {
             WHERE c.visible = true AND p.status = 'active'
         `);
 
-        // Fetch all unique tags from both tables
+        // Fetch all unique tags from the tags table (with EN and BG names)
         const tags = await query(`
-            SELECT DISTINCT tag
-            FROM (
-                SELECT unnest(tags) as tag FROM products WHERE status = 'active'
-                UNION
-                SELECT unnest(pt_bg.tags) as tag 
-                FROM product_translations pt_bg
-                JOIN products p ON pt_bg.product_id = p.id
-                WHERE p.status = 'active' AND pt_bg.language_code = 'bg'
-                UNION
-                SELECT unnest(pt_en.tags) as tag 
-                FROM product_translations pt_en
-                JOIN products p ON pt_en.product_id = p.id
-                WHERE p.status = 'active' AND pt_en.language_code = 'en'
-            ) as t
-            WHERE tag IS NOT NULL AND tag != ''
+            SELECT DISTINCT 
+                tg.name_en,
+                tg.name_bg
+            FROM tags tg
+            WHERE tg.name_en IS NOT NULL AND tg.name_en != ''
+            AND EXISTS (
+                SELECT 1 FROM products p
+                LEFT JOIN product_translations pt ON pt.product_id = p.id
+                WHERE p.status = 'active' 
+                AND (
+                    p.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[] OR
+                    pt.tags && ARRAY[tg.name_en, COALESCE(tg.name_bg, tg.name_en)]::text[]
+                )
+            )
         `);
 
         return NextResponse.json({
             collections: collections.rows,
-            tags: tags.rows.map(r => r.tag)
+            tags: tags.rows.map(r => ({
+                name_en: r.name_en,
+                name_bg: r.name_bg || r.name_en
+            }))
         });
 
     } catch (error) {
