@@ -57,14 +57,14 @@
 
     /* Layout + Typography Tokens */
     --touch-target-size: 48px;
-    --hero-section-min-height: 70vh;
-    --hero-section-min-height-lg: 85vh;
-    --hero-media-height: 60vh;
+    --hero-section-min-height: 70dvh;
+    --hero-section-min-height-lg: 85dvh;
+    --hero-media-height: 60dvh;
     --hero-media-min-height: 400px;
-    --shop-hero-height: 30vh;
+    --shop-hero-height: 30dvh;
     --shop-hero-min-height: 200px;
-    --category-hero-height: 50vh;
-    --category-hero-height-lg: 60vh;
+    --category-hero-height: 50dvh;
+    --category-hero-height-lg: 60dvh;
     --text-2xs: 0.625rem;
     --tracking-xl: 0.15em;
     --tracking-xxl: 0.2em;
