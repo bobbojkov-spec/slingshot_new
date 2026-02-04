@@ -1,11 +1,10 @@
 'use client';
 
-import { Suspense, useEffect, useState, use } from 'react';
+import { useEffect, useState, use } from 'react';
 import Head from "next/head";
 import Link from "next/link";
 import { ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
-import ColorSelector from "@/components/ColorSelector";
 import PriceNote from "@/components/PriceNote";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -45,6 +44,7 @@ interface Product {
   name_bg?: string;
   description_bg?: string;
   colors?: Array<{ id: string; name: string; url: string; image_path: string }>;
+  availability?: Array<{ variant_id: string; color_id: string; stock_qty: number; is_active: boolean }>;
   video_url?: string;
   description_html?: string;
   description_html_bg?: string;
@@ -121,6 +121,20 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     return match ? match[1].trim() : '';
   };
 
+  const getAvailabilityEntry = (variantId?: string | null, colorId?: string | null) => {
+    if (!variantId || !colorId || !product?.availability) return null;
+    return product.availability.find((entry) => entry.variant_id === variantId && entry.color_id === colorId) || null;
+  };
+
+  const getVariantColorId = (variant: Product['variants'][number]) => {
+    if (variant.product_color_id) return variant.product_color_id;
+    if (!product?.colors) return null;
+    const colorName = getColorFromVariantTitle(variant.title || '');
+    if (!colorName) return null;
+    const match = product.colors.find((color) => color.name?.toLowerCase() === colorName.toLowerCase());
+    return match?.id || null;
+  };
+
   // Get unique size options from variants
   const getUniqueSizeOptions = () => {
     if (!product?.variants) return [];
@@ -154,7 +168,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
     if (selectedSize) {
       // Find variant where title starts with selected size
-      // If color is selected, also match color
       const matchingVariants = product.variants.filter(v =>
         parseVariantTitle(v.title) === selectedSize
       );
@@ -164,13 +177,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       // If only one variant matches, return it
       if (matchingVariants.length === 1) return matchingVariants[0];
 
-      // If multiple variants match (different colors), try to match by color
-      if (selectedColorId && product.colors) {
-        const selectedColorName = product.colors.find(c => c.id === selectedColorId)?.name;
-        const colorMatch = matchingVariants.find(v => {
-          const variantColor = getColorFromVariantTitle(v.title);
-          return variantColor.toLowerCase() === selectedColorName?.toLowerCase();
-        });
+      // If multiple variants match, try to match by visual color first, fallback to title parsing
+      if (selectedColorId) {
+        const colorMatch = matchingVariants.find((v) => getVariantColorId(v) === selectedColorId);
         if (colorMatch) return colorMatch;
       }
 
@@ -186,9 +195,15 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     const variant = getSelectedVariant();
     if (!variant) return null;
 
+    const colorId = selectedColorId || getVariantColorId(variant);
+    const availabilityEntry = getAvailabilityEntry(variant.id, colorId);
+    const inStock = availabilityEntry
+      ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0
+      : variant.available && variant.inventory_quantity > 0;
+
     return {
-      inStock: variant.available && variant.inventory_quantity > 0,
-      quantity: variant.inventory_quantity,
+      inStock,
+      quantity: availabilityEntry?.stock_qty ?? variant.inventory_quantity,
       sku: variant.sku
     };
   };
@@ -197,8 +212,15 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     if (!product) return;
 
     const variant = getSelectedVariant();
-    const variantId = variant?.id || product.id;
-    const price = variant?.price || product.price;
+    if (!variant) return;
+
+    const colorId = selectedColorId || getVariantColorId(variant);
+    if (!colorId) return;
+    const availabilityEntry = getAvailabilityEntry(variant.id, colorId);
+    if (!availabilityEntry?.is_active || availabilityEntry.stock_qty <= 0) return;
+
+    const variantId = variant.id;
+    const price = variant.price || product.price;
 
     addItem({
       id: variantId,
@@ -206,7 +228,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       price: price,
       image: product.image,
       size: selectedSize,
-      color: selectedColorId ? product.colors?.find(c => c.id === selectedColorId)?.name : undefined,
+      color: colorId ? product.colors?.find(c => c.id === colorId)?.name : undefined,
       category: product.category,
       slug: product.slug,
       qty: quantity
@@ -414,7 +436,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {/* Stock Info */}
             {(() => {
               const stockInfo = getStockInfo();
-              if (!stockInfo || !selectedSize) return null;
+              if (!stockInfo || !selectedSize || !selectedColorId) return null;
 
               return (
                 <div className="mb-4 flex items-center gap-2">
@@ -472,16 +494,18 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 </span>
                 <div className="flex gap-2 md:gap-4 flex-wrap">
                   {product.colors.map((color) => {
-                    // Check if this color is available for the selected size
+                    // Check if this color is available for the selected size (availability matrix)
                     let isAvailable = true;
                     if (selectedSize && product.variants) {
-                      const matchingVariants = product.variants.filter(v => {
-                        const variantSize = parseVariantTitle(v.title);
-                        const variantColor = getColorFromVariantTitle(v.title);
-                        return variantSize === selectedSize &&
-                          variantColor.toLowerCase() === color.name.toLowerCase();
+                      const matchingVariants = product.variants.filter(v =>
+                        parseVariantTitle(v.title) === selectedSize
+                      );
+                      isAvailable = matchingVariants.some((v) => {
+                        const variantColorId = getVariantColorId(v);
+                        if (variantColorId !== color.id) return false;
+                        const availabilityEntry = getAvailabilityEntry(v.id, color.id);
+                        return availabilityEntry?.is_active && availabilityEntry.stock_qty > 0;
                       });
-                      isAvailable = matchingVariants.some(v => v.available && v.inventory_quantity > 0);
                     }
 
                     return (
@@ -532,22 +556,15 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                         parseVariantTitle(v.title) === numericSize
                       ) || [];
 
-                      // If color selected, check availability for that color
-                      let availableVariants = sizeVariants;
-                      if (selectedColorId && product.colors) {
-                        const selectedColorName = product.colors.find(c => c.id === selectedColorId)?.name;
-                        const colorMatch = sizeVariants.filter(v => {
-                          const variantColor = getColorFromVariantTitle(v.title);
-                          return variantColor.toLowerCase() === selectedColorName?.toLowerCase();
+                      let isAvailable = sizeVariants.length > 0;
+                      if (selectedColorId) {
+                        isAvailable = sizeVariants.some((v) => {
+                          const variantColorId = getVariantColorId(v);
+                          if (variantColorId !== selectedColorId) return false;
+                          const availabilityEntry = getAvailabilityEntry(v.id, selectedColorId);
+                          return availabilityEntry?.is_active && availabilityEntry.stock_qty > 0;
                         });
-                        if (colorMatch.length > 0) {
-                          availableVariants = colorMatch;
-                        }
                       }
-
-                      // For inquiry system, just check if variant exists
-                      // Don't require available=true and inventory_quantity > 0
-                      const isAvailable = availableVariants.length > 0;
                       const isSelected = selectedSize === numericSize;
 
                       return (
@@ -589,7 +606,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   <Plus className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
               </div>
-              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-4 md:py-4 px-8 hover:bg-gray-900 active:bg-gray-800 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base">
+              <button
+                onClick={handleAddToInquiry}
+                disabled={!selectedSize || !selectedColorId}
+                className={`flex-1 font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${!selectedSize || !selectedColorId
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
+                  }`}
+              >
                 <ShoppingBag className="w-5 h-5" /> {t("addToInquiry")}
               </button>
             </div>

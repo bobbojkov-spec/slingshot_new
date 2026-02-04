@@ -121,18 +121,30 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       ORDER BY display_order ASC
     `;
 
+    const availabilitySql = `
+      SELECT
+        pva.variant_id,
+        pva.color_id,
+        pva.stock_qty,
+        pva.is_active
+      FROM product_variant_availability pva
+      JOIN product_variants pv ON pv.id = pva.variant_id
+      WHERE pv.product_id = $1
+    `;
+
     const translationsSql = `
       SELECT language_code, title, description_html, description_html2, specs_html, package_includes, subtitle
       FROM product_translations
       WHERE product_id = $1
     `;
 
-    const [variantsResult, imagesResult, localImagesResult, colorsResult, translationsResult] = await Promise.all([
+    const [variantsResult, imagesResult, localImagesResult, colorsResult, translationsResult, availabilityResult] = await Promise.all([
       query(variantsSql, [product.id]),
       query(imagesSql, [product.id]),
       query(localImagesSql, [product.id]),
       query(colorsSql, [product.id]),
-      query(translationsSql, [product.id])
+      query(translationsSql, [product.id]),
+      query(availabilitySql, [product.id]),
     ]);
 
     // Process Translations
@@ -269,7 +281,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         variants: variantOptions,
         specs,
         features: product.features || [], // Return features
-        colors: productColors // Return resolved colors
+        colors: productColors,
+        availability: availabilityResult.rows || [],
       },
       related
     });

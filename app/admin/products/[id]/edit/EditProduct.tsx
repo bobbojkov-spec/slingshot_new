@@ -92,7 +92,7 @@ export default function EditProduct({
     const cloned = JSON.parse(JSON.stringify(product));
     return {
       ...cloned,
-      product_colors: cloned.colors || [],
+      product_colors: cloned.product_colors || [],
       colors: cloned.colors || [],
       collection_ids: initialCollectionIds || []
     };
@@ -145,7 +145,7 @@ export default function EditProduct({
       <Tabs
         activeKey={activeTab}
         onChange={(key) => setActiveTab(key as 'info' | 'variants' | 'cometa' | 'colors')}
-        destroyInactiveTabPane
+        destroyOnHidden
         items={[
           {
             key: 'info',
