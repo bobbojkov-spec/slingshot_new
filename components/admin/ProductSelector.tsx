@@ -90,9 +90,9 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
     if (loading) {
         return (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[10000]">
-                <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-100">
+                <div className="bg-white rounded p-8 shadow-2xl border border-gray-100">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-900 font-semibold">Loading catalog...</p>
+                    <p className="mt-4 text-gray-900 font-medium">Loading catalog...</p>
                 </div>
             </div>
         );
@@ -100,12 +100,12 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 sm:p-6 lg:p-8">
-            <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-[1600px] h-[95%] max-h-[1000px] flex flex-col overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
+            <div className="bg-white rounded shadow-2xl w-[95%] max-w-[1600px] h-[95%] max-h-[1000px] flex flex-col overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b bg-white relative z-20">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">Manage Collection Products</h2>
-                        <p className="text-sm text-gray-500 mt-1">Select products to include in this collection</p>
+                        <p className="text-sm text-gray-500 mt-2">Select products to include in this collection</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -119,9 +119,9 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left: Selected Products */}
                     <div className="w-1/3 border-r p-4 overflow-y-auto bg-gray-50/50">
-                        <h3 className="text-lg font-semibold mb-4 flex items-center justify-between">
+                        <h3 className="text-lg font-medium mb-4 flex items-center justify-between">
                             In Collection
-                            <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-sm">
+                            <span className="bg-blue-100 text-blue-700 px-4 py-0.5 rounded-full text-sm">
                                 {selectedIds.size}
                             </span>
                         </h3>
@@ -131,7 +131,7 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                 .map(product => (
                                     <div
                                         key={product.id}
-                                        className="flex items-center gap-3 p-2 bg-white border border-blue-100 rounded-lg shadow-sm"
+                                        className="flex items-center gap-4 p-2 bg-white border border-blue-100 rounded shadow-sm"
                                     >
                                         <div className="relative w-10 h-10 flex-shrink-0 rounded border border-gray-100 overflow-hidden bg-gray-50">
                                             {product.thumbnail_url ? (
@@ -152,7 +152,7 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                         </div>
                                         <button
                                             onClick={() => toggleProduct(product)}
-                                            className="text-gray-400 hover:text-red-600 p-1"
+                                            className="text-gray-400 hover:text-red-600 p-2"
                                         >
                                             <X size={14} />
                                         </button>
@@ -160,7 +160,7 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                 ))}
                             {selectedIds.size === 0 && (
                                 <div className="text-center py-12">
-                                    <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Search className="text-gray-400" size={20} />
                                     </div>
                                     <p className="text-gray-400 text-sm italic">No products selected</p>
@@ -181,14 +181,14 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         placeholder="Search by name, tags, or brand..."
-                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     />
                                 </div>
                                 <div className="w-48">
                                     <select
                                         value={selectedBrand}
                                         onChange={(e) => setSelectedBrand(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"
                                     >
                                         {brands.map(brand => (
                                             <option key={brand} value={brand}>{brand}</option>
@@ -203,20 +203,20 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
 
                         {/* Product List */}
                         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50/30">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {filteredProducts.map(product => {
                                     const isSelected = selectedIds.has(product.id);
                                     return (
                                         <div
                                             key={product.id}
                                             onClick={() => toggleProduct(product)}
-                                            className={`flex flex-col p-3 rounded-xl cursor-pointer transition-all border ${isSelected
+                                            className={`flex flex-col p-3 rounded cursor-pointer transition-all border ${isSelected
                                                 ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200'
                                                 : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
                                                 }`}
                                         >
-                                            <div className="flex items-start gap-3 mb-2">
-                                                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg border border-gray-100 overflow-hidden bg-gray-100">
+                                            <div className="flex items-start gap-4 mb-2">
+                                                <div className="relative w-16 h-16 flex-shrink-0 rounded border border-gray-100 overflow-hidden bg-gray-100">
                                                     {product.thumbnail_url ? (
                                                         <img
                                                             src={product.thumbnail_url}
@@ -230,7 +230,7 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                                     )}
                                                     {isSelected && (
                                                         <div className="absolute inset-0 bg-blue-600/10 flex items-center justify-center">
-                                                            <div className="bg-blue-600 text-white rounded-full p-1">
+                                                            <div className="bg-blue-600 text-white rounded-full p-2">
                                                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                                 </svg>
@@ -239,10 +239,10 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                                     )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+                                                    <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">
                                                         {product.name || 'Unnamed Product'}
                                                     </p>
-                                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mt-1 block">
+                                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mt-2 block">
                                                         {product.brand || 'Slingshot'}
                                                     </span>
                                                 </div>
@@ -270,7 +270,7 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                                         <Search className="text-gray-300" size={32} />
                                     </div>
                                     <h4 className="text-gray-900 font-medium">No results found</h4>
-                                    <p className="text-gray-500 text-sm mt-1">Try adjusting your search or brand filter</p>
+                                    <p className="text-gray-500 text-sm mt-2">Try adjusting your search or brand filter</p>
                                 </div>
                             )}
                         </div>
@@ -281,21 +281,21 @@ export default function ProductSelector({ collectionId, onClose, onSave }: Produ
                 <div className="flex items-center justify-between p-6 border-t bg-white">
                     <div>
                         <span className="text-sm text-gray-500">Selected Products</span>
-                        <p className="text-lg font-bold text-gray-900 leading-none mt-1">
+                        <p className="text-lg font-bold text-gray-900 leading-none mt-2">
                             {selectedIds.size} <span className="text-sm font-normal text-gray-500">items</span>
                         </p>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-4">
                         <button
                             onClick={onClose}
-                            className="px-6 py-2.5 text-sm font-medium border border-gray-300 rounded-xl hover:bg-gray-50 transition-all"
+                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition-all"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="px-8 py-2.5 text-sm font-medium bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+                            className="px-8 py-2 text-sm font-medium bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
                         >
                             {saving ? (
                                 <div className="flex items-center gap-2">

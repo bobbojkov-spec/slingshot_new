@@ -89,44 +89,44 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
     return (
         <div className="space-y-8">
             {/* Basic Info */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900">Group Settings</h2>
+            <div className="bg-white p-6 rounded border border-gray-200 shadow-sm space-y-4">
+                <h2 className="text-lg font-medium text-gray-900">Group Settings</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Group Title (EN)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Group Title (EN)</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Group Title (BG)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Group Title (BG)</label>
                         <input
                             type="text"
                             value={titleBg}
                             onChange={(e) => setTitleBg(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Sort Order</label>
                         <input
                             type="number"
                             value={sortOrder}
                             onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Slug (Optional - for linking)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Slug (Optional - for linking)</label>
                         <input
                             type="text"
                             value={slug}
                             onChange={(e) => setSlug(e.target.value)}
                             placeholder="e.g. harnesses"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
                 </div>
@@ -134,10 +134,10 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left: Selected Collections (Reorderable conceptually, but simple list for now) */}
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[600px]">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-between">
+                <div className="bg-white p-6 rounded border border-gray-200 shadow-sm flex flex-col h-[600px]">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center justify-between">
                         Selected Collections
-                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">{selectedIds.length}</span>
+                        <span className="bg-blue-100 text-blue-700 text-xs px-4 py-2 rounded-full">{selectedIds.length}</span>
                     </h2>
 
                     <div className="flex-1 overflow-y-auto space-y-2 pr-2">
@@ -145,7 +145,7 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                             const col = getCollection(id);
                             if (!col) return null;
                             return (
-                                <div key={id} className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-100 rounded-lg group">
+                                <div key={id} className="flex items-center gap-4 p-3 bg-blue-50 border border-blue-100 rounded group">
                                     <span className="text-blue-400 font-mono text-xs w-6">{index + 1}</span>
                                     <div className="flex-1">
                                         <p className="font-medium text-gray-900 text-sm">{col.title}</p>
@@ -153,7 +153,7 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                                     </div>
                                     <button
                                         onClick={() => toggleCollection(id)}
-                                        className="p-1 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
+                                        className="p-2 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
                                     >
                                         <ArrowLeft className="rotate-180" size={16} />
                                     </button>
@@ -170,8 +170,8 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                 </div>
 
                 {/* Right: All Collections Picker */}
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[600px]">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Available Collections</h2>
+                <div className="bg-white p-6 rounded border border-gray-200 shadow-sm flex flex-col h-[600px]">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Available Collections</h2>
 
                     <div className="relative mb-4">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -180,7 +180,7 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search collections..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                         />
                     </div>
 
@@ -191,7 +191,7 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                                 <div
                                     key={col.id}
                                     onClick={() => !isSelected && toggleCollection(col.id)}
-                                    className={`flex items-center gap-3 p-3 border rounded-lg transition-all cursor-pointer ${isSelected
+                                    className={`flex items-center gap-4 p-3 border rounded transition-all cursor-pointer ${isSelected
                                         ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
                                         : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
                                         }`}
@@ -215,13 +215,13 @@ export default function MenuGroupEditClient({ group, allCollections }: MenuGroup
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-8 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors shadow-sm"
+                    className="px-8 py-4 bg-gray-900 text-white font-medium rounded hover:bg-gray-800 disabled:opacity-50 transition-colors shadow-sm"
                 >
                     {saving ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button
                     onClick={() => router.back()}
-                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-6 py-4 bg-white border border-gray-300 text-gray-700 font-medium rounded hover:bg-gray-50 transition-colors"
                 >
                     Cancel
                 </button>

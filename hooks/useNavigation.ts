@@ -47,6 +47,18 @@ export interface MenuGroup {
   collections: MenuCollection[];
 }
 
+export interface NavigationPage {
+  id: number;
+  title: string;
+  slug: string;
+  status: string;
+  show_header: boolean;
+  show_dropdown: boolean;
+  footer_column: number | null;
+  header_order: number | null;
+  footer_order: number | null;
+}
+
 export interface NavigationData {
   sports: NavigationSport[];
   activityCategories: NavigationActivityCategory[];
@@ -54,6 +66,7 @@ export interface NavigationData {
   rideEngineHandles?: string[];
   slingshotMenuGroups?: MenuGroup[];
   rideEngineMenuGroups?: MenuGroup[];
+  customPages?: NavigationPage[];
 }
 
 export function useNavigation() {

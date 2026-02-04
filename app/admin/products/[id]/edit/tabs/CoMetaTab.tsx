@@ -124,7 +124,7 @@ export default function CoMetaTab({
         styles={{ body: { padding: 16 } }}
         style={{ marginBottom: 24 }}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space orientation="vertical" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ margin: 0 }}>SEO & Meta Management</h3>

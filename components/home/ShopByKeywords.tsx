@@ -56,7 +56,7 @@ export default function ShopByKeywords() {
         return (
             <section className="section-padding bg-ocean-blue">
                 <div className="section-container">
-                    <div className="flex flex-wrap justify-center gap-3">
+                    <div className="flex flex-wrap justify-center gap-4">
                         {[...Array(16)].map((_, i) => (
                             <div
                                 key={i}
@@ -77,15 +77,15 @@ export default function ShopByKeywords() {
         <section className="section-padding bg-ocean-blue">
             <div className="section-container">
                 {/* Section Header */}
-                <div className="text-center mb-10">
-                    <span className="text-section-title block mb-3 text-white/70">
+                <div className="text-center mb-12">
+                    <span className="text-section-title block mb-4 text-white/70">
                         {t("shopByKeywords.browseLabel")}
                     </span>
                     <h2 className="h2 text-white">{t("shopByKeywords.title")}</h2>
                 </div>
 
                 {/* Keywords Grid - Desktop: 3 rows of ~7, Mobile: 6 rows */}
-                <div className="flex flex-wrap justify-center gap-3 lg:gap-4">
+                <div className="flex flex-wrap justify-center gap-4 lg:gap-4">
                     {displayKeywords.map((keyword) => {
                         const displayName = language === "bg" && keyword.name_bg
                             ? keyword.name_bg
@@ -95,7 +95,7 @@ export default function ShopByKeywords() {
                             <Link
                                 key={keyword.slug}
                                 href={`/search?tag=${encodeURIComponent(keyword.name_en)}&lang=${language}`}
-                                className="group px-5 py-2.5 bg-white text-deep-navy rounded-full font-medium text-sm 
+                                className="group px-4 py-2 bg-white text-deep-navy rounded-full font-medium text-sm 
                   shadow-md hover:shadow-lg hover:bg-accent hover:text-white 
                   transition-all duration-300 inline-flex"
                             >

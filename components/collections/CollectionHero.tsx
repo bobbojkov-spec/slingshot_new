@@ -29,7 +29,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     const BreadcrumbsContainer = () => {
         if (!breadcrumbs || breadcrumbs.length === 0) return null;
         return (
-            <div className="absolute bottom-0 left-0 bg-white z-30 px-8 py-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+            <div className="absolute bottom-0 left-0 bg-white z-30 px-8 py-4 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500">
                 {breadcrumbs.map((item, index) => (
                     <React.Fragment key={index}>
                         {index > 0 && <span>/</span>}

@@ -37,11 +37,11 @@ export default function AdminCollectionForm({ collection, translations = [], act
                             children: (
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Title (EN)</label>
+                                        <label className="block text-sm font-medium mb-2">Title (EN)</label>
                                         <Input name="title_en" defaultValue={getTrans('en', 'title')} required />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Description (EN)</label>
+                                        <label className="block text-sm font-medium mb-2">Description (EN)</label>
                                         <Input.TextArea name="desc_en" rows={4} defaultValue={getTrans('en', 'description') || ""} />
                                     </div>
                                 </div>
@@ -53,11 +53,11 @@ export default function AdminCollectionForm({ collection, translations = [], act
                             children: (
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Title (BG)</label>
+                                        <label className="block text-sm font-medium mb-2">Title (BG)</label>
                                         <Input name="title_bg" defaultValue={getTrans('bg', 'title')} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Description (BG)</label>
+                                        <label className="block text-sm font-medium mb-2">Description (BG)</label>
                                         <Input.TextArea name="desc_bg" rows={4} defaultValue={getTrans('bg', 'description') || ""} />
                                     </div>
                                 </div>

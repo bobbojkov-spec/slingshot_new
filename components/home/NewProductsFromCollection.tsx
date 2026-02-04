@@ -53,7 +53,7 @@ function ProductCarouselCard({ product }: { product: Product }) {
     return (
         <Link
             href={`/product/${product.slug}`}
-            className="group block relative aspect-square overflow-hidden rounded-xl bg-gray-100 shadow-md hover:shadow-xl transition-all duration-500"
+            className="group block relative aspect-square overflow-hidden rounded bg-gray-100 shadow-md hover:shadow-xl transition-all duration-500"
         >
             {/* Image */}
             {currentImage ? (
@@ -73,7 +73,7 @@ function ProductCarouselCard({ product }: { product: Product }) {
 
             {/* Product name over the stripe */}
             <div className="absolute inset-x-0 bottom-0 p-4 lg:p-6">
-                <h3 className="h3 font-semibold text-white group-hover:text-accent transition-colors line-clamp-2">
+                <h3 className="h3 font-medium text-white group-hover:text-accent transition-colors line-clamp-2">
                     {product.name}
                 </h3>
             </div>
@@ -97,7 +97,7 @@ function ProductCarouselCard({ product }: { product: Product }) {
                     </button>
 
                     {/* Image dots indicator */}
-                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
                         {product.images.map((_, idx) => (
                             <span
                                 key={idx}
@@ -175,13 +175,13 @@ export default function NewProductsFromCollection() {
         return (
             <section className="section-padding bg-background">
                 <div className="section-container">
-                    <div className="text-center mb-10">
-                        <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mx-auto mb-3" />
+                    <div className="text-center mb-12">
+                        <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mx-auto mb-4" />
                         <div className="h-10 w-64 bg-gray-200 rounded animate-pulse mx-auto" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, i) => (
-                            <div key={i} className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
+                            <div key={i} className="aspect-square bg-gray-200 rounded animate-pulse" />
                         ))}
                     </div>
                 </div>
@@ -197,8 +197,8 @@ export default function NewProductsFromCollection() {
         <section className="section-padding bg-background">
             <div className="section-container">
                 {/* Section Header */}
-                <div className="text-center mb-10">
-                    <span className="text-section-title block mb-3">{t("newProducts.label")}</span>
+                <div className="text-center mb-12">
+                    <span className="text-section-title block mb-4">{t("newProducts.label")}</span>
                     <h2 className="h2 text-foreground">{t("newProducts.title")}</h2>
                 </div>
 

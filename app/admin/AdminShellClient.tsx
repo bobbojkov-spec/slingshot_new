@@ -54,7 +54,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
     ],
   },
 
-  { key: "pages", icon: <FileProtectOutlined />, labelText: "Pages" },
+  { key: "pages-new", icon: <FileProtectOutlined />, labelText: "Pages", href: "/admin/pages-new" },
   { key: "shop", icon: <ShoppingCartOutlined />, labelText: "Shop" },
   {
     key: "users",

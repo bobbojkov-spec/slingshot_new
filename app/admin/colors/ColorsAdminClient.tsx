@@ -155,7 +155,7 @@ const ColorsAdminClient = () => {
   );
 
   return (
-    <Space direction="vertical" size={24} style={{ width: "100%" }}>
+    <Space orientation="vertical" size={24} style={{ width: "100%" }}>
       <Card title="Color Catalog" extra={<Button icon={<PlusOutlined />} onClick={() => openModal()}>Add color</Button>}>
         <Table
           loading={loading}

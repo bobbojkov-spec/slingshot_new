@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState, use } from 'react';
+import Head from "next/head";
 import Link from "next/link";
 import { ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
@@ -12,6 +13,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import BackgroundVideoPlayer from "@/components/ui/BackgroundVideoPlayer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
+import { buildCanonicalUrlClient } from "@/lib/seo/url";
 
 interface Product {
   id: string;
@@ -28,6 +30,7 @@ interface Product {
     price: number;
     compareAtPrice: number | null;
     available: boolean;
+    inventory_quantity: number;
     sku: string;
     product_color_id?: string;
   }>;
@@ -44,12 +47,17 @@ interface Product {
   colors?: Array<{ id: string; name: string; url: string; image_path: string }>;
   video_url?: string;
   description_html?: string;
+  description_html_bg?: string;
   description_html2?: string;
+  description_html2_bg?: string;
   specs_html?: string;
+  specs_html_bg?: string;
   package_includes?: string;
+  package_includes_bg?: string;
   hero_video_url?: string;
   sku?: string;
   subtitle?: string;
+  subtitle_bg?: string;
   hero_image_url?: string;
 }
 
@@ -65,7 +73,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const [selectedColorId, setSelectedColorId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   useEffect(() => {
     if (!origin && typeof window !== "undefined") {
@@ -96,25 +104,101 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     fetchProduct();
   }, [slug]);
 
+  // Parse variant title to extract size
+  // Handles: "14 / Green", "XS- black", "7 Meter", "XS -green"
+  const parseVariantTitle = (title: string) => {
+    if (!title) return '';
+    // Match size at start: numbers (5, 5.5, 7, 12) OR standard sizes (XS, S, M, L, XL, XXL)
+    const match = title.match(/^(\d+(?:\.\d+)?|XXL|XL|L|M|S|XS)\s*(?:[\/\-\s]+)?/i);
+    return match ? match[1].toUpperCase() : title;
+  };
+
+  // Get color name from variant title (e.g., "14 / Green" -> "Green", "XS- black" -> "black")
+  const getColorFromVariantTitle = (title: string) => {
+    if (!title) return '';
+    // Match color after / or - or space
+    const match = title.match(/(?:[\/\-]\s*|\s{2,})(.+)$/);
+    return match ? match[1].trim() : '';
+  };
+
+  // Get unique size options from variants
+  const getUniqueSizeOptions = () => {
+    if (!product?.variants) return [];
+
+    // Group variants by size
+    const sizeGroups = new Map<string, string>();
+
+    product.variants.forEach(v => {
+      const sizeKey = parseVariantTitle(v.title);
+      if (sizeKey) {
+        // Clean display label - remove color part
+        const cleanLabel = v.title.replace(/\s*[\/\-]\s*.+$/, '').trim();
+        const existing = sizeGroups.get(sizeKey);
+        // Prefer shorter labels (without color info)
+        if (!existing || cleanLabel.length < existing.length) {
+          sizeGroups.set(sizeKey, cleanLabel);
+        }
+      }
+    });
+
+    // Return array of { numericSize, displayLabel }
+    return Array.from(sizeGroups.entries()).map(([sizeKey, displayLabel]) => ({
+      numericSize: sizeKey,
+      displayLabel
+    }));
+  };
+
+  // Get selected variant based on size and color
+  const getSelectedVariant = () => {
+    if (!product?.variants || product.variants.length === 0) return null;
+
+    if (selectedSize) {
+      // Find variant where title starts with selected size
+      // If color is selected, also match color
+      const matchingVariants = product.variants.filter(v =>
+        parseVariantTitle(v.title) === selectedSize
+      );
+
+      if (matchingVariants.length === 0) return null;
+
+      // If only one variant matches, return it
+      if (matchingVariants.length === 1) return matchingVariants[0];
+
+      // If multiple variants match (different colors), try to match by color
+      if (selectedColorId && product.colors) {
+        const selectedColorName = product.colors.find(c => c.id === selectedColorId)?.name;
+        const colorMatch = matchingVariants.find(v => {
+          const variantColor = getColorFromVariantTitle(v.title);
+          return variantColor.toLowerCase() === selectedColorName?.toLowerCase();
+        });
+        if (colorMatch) return colorMatch;
+      }
+
+      // Return first matching variant
+      return matchingVariants[0];
+    }
+
+    return null;
+  };
+
+  // Get stock info for selected combination
+  const getStockInfo = () => {
+    const variant = getSelectedVariant();
+    if (!variant) return null;
+
+    return {
+      inStock: variant.available && variant.inventory_quantity > 0,
+      quantity: variant.inventory_quantity,
+      sku: variant.sku
+    };
+  };
+
   const handleAddToInquiry = () => {
     if (!product) return;
 
-    let variantId = product.id;
-    let price = product.price;
-
-    if (product.variants && product.variants.length > 0) {
-      let matchingVariant;
-      if (selectedColorId) {
-        matchingVariant = product.variants.find(v => v.title === selectedSize && v.product_color_id === selectedColorId);
-      } else {
-        matchingVariant = product.variants.find(v => v.title === selectedSize);
-      }
-
-      if (matchingVariant) {
-        variantId = matchingVariant.id;
-        price = matchingVariant.price;
-      }
-    }
+    const variant = getSelectedVariant();
+    const variantId = variant?.id || product.id;
+    const price = variant?.price || product.price;
 
     addItem({
       id: variantId,
@@ -129,20 +213,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     });
   };
 
-  const t = {
-    size: language === "bg" ? "Размер" : "Size",
-    quantity: language === "bg" ? "Количество" : "Quantity",
-    addToInquiry: language === "bg" ? "Добави за запитване" : "Add to Inquiry",
-    specs: language === "bg" ? "Спецификации" : "Specifications",
-    related: language === "bg" ? "Може да харесате" : "You May Also Like"
-  };
+  // Translation keys - using centralized t() function
 
   if (loading) return <div className="min-h-screen pt-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
-  if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">Product not found</div>;
+  if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">{t("product.notFound")}</div>;
 
   const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Shop", href: "/shop" },
+    { label: t("breadcrumbs.home"), href: "/" },
+    { label: t("breadcrumbs.shop"), href: "/shop" },
     ...(product.brand?.toLowerCase() === "ride engine" || product.brand?.toLowerCase() === "rideengine"
       ? [{ label: "RIDEENGINE", href: "/shop?brand=Ride%20Engine" }]
       : []),
@@ -152,10 +230,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     ...(product.category_name
       ? [{ label: product.category_name, href: `/shop?category=${product.category_slug || product.category_name?.toLowerCase()}` }]
       : []),
-    { label: product.name }
+    { label: language === "bg" ? (product.name_bg || product.name) : product.name }
   ];
 
-  const baseUrl = origin || process.env.NEXT_PUBLIC_SITE_URL || "";
+  const canonicalUrl = buildCanonicalUrlClient(`/product/${product.slug}`);
+  const baseUrl = canonicalUrl.replace(/\/.+$/, "");
   const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
   const productSchema = {
     "@context": "https://schema.org",
@@ -186,21 +265,42 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     ]
   };
 
+  const pageTitle = `${product.title || product.name} | Slingshot Bulgaria`;
+  const rawDescription =
+    language === 'bg'
+      ? (product.description_bg || product.description || "")
+      : (product.description || "");
+  const pageDescription = rawDescription
+    .replace(/<[^>]+>/g, '')
+    .slice(0, 300);
+  const ogImage = product.image || product.images?.[0];
+
   return (
     <div className="min-h-screen bg-background relative pt-16 md:pt-20">
-      {baseUrl && (
-        <>
-          <SchemaJsonLd data={breadcrumbSchema} />
-          <SchemaJsonLd data={productSchema} />
-        </>
-      )}
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Slingshot Bulgaria" />
+        <meta property="og:type" content="product" />
+        {ogImage && <meta property="og:image" content={ogImage} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {ogImage && <meta name="twitter:image" content={ogImage} />}
+        <link rel="canonical" href={canonicalUrl} />
+      </Head>
+      <SchemaJsonLd data={breadcrumbSchema} defer />
+      <SchemaJsonLd data={productSchema} defer />
       {/* Breadcrumb Strip */}
       <div className="bg-white border-b border-gray-100 sticky top-16 md:top-20 z-20">
         <div className="section-container">
-          <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs font-medium uppercase tracking-wider text-gray-500 py-2 md:py-3 overflow-x-auto">
-            <Link href="/" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">Home</Link>
+          <div className="flex items-center gap-2 md:gap-2 text-[10px] md:text-xs font-medium uppercase tracking-wider text-gray-500 py-2 md:py-4 overflow-x-auto">
+            <Link href="/" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{t("breadcrumbs.home")}</Link>
             <span>/</span>
-            <Link href="/shop" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">Shop</Link>
+            <Link href="/shop" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{t("breadcrumbs.shop")}</Link>
 
             {(product.brand?.toLowerCase() === 'ride engine' || product.brand?.toLowerCase() === 'rideengine') && (
               <>
@@ -254,81 +354,88 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <ProductGallery
               images={product.images}
               productName={product.name}
-              activeIndex={(() => {
-                if (!selectedColorId || !product.colors) return 0;
-                const color = product.colors.find(c => c.id === selectedColorId);
-                if (!color) return 0;
-                const idx = product.images.findIndex(img => img === color.url);
-                return idx !== -1 ? idx : 0;
-              })()}
             />
           </div>
 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-1 md:mb-2 uppercase">{product.category_name}</span>
-            <h1 className="h1 font-black uppercase tracking-tighter mb-1 md:mb-2">
+            <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-2 md:mb-2 uppercase">{product.category_name}</span>
+            <h1 className="h1 font-bold uppercase tracking-tighter mb-2 md:mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
 
             {product.subtitle && (
-              <h3 className="h3 font-black uppercase tracking-wide mb-2 text-black leading-tight">
-                {product.subtitle}
+              <h3 className="h3 font-bold uppercase tracking-wide mb-2 text-black leading-tight">
+                {language === 'bg' ? (product.subtitle_bg || product.subtitle) : product.subtitle}
               </h3>
             )}
 
             {product.sku && (
-              <p className="text-[10px] md:text-xs text-black/60 font-mono mb-4 md:mb-6">{`SKU: ${product.sku}`}</p>
+              <p className="text-[10px] md:text-xs text-black/60 font-mono mb-4 md:mb-6">{`${t("product.sku")}: ${product.sku}`}</p>
             )}
 
-            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+            {/* Price Display */}
+            <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
               {(() => {
-                let currentPrice: number | null = null;
-                let originalPrice: number | null = null;
-                let displayPrice: string = "";
+                const selectedVariant = getSelectedVariant();
 
-                if (selectedSize && product.variants) {
-                  const v = product.variants.find(v => v.title === selectedSize);
-                  if (v) {
-                    currentPrice = v.price;
-                    originalPrice = v.compareAtPrice;
-                  }
+                // If a size is selected, show that variant's price
+                if (selectedVariant) {
+                  return (
+                    <>
+                      <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                        ${selectedVariant.price.toFixed(2)}
+                      </span>
+                      {selectedVariant.compareAtPrice && selectedVariant.compareAtPrice > selectedVariant.price && (
+                        <span className="text-lg md:text-xl text-muted-foreground line-through font-medium">
+                          ${selectedVariant.compareAtPrice.toFixed(2)}
+                        </span>
+                      )}
+                    </>
+                  );
                 }
 
-                if (!currentPrice && product.variants && product.variants.length > 0) {
+                // Show price range when no size selected
+                if (product.variants && product.variants.length > 0) {
                   const prices = product.variants.map(v => v.price).filter(p => !isNaN(p));
                   if (prices.length > 0) {
                     const min = Math.min(...prices);
                     const max = Math.max(...prices);
-                    displayPrice = min === max ? `$${min.toFixed(2)}` : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
-
-                    // For the range view, we'll show the compare_at_price of the cheapest variant if it has one
-                    const cheapestVariant = [...product.variants].sort((a, b) => a.price - b.price)[0];
-                    if (cheapestVariant && cheapestVariant.compareAtPrice && cheapestVariant.compareAtPrice > cheapestVariant.price) {
-                      originalPrice = cheapestVariant.compareAtPrice;
-                    }
+                    const displayPrice = min === max ? `$${min.toFixed(2)}` : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+                    return <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">{displayPrice}</span>;
                   }
-                } else if (!currentPrice) {
-                  displayPrice = `$${(product.price || 0).toFixed(2)}`;
-                } else {
-                  displayPrice = `$${currentPrice.toFixed(2)}`;
                 }
 
-                return (
-                  <>
-                    <span className="text-2xl md:text-3xl font-black tracking-tight text-foreground">{displayPrice}</span>
-                    {originalPrice && originalPrice > (currentPrice || product.price) && (
-                      <span className="text-lg md:text-xl text-muted-foreground line-through font-medium">
-                        (${originalPrice.toFixed(2)})
-                      </span>
-                    )}
-                  </>
-                );
+                // Fallback to product price
+                return <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">${(product.price || 0).toFixed(2)}</span>;
               })()}
             </div>
 
-            {product.description_html && (
-              <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: product.description_html }} />
+            {/* Stock Info */}
+            {(() => {
+              const stockInfo = getStockInfo();
+              if (!stockInfo || !selectedSize) return null;
+
+              return (
+                <div className="mb-4 flex items-center gap-2">
+                  <span className={`inline-block w-2 h-2 rounded-full ${stockInfo.inStock ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span className="text-sm text-gray-600">
+                    {stockInfo.inStock
+                      ? (language === 'bg' ? `В наличност (${stockInfo.quantity})` : `In stock (${stockInfo.quantity})`)
+                      : (language === 'bg' ? 'Изчерпано' : 'Out of stock')
+                    }
+                  </span>
+                  {stockInfo.sku && (
+                    <span className="text-xs text-gray-400 ml-2">SKU: {stockInfo.sku}</span>
+                  )}
+                </div>
+              );
+            })()}
+
+            {(language === 'bg' ? (product.description_html_bg || product.description_html) : product.description_html) && (
+              <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_html_bg || product.description_html || '') : (product.description_html || '') }}
+              />
             )}
 
             <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
@@ -337,11 +444,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {/* Key Features */}
             {product.features && product.features.length > 0 && (
               <div className="mb-8">
-                <h4 className="font-bold text-sm uppercase tracking-wider mb-3">{language === 'bg' ? 'Основни характеристики' : 'Key Features'}</h4>
+                <h4 className="font-bold text-sm uppercase tracking-wider mb-4">{t("product.keyFeatures")}</h4>
                 <ul className="space-y-2">
                   {product.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                      <span className="w-1.5 h-1.5 rounded-full bg-black mt-1.5 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-black mt-2.5 shrink-0" />
                       {feature}
                     </li>
                   ))}
@@ -356,94 +463,134 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {/* Visual Color Selector */}
             {product.colors && product.colors.length > 0 && (
               <div className="mb-6 md:mb-8">
-                <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{language === 'bg' ? 'Цвят' : 'Color'}</span>
-                <div className="flex gap-2 md:gap-3 flex-wrap">
-                  {product.colors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() => {
-                        setSelectedColorId(color.id);
-                        const colorVariants = product.variants?.filter(v => v.product_color_id === color.id) || [];
-                        const availableSizes = colorVariants.map(v => v.title);
-                        if (selectedSize && !availableSizes.includes(selectedSize)) {
-                          setSelectedSize("");
-                        }
-                      }}
-                      title={color.name}
-                      className={`w-14 h-14 md:w-12 md:h-12 rounded border-2 overflow-hidden relative transition-all ${selectedColorId === color.id ? 'border-black ring-1 ring-black ring-offset-2' : 'border-transparent hover:border-gray-300'
-                        }`}
-                    >
-                      <img
-                        src={color.url || color.image_path}
-                        alt={color.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+                <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-4 block">
+                  {t("product.color")}: {selectedColorId && (
+                    <span className="font-normal text-gray-600">
+                      {product.colors.find(c => c.id === selectedColorId)?.name}
+                    </span>
+                  )}
+                </span>
+                <div className="flex gap-2 md:gap-4 flex-wrap">
+                  {product.colors.map((color) => {
+                    // Check if this color is available for the selected size
+                    let isAvailable = true;
+                    if (selectedSize && product.variants) {
+                      const matchingVariants = product.variants.filter(v => {
+                        const variantSize = parseVariantTitle(v.title);
+                        const variantColor = getColorFromVariantTitle(v.title);
+                        return variantSize === selectedSize &&
+                          variantColor.toLowerCase() === color.name.toLowerCase();
+                      });
+                      isAvailable = matchingVariants.some(v => v.available && v.inventory_quantity > 0);
+                    }
+
+                    return (
+                      <button
+                        key={color.id}
+                        onClick={() => isAvailable && setSelectedColorId(color.id)}
+                        disabled={!isAvailable}
+                        title={`${color.name}${!isAvailable ? ' (' + (language === 'bg' ? 'изчерпано' : 'out of stock') + ')' : ''}`}
+                        className={`w-14 h-14 md:w-12 md:h-12 rounded border-2 overflow-hidden relative transition-all ${selectedColorId === color.id
+                          ? 'border-black ring-1 ring-black ring-offset-2'
+                          : isAvailable
+                            ? 'border-transparent hover:border-gray-300 hover:scale-105'
+                            : 'border-gray-200 opacity-40 cursor-not-allowed'
+                          }`}
+                      >
+                        <img
+                          src={color.url || color.image_path}
+                          alt={color.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {!isAvailable && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+                            <span className="text-xs text-gray-500">✕</span>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-                {selectedColorId && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    {product.colors.find(c => c.id === selectedColorId)?.name}
-                  </div>
-                )}
               </div>
             )}
 
             {/* Sizes/Variants */}
-            {((product.variants && product.variants.length > 0) || (product.sizes && product.sizes.length > 0)) && (
+            {(product.variants && product.variants.length > 0) && (
               <div className="mb-6 md:mb-8">
-                <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-3 block">{t.size}</span>
+                <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-4 block">{t("size")}</span>
                 <div className="flex gap-2 flex-wrap">
                   {(() => {
-                    let displayVariants = product.variants || [];
-                    if (selectedColorId) {
-                      displayVariants = displayVariants.filter(v => v.product_color_id === selectedColorId);
+                    const sizeOptions = getUniqueSizeOptions();
+
+                    if (sizeOptions.length === 0) {
+                      return <span className="text-sm text-gray-500 italic">{t("product.noSizesAvailable")}</span>;
                     }
 
-                    const sizes = displayVariants.length > 0
-                      ? displayVariants.map(v => v.title)
-                      : (product.sizes || []);
+                    return sizeOptions.map(({ numericSize, displayLabel }, idx) => {
+                      // Check if any variant with this size is available
+                      const sizeVariants = product.variants?.filter(v =>
+                        parseVariantTitle(v.title) === numericSize
+                      ) || [];
 
-                    if (sizes.length === 0 && selectedColorId) {
-                      return <span className="text-sm text-gray-500 italic">No sizes available for this color.</span>;
-                    }
+                      // If color selected, check availability for that color
+                      let availableVariants = sizeVariants;
+                      if (selectedColorId && product.colors) {
+                        const selectedColorName = product.colors.find(c => c.id === selectedColorId)?.name;
+                        const colorMatch = sizeVariants.filter(v => {
+                          const variantColor = getColorFromVariantTitle(v.title);
+                          return variantColor.toLowerCase() === selectedColorName?.toLowerCase();
+                        });
+                        if (colorMatch.length > 0) {
+                          availableVariants = colorMatch;
+                        }
+                      }
 
-                    return sizes.map((size, idx) => (
-                      <button
-                        key={`${size}-${idx}`}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-3 md:px-4 py-2 md:py-2.5 rounded border text-sm font-medium transition-all min-w-[60px] md:min-w-0 ${selectedSize === size
-                          ? "border-black bg-black text-white"
-                          : "border-gray-200 hover:border-black text-gray-700"
-                          }`}
-                      >
-                        {size}
-                      </button>
-                    ))
+                      // For inquiry system, just check if variant exists
+                      // Don't require available=true and inventory_quantity > 0
+                      const isAvailable = availableVariants.length > 0;
+                      const isSelected = selectedSize === numericSize;
+
+                      return (
+                        <button
+                          key={`${numericSize}-${idx}`}
+                          onClick={() => isAvailable && setSelectedSize(numericSize)}
+                          disabled={!isAvailable}
+                          className={`px-4 md:px-4 py-2 md:py-2 rounded border text-sm font-medium transition-all min-w-[60px] md:min-w-0 ${isSelected
+                            ? "border-black bg-black text-white"
+                            : isAvailable
+                              ? "border-gray-200 hover:border-black text-gray-700"
+                              : "border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed"
+                            }`}
+                        >
+                          {displayLabel}
+                          {!isAvailable && <span className="sr-only"> ({language === 'bg' ? 'изчерпано' : 'out of stock'})</span>}
+                        </button>
+                      );
+                    });
                   })()}
                 </div>
               </div>
             )}
 
             {/* Add to Cart */}
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-auto pt-6 md:pt-8 border-t border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-4 mt-auto pt-6 md:pt-8 border-t border-gray-100">
               <div className="flex items-center border border-gray-300 rounded overflow-hidden w-full sm:w-fit justify-center">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-6 md:px-4 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                  className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
                 >
                   <Minus className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
                 <span className="font-medium w-16 md:w-12 text-center text-lg md:text-base">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-6 md:px-4 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                  className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
                 >
                   <Plus className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
               </div>
-              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-4 md:py-3 px-8 hover:bg-gray-900 active:bg-gray-800 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base">
-                <ShoppingBag className="w-5 h-5" /> {t.addToInquiry}
+              <button onClick={handleAddToInquiry} className="flex-1 bg-black text-white font-bold uppercase tracking-widest py-4 md:py-4 px-8 hover:bg-gray-900 active:bg-gray-800 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base">
+                <ShoppingBag className="w-5 h-5" /> {t("addToInquiry")}
               </button>
             </div>
 
@@ -452,30 +599,36 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       </div>
 
       {/* Extended Description (Html2) */}
-      {product.description_html2 && (
+      {(language === 'bg' ? (product.description_html2_bg || product.description_html2) : product.description_html2) && (
         <div className="section-container py-8 border-t border-gray-100 mb-8">
-          <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.description_html2 }} />
+          <div className="prose prose-sm max-w-none text-gray-800"
+            dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_html2_bg || product.description_html2 || '') : (product.description_html2 || '') }}
+          />
         </div>
       )}
 
       {/* Specs HTML */}
-      {product.specs_html && (
+      {(language === 'bg' ? (product.specs_html_bg || product.specs_html) : product.specs_html) && (
         <div className="section-container py-16 border-t border-gray-100">
-          <h3 className="h2 font-black uppercase tracking-tight mb-8">
-            {language === 'bg' ? 'Спецификации' : 'Specifications'}
+          <h3 className="h2 font-bold uppercase tracking-tight mb-8">
+            {t("specs")}
           </h3>
-          <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
+          <div className="prose prose-sm max-w-none text-gray-800"
+            dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.specs_html_bg || product.specs_html || '') : (product.specs_html || '') }}
+          />
         </div>
       )}
 
       {/* Package Includes */}
-      {product.package_includes && (
+      {(language === 'bg' ? (product.package_includes_bg || product.package_includes) : product.package_includes) && (
         <div className="bg-gray-50 py-16 border-t border-gray-100">
           <div className="section-container">
-            <h3 className="h2 font-black uppercase tracking-tight mb-8">
+            <h3 className="h2 font-bold uppercase tracking-tight mb-8">
               {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
             </h3>
-            <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
+            <div className="prose prose-sm max-w-none text-gray-800"
+              dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.package_includes_bg || product.package_includes || '') : (product.package_includes || '') }}
+            />
           </div>
         </div>
       )}
@@ -484,7 +637,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {
         related.length > 0 && (
           <div className="section-container py-16 border-t border-gray-100">
-            <h2 className="h2 font-black uppercase tracking-tight mb-12 text-center">{t.related}</h2>
+            <h2 className="h2 font-bold uppercase tracking-tight mb-12 text-center">{t("related")}</h2>
             <ProductGrid products={related} />
           </div>
         )

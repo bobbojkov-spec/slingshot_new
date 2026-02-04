@@ -42,7 +42,7 @@ export default async function AdminDbCheckPage() {
 
   return (
     <section className="px-6 py-6">
-      <h1 className="text-2xl font-semibold mb-4">Database read test</h1>
+      <h1 className="text-2xl font-medium mb-4">Database read test</h1>
       <div className="w-full overflow-x-auto bg-white p-4 rounded shadow-sm">{body}</div>
     </section>
   );

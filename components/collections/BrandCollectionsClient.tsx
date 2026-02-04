@@ -43,7 +43,7 @@ export function BrandCollectionsClient({ collections, heroData, breadcrumbs, bra
                             <Link
                                 key={collection.id}
                                 href={`/collections/${collection.slug}`}
-                                className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                                className="group relative aspect-[16/9] overflow-hidden rounded bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                             >
                                 {collection.image_url ? (
                                     <img
@@ -58,7 +58,7 @@ export function BrandCollectionsClient({ collections, heroData, breadcrumbs, bra
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
                                     <h3
-                                        className="text-2xl font-black text-white uppercase tracking-tighter mb-2 transition-colors"
+                                        className="text-2xl font-bold text-white uppercase tracking-tighter mb-2 transition-colors"
                                     >
                                         {collection.title}
                                     </h3>
@@ -68,7 +68,7 @@ export function BrandCollectionsClient({ collections, heroData, breadcrumbs, bra
                                         </p>
                                     )}
                                     {collection.products && (
-                                        <p className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white">
+                                        <p className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold text-white">
                                             {/* We might not check actual count here if we optimized the query to not return products array, 
                                                 but getCollectionsByBrand returns separate 'product_count' if we query it, 
                                                 or assumes filtered > 0. 

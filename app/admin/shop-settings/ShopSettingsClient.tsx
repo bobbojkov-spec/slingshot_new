@@ -171,7 +171,7 @@ export default function ShopSettingsClient({
     const brandCards = useMemo(() => {
         return brands.map((brand, index) => (
             <Card key={brand.slug || index} size="small" style={{ height: '100%' }}>
-                <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                <Space orientation="vertical" size={12} style={{ width: '100%' }}>
                     <Input
                         value={brand.name}
                         placeholder="Brand name"
@@ -230,7 +230,7 @@ export default function ShopSettingsClient({
     }, [brands]);
 
     return (
-        <Space direction="vertical" size={24} style={{ width: '100%' }}>
+        <Space orientation="vertical" size={24} style={{ width: '100%' }}>
             <div>
                 <Typography.Title level={2} style={{ marginBottom: 4 }}>
                     Shop Settings

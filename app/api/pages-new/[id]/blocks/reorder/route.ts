@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query, transaction } from '@/lib/db';
 
 const parseId = (id?: string) => {
     if (!id) throw new Error('Missing id');
@@ -27,20 +27,17 @@ export async function POST(
         }
 
         // Update positions
-        await query('BEGIN');
-
-        for (let i = 0; i < blockIds.length; i++) {
-            await query(
-                'UPDATE page_blocks SET position = $1 WHERE id = $2 AND page_id = $3',
-                [i + 1, blockIds[i], pageId]
-            );
-        }
-
-        await query('COMMIT');
+        await transaction(async (client) => {
+            for (let i = 0; i < blockIds.length; i++) {
+                await client.query(
+                    'UPDATE page_blocks SET position = $1 WHERE id = $2 AND page_id = $3',
+                    [i + 1, blockIds[i], pageId]
+                );
+            }
+        });
 
         return NextResponse.json({ ok: true, data: { reordered: blockIds.length } });
     } catch (error) {
-        await query('ROLLBACK');
         console.error('BLOCKS REORDER FAILED:', error);
         return NextResponse.json(
             { ok: false, error: 'Failed to reorder blocks' },

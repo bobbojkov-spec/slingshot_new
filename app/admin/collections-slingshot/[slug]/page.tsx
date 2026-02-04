@@ -77,11 +77,11 @@ export default async function SlingshotCollectionEditPage({ params }: PageProps)
 
             {/* Page Header */}
             <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-4 mb-2">
                     <h1 className="text-3xl font-bold text-gray-900">
                         {translations.en.title || 'Untitled Collection'}
                     </h1>
-                    <span className="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 text-orange-700">
+                    <span className="px-4 py-2 text-sm font-medium rounded-full bg-orange-100 text-orange-700">
                         Slingshot
                     </span>
                 </div>

@@ -45,7 +45,7 @@ export default function ShopByCategories() {
                         {[...Array(12)].map((_, i) => (
                             <div
                                 key={i}
-                                className="aspect-[4/3] bg-gray-200 rounded-xl animate-pulse"
+                                className="aspect-[4/3] bg-gray-200 rounded animate-pulse"
                             />
                         ))}
                     </div>
@@ -63,7 +63,7 @@ export default function ShopByCategories() {
             <div className="section-container">
                 {/* Section Header */}
                 <div className="text-center mb-12">
-                    <span className="text-section-title block mb-3">
+                    <span className="text-section-title block mb-4">
                         {t("shopByCategories.browseLabel")}
                     </span>
                     <h2 className="h2 text-foreground">{t("shopByCategories.title")}</h2>
@@ -75,7 +75,7 @@ export default function ShopByCategories() {
                         <Link
                             key={collection.id}
                             href={`/collections/${collection.slug}`}
-                            className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                            className="group relative aspect-[4/3] overflow-hidden rounded bg-gray-100 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
                             style={{ animationDelay: `${index * 50}ms` }}
                         >
                             {/* Background Image */}
@@ -96,7 +96,7 @@ export default function ShopByCategories() {
 
                             {/* Content */}
                             <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-5">
-                                <h3 className="h3 font-bold text-white uppercase tracking-tighter mb-1 transition-colors">
+                                <h3 className="h3 font-bold text-white uppercase tracking-tighter mb-2 transition-colors">
                                     {collection.title}
                                 </h3>
                                 {collection.subtitle && (
@@ -108,13 +108,13 @@ export default function ShopByCategories() {
 
                             {/* Source Badge */}
                             <div className="absolute top-3 right-3">
-                                <span className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full text-[10px] font-semibold text-white uppercase tracking-wide">
+                                <span className="bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full text-[10px] font-medium text-white uppercase tracking-wide">
                                     {collection.source}
                                 </span>
                             </div>
 
                             {/* Hover Border Effect */}
-                            <div className="absolute inset-0 border-2 border-transparent group-hover:border-accent rounded-xl transition-colors duration-300" />
+                            <div className="absolute inset-0 border-2 border-transparent group-hover:border-accent rounded transition-colors duration-300" />
                         </Link>
                     ))}
                 </div>

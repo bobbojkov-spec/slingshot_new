@@ -80,7 +80,7 @@ export default function CollectionsListClient({
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Filter collections..."
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
+                            className="w-full pl-10 pr-4 py-4 bg-white border border-gray-200 rounded focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
                         />
                         <p className="text-xs text-gray-500 mt-2 ml-1 absolute">
                             Showing {filteredCollections.length} of {collections.length} collections
@@ -88,10 +88,10 @@ export default function CollectionsListClient({
                     </div>
 
                     {/* Language Switcher */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-1 flex items-center shadow-sm">
+                    <div className="bg-white border border-gray-200 rounded p-2 flex items-center shadow-sm">
                         <button
                             onClick={() => setViewLang('en')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewLang === 'en'
+                            className={`px-4 py-2 text-sm font-medium rounded transition-all ${viewLang === 'en'
                                 ? 'bg-gray-900 text-white shadow-sm'
                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
@@ -100,7 +100,7 @@ export default function CollectionsListClient({
                         </button>
                         <button
                             onClick={() => setViewLang('bg')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewLang === 'bg'
+                            className={`px-4 py-2 text-sm font-medium rounded transition-all ${viewLang === 'bg'
                                 ? 'bg-orange-500 text-white shadow-sm'
                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
@@ -130,11 +130,11 @@ export default function CollectionsListClient({
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300">
+                <div className="text-center py-16 bg-white rounded border border-dashed border-gray-300">
                     <div className="text-gray-400 mb-4">
                         <Search className="w-12 h-12 mx-auto opacity-20" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
                         No collections match your search
                     </h3>
                     <p className="text-gray-500">

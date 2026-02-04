@@ -71,20 +71,20 @@ export default function MenuGroupsListClient({ initialGroups, source }: MenuGrou
     return (
         <div className="space-y-8">
             {/* Create New Group Card */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Create New Menu Group</h3>
+            <div className="bg-white p-6 rounded border border-gray-200 shadow-sm">
+                <h3 className="text-sm font-medium text-gray-900 mb-4">Create New Menu Group</h3>
                 <form onSubmit={handleCreate} className="flex gap-4">
                     <input
                         type="text"
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
                         placeholder="e.g. Gear, Accessories, Apparel..."
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <button
                         type="submit"
                         disabled={creating || !newTitle.trim()}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
                     >
                         {creating ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus size={18} />}
                         Create Group
@@ -97,7 +97,7 @@ export default function MenuGroupsListClient({ initialGroups, source }: MenuGrou
                 {groups.map((group) => (
                     <div
                         key={group.id}
-                        className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4 hover:border-blue-300 transition-colors group"
+                        className="bg-white p-4 rounded border border-gray-200 shadow-sm flex items-center gap-4 hover:border-blue-300 transition-colors group"
                     >
                         {/* Drag Handle (Visual only for now) */}
                         <div className="text-gray-300 cursor-grab active:cursor-grabbing">
@@ -105,7 +105,7 @@ export default function MenuGroupsListClient({ initialGroups, source }: MenuGrou
                         </div>
 
                         <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{group.title}</h3>
+                            <h3 className="font-medium text-gray-900">{group.title}</h3>
                             <p className="text-sm text-gray-500">
                                 Contains {group.collection_count || 0} collections
                             </p>
@@ -114,14 +114,14 @@ export default function MenuGroupsListClient({ initialGroups, source }: MenuGrou
                         <div className="flex items-center gap-2">
                             <Link
                                 href={`/admin/collections-${source}/groups/${group.id}`}
-                                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                                 title="Edit Group"
                             >
                                 <Pencil size={18} />
                             </Link>
                             <button
                                 onClick={() => handleDelete(group.id)}
-                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                                 title="Delete Group"
                             >
                                 <Trash2 size={18} />

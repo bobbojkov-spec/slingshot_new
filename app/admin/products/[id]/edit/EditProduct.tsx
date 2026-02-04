@@ -87,12 +87,16 @@ export default function EditProduct({
     return qs ? `/admin/products?${qs}` : '/admin/products';
   }, [searchParams]);
 
-  const [draft, setDraft] = useState<Product>(() => ({
-    ...structuredClone(product),
-    product_colors: product.colors || [], // Map API 'colors' to 'product_colors'
-    colors: product.colors || [], // Keep legacy alias if needed
-    collection_ids: initialCollectionIds || []
-  }));
+  const [draft, setDraft] = useState<Product>(() => {
+    // Only clone once during initialization
+    const cloned = JSON.parse(JSON.stringify(product));
+    return {
+      ...cloned,
+      product_colors: cloned.colors || [],
+      colors: cloned.colors || [],
+      collection_ids: initialCollectionIds || []
+    };
+  });
 
   const [activeTab, setActiveTab] = useState<'info' | 'variants' | 'cometa' | 'colors'>('info');
   const [saving, setSaving] = useState(false);
@@ -141,33 +145,34 @@ export default function EditProduct({
       <Tabs
         activeKey={activeTab}
         onChange={(key) => setActiveTab(key as 'info' | 'variants' | 'cometa' | 'colors')}
+        destroyInactiveTabPane
         items={[
           {
             key: 'info',
             label: 'Info',
-            children: (
+            children: activeTab === 'info' ? (
               <InfoTab
                 draft={draft}
                 setDraft={setDraft}
                 categories={categories}
                 collections={collections}
               />
-            ),
+            ) : null,
           },
           {
             key: 'variants',
             label: 'Variants',
-            children: <VariantsTab draft={draft} setDraft={setDraft} />,
+            children: activeTab === 'variants' ? <VariantsTab draft={draft} setDraft={setDraft} /> : null,
           },
           {
             key: 'cometa',
             label: 'SEO Meta',
-            children: <CoMetaTab draft={draft} setDraft={setDraft} />,
+            children: activeTab === 'cometa' ? <CoMetaTab draft={draft} setDraft={setDraft} /> : null,
           },
           {
             key: 'colors',
             label: 'Visual Colors',
-            children: <ColorsTab draft={draft} setDraft={setDraft} />,
+            children: activeTab === 'colors' ? <ColorsTab draft={draft} setDraft={setDraft} /> : null,
           },
         ]}
       />

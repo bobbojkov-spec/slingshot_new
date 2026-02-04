@@ -11,16 +11,16 @@ const Newsletter = () => {
   return (
     <section className="newsletter-section section-padding">
       <div className="section-container text-center">
-        <span className="text-section-title text-accent mb-3 block">{t("newsletter.preamble")}</span>
+        <span className="text-section-title text-accent mb-4 block">{t("newsletter.preamble")}</span>
         <h2 className="h2 text-white mb-4">{t("newsletter.title")}</h2>
         <p className="font-body text-white/70 mb-8 max-w-md mx-auto">{t("newsletter.description")}</p>
-        <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
           <input
             type="email"
             placeholder={t("newsletter.placeholder")}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="flex-1 px-4 py-3 rounded bg-white/10 border border-white/20 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent"
+            className="flex-1 px-4 py-4 rounded bg-white/10 border border-white/20 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent"
           />
           <button type="submit" className="btn-primary">
             {t("newsletter.button")} <Send className="w-4 h-4 ml-2" />

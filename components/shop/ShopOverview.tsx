@@ -101,12 +101,12 @@ export default function ShopOverview() {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-10">
+            <div className="container mx-auto px-4 py-12">
                 <div className="animate-pulse space-y-6">
                     <div className="h-6 w-64 bg-gray-200 rounded" />
                     <div className="grid grid-cols-2 gap-4">
                         {[...Array(2)].map((_, idx) => (
-                            <div key={idx} className="h-28 bg-gray-200 rounded-xl" />
+                            <div key={idx} className="h-28 bg-gray-200 rounded" />
                         ))}
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export default function ShopOverview() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-10 space-y-12">
+        <div className="container mx-auto px-4 py-12 space-y-12">
             <div className="text-center space-y-2">
                 <h2 className="text-2xl md:text-3xl font-logo font-bold text-deep-navy uppercase tracking-tight">
                     Browse products by filter, or use the search bar.
@@ -127,14 +127,14 @@ export default function ShopOverview() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-deep-navy">Filter by Brand</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Filter by Brand</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {displayBrands.map((brand) => (
                         <Link
                             key={brand.slug}
                             href={`/shop?brand=${encodeURIComponent(brand.slug)}`}
-                            className="group rounded-2xl border border-gray-200 bg-white p-6 flex items-center justify-center hover:border-accent hover:shadow-lg transition"
+                            className="group rounded border border-gray-200 bg-white p-6 flex items-center justify-center hover:border-accent hover:shadow-lg transition"
                         >
                             {brand.logo_url_signed || brand.logo_url ? (
                                 <img
@@ -143,7 +143,7 @@ export default function ShopOverview() {
                                     className="h-16 object-contain"
                                 />
                             ) : (
-                                <span className="text-lg font-semibold text-deep-navy">
+                                <span className="text-lg font-medium text-deep-navy">
                                     {brand.name}
                                 </span>
                             )}
@@ -154,14 +154,14 @@ export default function ShopOverview() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-deep-navy">Filter by Collection</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Filter by Collection</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {displayCollections.map((collection) => (
                         <Link
                             key={collection.id}
                             href={`/shop?collection=${encodeURIComponent(collection.slug)}`}
-                            className="group relative aspect-[16/9] rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
+                            className="group relative aspect-[16/9] rounded overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
                         >
                             {collection.image_url ? (
                                 <img
@@ -174,11 +174,11 @@ export default function ShopOverview() {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                             <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-base md:text-lg font-semibold uppercase tracking-tight">
+                                <h4 className="text-white text-base md:text-lg font-medium uppercase tracking-tight">
                                     {collection.title}
                                 </h4>
                                 {collection.subtitle && (
-                                    <p className="text-white/80 text-xs md:text-sm mt-1 line-clamp-2">
+                                    <p className="text-white/80 text-xs md:text-sm mt-2 line-clamp-2">
                                         {collection.subtitle}
                                     </p>
                                 )}
@@ -190,9 +190,9 @@ export default function ShopOverview() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-deep-navy">Filter by Tag</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Filter by Tag</h3>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-4">
                     {displayKeywords.map((keyword) => {
                         const label = language === 'bg' ? keyword.name_bg : keyword.name_en;
                         return (
@@ -210,7 +210,7 @@ export default function ShopOverview() {
 
             <section className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-deep-navy">Featured Products</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Featured Products</h3>
                     <Link href="/collections/featured-products" className="text-sm text-accent">
                         View all
                     </Link>

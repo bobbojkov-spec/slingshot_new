@@ -1,19 +1,7 @@
 import { PoolClient } from 'pg';
 import { query, transaction } from './dbPg';
 
-export type BlockType =
-    | 'HERO'
-    | 'TEXT'
-    | 'TEXT_IMAGE'
-    | 'GALLERY'
-    | 'YOUTUBE'
-    | 'FEATURED_PRODUCTS';
-
-export type GalleryImageRecord = {
-    media_id: number;
-    url: string;
-    position: number;
-};
+export type BlockType = 'HERO' | 'TEXT' | 'TEXT_IMAGE';
 
 export type PageBlockRecord = {
     id: number;
@@ -23,11 +11,11 @@ export type PageBlockRecord = {
     data: Record<string, unknown> | null;
     enabled: boolean | null;
     created_at: string | null;
-    gallery_images?: GalleryImageRecord[];
+    gallery_images?: never;
 };
 
 export const BLOCK_COLUMNS = ['id', 'page_id', 'type', 'position', 'data', 'enabled', 'created_at'].join(', ');
-export const BLOCK_TYPES: BlockType[] = ['HERO', 'TEXT', 'TEXT_IMAGE', 'GALLERY', 'YOUTUBE', 'FEATURED_PRODUCTS'];
+export const BLOCK_TYPES: BlockType[] = ['HERO', 'TEXT', 'TEXT_IMAGE'];
 
 export async function listBlocksForPage(pageId: number): Promise<PageBlockRecord[]> {
     const { rows } = await query(
@@ -35,56 +23,7 @@ export async function listBlocksForPage(pageId: number): Promise<PageBlockRecord
         [pageId]
     );
 
-    const galleryBlockIds = rows
-        .filter((row) => row.type === 'GALLERY')
-        .map((row) => row.id);
-
-    if (!galleryBlockIds.length) {
-        return rows;
-    }
-
-    const { rows: galleryRows } = await query(
-        `
-    SELECT
-      g.block_id,
-      g.media_id,
-      g.position,
-      m.url
-    FROM page_block_gallery_images g
-    JOIN media_files m ON m.id = g.media_id
-    WHERE g.block_id = ANY($1)
-    ORDER BY g.block_id, g.position ASC
-  `,
-        [galleryBlockIds]
-    );
-
-    const galleryMap: Record<number, GalleryImageRecord[]> = {};
-    for (const galleryRow of galleryRows) {
-        const blockId = Number(galleryRow.block_id);
-        if (!galleryMap[blockId]) {
-            galleryMap[blockId] = [];
-        }
-        const mediaIdValue = Number(galleryRow.media_id);
-        const positionValue = Number(galleryRow.position ?? 0);
-        if (Number.isFinite(mediaIdValue)) {
-            galleryMap[blockId].push({
-                media_id: mediaIdValue,
-                url: String(galleryRow.url ?? ''),
-                position: positionValue,
-            });
-        }
-    }
-
-    return rows.map((row) => {
-        if (row.type !== 'GALLERY') {
-            return row;
-        }
-
-        return {
-            ...row,
-            gallery_images: galleryMap[row.id] ?? [],
-        };
-    });
+    return rows;
 }
 
 const ALLOWED_TYPES: BlockType[] = BLOCK_TYPES;
@@ -141,7 +80,7 @@ export async function createBlock({
 
 export async function updateBlock(
     blockId: number,
-    payload: { data?: Record<string, unknown>; enabled?: boolean; gallery_images?: { media_id?: number }[] }
+    payload: { data?: Record<string, unknown>; enabled?: boolean }
 ): Promise<PageBlockRecord> {
     return transaction(async (client) => {
         const { rows: existingBlocks } = await client.query('SELECT type FROM page_blocks WHERE id = $1', [blockId]);
@@ -182,43 +121,12 @@ export async function updateBlock(
             throw new Error('Block not found');
         }
 
-        const updatedBlock = rows[0];
-
-        if (blockType === 'GALLERY' && payload.gallery_images !== undefined) {
-            const normalizedImageIds = normalizeGalleryImages(payload.gallery_images);
-            await client.query('DELETE FROM page_block_gallery_images WHERE block_id = $1', [blockId]);
-
-            if (normalizedImageIds.length > 0) {
-                const placeholders: string[] = [];
-                const insertParams: unknown[] = [blockId];
-
-                normalizedImageIds.forEach((mediaId, index) => {
-                    const mediaParamIndex = insertParams.length + 1;
-                    const positionParamIndex = insertParams.length + 2;
-                    insertParams.push(mediaId, index + 1);
-                    placeholders.push(`($1, $${mediaParamIndex}, $${positionParamIndex})`);
-                });
-
-                await client.query(
-                    `INSERT INTO page_block_gallery_images (block_id, media_id, position) VALUES ${placeholders.join(', ')}`,
-                    insertParams
-                );
-            }
-        }
-
-        return updatedBlock;
+        return rows[0];
     });
 }
 
-const normalizeGalleryImages = (value: { media_id?: number }[]): number[] => {
-    return value
-        .map((entry) => Number(entry?.media_id))
-        .filter((entry): entry is number => Number.isFinite(entry));
-};
-
 export async function deleteBlock(blockId: number): Promise<void> {
     await transaction(async (client) => {
-        await client.query('DELETE FROM page_block_gallery_images WHERE block_id = $1', [blockId]);
         await client.query('DELETE FROM page_blocks WHERE id = $1', [blockId]);
     });
 }

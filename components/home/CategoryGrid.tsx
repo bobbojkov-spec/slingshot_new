@@ -37,7 +37,7 @@ const CategoryGrid = () => {
     <section className="section-padding bg-background">
       <div className="section-container">
         <div className="text-center mb-12">
-          <span className="text-section-title block mb-3">{t("categories.browseLabel")}</span>
+          <span className="text-section-title block mb-4">{t("categories.browseLabel")}</span>
           <h2 className="h2 text-foreground">{t("categories.sectionTitle")}</h2>
         </div>
 
@@ -56,7 +56,7 @@ const CategoryGrid = () => {
               />
               <div className="category-card-overlay" />
               <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-6">
-                <h3 className="h3 font-semibold text-white uppercase tracking-wide mb-1">
+                <h3 className="h3 font-medium text-white uppercase tracking-wide mb-2">
                   {t(`categories.names.${category.key}`)}
                 </h3>
                 <p className="font-body text-white/70 text-sm hidden lg:block">

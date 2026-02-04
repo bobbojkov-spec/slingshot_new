@@ -22,15 +22,15 @@ const ColorSelector = ({ colors, selectedColor, onColorSelect }: ColorSelectorPr
 
   return (
     <div>
-      <span className="font-heading font-semibold text-sm uppercase tracking-wide text-foreground mb-3 block">
+      <span className="font-heading font-medium text-sm uppercase tracking-wide text-foreground mb-4 block">
         {label}: <span className="text-muted-foreground capitalize font-normal">{selectedColor}</span>
       </span>
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         {colors.map((color) => (
           <button
             key={color.value}
             onClick={() => onColorSelect(color.value)}
-            className={`relative w-10 h-10 rounded-lg transition-all ${color.bgClass} ${
+            className={`relative w-10 h-10 rounded transition-all ${color.bgClass} ${
               selectedColor === color.value 
                 ? "ring-2 ring-offset-2 ring-foreground scale-110" 
                 : "hover:scale-105"

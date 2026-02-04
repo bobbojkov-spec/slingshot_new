@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Typography, Space, Button } from 'antd';
 import { useQuill } from 'react-quilljs';
 import { CopyOutlined } from '@ant-design/icons';
@@ -24,6 +24,7 @@ const BilingualRichText: React.FC<BilingualRichTextProps> = ({
   placeholder,
   showCopyButton = true,
 }) => {
+  const [translating, setTranslating] = useState(false);
   const modules = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
@@ -107,6 +108,27 @@ const BilingualRichText: React.FC<BilingualRichTextProps> = ({
     }
   };
 
+  const handleTranslateText = async () => {
+    if (!enValue) return;
+    setTranslating(true);
+    try {
+      const res = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: enValue, type: 'html' }),
+      });
+      const data = await res.json();
+      if (data.translated && bgQuill) {
+        bgQuill.clipboard.dangerouslyPasteHTML(data.translated);
+        onBgChange(data.translated);
+      }
+    } catch (e) {
+      console.error('Translation failed', e);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   return (
     <Space orientation="vertical" size={12} style={{ width: '100%', maxWidth: '80vw' }}>
       <div>
@@ -118,16 +140,30 @@ const BilingualRichText: React.FC<BilingualRichTextProps> = ({
 
       <Space style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography.Text strong>{label} (Bulgarian)</Typography.Text>
-        {showCopyButton && (
-          <Button
-            size="small"
-            icon={<CopyOutlined />}
-            onClick={handleCopyFromEnglish}
-            disabled={!enValue}
-          >
-            Copy from English
-          </Button>
-        )}
+        <Space>
+          {showCopyButton && (
+            <>
+              <Button
+                size="small"
+                icon={<CopyOutlined />}
+                onClick={handleCopyFromEnglish}
+                disabled={!enValue}
+              >
+                Copy
+              </Button>
+              <Button
+                size="small"
+                type="primary"
+                ghost
+                loading={translating}
+                onClick={handleTranslateText}
+                disabled={!enValue}
+              >
+                Translate
+              </Button>
+            </>
+          )}
+        </Space>
       </Space>
       <div>
         <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, backgroundColor: '#fffbe6' }}>

@@ -81,13 +81,13 @@ export default function HomepageKeywordsClient({
   return (
     <div className="space-y-6">
       {/* Stats Banner */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-purple-50 border border-purple-200 rounded p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-sm text-purple-700">
             Selected: <strong>{selectedNames.length}</strong> keywords
           </span>
           {selectedNames.length > 20 && (
-            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
+            <span className="text-xs bg-orange-100 text-orange-700 px-4 py-2 rounded">
               Max 20 will be displayed
             </span>
           )}
@@ -96,7 +96,7 @@ export default function HomepageKeywordsClient({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="px-6 py-2 bg-gray-900 text-white font-medium rounded hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -105,15 +105,15 @@ export default function HomepageKeywordsClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Selected Keywords */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col h-[600px]">
+        <div className="bg-white border border-gray-200 rounded shadow-sm flex flex-col h-[600px]">
           <div className="p-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900 flex items-center justify-between">
+            <h2 className="font-medium text-gray-900 flex items-center justify-between">
               Selected Keywords
-              <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
+              <span className="bg-purple-100 text-purple-700 text-xs px-4 py-2 rounded-full">
                 {selectedNames.length}
               </span>
             </h2>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-2">
               Max 20. Order is preserved but displayed randomly.
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function HomepageKeywordsClient({
             {selectedTags.map((tag, index) => (
               <div
                 key={tag.name_en}
-                className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${index < 16
+                className={`flex items-center gap-2 p-4 rounded border transition-colors ${index < 16
                   ? 'bg-purple-50 border-purple-200'
                   : 'bg-gray-50 border-gray-200 opacity-70'
                   }`}
@@ -141,11 +141,11 @@ export default function HomepageKeywordsClient({
                 <span className="text-xs text-gray-400 flex-shrink-0">
                   {tag.count} products
                 </span>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => moveItem(index, 'up')}
                     disabled={index === 0}
-                    className="p-1 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
+                    className="p-2 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
                     title="Move up"
                   >
                     <ArrowUp size={14} />
@@ -153,14 +153,14 @@ export default function HomepageKeywordsClient({
                   <button
                     onClick={() => moveItem(index, 'down')}
                     disabled={index === selectedNames.length - 1}
-                    className="p-1 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
+                    className="p-2 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
                     title="Move down"
                   >
                     <ArrowDown size={14} />
                   </button>
                   <button
                     onClick={() => toggleTag(tag.name_en)}
-                    className="p-1 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
+                    className="p-2 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
                     title="Remove"
                   >
                     <ArrowLeft className="rotate-180" size={16} />
@@ -171,16 +171,16 @@ export default function HomepageKeywordsClient({
             {selectedNames.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm">
                 <p>No keywords selected.</p>
-                <p className="text-xs mt-1">Choose from the list on the right.</p>
+                <p className="text-xs mt-2">Choose from the list on the right.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Right: Available Tags */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col h-[600px]">
-          <div className="p-4 border-b border-gray-200 space-y-3">
-            <h2 className="font-semibold text-gray-900">Available Keywords</h2>
+        <div className="bg-white border border-gray-200 rounded shadow-sm flex flex-col h-[600px]">
+          <div className="p-4 border-b border-gray-200 space-y-4">
+            <h2 className="font-medium text-gray-900">Available Keywords</h2>
 
             {/* Search */}
             <div className="relative">
@@ -193,7 +193,7 @@ export default function HomepageKeywordsClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search keywords..."
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 outline-none text-sm"
               />
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function HomepageKeywordsClient({
                 <div
                   key={tag.name_en}
                   onClick={() => !isSelected && toggleTag(tag.name_en)}
-                  className={`flex items-center gap-3 p-3 border rounded-lg transition-all cursor-pointer ${isSelected
+                  className={`flex items-center gap-4 p-4 border rounded transition-all cursor-pointer ${isSelected
                     ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
                     : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm'
                     }`}

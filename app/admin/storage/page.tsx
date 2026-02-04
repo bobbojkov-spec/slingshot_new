@@ -66,7 +66,7 @@ export default function AdminStoragePage() {
 
   return (
     <section className="px-6 py-6">
-      <h1 className="text-2xl font-semibold mb-4">Storage</h1>
+      <h1 className="text-2xl font-medium mb-4">Storage</h1>
       <div className="space-y-4">
         <div className="flex flex-col gap-2">
           <label className="font-medium">Upload a file</label>
@@ -84,8 +84,8 @@ export default function AdminStoragePage() {
           {status && <p className="text-sm text-gray-500">{status}</p>}
         </div>
         <div>
-          <h2 className="text-lg font-semibold mb-2">Bucket contents</h2>
-          <div className="border rounded-md p-3 bg-white shadow-sm">
+          <h2 className="text-lg font-medium mb-2">Bucket contents</h2>
+          <div className="border rounded p-4 bg-white shadow-sm">
             {files.length === 0 ? (
               <p className="text-sm text-gray-500">No files yet.</p>
             ) : (

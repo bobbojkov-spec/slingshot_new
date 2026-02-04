@@ -1,5 +1,5 @@
 /**
- * Generate SEO data for a product based on product information
+ * Generate SEO data for a product or page based on provided information
  */
 
 export interface ProductDataForSEO {
@@ -38,11 +38,11 @@ function truncate(text: string, maxLength: number): string {
 function generateMetaTitle(product: ProductDataForSEO): string {
     const parts: string[] = [];
 
-    // Add product name
+    // Add product/page name
     parts.push(product.name);
 
     // Add category if available
-    if (product.categoryNames.length > 0) {
+    if (product.categoryNames && product.categoryNames.length > 0) {
         parts.push(product.categoryNames[0]);
     }
 
@@ -50,7 +50,7 @@ function generateMetaTitle(product: ProductDataForSEO): string {
     if (product.price !== null && product.price !== undefined) {
         const priceNum = typeof product.price === 'number' ? product.price : parseFloat(String(product.price));
         if (!isNaN(priceNum)) {
-            parts.push(`${priceNum.toFixed(2)} ${product.currency}`);
+            parts.push(`${priceNum.toFixed(2)} ${product.currency || 'EUR'}`);
         }
     }
 
@@ -65,12 +65,13 @@ function generateMetaTitle(product: ProductDataForSEO): string {
 function generateMetaDescription(product: ProductDataForSEO): string {
     const parts: string[] = [];
 
-    // Start with product name
+    // Start with product/page name
     parts.push(product.name);
 
     // Add description if available
     if (product.description) {
         const cleanDescription = product.description
+            .replace(/<[^>]*>/g, '') // Strip HTML
             .replace(/\s+/g, ' ')
             .trim()
             .substring(0, 120);
@@ -80,7 +81,7 @@ function generateMetaDescription(product: ProductDataForSEO): string {
     }
 
     // Add category if available
-    if (product.categoryNames.length > 0) {
+    if (product.categoryNames && product.categoryNames.length > 0) {
         parts.push(`Category: ${product.categoryNames.join(', ')}`);
     }
 
@@ -88,7 +89,7 @@ function generateMetaDescription(product: ProductDataForSEO): string {
     if (product.price !== null && product.price !== undefined) {
         const priceNum = typeof product.price === 'number' ? product.price : parseFloat(String(product.price));
         if (!isNaN(priceNum)) {
-            parts.push(`Price: ${priceNum.toFixed(2)} ${product.currency}`);
+            parts.push(`Price: ${priceNum.toFixed(2)} ${product.currency || 'EUR'}`);
         }
     }
 
@@ -103,7 +104,7 @@ function generateMetaDescription(product: ProductDataForSEO): string {
 function generateKeywords(product: ProductDataForSEO): string {
     const keywords: string[] = [];
 
-    // Add product name words
+    // Add name words
     const nameWords = product.name
         .toLowerCase()
         .split(/\s+/)
@@ -112,10 +113,14 @@ function generateKeywords(product: ProductDataForSEO): string {
     keywords.push(...nameWords);
 
     // Add categories
-    keywords.push(...product.categoryNames.map(cat => cat.toLowerCase()));
+    if (product.categoryNames) {
+        keywords.push(...product.categoryNames.map(cat => cat.toLowerCase()));
+    }
 
     // Add tags
-    keywords.push(...product.tags.map(tag => tag.toLowerCase()));
+    if (product.tags) {
+        keywords.push(...product.tags.map(tag => tag.toLowerCase()));
+    }
 
     // Remove duplicates and join
     const uniqueKeywords = [...new Set(keywords)];
@@ -132,7 +137,7 @@ function generateOGTitle(product: ProductDataForSEO): string {
     if (product.price !== null && product.price !== undefined) {
         const priceNum = typeof product.price === 'number' ? product.price : parseFloat(String(product.price));
         if (!isNaN(priceNum)) {
-            parts.push(`${priceNum.toFixed(2)} ${product.currency}`);
+            parts.push(`${priceNum.toFixed(2)} ${product.currency || 'EUR'}`);
         }
     }
 
@@ -146,6 +151,7 @@ function generateOGTitle(product: ProductDataForSEO): string {
 function generateOGDescription(product: ProductDataForSEO): string {
     if (product.description) {
         const cleanDescription = product.description
+            .replace(/<[^>]*>/g, '') // Strip HTML
             .replace(/\s+/g, ' ')
             .trim();
         return truncate(cleanDescription, 200);
@@ -159,11 +165,11 @@ function generateOGDescription(product: ProductDataForSEO): string {
  * Generate canonical URL
  */
 function generateCanonicalUrl(product: ProductDataForSEO, baseUrl: string): string {
-    return `${baseUrl}/shop/product/${product.slug}`;
+    return `${baseUrl.replace(/\/$/, '')}/shop/product/${product.slug}`;
 }
 
 /**
- * Main function to generate all SEO data for a product
+ * Main function to generate all SEO data for a product or page
  */
 export function generateProductSEO(
     product: ProductDataForSEO,

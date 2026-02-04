@@ -30,8 +30,8 @@ const fetchHeroBackground = async (pageId: number) => {
     );
 
     const hero = rows[0];
-    const backgroundImageId = hero?.data?.background_image_id
-        ? Number(hero.data.background_image_id)
+    const backgroundImageId = hero?.data?.background_image?.media_id
+        ? Number(hero.data.background_image.media_id)
         : null;
 
     if (!backgroundImageId) {
@@ -116,7 +116,7 @@ export async function POST(
                 name: page.title || '',
                 slug: page.slug || '',
                 description,
-                price: null,
+                price: null, // Pages don't have prices
                 currency: 'EUR',
                 categoryNames: [],
                 tags: [],

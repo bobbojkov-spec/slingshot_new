@@ -2,10 +2,12 @@
 
 import { use } from "react";
 import Link from "next/link";
+import Head from "next/head";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
+import { buildCanonicalUrlClient } from "@/lib/seo/url";
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -78,6 +80,7 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
     language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
   const description =
     language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
+  const canonicalUrl = buildCanonicalUrlClient(`/category/${category}`);
 
   const breadcrumbItems = [
     { label: language === "bg" ? "Начало" : "Home", href: "/" },
@@ -85,16 +88,35 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
     { label: categoryName }
   ];
 
-  const breadcrumbSchema = buildBreadcrumbSchema(
-    typeof window === "undefined" ? "" : window.location.origin,
-    breadcrumbItems
-  );
+  const breadcrumbSchema = buildBreadcrumbSchema(canonicalUrl.replace(/\/.+$/, ""), breadcrumbItems);
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: categoryName,
+    url: canonicalUrl,
+    description,
+  };
+
+  const pageTitle = `${categoryName} | Slingshot Bulgaria`;
+  const pageDescription = description;
 
   return (
     <div className="min-h-screen bg-background">
-      {typeof window !== "undefined" && (
-        <SchemaJsonLd data={breadcrumbSchema} />
-      )}
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Slingshot Bulgaria" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+      </Head>
+      <SchemaJsonLd data={breadcrumbSchema} defer />
+      <SchemaJsonLd data={pageSchema} defer />
       <Header />
       <main className="pt-20">
         <section className="category-hero relative">
@@ -156,18 +178,18 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
         <section className="bg-secondary/30 section-padding">
           <div className="section-container">
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-background rounded-lg p-6">
-                <h3 className="font-heading font-semibold mb-2">Free Shipping</h3>
+              <div className="bg-background rounded p-6">
+                <h3 className="font-heading font-medium mb-2">Free Shipping</h3>
                 <p className="font-body text-sm text-muted-foreground">On all orders over 200 BGN</p>
               </div>
-              <div className="bg-background rounded-lg p-6">
-                <h3 className="font-heading font-semibold mb-2">Expert Advice</h3>
+              <div className="bg-background rounded p-6">
+                <h3 className="font-heading font-medium mb-2">Expert Advice</h3>
                 <p className="font-body text-sm text-muted-foreground">
                   Our team of experienced riders will help you
                 </p>
               </div>
-              <div className="bg-background rounded-lg p-6">
-                <h3 className="font-heading font-semibold mb-2">2 Year Warranty</h3>
+              <div className="bg-background rounded p-6">
+                <h3 className="font-heading font-medium mb-2">2 Year Warranty</h3>
                 <p className="font-body text-sm text-muted-foreground">On all Slingshot products</p>
               </div>
             </div>

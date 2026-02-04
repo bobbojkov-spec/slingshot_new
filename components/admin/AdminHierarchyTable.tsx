@@ -26,10 +26,10 @@ export default function AdminHierarchyTable({ collections }: { collections: Coll
         return (
             <React.Fragment key={col.id}>
                 <tr className="hover:bg-gray-50 border-b last:border-0 transition-colors">
-                    <td className="py-3 px-6 font-medium">
+                    <td className="py-4 px-6 font-medium">
                         <div className="flex items-center gap-2" style={{ paddingLeft: depth * 24 }}>
                             {hasChildren ? (
-                                <button onClick={() => toggle(col.id)} className="p-1 hover:bg-gray-200 rounded">
+                                <button onClick={() => toggle(col.id)} className="p-2 hover:bg-gray-200 rounded">
                                     {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                                 </button>
                             ) : (
@@ -38,9 +38,9 @@ export default function AdminHierarchyTable({ collections }: { collections: Coll
                             {col.title}
                         </div>
                     </td>
-                    <td className="py-3 px-6 text-gray-500">{col.handle}</td>
-                    <td className="py-3 px-6 text-gray-500">{col.product_count}</td>
-                    <td className="py-3 px-6 text-right">
+                    <td className="py-4 px-6 text-gray-500">{col.handle}</td>
+                    <td className="py-4 px-6 text-gray-500">{col.product_count}</td>
+                    <td className="py-4 px-6 text-right">
                         <Link
                             href={`/admin/collections/${col.id}`}
                             className="text-blue-600 hover:text-blue-800 flex items-center justify-end gap-1"
@@ -56,7 +56,7 @@ export default function AdminHierarchyTable({ collections }: { collections: Coll
     };
 
     return (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded shadow overflow-hidden">
             <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                     <tr>

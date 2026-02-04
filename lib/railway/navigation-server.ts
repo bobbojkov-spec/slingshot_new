@@ -129,11 +129,33 @@ export async function getNavigationData(lang: string = 'en') {
         }
     });
 
+    const { rows: customPages } = await query(
+        `
+        SELECT id, title, slug, status, show_header, header_order, show_dropdown, dropdown_order, footer_column, footer_order
+        FROM pages
+        WHERE status = 'published'
+          AND (show_header = true OR show_dropdown = true OR footer_column IS NOT NULL)
+        ORDER BY header_order ASC, footer_order ASC
+        `
+    );
+
     return {
         language: lang,
         sports: sportsRows.map((row: any) => sportMap.get(row.slug)).filter(Boolean),
         activityCategories: activitiesResult,
         rideEngineHandles: rideEngineRows.map((r: any) => r.handle),
+        customPages: customPages.map((p: any) => ({
+            id: Number(p.id),
+            title: String(p.title),
+            slug: String(p.slug),
+            status: String(p.status),
+            show_header: Boolean(p.show_header),
+            header_order: p.header_order ? Number(p.header_order) : null,
+            show_dropdown: Boolean(p.show_dropdown),
+            dropdown_order: p.dropdown_order ? Number(p.dropdown_order) : null,
+            footer_column: p.footer_column ? Number(p.footer_column) : null,
+            footer_order: p.footer_order ? Number(p.footer_order) : null,
+        })),
     };
 }
 

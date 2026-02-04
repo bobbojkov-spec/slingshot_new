@@ -239,7 +239,7 @@ export default function CollectionEditForm({
     return (
         <div className="max-w-4xl pb-20">
             {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 flex items-center gap-3">
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-800 flex items-center gap-4">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                     <span className="text-sm font-medium">{error}</span>
                 </div>
@@ -247,16 +247,16 @@ export default function CollectionEditForm({
 
             {/* Hero Image Section */}
             <div className="mb-8">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                     Hero Presentation
-                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Optimized Variants</span>
+                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-4 py-0.5 rounded-full">Optimized Variants</span>
                 </h2>
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <div className="bg-white rounded border border-gray-200 p-6 shadow-sm">
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Left: Image Preview (300px) */}
                         <div className="w-full md:w-[320px] flex-shrink-0">
                             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Desktop Preview (1900px)</label>
-                            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-50 border border-gray-100 group">
+                            <div className="relative aspect-video w-full rounded overflow-hidden bg-gray-50 border border-gray-100 group">
                                 {displayUrl && !imageError ? (
                                     <>
                                         <img
@@ -276,13 +276,13 @@ export default function CollectionEditForm({
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider mt-1">{imageError && displayUrl ? 'Image Error' : 'No hero image'}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider mt-2">{imageError && displayUrl ? 'Image Error' : 'No hero image'}</span>
                                     </div>
                                 )}
                                 {uploading && (
-                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
                                         <div className="w-8 h-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                                        <span className="text-sm font-semibold text-gray-900">Processing Variants...</span>
+                                        <span className="text-sm font-medium text-gray-900">Processing Variants...</span>
                                         <p className="text-[10px] text-gray-500 uppercase tracking-widest">300 • 1000 • 1900</p>
                                     </div>
                                 )}
@@ -292,8 +292,8 @@ export default function CollectionEditForm({
                         {/* Right: Upload Button & URL Input */}
                         <div className="flex-1 space-y-6">
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Upload Media</label>
-                                <label className="relative inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 group overflow-hidden">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Upload Media</label>
+                                <label className="relative inline-flex items-center justify-center px-6 py-4 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-all cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 group overflow-hidden">
                                     <input
                                         type="file"
                                         className="hidden"
@@ -312,7 +312,7 @@ export default function CollectionEditForm({
                                         {uploading ? 'Processing...' : 'Upload Hero Image'}
                                     </div>
                                 </label>
-                                <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+                                <p className="mt-4 text-xs text-gray-500 leading-relaxed">
                                     Upload a high-resolution image. We will automatically generate <br />
                                     <b>300px</b>, <b>1000px</b>, and <b>1900px</b> variants for optimal performance.
                                 </p>
@@ -327,7 +327,7 @@ export default function CollectionEditForm({
                                     value={imageUrl}
                                     onChange={(e) => setImageUrl(e.target.value)}
                                     placeholder="https://storage.railway.app/..."
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 />
                             </div>
 
@@ -340,10 +340,10 @@ export default function CollectionEditForm({
                                     value={videoUrl}
                                     onChange={(e) => setVideoUrl(e.target.value)}
                                     placeholder="https://www.youtube.com/watch?v=... or .mp4"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 />
                                 <div className="mt-2">
-                                    <label className="relative inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition-all cursor-pointer border border-gray-200">
+                                    <label className="relative inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 transition-all cursor-pointer border border-gray-200">
                                         <input
                                             type="file"
                                             className="hidden"
@@ -362,7 +362,7 @@ export default function CollectionEditForm({
                                             {videoUploading ? 'Uploading Video...' : 'Upload Video File'}
                                         </div>
                                     </label>
-                                    <p className="mt-1 text-[10px] text-gray-500">
+                                    <p className="mt-2 text-[10px] text-gray-500">
                                         Uploads MP4/WebM to storage and fills the URL field. Supported max size: 500MB (Railway Limit).
                                     </p>
                                 </div>
@@ -374,12 +374,12 @@ export default function CollectionEditForm({
 
             {/* Content Section - Both Languages Visible */}
             <div className="mb-8">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Content</h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Content</h2>
+                <div className="bg-white rounded border border-gray-200 p-6">
                     <div className="grid grid-cols-2 gap-6">
                         {/* English */}
                         <div>
-                            <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                            <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
                                 <span className="text-lg">🇬🇧</span> English
                             </h3>
                             <div className="space-y-4">
@@ -392,7 +392,7 @@ export default function CollectionEditForm({
                                         value={translations.en.title}
                                         onChange={(e) => updateTranslation('en', 'title', e.target.value)}
                                         placeholder="Collection title"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
                                 <div>
@@ -404,7 +404,7 @@ export default function CollectionEditForm({
                                         onChange={(e) => updateTranslation('en', 'subtitle', e.target.value)}
                                         placeholder="Collection subtitle"
                                         rows={3}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
                             </div>
@@ -412,7 +412,7 @@ export default function CollectionEditForm({
 
                         {/* Bulgarian */}
                         <div>
-                            <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                            <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
                                 <span className="text-lg">🇧🇬</span> Bulgarian
                             </h3>
                             <div className="space-y-4">
@@ -425,7 +425,7 @@ export default function CollectionEditForm({
                                         value={translations.bg.title}
                                         onChange={(e) => updateTranslation('bg', 'title', e.target.value)}
                                         placeholder="Заглавие на колекцията"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
                                 <div>
@@ -437,7 +437,7 @@ export default function CollectionEditForm({
                                         onChange={(e) => updateTranslation('bg', 'subtitle', e.target.value)}
                                         placeholder="Подзаглавие"
                                         rows={3}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
                             </div>
@@ -448,15 +448,15 @@ export default function CollectionEditForm({
 
             {/* Products Section */}
             <div className="mb-8">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">
                     Products ({productCount})
                 </h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded border border-gray-200 p-6">
                     <div className="flex gap-6">
                         {/* Left: Product List */}
                         <div className="flex-1">
                             {productCount > 0 ? (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {products.map((product) => (
                                         <div
                                             key={product.id}
@@ -490,7 +490,7 @@ export default function CollectionEditForm({
                         <div className="flex items-start">
                             <button
                                 onClick={() => setShowProductSelector(true)}
-                                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
+                                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors whitespace-nowrap"
                             >
                                 Manage Products
                             </button>
@@ -502,21 +502,21 @@ export default function CollectionEditForm({
             {/* Nested Collections Section (Only for Homepage/Meta collections) */}
             {collection.source === 'homepage' && (
                 <div className="mb-8">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                         Nested Collections ({childCollections.length})
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Menu Aggregation</span>
+                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-4 py-0.5 rounded-full">Menu Aggregation</span>
                     </h2>
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded border border-gray-200 p-6">
                         <div className="flex gap-6">
                             <div className="flex-1">
                                 {childCollections.length > 0 ? (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                         {childCollections.map((col) => (
                                             <div
                                                 key={col.id}
-                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100"
+                                                className="flex items-center gap-4 p-3 bg-gray-50 rounded border border-gray-100"
                                             >
-                                                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100 text-gray-400 flex-shrink-0">
+                                                <div className="w-10 h-10 bg-white rounded flex items-center justify-center border border-gray-100 text-gray-400 flex-shrink-0">
                                                     <Layers size={20} />
                                                 </div>
                                                 <div className="min-w-0">
@@ -533,7 +533,7 @@ export default function CollectionEditForm({
                             <div className="flex items-start">
                                 <button
                                     onClick={() => setShowCollectionSelector(true)}
-                                    className="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 transition-colors whitespace-nowrap"
+                                    className="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded hover:bg-rose-700 transition-colors whitespace-nowrap"
                                 >
                                     Manage Collections
                                 </button>
@@ -545,8 +545,8 @@ export default function CollectionEditForm({
 
             {/* Settings Section */}
             <div className="mb-8">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Settings</h2>
+                <div className="bg-white rounded border border-gray-200 p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <label className="text-sm font-medium text-gray-700">
@@ -576,7 +576,7 @@ export default function CollectionEditForm({
                             type="text"
                             value={slug}
                             onChange={(e) => setSlug(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                         <p className="mt-2 text-sm text-gray-500">
                             Unique ID used in the URL. Must be unique across all collections.
@@ -591,7 +591,7 @@ export default function CollectionEditForm({
                             type="number"
                             value={sortOrder}
                             onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                            className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-32 px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                         <p className="mt-2 text-sm text-gray-500">
                             Lower numbers appear first (0 is first)
@@ -605,13 +605,13 @@ export default function CollectionEditForm({
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-4 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     {saving ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button
                     onClick={() => router.back()}
-                    className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-6 py-4 bg-gray-100 text-gray-700 font-medium rounded hover:bg-gray-200 transition-colors"
                 >
                     Cancel
                 </button>

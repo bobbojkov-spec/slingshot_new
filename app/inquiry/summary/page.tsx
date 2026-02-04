@@ -1,21 +1,49 @@
 "use client";
 
+import Head from "next/head";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { useCart } from "@/lib/cart/CartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { InquiryStepper } from "@/components/InquiryStepper";
+import { buildCanonicalUrlClient } from "@/lib/seo/url";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function SummaryPage() {
   const { items, updateQuantity, removeItem } = useCart();
   const { t } = useLanguage();
+  const canonicalUrl = buildCanonicalUrlClient("/inquiry/summary");
+  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: t("inquiry.yourItems"),
+    url: canonicalUrl,
+    description: t("inquiry.progressLabel"),
+  };
 
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Head>
+        <title>{t("inquiry.yourItems")} | Slingshot Bulgaria</title>
+        <meta name="description" content={t("inquiry.progressLabel")} />
+        <meta property="og:title" content={`${t("inquiry.yourItems")} | Slingshot Bulgaria`} />
+        <meta property="og:description" content={t("inquiry.progressLabel")} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Slingshot Bulgaria" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={baseOgImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${t("inquiry.yourItems")} | Slingshot Bulgaria`} />
+        <meta name="twitter:description" content={t("inquiry.progressLabel")} />
+        <meta name="twitter:image" content={baseOgImage} />
+        <link rel="canonical" href={canonicalUrl} />
+      </Head>
+      <SchemaJsonLd data={pageSchema} defer />
       <Header />
       <main className="flex-1 pt-20">
         <div className="section-container section-padding space-y-6">
@@ -27,17 +55,17 @@ export default function SummaryPage() {
               </span>
               <h1 className="h1 font-heading mt-2">{t("inquiry.yourItems")}</h1>
             </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <span className="rounded-full bg-muted/60 text-white px-3 py-1">{t("inquiry.steps.summary")}</span>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="rounded-full bg-muted/60 text-white px-4 py-2">{t("inquiry.steps.summary")}</span>
               <span className="h-px w-10 bg-border" />
-              <span className="px-3 py-1 text-muted-foreground">{t("inquiry.steps.contact")}</span>
+              <span className="px-4 py-2 text-muted-foreground">{t("inquiry.steps.contact")}</span>
               <span className="h-px w-10 bg-border" />
-              <span className="px-3 py-1 text-muted-foreground">{t("inquiry.steps.confirmation")}</span>
+              <span className="px-4 py-2 text-muted-foreground">{t("inquiry.steps.confirmation")}</span>
             </div>
           </div>
 
           {items.length === 0 && (
-            <div className="rounded-lg border border-border p-6 text-center font-body text-muted-foreground">
+            <div className="rounded border border-border p-6 text-center font-body text-muted-foreground">
               {t("inquiry.emptyCart")}
             </div>
           )}
@@ -45,7 +73,7 @@ export default function SummaryPage() {
           {items.map((item, index) => (
             <div
               key={`${item.id}-${item.size}-${item.color}-${index}`}
-              className="rounded-2xl border border-border bg-white shadow-sm px-5 py-4 flex flex-col lg:flex-row lg:items-center lg:gap-6 gap-4"
+              className="rounded border border-border bg-white shadow-sm px-4 py-4 flex flex-col lg:flex-row lg:items-center lg:gap-6 gap-4"
             >
               <div className="flex items-center gap-4">
                 {item.image && (
@@ -57,12 +85,12 @@ export default function SummaryPage() {
                     {item.category} {item.size && `• ${item.size}`}
                   </p>
                   {item.color && (
-                    <div className="flex items-center gap-1.5 mt-1">
+                    <div className="flex items-center gap-2 mt-2">
                       <span
                         className={`w-3 h-3 rounded-full ${item.color === "blue" ? "bg-blue-500" :
-                            item.color === "green" ? "bg-emerald-500" :
-                              item.color === "orange" ? "bg-orange-500" :
-                                "bg-gray-400"
+                          item.color === "green" ? "bg-emerald-500" :
+                            item.color === "orange" ? "bg-orange-500" :
+                              "bg-gray-400"
                           }`}
                       />
                       <span className="text-xs text-muted-foreground capitalize">{item.color}</span>
@@ -97,14 +125,14 @@ export default function SummaryPage() {
           ))}
 
           {items.length > 0 && (
-            <div className="rounded-2xl border border-border bg-secondary/30 px-6 py-4 flex items-center justify-between">
+            <div className="rounded border border-border bg-secondary/30 px-6 py-4 flex items-center justify-between">
               <span className="font-body text-muted-foreground">{t("inquiry.totalItems")}</span>
               <span className="font-heading text-2xl">{totalItems}</span>
             </div>
           )}
 
           <div className="flex justify-end">
-            <Link href="/inquiry/contact" className="btn-primary px-6 py-3">
+            <Link href="/inquiry/contact" className="btn-primary px-6 py-4">
               {t("inquiry.continueButton")}
             </Link>
           </div>

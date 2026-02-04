@@ -76,10 +76,10 @@ export default async function HomepageCollectionsPage() {
 
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-4">
                             {sourceTitle} Collections
                             <span
-                                className="text-sm font-normal px-3 py-1 rounded-full text-white"
+                                className="text-sm font-normal px-4 py-2 rounded-full text-white"
                                 style={{ backgroundColor: sourceColor }}
                             >
                                 {collections.length} collections

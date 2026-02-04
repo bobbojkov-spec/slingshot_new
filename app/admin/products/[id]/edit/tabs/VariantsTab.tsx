@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect, type ReactNode } from 'react';
+import { useMemo, useState, useEffect, type ReactNode, memo } from 'react';
 import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import BilingualInput from '../../../../components/BilingualInput';
@@ -41,7 +41,7 @@ type SharedColor = {
   hex_color: string;
 };
 
-export default function VariantsTab({
+function VariantsTab({
   draft,
   setDraft,
 }: {
@@ -84,6 +84,7 @@ export default function VariantsTab({
 
   const variants = draft.variants || [];
   const colors = draft.colors || [];
+  const visualColors = draft.product_colors || [];
   const availability = draft.availability || [];
 
   const sortedColors = useMemo(
@@ -438,41 +439,44 @@ export default function VariantsTab({
     {
       title: 'Visual Color',
       key: 'product_color_id',
-      width: 150,
+      width: 180,
       render: (_: any, record: Variant) => {
-        const visualColors = draft.product_colors || [];
-        // If editing
         if (isEditing(record)) {
           return (
             <Select
               style={{ width: '100%' }}
               allowClear
+              placeholder={visualColors.length ? 'Select visual color' : 'Add colors in Visual Colors tab'}
               value={editForm.product_color_id}
               onChange={(val) => setEditForm({ ...editForm, product_color_id: val })}
-            >
-              {visualColors.map((c: any) => (
-                <Select.Option key={c.id} value={c.id}>
+              options={visualColors.map((c: any) => ({
+                value: c.id,
+                label: (
                   <Space>
-                    <img src={c.url || c.image_path} style={{ width: 20, height: 20, objectFit: 'contain' }} />
-                    {c.name || 'Unnamed'}
+                    <img
+                      src={c.url || c.image_path}
+                      alt={c.name || 'Color'}
+                      style={{ width: 20, height: 20, objectFit: 'contain', borderRadius: 4, border: '1px solid #eee' }}
+                    />
+                    <span>{c.name || 'Unnamed'}</span>
                   </Space>
-                </Select.Option>
-              ))}
-            </Select>
+                ),
+              }))}
+            />
           );
         }
-        // Read only
+
         const color = visualColors.find((c: any) => c.id === record.product_color_id);
-        if (!color) return '—';
+        if (!color) return <Typography.Text type="secondary">—</Typography.Text>;
         return (
           <Space>
-            <div style={{ width: 20, height: 20, borderRadius: 2, border: '1px solid #ddd', overflow: 'hidden' }}>
-              <img src={color.url || color.image_path} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ width: 20, height: 20, borderRadius: 4, border: '1px solid #ddd', overflow: 'hidden' }}>
+              <img src={color.url || color.image_path} alt={color.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <Typography.Text style={{ fontSize: 12 }}>{color.name}</Typography.Text>
           </Space>
         );
-      }
+      },
     },
     {
       title: 'Price (€)',
@@ -969,3 +973,5 @@ function CardSection({
     </div>
   );
 }
+
+export default memo(VariantsTab);

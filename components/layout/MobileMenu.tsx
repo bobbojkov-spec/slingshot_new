@@ -13,6 +13,7 @@ interface MobileMenuProps {
         sports?: NavigationSport[];
         slingshotMenuGroups?: MenuGroup[];
         rideEngineMenuGroups?: MenuGroup[];
+        customPages?: any[];
     } | null;
 }
 
@@ -20,8 +21,6 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
     const { language, setLanguage, t } = useLanguage();
 
     // Track open states for accordions
-    // Structure: { [sportSlug]: boolean } -> if true, show Groups
-    // Structure: { [groupSlug_or_Id]: boolean } -> if true, show Collections
     const [expandedSports, setExpandedSports] = useState<Record<string, boolean>>({});
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -68,7 +67,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                             </button>
 
-                            <div className={`pl-4 flex flex-col gap-3 overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-[1000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                            <div className={`pl-4 flex flex-col gap-4 overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-[1000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                                 {sportGroups.map(group => {
                                     const groupTitle = (language === 'bg' && group.title_bg) ? group.title_bg : group.title;
                                     const isGroupExpanded = expandedGroups[group.id];
@@ -80,16 +79,16 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
 
                                     return (
                                         <div key={group.id}>
-                                            <div className="w-full flex items-center justify-between text-sm py-1 text-white/70 uppercase tracking-wider">
+                                            <div className="w-full flex items-center justify-between text-sm py-2 text-white/70 uppercase tracking-wider">
                                                 {groupTitle}
                                                 {isGroupExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                             </div>
-                                            <div className={`pl-4 flex flex-col gap-2 mt-1 border-l border-white/10 ${isGroupExpanded ? 'block' : 'hidden'}`}>
+                                            <div className={`pl-4 flex flex-col gap-2 mt-2 border-l border-white/10 ${isGroupExpanded ? 'block' : 'hidden'}`}>
                                                 {collections.map(col => (
                                                     <Link
                                                         key={col.id}
                                                         href={`/collections/${col.slug}`}
-                                                        className="text-white/60 hover:text-accent text-sm py-1 transition-colors"
+                                                        className="text-white/60 hover:text-accent text-sm py-2 transition-colors"
                                                         onClick={onClose}
                                                     >
                                                         {col.title}
@@ -99,7 +98,6 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                         </div>
                                     );
                                 })}
-                                {/* Fallback simply linking to sport page if no groups (rare) */}
                                 {sportGroups.length === 0 && (
                                     <Link href={`/category/${sport.slug}`} onClick={onClose} className="text-white/50 text-sm italic">
                                         View all {sport.name}
@@ -110,14 +108,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                     );
                 })}
 
-                {/* Ride Engine Link - Keeping simple as requested or should it expand too? 
-            "Ride Engine" is usually treated as a separate brand link. 
-            User said "menu for Tablet... list its Submenus". 
-            Let's keep Ride Engine as a direct link for now unless they have complex grouping structure here too. 
-            Actually, the logic for RE groups is available. Let's make it an accordion too for consistency?
-            User said "Slingshot BG video/image... no hiding of the BG on mobile". 
-            Let's stick to the requested change: "menu for Tablet, and mobile... list its Submenus (collections) on Click".
-        */}
+                {/* Ride Engine Link */}
                 <div className="border-b border-white/5 pb-2">
                     <button
                         onClick={() => toggleSport('rideengine')}
@@ -126,13 +117,13 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                         RIDEENGINE
                         {expandedSports['rideengine'] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                     </button>
-                    <div className={`pl-4 flex flex-col gap-3 overflow-hidden transition-all duration-300 ${expandedSports['rideengine'] ? 'max-h-[1000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className={`pl-4 flex flex-col gap-4 overflow-hidden transition-all duration-300 ${expandedSports['rideengine'] ? 'max-h-[1000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                         {navigation?.rideEngineMenuGroups?.map(group => {
                             const groupTitle = (language === 'bg' && group.title_bg) ? group.title_bg : group.title;
 
                             return (
                                 <div key={group.id} className="flex flex-col gap-1">
-                                    <div className="text-xs text-accent/70 uppercase tracking-widest font-bold py-1">
+                                    <div className="text-xs text-accent/70 uppercase tracking-widest font-bold py-2">
                                         {groupTitle}
                                     </div>
                                     <div className="pl-2 border-l border-white/10 flex flex-col gap-1">
@@ -140,7 +131,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                             <Link
                                                 key={col.id}
                                                 href={`/collections/${col.slug}`}
-                                                className="text-white/60 hover:text-white text-sm py-1"
+                                                className="text-white/60 hover:text-white text-sm py-2"
                                                 onClick={onClose}
                                             >
                                                 {col.title}
@@ -153,16 +144,28 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                     </div>
                 </div>
 
+                {/* Custom Pages */}
+                {navigation?.customPages?.filter((p: any) => p.show_header).sort((a: any, b: any) => (a.header_order || 0) - (b.header_order || 0)).map((page: any) => (
+                    <div key={page.id} className="border-b border-white/5 last:border-0 pb-2">
+                        <Link
+                            href={`/p/${page.slug}`}
+                            className="w-full block text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors"
+                            onClick={onClose}
+                        >
+                            {page.title}
+                        </Link>
+                    </div>
+                ))}
 
                 {/* Language Selector */}
-                <div className="pt-4 mt-2 mb-safe"> {/* Added mb-safe for spacing */}
+                <div className="pt-4 mt-2 mb-safe text-left">
                     <span className="font-body text-xs text-white/40 uppercase tracking-wider mb-2 block">
                         {t("header.languageLabel")}
                     </span>
                     <div className="flex items-center gap-1 mb-8">
-                        <div className="bg-white/5 border border-white/10 rounded-md p-1 flex items-center shadow-sm">
+                        <div className="bg-white/5 border border-white/10 rounded p-2 flex items-center shadow-sm">
                             <button
-                                className={`px-3 py-1 text-xs font-bold rounded transition-all ${language === "bg"
+                                className={`px-4 py-2 text-xs font-bold rounded transition-all ${language === "bg"
                                     ? "bg-white text-deep-navy shadow-sm"
                                     : "text-white/50 hover:text-white"
                                     }`}
@@ -171,7 +174,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                 BG
                             </button>
                             <button
-                                className={`px-3 py-1 text-xs font-bold rounded transition-all ${language === "en"
+                                className={`px-4 py-2 text-xs font-bold rounded transition-all ${language === "en"
                                     ? "bg-white text-deep-navy shadow-sm"
                                     : "text-white/50 hover:text-white"
                                     }`}

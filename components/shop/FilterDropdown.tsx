@@ -47,7 +47,7 @@ export function FilterDropdown({ label, options, selectedValues, onChange, disab
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    flex items-center justify-between min-w-[150px] px-3 py-2 
+                    flex items-center justify-between min-w-[150px] px-4 py-2 
                     bg-white border rounded text-left transition-colors
                     ${isOpen ? 'border-black ring-1 ring-black' : 'border-gray-300 hover:border-black'}
                 `}
@@ -71,7 +71,7 @@ export function FilterDropdown({ label, options, selectedValues, onChange, disab
             {isOpen && (
                 <div className="absolute top-full left-0 mt-2 w-56 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded shadow-lg z-50 p-2">
                     {options.length === 0 ? (
-                        <div className="text-sm text-gray-400 px-2 py-1">No options</div>
+                        <div className="text-sm text-gray-400 px-4 py-2">No options</div>
                     ) : (
                         options.map((option) => {
                             const isSelected = selectedValues.includes(option.slug);
@@ -80,7 +80,7 @@ export function FilterDropdown({ label, options, selectedValues, onChange, disab
                                     key={option.slug}
                                     type="button"
                                     onClick={() => toggleOption(option.slug)}
-                                    className="flex items-center w-full px-2 py-2 text-sm text-left hover:bg-gray-50 rounded transition-colors group"
+                                    className="flex items-center w-full px-4 py-2 text-sm text-left hover:bg-gray-50 rounded transition-colors group"
                                 >
                                     <div className={`
                                         w-4 h-4 mr-3 border rounded flex items-center justify-center transition-colors

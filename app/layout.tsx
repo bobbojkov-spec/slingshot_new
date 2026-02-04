@@ -10,6 +10,7 @@ import { headers } from "next/headers";
 import type { Language } from "@/lib/i18n/LanguageContext";
 import { getFullNavigation } from "@/lib/railway/navigation-server";
 import { buildLocalBusinessSchema, buildWebSiteSchema } from "@/lib/seo/business";
+import { buildCanonicalUrl } from "@/lib/seo/url-server";
 
 export const metadata: Metadata = {
   title: "Slingshot Bulgaria",
@@ -79,10 +80,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Fetch navigation data server-side to prevent layout shifts
   const initialNavigation = await getFullNavigation(initialLanguage);
 
-  // SEO: Construct canonical URL
-  const host = getHeaderValue("host") || "slingshotnew-development.up.railway.app";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  const canonicalUrl = `${protocol}://${host}`;
+  const canonicalUrl = await buildCanonicalUrl();
+  const baseUrl = canonicalUrl.replace(/\/$/, "");
+  const ogImage = `${baseUrl}/images/og-default.jpg`;
 
   const webSiteSchema = buildWebSiteSchema(canonicalUrl);
   const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);
@@ -97,6 +97,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
         <link rel="canonical" href={canonicalUrl} />
+        <link rel="alternate" hrefLang="en" href={`${baseUrl}/?lang=en`} />
+        <link rel="alternate" hrefLang="bg" href={`${baseUrl}/?lang=bg`} />
+        <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/`} />
+        <meta property="og:image" content={ogImage} />
+        <meta name="twitter:image" content={ogImage} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}

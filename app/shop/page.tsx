@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Head from "next/head";
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ShopToolbar } from '@/components/shop/ShopToolbar';
 import { ShopHero } from '@/components/shop/ShopHero';
@@ -12,19 +13,27 @@ import ShopOverview from '@/components/shop/ShopOverview';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
 import { buildBreadcrumbSchema } from '@/lib/seo/business';
+import { buildCanonicalUrlClient } from '@/lib/seo/url';
 
 
 
 function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [products, setProducts] = useState([]);
   const [facets, setFacets] = useState({ categories: [], collections: [], types: [], tags: [], brands: [] });
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<string>(process.env.NEXT_PUBLIC_SITE_URL || "");
+
+  useEffect(() => {
+    if (!origin && typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, [origin]);
 
   // If ANY filter is active, we should NOT show the Featured/BestSellers sections
   // Filters: category, collection, type, tag, brand, q
@@ -70,22 +79,52 @@ function ShopContent() {
   };
 
   const breadcrumbItems = [
-    { label: 'Shop', href: '/shop' },
-    ...(searchParams.get('q') ? [{ label: `Search for "${searchParams.get('q')}" results: ${pagination.total}` }] : []),
+    { label: t("breadcrumbs.shop"), href: '/shop' },
+    ...(searchParams.get('q') ? [{ label: `${t("shop.search_results")} "${searchParams.get('q')}" ${t("shop.products")}: ${pagination.total}` }] : []),
     ...(searchParams.get('category') ? [{ label: searchParams.get('category')!.toUpperCase() }] : []),
   ];
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window === 'undefined' ? '' : window.location.origin);
+  const canonicalUrl = buildCanonicalUrlClient(`/shop${searchParams.toString() ? `?${searchParams.toString()}` : ''}`);
+  const baseUrl = canonicalUrl.replace(/\/.+$/, "");
   const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: breadcrumbItems[0]?.label || t("shop.allProducts"),
+    url: canonicalUrl,
+    description: searchParams.get('q') ? t("shop.search") : t("shop.allProducts"),
+  };
+
+  const pageTitle = searchParams.get('q')
+    ? `${t("shop.search")} "${searchParams.get('q')}" | Slingshot Bulgaria`
+    : `${t("shop.allProducts")} | Slingshot Bulgaria`;
+  const pageDescription = searchParams.get('q')
+    ? `${t("shop.search")} "${searchParams.get('q')}"`
+    : t("shop.allProducts");
+  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
 
   return (
     <div className="min-h-screen bg-zinc-100 pt-20">
-      {baseUrl && (
-        <SchemaJsonLd data={breadcrumbSchema} />
-      )}
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Slingshot Bulgaria" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={baseOgImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={baseOgImage} />
+        <link rel="canonical" href={canonicalUrl} />
+      </Head>
+      <SchemaJsonLd data={breadcrumbSchema} defer />
+      <SchemaJsonLd data={pageSchema} defer />
       {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
       <ShopHero
-        title={searchParams.get('q') ? 'Search' : (searchParams.get('category') || 'All Products')}
+        title={searchParams.get('q') ? t("shop.search") : (searchParams.get('category') || t("shop.allProducts"))}
         breadcrumbs={breadcrumbItems}
         variant={hasFilters ? 'minimal' : 'default'}
       />
@@ -106,7 +145,23 @@ function ShopContent() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">No products found matching your criteria.</div>
+          <div className="text-center py-20 text-gray-500 space-y-4">
+            <p>{t("shop.noProductsFound")}</p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+              <button
+                onClick={() => router.push('/shop')}
+                className="px-4 py-2 rounded bg-black text-white hover:bg-gray-900 transition"
+              >
+                {t("shop.clearFilters") || "Clear filters"}
+              </button>
+              <button
+                onClick={() => router.push('/shop?collection=best-sellers')}
+                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:border-gray-400 transition"
+              >
+                {t("shop.bestSellers") || "Best sellers"}
+              </button>
+            </div>
+          </div>
         ) : (
           <>
             {hasFilters && <ProductGrid products={products} />}
@@ -119,17 +174,17 @@ function ShopContent() {
                   disabled={pagination.page === 1}
                   onClick={() => handlePageChange(pagination.page - 1)}
                 >
-                  <ChevronLeft className="w-4 h-4 mr-2" /> Previous
+                  <ChevronLeft className="w-4 h-4 mr-2" /> {t("shop.previous")}
                 </Button>
                 <span className="text-sm font-medium">
-                  Page {pagination.page} of {pagination.totalPages}
+                  {t("shop.page")} {pagination.page} {t("shop.of")} {pagination.totalPages}
                 </span>
                 <Button
                   variant="outline"
                   disabled={pagination.page === pagination.totalPages}
                   onClick={() => handlePageChange(pagination.page + 1)}
                 >
-                  Next <ChevronRight className="w-4 h-4 ml-2" />
+                  {t("shop.next")} <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             )}

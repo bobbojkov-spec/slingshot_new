@@ -27,6 +27,7 @@ type EditFormValues = {
     header_order?: number;
     show_dropdown: boolean;
     dropdown_order?: number;
+    show_footer: boolean;
     footer_column: '' | 1 | 2 | 3;
     footer_order?: number;
     order?: number;
@@ -126,6 +127,7 @@ export default function PagesNewAdminPage() {
             header_order: page.header_order ?? undefined,
             show_dropdown: Boolean(page.show_dropdown),
             dropdown_order: page.dropdown_order ?? undefined,
+            show_footer: Boolean(page.footer_column),
             footer_column: (page.footer_column ?? '') as '' | 1 | 2 | 3,
             footer_order: page.footer_order ?? undefined,
         });
@@ -137,6 +139,7 @@ export default function PagesNewAdminPage() {
 
         setSubmitting(true);
         try {
+            const showFooter = Boolean(values.show_footer);
             const payload = {
                 title: values.title,
                 slug: values.slug,
@@ -146,8 +149,8 @@ export default function PagesNewAdminPage() {
                 header_order: values.header_order,
                 show_dropdown: values.show_dropdown,
                 dropdown_order: values.dropdown_order,
-                footer_column: values.footer_column === '' ? null : values.footer_column,
-                footer_order: values.footer_order,
+                footer_column: showFooter ? (values.footer_column === '' ? null : values.footer_column) : null,
+                footer_order: showFooter ? values.footer_order : null,
             };
 
             const response = await fetch(`/api/pages-new/${selectedPage.id}`, {
@@ -394,24 +397,44 @@ export default function PagesNewAdminPage() {
                         }
                     </Form.Item>
 
-                    <Form.Item name="footer_column" label="Footer Column">
-                        <Select<number | ''> options={footerOptions} />
+                    <Form.Item name="show_footer" valuePropName="checked">
+                        <Checkbox>Show in Footer</Checkbox>
                     </Form.Item>
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prev, curr) => prev.footer_column !== curr.footer_column}
+                        shouldUpdate={(prev, curr) => prev.show_footer !== curr.show_footer || prev.footer_column !== curr.footer_column}
                     >
-                        {({ getFieldValue }) =>
-                            getFieldValue('footer_column') ? (
-                                <Form.Item
-                                    name="footer_order"
-                                    label="Footer Order"
-                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
-                                >
-                                    <InputNumber min={1} style={{ width: '100%' }} />
-                                </Form.Item>
-                            ) : null
-                        }
+                        {({ getFieldValue, setFieldValue }) => {
+                            const showFooter = getFieldValue('show_footer');
+                            if (!showFooter) {
+                                if (getFieldValue('footer_column')) {
+                                    setFieldValue('footer_column', '');
+                                }
+                                if (getFieldValue('footer_order')) {
+                                    setFieldValue('footer_order', undefined);
+                                }
+                                return null;
+                            }
+
+                            if (!getFieldValue('footer_column')) {
+                                setFieldValue('footer_column', 1);
+                            }
+
+                            return (
+                                <>
+                                    <Form.Item name="footer_column" label="Footer Column" rules={[{ required: true }]}>
+                                        <Select<number | ''> options={footerOptions} />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="footer_order"
+                                        label="Footer Order"
+                                        rules={[{ required: true }, { type: 'number', min: 1 }]}
+                                    >
+                                        <InputNumber min={1} style={{ width: '100%' }} />
+                                    </Form.Item>
+                                </>
+                            );
+                        }}
                     </Form.Item>
                 </Form>
             </Modal>

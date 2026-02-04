@@ -183,7 +183,7 @@ const Header = () => {
     <header className={headerClass}>
       <div className="section-container">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 shrink-0">
+          <Link href="/" className="flex items-center gap-4 shrink-0">
             <img
               alt="Slingshot Bulgaria Official Logo"
               className="h-10 w-auto"
@@ -191,7 +191,7 @@ const Header = () => {
               width={160}
               height={40}
             />
-            <span className="font-logo font-extrabold text-orange-500/45 text-lg tracking-tight ml-1">
+            <span className="font-logo font-bold text-orange-500/45 text-lg tracking-tight ml-1">
               BG
             </span>
           </Link>
@@ -211,7 +211,7 @@ const Header = () => {
                     onMouseLeave={handleNavLeave}
                   >
                     <span
-                      className={`nav-link-white h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
+                      className={`nav-link-white h-full flex items-center px-4 cursor-default bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
                         }`}
                     >
                       {sport.name}
@@ -226,13 +226,23 @@ const Header = () => {
                   onMouseLeave={handleNavLeave}
                 >
                   <span
-                    className={`h-full flex items-center px-3 cursor-default bg-transparent border-0 uppercase tracking-xl font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
+                    className={`h-full flex items-center px-4 cursor-default bg-transparent border-0 uppercase tracking-xl font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
                       }`}
                   >
                     RIDEENGINE
                   </span>
                 </div>
 
+                {/* Custom Pages */}
+                {navigation?.customPages?.filter(p => p.show_header).sort((a, b) => (a.header_order || 0) - (b.header_order || 0)).map(page => (
+                  <Link
+                    key={page.id}
+                    href={`/p/${page.slug}`}
+                    className="nav-link-white h-full flex items-center px-4 uppercase tracking-wide font-bold text-sm transition-all duration-200 hover:bg-white/5 whitespace-nowrap"
+                  >
+                    {page.title}
+                  </Link>
+                ))}
               </nav>
             </div>
           </div>
@@ -276,7 +286,7 @@ const Header = () => {
                             {groupTitle}
                           </h3>
 
-                          <div className="flex flex-col gap-3">
+                          <div className="flex flex-col gap-4">
                             {filteredCollections.map((col: MenuCollection) => (
                               <Link
                                 key={col.id}
@@ -349,10 +359,10 @@ const Header = () => {
             </button>
 
             <div className="hidden lg:flex items-center ml-2">
-              <div className="bg-white/5 border border-white/10 rounded-md p-1 flex items-center shadow-sm">
+              <div className="bg-white/5 border border-white/10 rounded p-2 flex items-center shadow-sm">
                 <button
                   onClick={() => setLanguage("bg", true)}
-                  className={`px-2 py-0.5 text-2xs font-bold rounded transition-all ${language === "bg"
+                  className={`px-4 py-0.5 text-2xs font-bold rounded transition-all ${language === "bg"
                     ? "bg-white text-deep-navy shadow-sm"
                     : "text-white/50 hover:text-white hover:bg-white/5"
                     }`}
@@ -361,7 +371,7 @@ const Header = () => {
                 </button>
                 <button
                   onClick={() => setLanguage("en", true)}
-                  className={`px-2 py-0.5 text-2xs font-bold rounded transition-all ${language === "en"
+                  className={`px-4 py-0.5 text-2xs font-bold rounded transition-all ${language === "en"
                     ? "bg-white text-deep-navy shadow-sm"
                     : "text-white/50 hover:text-white hover:bg-white/5"
                     }`}
@@ -395,7 +405,7 @@ const Header = () => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t("header.searchPlaceholder")}
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
+                className="w-full bg-white/10 border border-white/20 rounded px-4 py-4 pr-12 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
               />
               <button
                 type="submit"
@@ -411,20 +421,20 @@ const Header = () => {
 
               {/* LIVE SUGGESTIONS DROPDOWN */}
               {(suggestions.products.length > 0 || suggestions.collections.length > 0 || (suggestions.tags && suggestions.tags.length > 0)) && (
-                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded-xl shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-dropdown-height overflow-y-auto border border-gray-200">
+                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-dropdown-height overflow-y-auto border border-gray-200">
                   <div className="flex flex-col gap-8">
 
                     {/* TAGS */}
                     {suggestions.tags && suggestions.tags.length > 0 && (
                       <div className="px-6">
-                        <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.suggestions")}</h4>
+                        <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.suggestions")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.name}
                               href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
                               onClick={() => setIsSearchOpen(false)}
-                              className="px-5 py-2.5 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-black text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
+                              className="px-4 py-2 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-bold text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
                             >
                               {tag.name}
                             </Link>
@@ -437,7 +447,7 @@ const Header = () => {
                       {/* COLLECTIONS */}
                       {suggestions.collections.length > 0 && (
                         <div>
-                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.collections")}</h4>
+                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.collections")}</h4>
                           <div className="space-y-1">
                             {suggestions.collections.map((col: any) => (
                               <Link
@@ -458,7 +468,7 @@ const Header = () => {
                       {/* PRODUCTS */}
                       {suggestions.products.length > 0 && (
                         <div>
-                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-3">{t("search.products")}</h4>
+                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.products")}</h4>
                           <div className="space-y-4">
                             {suggestions.products.map((prod: any) => (
                               <Link
@@ -467,7 +477,7 @@ const Header = () => {
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center gap-4 group"
                               >
-                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-200 p-1">
+                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-200 p-2">
                                   <img
                                     src={prod.image || '/placeholder.jpg'}
                                     alt={`${prod.name} - Slingshot Bulgaria Gear`}

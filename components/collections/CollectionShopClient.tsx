@@ -101,7 +101,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                             <Link
                                 key={child.id}
                                 href={`/collections/${child.slug}`}
-                                className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                                className="group relative aspect-[16/9] overflow-hidden rounded bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                             >
                                 {child.image_url ? (
                                     <img
@@ -115,7 +115,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
-                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 group-hover:text-accent transition-colors">
+                                    <h3 className="text-2xl font-bold text-white uppercase tracking-tighter mb-2 group-hover:text-accent transition-colors">
                                         {child.title}
                                     </h3>
                                     {child.subtitle && (

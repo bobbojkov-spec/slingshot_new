@@ -55,6 +55,7 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       { rows: activityRows = [] },
       { rows: colorRows = [] },
       { rows: availabilityRows = [] },
+      { rows: visualColorRows = [] },
     ] = await Promise.all([
       query(
         `
@@ -144,6 +145,16 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
         `,
         [productId]
       ),
+      query(
+        `
+          SELECT id, name, image_path, display_order
+          FROM product_colors
+          WHERE product_id = $1
+            AND image_path IS NOT NULL
+          ORDER BY display_order ASC
+        `,
+        [productId]
+      ),
     ]);
 
     const descriptions = descRows[0] || {};
@@ -177,6 +188,13 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       created_at: row.shared_created_at,
       updated_at: row.shared_updated_at,
     }));
+
+    const visualColors = await Promise.all(
+      visualColorRows.map(async (row: any) => ({
+        ...row,
+        url: row.image_path ? await getPresignedUrl(row.image_path) : null,
+      }))
+    );
 
     return NextResponse.json({
       product: {
@@ -225,7 +243,8 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
         },
         activity_categories: activityRows,
         activity_category_ids: activityRows.map((row) => row.id),
-        colors: colorRows,
+        colors,
+        product_colors: visualColors,
         availability: availabilityRows,
       },
     });

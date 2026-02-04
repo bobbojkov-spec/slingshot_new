@@ -49,14 +49,14 @@ const BestSellers = () => {
   return (
     <section className="section-padding bg-secondary/30">
       <div className="section-container">
-        <div className="flex items-end justify-between mb-10">
+        <div className="flex items-end justify-between mb-12">
           <div>
-            <span className="text-section-title block mb-3">{t("bestSellers.label")}</span>
+            <span className="text-section-title block mb-4">{t("bestSellers.label")}</span>
             <h2 className="h2 text-foreground">{t("bestSellers.title")}</h2>
           </div>
           <Link
             href="/shop"
-            className="hidden sm:inline-flex items-center gap-2 font-heading font-semibold text-primary hover:text-accent transition-colors uppercase tracking-wider text-sm"
+            className="hidden sm:inline-flex items-center gap-2 font-heading font-medium text-primary hover:text-accent transition-colors uppercase tracking-wider text-sm"
           >
             {t("bestSellers.viewAll")}
             <ArrowRight className="w-4 h-4" />

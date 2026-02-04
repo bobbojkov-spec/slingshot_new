@@ -44,7 +44,7 @@ export default function CollectionCard({
         <div className="relative group">
             <Link
                 href={`/admin/collections-${source}/${collection.slug}`}
-                className="block relative aspect-[2/1] rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100"
+                className="block relative aspect-[2/1] rounded overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100"
             >
                 {/* Background Image / Placeholder */}
                 <div className="absolute inset-0">
@@ -69,7 +69,7 @@ export default function CollectionCard({
 
                 {/* Content */}
                 <div className="absolute inset-x-0 bottom-0 p-4 z-10">
-                    <h3 className={`font-semibold text-lg line-clamp-2 mb-1 ${isFallback ? 'text-orange-200 italic' : 'text-white'}`}>
+                    <h3 className={`font-medium text-lg line-clamp-2 mb-2 ${isFallback ? 'text-orange-200 italic' : 'text-white'}`}>
                         {displayTitle}
                     </h3>
                     {displaySubtitle && (
@@ -78,7 +78,7 @@ export default function CollectionCard({
                         </p>
                     )}
                     {/* Product Count Badge */}
-                    <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded border border-white/20">
+                    <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-4 py-0.5 rounded border border-white/20">
                         {collection.product_count ?? 0}
                     </div>
                 </div>
@@ -116,7 +116,7 @@ export default function CollectionCard({
                         e.stopPropagation();
                         onDelete();
                     }}
-                    className="absolute top-2 left-2 z-20 bg-red-600 text-white p-1.5 rounded-full opacity-100 hover:bg-red-700 transition-colors shadow-lg"
+                    className="absolute top-2 left-2 z-20 bg-red-600 text-white p-2.5 rounded-full opacity-100 hover:bg-red-700 transition-colors shadow-lg"
                     title="Delete Empty Collection"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

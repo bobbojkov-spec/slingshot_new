@@ -68,10 +68,22 @@ export default {
         heading: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"]
       },
+      fontWeight: {
+        normal: "400",
+        medium: "500",
+        semibold: "500",
+        bold: "700",
+        extrabold: "700",
+        black: "700"
+      },
       borderRadius: {
+        DEFAULT: "var(--radius)",
+        sm: "var(--radius)",
+        md: "var(--radius)",
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)"
+        xl: "var(--radius)",
+        "2xl": "var(--radius)",
+        "3xl": "var(--radius)"
       },
       keyframes: {
         "accordion-down": {

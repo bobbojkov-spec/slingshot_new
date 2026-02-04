@@ -85,13 +85,13 @@ export default function HomepageCategoriesClient({
   return (
     <div className="space-y-6">
       {/* Stats Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-blue-50 border border-blue-200 rounded p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-sm text-blue-700">
             Selected: <strong>{selectedIds.length}</strong> collections
           </span>
           {selectedIds.length > 8 && (
-            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
+            <span className="text-xs bg-orange-100 text-orange-700 px-4 py-2 rounded">
               First 8 will be displayed
             </span>
           )}
@@ -100,7 +100,7 @@ export default function HomepageCategoriesClient({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="px-6 py-2 bg-gray-900 text-white font-medium rounded hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -109,15 +109,15 @@ export default function HomepageCategoriesClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Selected Collections */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col h-[600px]">
+        <div className="bg-white border border-gray-200 rounded shadow-sm flex flex-col h-[600px]">
           <div className="p-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900 flex items-center justify-between">
+            <h2 className="font-medium text-gray-900 flex items-center justify-between">
               Selected Collections
-              <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+              <span className="bg-blue-100 text-blue-700 text-xs px-4 py-2 rounded-full">
                 {selectedIds.length}
               </span>
             </h2>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-2">
               First 8 will appear on homepage
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function HomepageCategoriesClient({
             {selectedCollections.map((col, index) => (
               <div
                 key={col.id}
-                className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${index < 8
+                className={`flex items-center gap-2 p-4 rounded border transition-colors ${index < 8
                     ? 'bg-blue-50 border-blue-200'
                     : 'bg-gray-50 border-gray-200 opacity-70'
                   }`}
@@ -138,17 +138,17 @@ export default function HomepageCategoriesClient({
                   <p className="font-medium text-gray-900 text-sm truncate">
                     {col.title}
                   </p>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <p className="text-xs text-gray-500 flex items-center gap-2">
                     <span className="capitalize">{col.source}</span>
                     <span className="text-gray-300">|</span>
                     <span className="truncate">{col.slug}</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => moveItem(index, 'up')}
                     disabled={index === 0}
-                    className="p-1 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
+                    className="p-2 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
                     title="Move up"
                   >
                     <ArrowUp size={14} />
@@ -156,14 +156,14 @@ export default function HomepageCategoriesClient({
                   <button
                     onClick={() => moveItem(index, 'down')}
                     disabled={index === selectedIds.length - 1}
-                    className="p-1 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
+                    className="p-2 hover:bg-white rounded disabled:opacity-30 text-gray-500 hover:text-gray-700"
                     title="Move down"
                   >
                     <ArrowDown size={14} />
                   </button>
                   <button
                     onClick={() => toggleCollection(col.id)}
-                    className="p-1 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
+                    className="p-2 hover:bg-red-100 text-gray-400 hover:text-red-500 rounded transition-colors"
                     title="Remove"
                   >
                     <ArrowLeft className="rotate-180" size={16} />
@@ -174,16 +174,16 @@ export default function HomepageCategoriesClient({
             {selectedIds.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm">
                 <p>No collections selected.</p>
-                <p className="text-xs mt-1">Choose from the list on the right.</p>
+                <p className="text-xs mt-2">Choose from the list on the right.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Right: Available Collections */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col h-[600px]">
-          <div className="p-4 border-b border-gray-200 space-y-3">
-            <h2 className="font-semibold text-gray-900">Available Collections</h2>
+        <div className="bg-white border border-gray-200 rounded shadow-sm flex flex-col h-[600px]">
+          <div className="p-4 border-b border-gray-200 space-y-4">
+            <h2 className="font-medium text-gray-900">Available Collections</h2>
 
             {/* Source Filter Tabs */}
             <div className="flex gap-2">
@@ -191,7 +191,7 @@ export default function HomepageCategoriesClient({
                 <button
                   key={filter}
                   onClick={() => setSourceFilter(filter)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${sourceFilter === filter
+                  className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${sourceFilter === filter
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
@@ -216,7 +216,7 @@ export default function HomepageCategoriesClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search collections..."
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
               />
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function HomepageCategoriesClient({
                 <div
                   key={col.id}
                   onClick={() => !isSelected && toggleCollection(col.id)}
-                  className={`flex items-center gap-3 p-3 border rounded-lg transition-all cursor-pointer ${isSelected
+                  className={`flex items-center gap-4 p-4 border rounded transition-all cursor-pointer ${isSelected
                       ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
                       : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
                     }`}
@@ -245,7 +245,7 @@ export default function HomepageCategoriesClient({
                     <p className="font-medium text-gray-900 text-sm truncate">
                       {col.title}
                     </p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 flex items-center gap-2">
                       <span className="capitalize">{col.source}</span>
                       <span className="text-gray-300">|</span>
                       <span className="truncate">{col.slug}</span>

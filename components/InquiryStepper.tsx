@@ -18,7 +18,7 @@ export const InquiryStepper = ({ activeIndex }: InquiryStepperProps) => {
   const { t } = useLanguage();
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-4">
       {steps.map((step, index) => (
         <div key={step.key} className="flex items-center gap-4">
           <div
@@ -29,7 +29,7 @@ export const InquiryStepper = ({ activeIndex }: InquiryStepperProps) => {
             }`}
           >
             <step.Icon className="w-4 h-4" />
-            <span className="text-xs font-semibold uppercase tracking-[0.4em]">
+            <span className="text-xs font-medium uppercase tracking-[0.4em]">
               {t(step.key)}
             </span>
           </div>

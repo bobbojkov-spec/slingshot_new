@@ -73,10 +73,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
     // 2. Fetch Variants (for pricing and options)
     const variantsSql = `
-      SELECT 
-        id, 
-        price, 
-        compare_at_price, 
+      SELECT
+        id,
+        price,
+        compare_at_price,
         inventory_quantity,
         title,
         name_en, -- Use this for display
@@ -85,8 +85,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         available,
         status,
         position,
-        product_color_id -- New Column
-      FROM product_variants 
+        product_color_id
+      FROM product_variants
       WHERE product_id = $1 AND status = 'active'
       ORDER BY position ASC
     `;
@@ -121,12 +121,32 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       ORDER BY display_order ASC
     `;
 
-    const [variantsResult, imagesResult, localImagesResult, colorsResult] = await Promise.all([
+    const translationsSql = `
+      SELECT language_code, title, description_html, description_html2, specs_html, package_includes, subtitle
+      FROM product_translations
+      WHERE product_id = $1
+    `;
+
+    const [variantsResult, imagesResult, localImagesResult, colorsResult, translationsResult] = await Promise.all([
       query(variantsSql, [product.id]),
       query(imagesSql, [product.id]),
       query(localImagesSql, [product.id]),
-      query(colorsSql, [product.id])
+      query(colorsSql, [product.id]),
+      query(translationsSql, [product.id])
     ]);
+
+    // Process Translations
+    const translations = translationsResult.rows;
+    const bgTrans = translations.find((t: any) => t.language_code === 'bg');
+    if (bgTrans) {
+      product.name_bg = bgTrans.title || product.name_bg;
+      product.description_html_bg = bgTrans.description_html;
+      product.description_html2_bg = bgTrans.description_html2;
+      product.specs_html_bg = bgTrans.specs_html;
+      product.package_includes_bg = bgTrans.package_includes;
+      product.subtitle_bg = bgTrans.subtitle;
+    }
+
 
     const variants = variantsResult.rows;
     // ... (image processing remains same)
@@ -153,15 +173,16 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     const prices = variants.map((v: any) => parseFloat(v.price)).filter(p => !isNaN(p));
     const price = prices.length > 0 ? Math.min(...prices) : 0;
 
-    // Extract variant options 
+    // Extract variant options
     const variantOptions = variants.map((v: any) => ({
       id: v.id,
-      title: v.name_en || v.name_bg || v.title || 'Default', // Prioritize name_en
+      title: v.name_en || v.name_bg || v.title || 'Default',
       price: parseFloat(v.price || 0),
       compareAtPrice: v.compare_at_price ? parseFloat(v.compare_at_price) : null,
       available: v.available,
+      inventory_quantity: parseInt(v.inventory_quantity || 0),
       sku: v.sku,
-      product_color_id: v.product_color_id // Include color ID
+      product_color_id: v.product_color_id
     }));
 
     // 3. Fetch Related Products (Same Product Type or Category, max 4)

@@ -49,15 +49,6 @@ export function toImageObjectKey(input: string | null | undefined): ImageObjectK
         return raw.replace(/^\/+/, '');
     }
 
-    // Check for known content directories (e.g. from bucket paths like /bucket/product-images/...)
-    const knownPrefixes = ['product-images/', 'media-library/', 'hero-slides/', 'news-images/'];
-    for (const prefix of knownPrefixes) {
-        const idx = raw.indexOf(prefix);
-        if (idx !== -1) {
-            return raw.substring(idx);
-        }
-    }
-
     // Some callers may pass "placeholder.jpg" - treat as an object key in original/
     if (!raw.includes('://') && !raw.startsWith('/')) {
         return raw.replace(/^\/+/, '');

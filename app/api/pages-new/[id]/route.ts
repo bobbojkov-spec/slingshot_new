@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query } from '@/lib/dbPg';
 
 const PAGE_COLUMNS = [
     'id',
@@ -12,7 +12,7 @@ const PAGE_COLUMNS = [
     'dropdown_order',
     'footer_column',
     'footer_order',
-    '"order"',
+    'order',
     'seo_title',
     'seo_description',
     'seo_keywords',
@@ -23,6 +23,28 @@ const PAGE_COLUMNS = [
     'created_at',
     'updated_at',
 ];
+
+const quoteColumn = (column: string) => (column === 'order' ? '"order"' : column);
+
+async function resolveColumns() {
+    const { rows } = await query(
+        `
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'pages' AND column_name = ANY($1)
+    `,
+        [PAGE_COLUMNS]
+    );
+
+    const available = new Set(rows.map((row: { column_name: string }) => row.column_name));
+    const filtered = PAGE_COLUMNS.filter((column) => available.has(column));
+
+    if (!filtered.length) {
+        throw new Error('No page columns available');
+    }
+
+    return filtered;
+}
 
 const parseId = (id?: string) => {
     if (!id) {
@@ -41,6 +63,20 @@ const parseId = (id?: string) => {
 const isPositiveInt = (value: unknown) => {
     const numberValue = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(numberValue) && Number.isInteger(numberValue) && numberValue >= 1;
+};
+
+const normalizeFooterColumn = (value: unknown): number | null => {
+    if (value === '' || value === null || value === undefined) {
+        return null;
+    }
+
+    const numberValue = typeof value === 'number' ? value : Number(value);
+
+    if (!Number.isFinite(numberValue)) {
+        return null;
+    }
+
+    return numberValue;
 };
 
 const parseNullableNumber = (value: unknown): number | null => {
@@ -64,7 +100,8 @@ export async function GET(
     try {
         const { id } = await context.params;
         const numId = parseId(id);
-        const selectColumns = PAGE_COLUMNS.join(', ');
+        const columns = await resolveColumns();
+        const selectColumns = columns.map(quoteColumn).join(', ');
         const { rows } = await query(
             `SELECT ${selectColumns} FROM pages WHERE id = $1`,
             [numId]
@@ -96,10 +133,12 @@ export async function PATCH(
     try {
         const { id } = await context.params;
         const numId = parseId(id);
+        const columns = await resolveColumns();
+        const available = new Set(columns);
         const payload = await request.json();
         const updates: { column: string; value: unknown }[] = [];
 
-        if (payload.title !== undefined) {
+        if (payload.title !== undefined && available.has('title')) {
             const title = typeof payload.title === 'string' ? payload.title.trim() : '';
             if (!title) {
                 return NextResponse.json(
@@ -110,7 +149,7 @@ export async function PATCH(
             updates.push({ column: 'title', value: title });
         }
 
-        if (payload.slug !== undefined) {
+        if (payload.slug !== undefined && available.has('slug')) {
             const slug = typeof payload.slug === 'string' ? payload.slug.trim() : '';
             if (!slug) {
                 return NextResponse.json(
@@ -132,7 +171,7 @@ export async function PATCH(
             updates.push({ column: 'slug', value: slug });
         }
 
-        if (payload.status !== undefined) {
+        if (payload.status !== undefined && available.has('status')) {
             if (payload.status !== 'draft' && payload.status !== 'published') {
                 return NextResponse.json(
                     { ok: false, error: 'Status must be draft or published' },
@@ -142,7 +181,7 @@ export async function PATCH(
             updates.push({ column: 'status', value: payload.status });
         }
 
-        if (payload.show_header !== undefined) {
+        if (payload.show_header !== undefined && available.has('show_header')) {
             const showHeader = Boolean(payload.show_header);
             updates.push({ column: 'show_header', value: showHeader });
 
@@ -153,13 +192,25 @@ export async function PATCH(
                         { status: 400 }
                     );
                 }
-                updates.push({ column: 'header_order', value: Number(payload.header_order) });
+                if (available.has('header_order')) {
+                    updates.push({ column: 'header_order', value: Number(payload.header_order) });
+                }
             } else {
-                updates.push({ column: 'header_order', value: null });
+                if (available.has('header_order')) {
+                    updates.push({ column: 'header_order', value: null });
+                }
             }
+        } else if (payload.header_order !== undefined && available.has('header_order')) {
+            if (!isPositiveInt(payload.header_order)) {
+                return NextResponse.json(
+                    { ok: false, error: 'Header order must be an integer >= 1' },
+                    { status: 400 }
+                );
+            }
+            updates.push({ column: 'header_order', value: Number(payload.header_order) });
         }
 
-        if (payload.show_dropdown !== undefined) {
+        if (payload.show_dropdown !== undefined && available.has('show_dropdown')) {
             const showDropdown = Boolean(payload.show_dropdown);
             updates.push({ column: 'show_dropdown', value: showDropdown });
 
@@ -170,26 +221,40 @@ export async function PATCH(
                         { status: 400 }
                     );
                 }
-                updates.push({ column: 'dropdown_order', value: Number(payload.dropdown_order) });
+                if (available.has('dropdown_order')) {
+                    updates.push({ column: 'dropdown_order', value: Number(payload.dropdown_order) });
+                }
             } else {
-                updates.push({ column: 'dropdown_order', value: null });
+                if (available.has('dropdown_order')) {
+                    updates.push({ column: 'dropdown_order', value: null });
+                }
             }
+        } else if (payload.dropdown_order !== undefined && available.has('dropdown_order')) {
+            if (!isPositiveInt(payload.dropdown_order)) {
+                return NextResponse.json(
+                    { ok: false, error: 'Dropdown order must be an integer >= 1' },
+                    { status: 400 }
+                );
+            }
+            updates.push({ column: 'dropdown_order', value: Number(payload.dropdown_order) });
         }
 
-        if (payload.footer_column !== undefined) {
-            const footerColumn = parseNullableNumber(payload.footer_column);
+        if (payload.footer_column !== undefined && available.has('footer_column')) {
+            const normalized = normalizeFooterColumn(payload.footer_column);
 
-            if (footerColumn !== null && ![1, 2, 3].includes(Number(footerColumn))) {
+            if (normalized !== null && ![1, 2, 3].includes(Number(normalized))) {
                 return NextResponse.json(
                     { ok: false, error: 'Footer column must be 1, 2, 3, or empty' },
                     { status: 400 }
                 );
             }
 
-            updates.push({ column: 'footer_column', value: footerColumn });
+            updates.push({ column: 'footer_column', value: normalized });
 
-            if (footerColumn === null) {
-                updates.push({ column: 'footer_order', value: null });
+            if (normalized === null) {
+                if (available.has('footer_order')) {
+                    updates.push({ column: 'footer_order', value: null });
+                }
             } else {
                 if (!isPositiveInt(payload.footer_order)) {
                     return NextResponse.json(
@@ -197,50 +262,60 @@ export async function PATCH(
                         { status: 400 }
                     );
                 }
-                updates.push({ column: 'footer_order', value: Number(payload.footer_order) });
+                if (available.has('footer_order')) {
+                    updates.push({ column: 'footer_order', value: Number(payload.footer_order) });
+                }
             }
+        } else if (payload.footer_order !== undefined && available.has('footer_order')) {
+            if (!isPositiveInt(payload.footer_order)) {
+                return NextResponse.json(
+                    { ok: false, error: 'Footer order must be an integer >= 1' },
+                    { status: 400 }
+                );
+            }
+            updates.push({ column: 'footer_order', value: Number(payload.footer_order) });
         }
 
-        if (payload.seo_title !== undefined) {
+        if (payload.seo_title !== undefined && available.has('seo_title')) {
             const seoTitle = typeof payload.seo_title === 'string' ? payload.seo_title.trim() : '';
             updates.push({ column: 'seo_title', value: seoTitle || null });
         }
 
-        if (payload.seo_description !== undefined) {
+        if (payload.seo_description !== undefined && available.has('seo_description')) {
             const seoDescription =
                 typeof payload.seo_description === 'string' ? payload.seo_description.trim() : '';
             updates.push({ column: 'seo_description', value: seoDescription || null });
         }
 
-        if (payload.seo_keywords !== undefined) {
+        if (payload.seo_keywords !== undefined && available.has('seo_keywords')) {
             const seoKeywords =
                 typeof payload.seo_keywords === 'string' ? payload.seo_keywords.trim() : '';
             updates.push({ column: 'seo_keywords', value: seoKeywords || null });
         }
 
-        if (payload.og_title !== undefined) {
+        if (payload.og_title !== undefined && available.has('og_title')) {
             const ogTitle = typeof payload.og_title === 'string' ? payload.og_title.trim() : '';
             updates.push({ column: 'og_title', value: ogTitle || null });
         }
 
-        if (payload.og_description !== undefined) {
+        if (payload.og_description !== undefined && available.has('og_description')) {
             const ogDescription =
                 typeof payload.og_description === 'string' ? payload.og_description.trim() : '';
             updates.push({ column: 'og_description', value: ogDescription || null });
         }
 
-        if (payload.og_image_id !== undefined) {
+        if (payload.og_image_id !== undefined && available.has('og_image_id')) {
             const imageId = parseNullableNumber(payload.og_image_id);
             updates.push({ column: 'og_image_id', value: imageId });
         }
 
-        if (payload.canonical_url !== undefined) {
+        if (payload.canonical_url !== undefined && available.has('canonical_url')) {
             const canonicalValue =
                 typeof payload.canonical_url === 'string' ? payload.canonical_url.trim() : '';
             updates.push({ column: 'canonical_url', value: canonicalValue || null });
         }
 
-        if (payload.order !== undefined) {
+        if (payload.order !== undefined && available.has('order')) {
             if (!isPositiveInt(payload.order)) {
                 return NextResponse.json(
                     { ok: false, error: 'Order must be an integer >= 1' },
@@ -263,12 +338,13 @@ export async function PATCH(
         const values = updates.map((update) => update.value);
         const placeholderIndex = values.length + 1;
 
+        const returningColumns = columns.map(quoteColumn).join(', ');
         const { rows } = await query(
             `
       UPDATE pages
       SET ${setClause}, updated_at = NOW()
       WHERE id = $${placeholderIndex}
-      RETURNING ${PAGE_COLUMNS.join(', ')}
+      RETURNING ${returningColumns}
       `,
             [...values, numId]
         );
@@ -282,7 +358,7 @@ export async function PATCH(
 
         return NextResponse.json({ ok: true, data: rows[0] });
     } catch (error) {
-        console.error('PAGES PATCH FAILED:', error);
+        console.error('PAGES-NEW PATCH FAILED:', error);
         return NextResponse.json(
             {
                 ok: false,
@@ -307,7 +383,7 @@ export async function DELETE(
 
         if (!rows.length) {
             return NextResponse.json(
-                { ok: false, error: 'Page not found or not deletable (only draft pages can be deleted)' },
+                { ok: false, error: 'Page not found or not deletable' },
                 { status: 404 }
             );
         }

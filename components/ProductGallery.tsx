@@ -48,7 +48,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
       <div className="flex flex-col gap-4">
         {/* Main Image */}
         <div
-          className="relative bg-secondary/30 rounded-lg flex items-center justify-center cursor-zoom-in group overflow-hidden"
+          className="relative bg-secondary/30 rounded flex items-center justify-center cursor-zoom-in group overflow-hidden"
           onClick={() => setIsZoomOpen(true)}
         >
           <img
@@ -58,7 +58,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
           />
 
           {/* Zoom hint - desktop/tablet only */}
-          <div className="hidden md:flex absolute bottom-4 right-4 items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-2 rounded-full text-sm text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="hidden md:flex absolute bottom-4 right-4 items-center gap-2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
             <ZoomIn className="w-4 h-4" />
             <span>Click to zoom</span>
           </div>
@@ -71,7 +71,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
               <button
                 key={index}
                 onClick={() => setSelectedIndex(index)}
-                className={`relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedIndex === index
+                className={`relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
                   ? "border-accent ring-2 ring-accent/30"
                   : "border-border hover:border-primary"
                   }`}

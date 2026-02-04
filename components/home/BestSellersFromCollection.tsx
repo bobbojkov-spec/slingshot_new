@@ -70,7 +70,7 @@ export default function BestSellersFromCollection() {
                 <div className="section-container">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="aspect-[4/5] bg-gray-200 rounded-xl animate-pulse" />
+                            <div key={i} className="aspect-[4/5] bg-gray-200 rounded animate-pulse" />
                         ))}
                     </div>
                 </div>
@@ -86,14 +86,14 @@ export default function BestSellersFromCollection() {
         <section className="section-padding bg-secondary/30">
             <div className="section-container">
                 {/* Section Header */}
-                <div className="flex items-end justify-between mb-10">
+                <div className="flex items-end justify-between mb-12">
                     <div>
-                        <span className="text-section-title block mb-3">{t("bestSellers.label")}</span>
+                        <span className="text-section-title block mb-4">{t("bestSellers.label")}</span>
                         <h2 className="h2 text-foreground">{t("bestSellers.title")}</h2>
                     </div>
                     <Link
                         href="/collections/best-sellers"
-                        className="hidden sm:inline-flex items-center gap-2 font-heading font-semibold text-primary hover:text-accent transition-colors uppercase tracking-wider text-sm"
+                        className="hidden sm:inline-flex items-center gap-2 font-heading font-medium text-primary hover:text-accent transition-colors uppercase tracking-wider text-sm"
                     >
                         {t("bestSellers.viewAll")}
                         <ArrowRight className="w-4 h-4" />

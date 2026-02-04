@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Head from "next/head";
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ShopToolbar } from '@/components/shop/ShopToolbar';
 import { ShopHero } from '@/components/shop/ShopHero';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
 import { buildBreadcrumbSchema } from '@/lib/seo/business';
+import { buildCanonicalUrlClient } from '@/lib/seo/url';
 
 function SearchContent() {
     const searchParams = useSearchParams();
@@ -65,14 +67,44 @@ function SearchContent() {
         { label: searchLabel },
     ];
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window === 'undefined' ? '' : window.location.origin);
+    const canonicalUrl = buildCanonicalUrlClient(`/search${searchParams.toString() ? `?${searchParams.toString()}` : ''}`);
+    const baseUrl = canonicalUrl.replace(/\/.+$/, "");
     const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
+    const pageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Search",
+        url: canonicalUrl,
+        description: searchLabel,
+    };
+
+    const pageTitle = query
+        ? `Search "${query}" | Slingshot Bulgaria`
+        : tag
+            ? `Tag: ${tag} | Slingshot Bulgaria`
+            : "Search | Slingshot Bulgaria";
+    const pageDescription = searchLabel;
+    const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
 
     return (
         <div className="min-h-screen bg-zinc-100 pt-20">
-            {baseUrl && (
-                <SchemaJsonLd data={breadcrumbSchema} />
-            )}
+            <Head>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <meta property="og:title" content={pageTitle} />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:url" content={canonicalUrl} />
+                <meta property="og:site_name" content="Slingshot Bulgaria" />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content={baseOgImage} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={pageTitle} />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={baseOgImage} />
+                <link rel="canonical" href={canonicalUrl} />
+            </Head>
+            <SchemaJsonLd data={breadcrumbSchema} defer />
+            <SchemaJsonLd data={pageSchema} defer />
             <ShopHero
                 title="Search"
                 breadcrumbs={breadcrumbItems}
@@ -90,8 +122,24 @@ function SearchContent() {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                     </div>
                 ) : products.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500">
-                        {query ? `No products found for "${query}".` : tag ? `No products found for tag "${tag}".` : 'No products found.'}
+                    <div className="text-center py-20 text-gray-500 space-y-4">
+                        <p>
+                            {query ? `No products found for "${query}".` : tag ? `No products found for tag "${tag}".` : 'No products found.'}
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+                            <button
+                                onClick={() => router.push('/search')}
+                                className="px-4 py-2 rounded bg-black text-white hover:bg-gray-900 transition"
+                            >
+                                Clear search
+                            </button>
+                            <button
+                                onClick={() => router.push('/shop')}
+                                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:border-gray-400 transition"
+                            >
+                                Browse all products
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <>

@@ -75,7 +75,7 @@ export function ProductFilters({ facets }: ProductFiltersProps) {
                                     }`}
                             >
                                 <span>{cat.name}</span>
-                                {/* <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{cat.count}</span> */}
+                                {/* <span className="text-xs bg-gray-100 px-4 py-0.5 rounded-full">{cat.count}</span> */}
                             </button>
                         </li>
                     ))}
@@ -116,7 +116,7 @@ export function ProductFilters({ facets }: ProductFiltersProps) {
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={() => updateFilter('availability', currentAvailability === 'in_stock' ? null : 'in_stock', 'toggle')}
-                        className={`w-10 h-6 rounded-full transition-colors flex items-center p-1 ${currentAvailability === 'in_stock' ? 'bg-black' : 'bg-gray-200'
+                        className={`w-10 h-6 rounded-full transition-colors flex items-center p-2 ${currentAvailability === 'in_stock' ? 'bg-black' : 'bg-gray-200'
                             }`}
                     >
                         <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${currentAvailability === 'in_stock' ? 'translate-x-4' : 'translate-x-0'

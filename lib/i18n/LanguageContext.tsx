@@ -69,9 +69,18 @@ export function LanguageProvider({
 
 export function useLanguage() {
   const ctx = useContext(LanguageContext);
+
+  // Safe fallback for SSR or edge cases where context might be missing
   if (!ctx) {
-    throw new Error("useLanguage must be used within LanguageProvider");
+    // If we're on the server, we might be in an SSR pass where context hasn't propagated yet
+    // Return a minimal fallback instead of crashing
+    return {
+      language: "en" as Language,
+      setLanguage: () => { },
+      t: (key: string) => (translations.en as any)?.[key] ?? key
+    };
   }
+
   return ctx;
 }
 

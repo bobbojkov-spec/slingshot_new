@@ -118,7 +118,21 @@ export const translations = {
     "shopByKeywords.title": "Shop by Keyword",
     "shopByKeywords.hint": "Click any keyword to explore related products",
     "newProducts.label": "Latest",
-    "newProducts.title": "New Arrivals"
+    "newProducts.title": "New Arrivals",
+    "product.notFound": "Product not found",
+    "product.loading": "Loading...",
+    "product.errorLoading": "Error loading product",
+    "product.noSizesAvailable": "No sizes available for this color.",
+    "product.sku": "SKU",
+    "product.keyFeatures": "Key Features",
+    "product.color": "Color",
+    "shop.allProducts": "All Products",
+    "shop.search": "Search",
+    "shop.noProductsFound": "No products found matching your criteria.",
+    "shop.previous": "Previous",
+    "shop.next": "Next",
+    "shop.page": "Page",
+    "shop.of": "of"
   },
   bg: {
     "header.nav.kites": "Кайтове",
@@ -239,7 +253,21 @@ export const translations = {
     "shopByKeywords.title": "Пазарувай по ключови думи",
     "shopByKeywords.hint": "Кликнете върху ключова дума, за да разгледате свързани продукти",
     "newProducts.label": "Най-нови",
-    "newProducts.title": "Нови продукти"
+    "newProducts.title": "Нови продукти",
+    "product.notFound": "Продуктът не е намерен",
+    "product.loading": "Зареждане...",
+    "product.errorLoading": "Грешка при зареждане на продукта",
+    "product.noSizesAvailable": "Няма налични размери за този цвят.",
+    "product.sku": "Арт. номер",
+    "product.keyFeatures": "Основни характеристики",
+    "product.color": "Цвят",
+    "shop.allProducts": "Всички продукти",
+    "shop.search": "Търсене",
+    "shop.noProductsFound": "Не са намерени продукти, отговарящи на вашите критерии.",
+    "shop.previous": "Предишна",
+    "shop.next": "Следваща",
+    "shop.page": "Страница",
+    "shop.of": "от"
   }
 };
 

@@ -13,6 +13,13 @@ const PAGE_COLUMNS = [
     'footer_column',
     'footer_order',
     '"order"',
+    'seo_title',
+    'seo_description',
+    'seo_keywords',
+    'og_title',
+    'og_description',
+    'og_image_id',
+    'canonical_url',
     'created_at',
     'updated_at',
 ];
