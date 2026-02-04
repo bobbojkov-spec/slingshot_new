@@ -96,7 +96,7 @@ export default function ShopByCategories() {
 
                             {/* Content */}
                             <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-5">
-                                <h3 className="font-heading font-bold text-white uppercase tracking-tighter text-base lg:text-lg mb-1 transition-colors">
+                                <h3 className="h3 font-bold text-white uppercase tracking-tighter mb-1 transition-colors">
                                     {collection.title}
                                 </h3>
                                 {collection.subtitle && (
