@@ -267,7 +267,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
             <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-1 md:mb-2 uppercase">{product.category_name}</span>
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter mb-1 md:mb-2">
+            <h1 className="h1 font-black uppercase tracking-tighter mb-1 md:mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
 
