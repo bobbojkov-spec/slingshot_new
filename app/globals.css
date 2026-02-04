@@ -364,6 +364,38 @@
     @apply w-full overflow-x-auto;
   }
 
+  /* Rich Text (Prose) Defaults */
+  .prose {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .prose :where(p) {
+    margin: 0.75rem 0;
+  }
+
+  .prose :where(ul, ol) {
+    margin: 0.75rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .prose :where(li) {
+    margin: 0.5rem 0;
+  }
+
+  .prose :where(h2, h3, h4) {
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .prose :where(a) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .prose :where(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+
   /* Prose Table Styles (Rich Text Content) */
   .prose table {
     @apply border-collapse my-8 text-left;

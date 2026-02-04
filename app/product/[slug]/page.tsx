@@ -413,8 +413,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                         key={`${size}-${idx}`}
                         onClick={() => setSelectedSize(size)}
                         className={`px-3 md:px-4 py-2 md:py-2.5 rounded border text-sm font-medium transition-all min-w-[60px] md:min-w-0 ${selectedSize === size
-                            ? "border-black bg-black text-white"
-                            : "border-gray-200 hover:border-black text-gray-700"
+                          ? "border-black bg-black text-white"
+                          : "border-gray-200 hover:border-black text-gray-700"
                           }`}
                       >
                         {size}
@@ -454,7 +454,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Extended Description (Html2) */}
       {product.description_html2 && (
         <div className="section-container py-8 border-t border-gray-100 mb-8">
-          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.description_html2 }} />
+          <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.description_html2 }} />
         </div>
       )}
 
@@ -464,7 +464,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
             {language === 'bg' ? 'Спецификации' : 'Specifications'}
           </h3>
-          <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
+          <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
         </div>
       )}
 
@@ -475,7 +475,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
               {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
             </h3>
-            <div className="prose max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
+            <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
           </div>
         </div>
       )}
