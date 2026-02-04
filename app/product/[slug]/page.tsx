@@ -272,7 +272,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             </h1>
 
             {product.subtitle && (
-              <h3 className="text-base md:text-xl font-black uppercase tracking-wide mb-2 text-black leading-tight">
+              <h3 className="h3 font-black uppercase tracking-wide mb-2 text-black leading-tight">
                 {product.subtitle}
               </h3>
             )}
@@ -461,7 +461,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Specs HTML */}
       {product.specs_html && (
         <div className="section-container py-16 border-t border-gray-100">
-          <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
+          <h3 className="h2 font-black uppercase tracking-tight mb-8">
             {language === 'bg' ? 'Спецификации' : 'Specifications'}
           </h3>
           <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.specs_html }} />
@@ -472,7 +472,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {product.package_includes && (
         <div className="bg-gray-50 py-16 border-t border-gray-100">
           <div className="section-container">
-            <h3 className="text-2xl font-black uppercase tracking-tight mb-8">
+            <h3 className="h2 font-black uppercase tracking-tight mb-8">
               {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
             </h3>
             <div className="prose prose-sm max-w-none text-gray-800" dangerouslySetInnerHTML={{ __html: product.package_includes }} />
@@ -484,7 +484,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {
         related.length > 0 && (
           <div className="section-container py-16 border-t border-gray-100">
-            <h2 className="text-3xl font-black uppercase tracking-tight mb-12 text-center">{t.related}</h2>
+            <h2 className="h2 font-black uppercase tracking-tight mb-12 text-center">{t.related}</h2>
             <ProductGrid products={related} />
           </div>
         )
