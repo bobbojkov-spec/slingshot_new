@@ -14,7 +14,7 @@ export default function SuccessPage() {
       <main className="flex-1 pt-20">
         <div className="section-container section-padding text-center space-y-6">
           <InquiryStepper activeIndex={2} />
-          <h1 className="font-heading text-4xl">{t("inquiry.success.title")}</h1>
+          <h1 className="h1 font-heading">{t("inquiry.success.title")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {t("inquiry.success.message")}
           </p>

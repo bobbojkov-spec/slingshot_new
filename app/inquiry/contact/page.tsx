@@ -18,7 +18,7 @@ export default function ContactPage() {
         <div className="section-container section-padding space-y-6 max-w-3xl">
           <div>
             <InquiryStepper activeIndex={1} />
-            <h1 className="font-heading text-4xl mt-3">{t("inquiry.contactPage.title")}</h1>
+            <h1 className="h1 font-heading mt-3">{t("inquiry.contactPage.title")}</h1>
             <p className="text-muted-foreground mt-2">{t("inquiry.contactPage.helper")}</p>
           </div>
           <div className="space-y-4">

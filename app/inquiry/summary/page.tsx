@@ -25,7 +25,7 @@ export default function SummaryPage() {
               <span className="font-heading text-sm uppercase tracking-[0.5em] text-muted-foreground">
                 {t("inquiry.progressLabel")}
               </span>
-              <h1 className="font-heading text-3xl mt-2">{t("inquiry.yourItems")}</h1>
+              <h1 className="h1 font-heading mt-2">{t("inquiry.yourItems")}</h1>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <span className="rounded-full bg-muted/60 text-white px-3 py-1">{t("inquiry.steps.summary")}</span>
@@ -59,12 +59,11 @@ export default function SummaryPage() {
                   {item.color && (
                     <div className="flex items-center gap-1.5 mt-1">
                       <span
-                        className={`w-3 h-3 rounded-full ${
-                          item.color === "blue" ? "bg-blue-500" :
-                          item.color === "green" ? "bg-emerald-500" :
-                          item.color === "orange" ? "bg-orange-500" :
-                          "bg-gray-400"
-                        }`}
+                        className={`w-3 h-3 rounded-full ${item.color === "blue" ? "bg-blue-500" :
+                            item.color === "green" ? "bg-emerald-500" :
+                              item.color === "orange" ? "bg-orange-500" :
+                                "bg-gray-400"
+                          }`}
                       />
                       <span className="text-xs text-muted-foreground capitalize">{item.color}</span>
                     </div>
