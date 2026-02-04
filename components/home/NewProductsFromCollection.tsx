@@ -73,7 +73,7 @@ function ProductCarouselCard({ product }: { product: Product }) {
 
             {/* Product name over the stripe */}
             <div className="absolute inset-x-0 bottom-0 p-4 lg:p-6">
-                <h3 className="font-heading font-semibold text-white text-lg lg:text-xl group-hover:text-accent transition-colors line-clamp-2">
+                <h3 className="h3 font-semibold text-white group-hover:text-accent transition-colors line-clamp-2">
                     {product.name}
                 </h3>
             </div>

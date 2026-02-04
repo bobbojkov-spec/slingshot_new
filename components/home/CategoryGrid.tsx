@@ -56,7 +56,7 @@ const CategoryGrid = () => {
               />
               <div className="category-card-overlay" />
               <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-6">
-                <h3 className="font-heading font-semibold text-white text-lg lg:text-xl uppercase tracking-wide mb-1">
+                <h3 className="h3 font-semibold text-white uppercase tracking-wide mb-1">
                   {t(`categories.names.${category.key}`)}
                 </h3>
                 <p className="font-body text-white/70 text-sm hidden lg:block">
