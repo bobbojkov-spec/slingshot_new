@@ -9,6 +9,13 @@ const CartDrawer = () => {
   const { items, removeItem, updateQuantity, clear, isOpen, close, getCount } = useCart();
   const { t } = useLanguage();
 
+  const formatSize = (size?: string) => {
+    if (!size) return '';
+    const isNumeric = /^\d+(?:\.\d+)?$/.test(size);
+    if (!isNumeric) return size;
+    return `${size} ${t("product.sizeMeter")}`;
+  };
+
   return (
     <div
       aria-hidden={!isOpen}
@@ -20,12 +27,12 @@ const CartDrawer = () => {
       />
       <div className={`absolute top-0 right-0 h-[70vh] w-full sm:w-96 bg-white shadow-2xl flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-2 text-lg font-heading">
+          <div className="flex items-center gap-2 text-lg font-heading">
             <ShoppingBag className="w-5 h-5" />
-              <span>{t("cart.title")}</span>
-              <span className="text-sm font-normal text-muted-foreground">
-                ({getCount()} {t("cart.itemsLabel")})
-              </span>
+            <span>{t("cart.title")}</span>
+            <span className="text-sm font-normal text-muted-foreground">
+              ({getCount()} {t("cart.itemsLabel")})
+            </span>
           </div>
           <button onClick={close} className="text-muted-foreground hover:text-foreground text-lg leading-none">✕</button>
         </div>
@@ -55,20 +62,8 @@ const CartDrawer = () => {
                       {item.name}
                     </Link>
                     <p className="text-xs text-muted-foreground mb-2">
-                      {item.category} {item.size ? `• ${item.size}` : ""}
+                      {[formatSize(item.size), item.color].filter(Boolean).join(" ")}
                     </p>
-                    {item.color && (
-                      <div className="flex items-center gap-2 mb-2">
-                        <span 
-                          className={`w-3 h-3 rounded-full ${
-                            item.color === 'blue' ? 'bg-blue-500' : 
-                            item.color === 'green' ? 'bg-emerald-500' : 
-                            item.color === 'orange' ? 'bg-orange-500' : 'bg-gray-400'
-                          }`}
-                        />
-                        <span className="text-xs text-muted-foreground capitalize">{item.color}</span>
-                      </div>
-                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <button

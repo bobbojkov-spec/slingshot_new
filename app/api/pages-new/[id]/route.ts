@@ -16,6 +16,11 @@ const PAGE_COLUMNS = [
     'seo_title',
     'seo_description',
     'seo_keywords',
+    'title_bg',
+    'subtitle_en',
+    'subtitle_bg',
+    'hero_image_url',
+    'hero_video_url',
     'og_title',
     'og_description',
     'og_image_id',
@@ -313,6 +318,26 @@ export async function PATCH(
             const canonicalValue =
                 typeof payload.canonical_url === 'string' ? payload.canonical_url.trim() : '';
             updates.push({ column: 'canonical_url', value: canonicalValue || null });
+        }
+
+        if (payload.title_bg !== undefined && available.has('title_bg')) {
+            updates.push({ column: 'title_bg', value: payload.title_bg || null });
+        }
+
+        if (payload.subtitle_en !== undefined && available.has('subtitle_en')) {
+            updates.push({ column: 'subtitle_en', value: payload.subtitle_en || null });
+        }
+
+        if (payload.subtitle_bg !== undefined && available.has('subtitle_bg')) {
+            updates.push({ column: 'subtitle_bg', value: payload.subtitle_bg || null });
+        }
+
+        if (payload.hero_image_url !== undefined && available.has('hero_image_url')) {
+            updates.push({ column: 'hero_image_url', value: payload.hero_image_url || null });
+        }
+
+        if (payload.hero_video_url !== undefined && available.has('hero_video_url')) {
+            updates.push({ column: 'hero_video_url', value: payload.hero_video_url || null });
         }
 
         if (payload.order !== undefined && available.has('order')) {

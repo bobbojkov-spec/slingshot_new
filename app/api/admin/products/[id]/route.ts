@@ -47,6 +47,7 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
     const [
       { rows: imageRows = [] },
       { rows: variantRows = [] },
+      { rows: railwayImageRows = [] },
       { rows: descRows = [] },
       { rows: specsRows = [] },
       { rows: packageRows = [] },
@@ -85,6 +86,36 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
           LEFT JOIN product_variant_translations pvt_en ON pv.id = pvt_en.variant_id AND pvt_en.language_code = 'en'
           LEFT JOIN product_variant_translations pvt_bg ON pv.id = pvt_bg.variant_id AND pvt_bg.language_code = 'bg'
           WHERE pv.product_id = $1
+        `,
+        [productId]
+      ),
+      query(
+        `
+          SELECT id, storage_path, size, display_order, bundle_id
+          FROM product_images_railway
+          WHERE product_id = $1
+            AND id IN (
+              SELECT id FROM (
+                SELECT
+                  id,
+                  bundle_id,
+                  ROW_NUMBER() OVER (
+                    PARTITION BY bundle_id
+                    ORDER BY CASE size
+                      WHEN 'thumb' THEN 1
+                      WHEN 'small' THEN 2
+                      WHEN 'medium' THEN 3
+                      WHEN 'big' THEN 4
+                      WHEN 'original' THEN 5
+                      ELSE 6
+                    END
+                  ) AS rn
+                FROM product_images_railway
+                WHERE product_id = $1
+              ) ranked
+              WHERE rn = 1
+            )
+          ORDER BY display_order ASC
         `,
         [productId]
       ),
@@ -178,6 +209,24 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       })
     );
 
+    const railwayImages = await Promise.all(
+      railwayImageRows.map(async (row: any) => {
+        const signedUrl = row.storage_path ? await getPresignedUrl(row.storage_path) : null;
+        return {
+          id: row.id,
+          url: signedUrl,
+          thumb_url: signedUrl,
+          medium_url: signedUrl,
+          original_url: signedUrl,
+          storage_path: row.storage_path,
+          position: row.display_order,
+          source: 'railway',
+        };
+      })
+    );
+
+    const images = signedImages.length ? signedImages : railwayImages;
+
     const colors = colorRows.map((row: any) => ({
       id: row.id,
       color_id: row.color_id,
@@ -200,7 +249,7 @@ export async function GET(_: Request, props: { params: Promise<{ id: string }> }
       product: {
         ...rest,
         category: category_info || null,
-        images: signedImages,
+        images,
         variants: variantRows,
         // Legacy fallback fields
         description_html: rest.description_html ?? descriptions.description_html ?? null,

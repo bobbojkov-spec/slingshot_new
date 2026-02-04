@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const { rows: availabilityRows = [] } = await query(
       `
         INSERT INTO product_variant_availability (variant_id, color_id, stock_qty, is_active, created_at, updated_at)
-        SELECT $1, id, 0, false, NOW(), NOW()
+        SELECT $1, id, 1, true, NOW(), NOW()
         FROM product_colors
         WHERE product_id = $2
         ON CONFLICT (variant_id, color_id) DO NOTHING

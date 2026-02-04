@@ -25,6 +25,12 @@ export default function SummaryPage() {
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0);
+  const formatSize = (size?: string) => {
+    if (!size) return '';
+    const isNumeric = /^\d+(?:\.\d+)?$/.test(size);
+    if (!isNumeric) return size;
+    return `${size} ${t("product.sizeMeter")}`;
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -82,20 +88,8 @@ export default function SummaryPage() {
                 <div>
                   <p className="font-heading text-lg line-clamp-1">{item.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.category} {item.size && `• ${item.size}`}
+                    {[formatSize(item.size), item.color].filter(Boolean).join(" ")}
                   </p>
-                  {item.color && (
-                    <div className="flex items-center gap-2 mt-2">
-                      <span
-                        className={`w-3 h-3 rounded-full ${item.color === "blue" ? "bg-blue-500" :
-                          item.color === "green" ? "bg-emerald-500" :
-                            item.color === "orange" ? "bg-orange-500" :
-                              "bg-gray-400"
-                          }`}
-                      />
-                      <span className="text-xs text-muted-foreground capitalize">{item.color}</span>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="flex flex-1 items-center justify-between gap-4 text-sm text-muted-foreground">

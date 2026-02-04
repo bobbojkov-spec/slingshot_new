@@ -42,13 +42,21 @@ export default function ColorsTab({
 
             // Add with signed URLs from matching images
             const newColors = data.colors.map((c: any) => {
-                const matchingImg = productImages.find(img => img.storage_path === c.image_path);
+                const matchingImg = productImages.find((img: any) =>
+                    img.storage_path === c.image_path ||
+                    img.original_path === c.image_path ||
+                    img.url === c.image_path
+                );
                 return { ...c, url: matchingImg?.thumb_url || matchingImg?.medium_url || matchingImg?.url };
             });
 
             setDraft(prev => ({
                 ...prev,
-                product_colors: [...(prev.product_colors || []), ...newColors]
+                product_colors: [...(prev.product_colors || []), ...newColors],
+                availability: [
+                    ...(prev.availability || []),
+                    ...(data.availability || []),
+                ]
             }));
 
             message.success(`${selectedPaths.length} colors added`);
@@ -84,7 +92,8 @@ export default function ColorsTab({
             setDraft(prev => ({
                 ...prev,
                 product_colors: prev.product_colors?.filter(c => c.id !== colorId),
-                variants: prev.variants?.map(v => v.product_color_id === colorId ? { ...v, product_color_id: null } : v)
+                variants: prev.variants?.map(v => v.product_color_id === colorId ? { ...v, product_color_id: null } : v),
+                availability: prev.availability?.filter(entry => entry.color_id !== colorId)
             }));
             message.success('Color deleted');
         } catch (e: any) {
@@ -145,7 +154,11 @@ export default function ColorsTab({
                 width={800}
             >
                 <div style={{ marginBottom: 16, display: 'flex', gap: 12 }}>
-                    <Button onClick={() => setSelectedPaths(productImages.map((img: any) => img.storage_path))}>
+                    <Button
+                        onClick={() =>
+                            setSelectedPaths(productImages.map((img: any) => img.storage_path || img.original_path || img.url))
+                        }
+                    >
                         Select All
                     </Button>
                     <Button onClick={() => setSelectedPaths([])}>
@@ -154,7 +167,8 @@ export default function ColorsTab({
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: 8, padding: '0 0 16px' }}>
                     {productImages.map((img: any) => {
-                        const isSelected = selectedPaths.includes(img.storage_path);
+                        const imagePath = img.storage_path || img.original_path || img.url;
+                        const isSelected = selectedPaths.includes(imagePath);
                         return (
                             <div
                                 key={img.id}
@@ -165,7 +179,7 @@ export default function ColorsTab({
                                     overflow: 'hidden',
                                     position: 'relative'
                                 }}
-                                onClick={() => toggleSelection(img.storage_path)}
+                                onClick={() => toggleSelection(imagePath)}
                             >
                                 <Image
                                     src={img.thumb_url || img.medium_url || img.url}

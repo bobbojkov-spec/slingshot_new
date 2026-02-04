@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect, type ReactNode, memo } from 'react';
+import { useMemo, useState, type ReactNode, memo } from 'react';
 import { Button, Table, Typography, Switch, Space, Input, InputNumber, Popconfirm, message, Modal, Form, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import BilingualInput from '../../../../components/BilingualInput';
@@ -34,13 +34,6 @@ type AvailabilityEntry = {
   is_active: boolean;
 };
 
-type SharedColor = {
-  id: string;
-  name_en: string;
-  name_bg?: string;
-  hex_color: string;
-};
-
 function VariantsTab({
   draft,
   setDraft,
@@ -52,6 +45,10 @@ function VariantsTab({
   const [editForm, setEditForm] = useState<Variant>({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isBilingualModalOpen, setIsBilingualModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assignColorId, setAssignColorId] = useState<string | null>(null);
+  const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>([]);
+  const [savingAssignments, setSavingAssignments] = useState(false);
   const [bilingualEditForm, setBilingualEditForm] = useState<{
     variant?: Variant;
     translation_en: { title: string };
@@ -62,43 +59,40 @@ function VariantsTab({
   });
   const [addForm] = Form.useForm();
   const [savingAvailabilityKey, setSavingAvailabilityKey] = useState<string>('');
-  const [assignModalOpen, setAssignModalOpen] = useState(false);
-  const [selectedSharedColor, setSelectedSharedColor] = useState<SharedColor | null>(null);
-  const [assignPosition, setAssignPosition] = useState(0);
-  const [sharedColors, setSharedColors] = useState<SharedColor[]>([]);
-  const [loadingAssignment, setLoadingAssignment] = useState(false);
-
-  useEffect(() => {
-    const loadSharedColors = async () => {
-      try {
-        const res = await fetch("/api/admin/colors");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || "Failed to load colors");
-        setSharedColors(data.colors ?? []);
-      } catch (err: any) {
-        message.error(err?.message || "Unable to load colors");
-      }
-    };
-    loadSharedColors();
-  }, []);
 
   const variants = draft.variants || [];
-  const colors = draft.colors || [];
   const visualColors = draft.product_colors || [];
   const availability = draft.availability || [];
 
-  const sortedColors = useMemo(
-    () => [...colors].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
-    [colors]
-  );
-  const visibleColors = useMemo(
-    () => sortedColors.filter((color) => color.is_visible !== false),
-    [sortedColors]
+  const sortedVisualColors = useMemo(
+    () => [...visualColors].sort((a, b) => (a.display_order ?? a.position ?? 0) - (b.display_order ?? b.position ?? 0)),
+    [visualColors]
   );
   const sortedVariants = useMemo(
     () => [...variants].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
     [variants]
   );
+
+  const assignedColorByVariant = useMemo(() => {
+    const map = new Map<string, string>();
+    sortedVisualColors.forEach((color) => {
+      availability
+        .filter((entry) => entry.color_id === color.id && entry.is_active && entry.stock_qty > 0)
+        .forEach((entry) => {
+          if (!map.has(entry.variant_id)) {
+            map.set(entry.variant_id, color.id);
+          }
+        });
+    });
+
+    sortedVariants.forEach((variant) => {
+      if (variant.id && variant.product_color_id && !map.has(variant.id)) {
+        map.set(variant.id, variant.product_color_id);
+      }
+    });
+
+    return map;
+  }, [availability, sortedVisualColors, sortedVariants]);
 
   const isEditing = (record: Variant) => record.id === editingKey;
 
@@ -280,58 +274,6 @@ function VariantsTab({
     }
   };
 
-  const handleAssignColor = async () => {
-    if (!draft.id || !selectedSharedColor) return;
-    setLoadingAssignment(true);
-    try {
-      const res = await fetch(`/api/admin/products/${draft.id}/color-assignments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ colorId: selectedSharedColor.id, position: assignPosition }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Failed to assign color');
-      setDraft((prev) => ({
-        ...prev,
-        colors: [...(prev.colors || []), {
-          id: data.assignment.id,
-          color_id: selectedSharedColor.id,
-          position: data.assignment.position,
-          name_en: selectedSharedColor.name_en,
-          name_bg: selectedSharedColor.name_bg,
-          hex_color: selectedSharedColor.hex_color,
-        }],
-      }));
-      message.success('Color assigned to product');
-      setAssignModalOpen(false);
-      setSelectedSharedColor(null);
-    } catch (err: any) {
-      message.error(err?.message || 'Failed to assign color');
-    } finally {
-      setLoadingAssignment(false);
-    }
-  };
-
-  const removeAssignment = async (assignmentId: string) => {
-    if (!draft.id) return;
-    try {
-      const res = await fetch(`/api/admin/products/${draft.id}/color-assignments`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assignmentId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Failed to remove color');
-      setDraft((prev) => ({
-        ...prev,
-        colors: prev.colors?.filter((color) => color.id !== assignmentId),
-        availability: prev.availability?.filter((entry) => entry.color_id !== assignmentId),
-      }));
-      message.success('Color removed from product');
-    } catch (err: any) {
-      message.error(err?.message || 'Unable to remove color');
-    }
-  };
 
   const getAvailabilityEntry = (variantId: string, colorId: string): AvailabilityEntry => {
     const entry = availability.find((row) => row.variant_id === variantId && row.color_id === colorId);
@@ -341,8 +283,8 @@ function VariantsTab({
     return {
       variant_id: variantId,
       color_id: colorId,
-      stock_qty: 0,
-      is_active: false,
+      stock_qty: 1,
+      is_active: true,
     };
   };
 
@@ -386,6 +328,130 @@ function VariantsTab({
       message.error(err?.message || 'Failed to save availability');
     } finally {
       setSavingAvailabilityKey('');
+    }
+  };
+
+  const openAssignModal = (colorId: string) => {
+    const currentSelection = sortedVariants
+      .filter((variant) => variant.id && assignedColorByVariant.get(variant.id) === colorId)
+      .map((variant) => variant.id as string);
+    setAssignColorId(colorId);
+    setSelectedVariantIds(currentSelection);
+    setIsAssignModalOpen(true);
+  };
+
+  const handleSaveAssignments = async () => {
+    if (!draft.id || !assignColorId) return;
+
+    const currentAssigned = sortedVariants
+      .filter((variant) => variant.id && assignedColorByVariant.get(variant.id) === assignColorId)
+      .map((variant) => variant.id as string);
+    const selectedSet = new Set(selectedVariantIds);
+
+    const toActivate = selectedVariantIds;
+    const toDeactivate = currentAssigned.filter((id) => !selectedSet.has(id));
+    const conflicts = selectedVariantIds.filter((id) => {
+      const existingColor = assignedColorByVariant.get(id);
+      return existingColor && existingColor !== assignColorId;
+    });
+
+    const entries: AvailabilityEntry[] = [];
+    toActivate.forEach((variantId) => {
+      entries.push({
+        variant_id: variantId,
+        color_id: assignColorId,
+        stock_qty: 1,
+        is_active: true,
+      });
+    });
+    toDeactivate.forEach((variantId) => {
+      entries.push({
+        variant_id: variantId,
+        color_id: assignColorId,
+        stock_qty: 0,
+        is_active: false,
+      });
+    });
+    conflicts.forEach((variantId) => {
+      const oldColor = assignedColorByVariant.get(variantId);
+      if (oldColor) {
+        entries.push({
+          variant_id: variantId,
+          color_id: oldColor,
+          stock_qty: 0,
+          is_active: false,
+        });
+      }
+    });
+
+    const uniqueEntries = Array.from(
+      new Map(entries.map((entry) => [`${entry.variant_id}-${entry.color_id}`, entry])).values()
+    );
+
+    if (!uniqueEntries.length) {
+      setIsAssignModalOpen(false);
+      return;
+    }
+
+    setSavingAssignments(true);
+    try {
+      const res = await fetch(`/api/admin/products/${draft.id}/availability`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries: uniqueEntries }),
+      });
+
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error || 'Failed to save assignments');
+
+      setDraft((prev) => ({
+        ...prev,
+        availability: [
+          ...(prev.availability?.filter(
+            (entry) => !uniqueEntries.some(
+              (update) => update.variant_id === entry.variant_id && update.color_id === entry.color_id
+            )
+          ) || []),
+          ...(body.entries || uniqueEntries),
+        ],
+      }));
+
+      const variantUpdates = new Map<string, string | null>();
+      toActivate.forEach((variantId) => variantUpdates.set(variantId, assignColorId));
+      toDeactivate.forEach((variantId) => variantUpdates.set(variantId, null));
+
+      if (variantUpdates.size) {
+        await Promise.all(
+          Array.from(variantUpdates.entries()).map(async ([variantId, colorId]) => {
+            const res = await fetch('/api/admin/products/variants', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                variantId,
+                data: { product_color_id: colorId },
+              }),
+            });
+            const body = await res.json();
+            if (!res.ok) throw new Error(body?.error || 'Failed to update primary color');
+          })
+        );
+
+        setDraft((prev) => ({
+          ...prev,
+          variants: prev.variants?.map((variant) => {
+            if (!variant.id) return variant;
+            if (!variantUpdates.has(variant.id)) return variant;
+            return { ...variant, product_color_id: variantUpdates.get(variant.id) || null };
+          }),
+        }));
+      }
+
+      message.success('Assignments updated');
+      setIsAssignModalOpen(false);
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to save assignments');
+    } finally {
+      setSavingAssignments(false);
     }
   };
 
@@ -434,48 +500,6 @@ function VariantsTab({
           );
         }
         return record.sku || '—';
-      },
-    },
-    {
-      title: 'Visual Color',
-      key: 'product_color_id',
-      width: 180,
-      render: (_: any, record: Variant) => {
-        if (isEditing(record)) {
-          return (
-            <Select
-              style={{ width: '100%' }}
-              allowClear
-              placeholder={visualColors.length ? 'Select visual color' : 'Add colors in Visual Colors tab'}
-              value={editForm.product_color_id}
-              onChange={(val) => setEditForm({ ...editForm, product_color_id: val })}
-              options={visualColors.map((c: any) => ({
-                value: c.id,
-                label: (
-                  <Space>
-                    <img
-                      src={c.url || c.image_path}
-                      alt={c.name || 'Color'}
-                      style={{ width: 20, height: 20, objectFit: 'contain', borderRadius: 4, border: '1px solid #eee' }}
-                    />
-                    <span>{c.name || 'Unnamed'}</span>
-                  </Space>
-                ),
-              }))}
-            />
-          );
-        }
-
-        const color = visualColors.find((c: any) => c.id === record.product_color_id);
-        if (!color) return <Typography.Text type="secondary">—</Typography.Text>;
-        return (
-          <Space>
-            <div style={{ width: 20, height: 20, borderRadius: 4, border: '1px solid #ddd', overflow: 'hidden' }}>
-              <img src={color.url || color.image_path} alt={color.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </div>
-            <Typography.Text style={{ fontSize: 12 }}>{color.name}</Typography.Text>
-          </Space>
-        );
       },
     },
     {
@@ -615,6 +639,86 @@ function VariantsTab({
     <div>
       <Space orientation="vertical" size={24} style={{ width: '100%' }}>
         <CardSection
+          title="Visual Color Assignment"
+          description="Assign each variant to exactly one visual color."
+        >
+          {!(sortedVisualColors.length && sortedVariants.length) ? (
+            <Typography.Text type="secondary">
+              Add at least one variant and visual color to configure assignments.
+            </Typography.Text>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16 }}>
+              {sortedVisualColors.map((color) => {
+                const assignedVariants = sortedVariants.filter(
+                  (variant) => variant.id && assignedColorByVariant.get(variant.id) === color.id
+                );
+                return (
+                  <div
+                    key={color.id}
+                    style={{
+                      border: '1px solid #f0f0f0',
+                      borderRadius: 10,
+                      padding: 12,
+                      background: '#fff',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      minHeight: 220,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        aspectRatio: '1',
+                        borderRadius: 8,
+                        overflow: 'hidden',
+                        background: '#f5f5f5',
+                        border: '1px solid #eee',
+                      }}
+                    >
+                      <img
+                        src={color.url || color.image_path}
+                        alt={color.name || 'Color'}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                    <Typography.Text strong style={{ fontSize: 13 }}>
+                      {color.name || 'Unnamed'}
+                    </Typography.Text>
+                    <Button size="small" onClick={() => openAssignModal(color.id)}>
+                      Assign
+                    </Button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                      {assignedVariants.length === 0 ? (
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                          No variants assigned.
+                        </Typography.Text>
+                      ) : (
+                        assignedVariants.map((variant) => (
+                          <div
+                            key={variant.id}
+                            style={{
+                              padding: '6px 8px',
+                              borderRadius: 6,
+                              background: '#fafafa',
+                              border: '1px solid #f0f0f0',
+                              fontSize: 12,
+                            }}
+                          >
+                            <strong>{variant.title || variant.name_en || variant.translation_en?.title || 'Untitled'}</strong>
+                            <div style={{ color: '#999' }}>SKU: {variant.sku || '-'}</div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardSection>
+
+        <CardSection
           title="Product Variants"
           description="Add pricing, SKU and inventory per variant."
           action={
@@ -631,184 +735,6 @@ function VariantsTab({
             pagination={false}
             scroll={{ x: true }}
           />
-        </CardSection>
-
-        <CardSection
-          title="Product Colors"
-          description="Assign shared colors from the central catalog to this product."
-          action={
-            <Space>
-              <Button type="default" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
-                Assign Color
-              </Button>
-              <a href="/admin/colors" target="_blank" rel="noreferrer">
-                Manage catalog
-              </a>
-            </Space>
-          }
-        >
-          <Table
-            size="small"
-            rowKey={(row) => row.id}
-            dataSource={sortedColors}
-            pagination={false}
-            columns={[
-              { title: 'Name (EN)', dataIndex: 'name_en', key: 'name_en' },
-              { title: 'Name (BG)', dataIndex: 'name_bg', key: 'name_bg' },
-              {
-                title: 'Color',
-                key: 'color',
-                render: (_: any, record: any) => (
-                  <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '50%',
-                      border: '1px solid #e0e0e0',
-                      backgroundColor: record.hex_color || '#000',
-                      margin: '0 auto',
-                    }}
-                  />
-                ),
-              },
-              {
-                title: 'Position',
-                dataIndex: 'position',
-                key: 'position',
-              },
-              {
-                title: 'Actions',
-                key: 'actions',
-                render: (_: any, record: any) => (
-                  <Button
-                    type="link"
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => removeAssignment(record.id)}
-                  >
-                    Remove
-                  </Button>
-                ),
-              },
-            ]}
-          />
-        </CardSection>
-
-        <CardSection
-          title="Availability Matrix"
-          description="Update stock and activation per variant × color cell."
-        >
-          {!(visibleColors.length && sortedVariants.length) ? (
-            <Typography.Text type="secondary">
-              Add at least one variant and color to configure availability.
-            </Typography.Text>
-          ) : (
-            <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
-              <table style={{ width: '100%', borderSpacing: 0 }}>
-                <thead>
-                  <tr>
-                    <th
-                      style={{
-                        textAlign: 'left',
-                        padding: '8px 12px',
-                        borderBottom: '1px solid #f0f0f0',
-                        minWidth: 200,
-                      }}
-                    >
-                      Variant
-                    </th>
-                    {visibleColors.map((color) => (
-                      <th
-                        key={color.id}
-                        style={{
-                          textAlign: 'center',
-                          padding: '8px 12px',
-                          borderBottom: '1px solid #f0f0f0',
-                        }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                          <span
-                            style={{
-                              width: 24,
-                              height: 24,
-                              borderRadius: '50%',
-                              backgroundColor: color.hex_color || '#000',
-                              margin: '0 auto',
-                            }}
-                          />
-                          <span style={{ fontSize: 12 }}>{color.name_en}</span>
-                          <span style={{ fontSize: 10, color: '#6b7280' }}>{color.name_bg}</span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedVariants.map((variant) => (
-                    <tr key={variant.id}>
-                      <td
-                        style={{
-                          padding: '8px 12px',
-                          borderBottom: '1px solid #f0f0f0',
-                        }}
-                      >
-                        <Typography.Text strong>
-                          {variant.title || variant.name_en || variant.translation_en?.title || 'Untitled'}
-                        </Typography.Text>
-                        <br />
-                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                          SKU: {variant.sku || '-'}
-                        </Typography.Text>
-                      </td>
-                      {visibleColors.map((color) => {
-                        const entry = getAvailabilityEntry(variant.id!, color.id);
-                        const cellKey = `${variant.id}-${color.id}`;
-                        const isSaving = savingAvailabilityKey === cellKey;
-
-                        return (
-                          <td
-                            key={color.id}
-                            style={{
-                              padding: '8px 12px',
-                              borderBottom: '1px solid #f0f0f0',
-                            }}
-                          >
-                            <Space orientation="vertical" size={2} style={{ width: '100%' }}>
-                              <InputNumber
-                                size="small"
-                                min={0}
-                                value={entry.stock_qty}
-                                onChange={(val) =>
-                                  saveAvailabilityCell(variant.id!, color.id, {
-                                    stock_qty: val ?? 0,
-                                  })
-                                }
-                                style={{ width: '100%' }}
-                                disabled={isSaving}
-                              />
-                              <Switch
-                                size="small"
-                                checked={entry.is_active}
-                                onChange={(checked) =>
-                                  saveAvailabilityCell(variant.id!, color.id, {
-                                    is_active: checked,
-                                  })
-                                }
-                                loading={isSaving}
-                                checkedChildren="Active"
-                                unCheckedChildren="Inactive"
-                              />
-                            </Space>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </CardSection>
       </Space>
 
@@ -885,54 +811,69 @@ function VariantsTab({
       </Modal>
 
       <Modal
-        title="Assign Shared Color"
-        open={assignModalOpen}
-        onCancel={() => {
-          setAssignModalOpen(false);
-          setSelectedSharedColor(null);
-        }}
-        okText="Assign"
-        confirmLoading={loadingAssignment}
-        onOk={handleAssignColor}
-        width={400}
+        title="Assign variants to color"
+        open={isAssignModalOpen}
+        onCancel={() => setIsAssignModalOpen(false)}
+        onOk={handleSaveAssignments}
+        okText="Save Assignments"
+        confirmLoading={savingAssignments}
+        width={720}
       >
-        <Form layout="vertical">
-          <Form.Item label="Color" required>
-            <Select
-              placeholder="Select a shared color"
-              value={selectedSharedColor?.id}
-              onChange={(value) => {
-                const selection = sharedColors.find((color) => color.id === value) || null;
-                setSelectedSharedColor(selection);
-              }}
-            >
-              {sharedColors.map((color) => (
-                <Select.Option key={color.id} value={color.id}>
-                  <Space>
-                    <span
-                      style={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        backgroundColor: color.hex_color || '#000',
-                        display: 'inline-block',
-                      }}
-                    />
-                    <span>{color.name_en}</span>
-                  </Space>
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Position">
-            <InputNumber
-              style={{ width: '100%' }}
-              min={0}
-              value={assignPosition}
-              onChange={(value) => setAssignPosition(value ?? 0)}
-            />
-          </Form.Item>
-        </Form>
+        <Table<Variant>
+          size="small"
+          rowKey={(row) => row.id || row.sku || row.title || Math.random().toString()}
+          dataSource={sortedVariants}
+          pagination={false}
+          rowSelection={{
+            selectedRowKeys: selectedVariantIds,
+            onChange: (keys) => setSelectedVariantIds(keys as string[]),
+            getCheckboxProps: (record) => {
+              if (!record.id) return { disabled: true };
+              const assignedColor = assignedColorByVariant.get(record.id);
+              return {
+                disabled: assignedColor !== undefined && assignedColor !== assignColorId,
+              };
+            },
+          }}
+          columns={[
+            {
+              title: 'Variant',
+              key: 'variant',
+              render: (_: any, record: Variant) => (
+                <div>
+                  <div style={{ fontWeight: 600 }}>
+                    {record.title || record.name_en || record.translation_en?.title || 'Untitled'}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#999' }}>SKU: {record.sku || '-'}</div>
+                </div>
+              ),
+            },
+            {
+              title: 'Price',
+              dataIndex: 'price',
+              key: 'price',
+              width: 120,
+              render: (value: number) => (value !== undefined && value !== null ? `€${value}` : '—'),
+            },
+          ]}
+          onRow={(record) => {
+            return {
+              onClick: () => {
+                if (!record.id) return;
+                const assignedColor = assignedColorByVariant.get(record.id);
+                if (assignedColor && assignedColor !== assignColorId) return;
+                setSelectedVariantIds((prev) =>
+                  prev.includes(record.id!)
+                    ? prev.filter((id) => id !== record.id)
+                    : [...prev, record.id!]
+                );
+              },
+            };
+          }}
+        />
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          Variants already assigned to another color are disabled. Each variant can only belong to one color.
+        </Typography.Text>
       </Modal>
 
     </div>

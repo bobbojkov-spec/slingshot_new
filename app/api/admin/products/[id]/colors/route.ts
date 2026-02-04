@@ -14,7 +14,19 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       [id, name, image_path, display_order || 0]
     );
 
-    return NextResponse.json({ color: res.rows[0] });
+    const availabilityRes = await query(
+      `
+        INSERT INTO product_variant_availability (variant_id, color_id, stock_qty, is_active, created_at, updated_at)
+        SELECT pv.id, $2, 1, true, NOW(), NOW()
+        FROM product_variants pv
+        WHERE pv.product_id = $1
+        ON CONFLICT (variant_id, color_id) DO NOTHING
+        RETURNING variant_id, color_id, stock_qty, is_active, created_at, updated_at
+      `,
+      [id, res.rows[0].id]
+    );
+
+    return NextResponse.json({ color: res.rows[0], availability: availabilityRes.rows || [] });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

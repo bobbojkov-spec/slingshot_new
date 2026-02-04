@@ -199,11 +199,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     const availabilityEntry = getAvailabilityEntry(variant.id, colorId);
     const inStock = availabilityEntry
       ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0
-      : variant.available && variant.inventory_quantity > 0;
+      : true;
 
     return {
       inStock,
-      quantity: availabilityEntry?.stock_qty ?? variant.inventory_quantity,
+      quantity: availabilityEntry?.stock_qty ?? Math.max(variant.inventory_quantity || 0, 1),
       sku: variant.sku
     };
   };
@@ -217,7 +217,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     const colorId = selectedColorId || getVariantColorId(variant);
     if (!colorId) return;
     const availabilityEntry = getAvailabilityEntry(variant.id, colorId);
-    if (!availabilityEntry?.is_active || availabilityEntry.stock_qty <= 0) return;
+    if (availabilityEntry && (!availabilityEntry.is_active || availabilityEntry.stock_qty <= 0)) return;
 
     const variantId = variant.id;
     const price = variant.price || product.price;
@@ -504,7 +504,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                         const variantColorId = getVariantColorId(v);
                         if (variantColorId !== color.id) return false;
                         const availabilityEntry = getAvailabilityEntry(v.id, color.id);
-                        return availabilityEntry?.is_active && availabilityEntry.stock_qty > 0;
+                        return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
                       });
                     }
 
@@ -562,7 +562,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                           const variantColorId = getVariantColorId(v);
                           if (variantColorId !== selectedColorId) return false;
                           const availabilityEntry = getAvailabilityEntry(v.id, selectedColorId);
-                          return availabilityEntry?.is_active && availabilityEntry.stock_qty > 0;
+                          return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
                         });
                       }
                       const isSelected = selectedSize === numericSize;
@@ -614,7 +614,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
                   }`}
               >
-                <ShoppingBag className="w-5 h-5" /> {t("addToInquiry")}
+                <ShoppingBag className="w-5 h-5" /> {t("product.addToInquiry")}
               </button>
             </div>
 

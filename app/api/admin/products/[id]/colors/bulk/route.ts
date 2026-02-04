@@ -29,7 +29,23 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             insertedColors.push(res.rows[0]);
         }
 
-        return NextResponse.json({ colors: insertedColors });
+        const colorIds = insertedColors.map((row) => row.id);
+        const availabilityRows = colorIds.length
+            ? await query(
+                `
+          INSERT INTO product_variant_availability (variant_id, color_id, stock_qty, is_active, created_at, updated_at)
+          SELECT pv.id, pc.id, 1, true, NOW(), NOW()
+          FROM product_variants pv
+          JOIN product_colors pc ON pc.id = ANY($2::uuid[])
+          WHERE pv.product_id = $1
+          ON CONFLICT (variant_id, color_id) DO NOTHING
+          RETURNING variant_id, color_id, stock_qty, is_active, created_at, updated_at
+        `,
+                [id, colorIds]
+            )
+            : { rows: [] };
+
+        return NextResponse.json({ colors: insertedColors, availability: availabilityRows.rows || [] });
     } catch (error: any) {
         console.error('Bulk color addition failed:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
