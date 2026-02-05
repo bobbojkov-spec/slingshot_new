@@ -40,7 +40,7 @@ export default function SimpleEditProduct({
 
     return (
         <div style={{ padding: 24 }}>
-            <h1>Edit Product: {draft.info?.title || draft.name}</h1>
+            <h1>Edit Product: {draft.info?.title || 'Untitled'}</h1>
             <Button type="primary" loading={saving} onClick={handleSave} style={{ marginBottom: 16 }}>
                 Save
             </Button>
