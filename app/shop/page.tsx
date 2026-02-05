@@ -43,7 +43,13 @@ function ShopContent() {
     return lowered;
   };
 
-  const brandParam = normalizedBrand(searchParams.get('brand'));
+  // Get all brand values (for multi-select support)
+  const brandParams = searchParams.getAll('brand').map(b => normalizedBrand(b)).filter(Boolean) as string[];
+  // Single brand for display purposes
+  const brandParam = brandParams.length === 1 ? brandParams[0] : null;
+  // Both brands selected = effectively no brand filter (show all)
+  const bothBrandsSelected = brandParams.length === 2 &&
+    brandParams.includes('ride-engine') && brandParams.includes('slingshot');
   const categoryParam = searchParams.get('category');
 
   useEffect(() => {
@@ -63,8 +69,11 @@ function ShopContent() {
     }
   }, [categoryParam, router, searchParams]);
 
+  // Show brand overview only for single brand selection (not when both are selected)
   const isBrandOverview =
+    brandParam !== null &&
     (brandParam === 'ride-engine' || brandParam === 'slingshot') &&
+    !bothBrandsSelected &&
     !searchParams.has('collection') &&
     !searchParams.has('tag') &&
     !searchParams.has('q') &&
@@ -80,14 +89,15 @@ function ShopContent() {
         : '';
 
   // If ANY filter is active, we should NOT show the Featured/BestSellers sections
-  // Filters: category, collection, type, tag, brand, q
+  // Filters: category, collection, type, tag, brand (single), q
   // Page > 1 also hides them
+  // Note: Both brands selected = no brand filter (show all)
   const hasFilters =
     searchParams.has('category') ||
     searchParams.has('collection') ||
     searchParams.has('type') ||
     searchParams.has('tag') ||
-    searchParams.has('brand') ||
+    (searchParams.has('brand') && !bothBrandsSelected) ||
     searchParams.has('q') ||
     (parseInt(searchParams.get('page') || '1') > 1);
 

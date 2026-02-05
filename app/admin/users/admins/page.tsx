@@ -31,6 +31,8 @@ export default function AdminUsersPage() {
   const [passwordForm] = Form.useForm();
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [allowlist, setAllowlist] = useState<string[]>([]);
+  const [allowlistText, setAllowlistText] = useState('');
+  const [allowlistLoading, setAllowlistLoading] = useState(false);
   const [requireAllowlist, setRequireAllowlist] = useState(false);
 
   const roleOptions = useMemo(
@@ -114,11 +116,39 @@ export default function AdminUsersPage() {
       const res = await fetch('/api/admin/allowlist');
       const body = await res.json();
       if (res.ok) {
-        setAllowlist(body.allowlist || []);
+        const emails = body.allowlist || [];
+        setAllowlist(emails);
+        setAllowlistText(emails.join('\n'));
         setRequireAllowlist(Boolean(body.requireAllowlist));
       }
     } catch (err: any) {
       console.warn('Failed to load allowlist', err?.message || err);
+    }
+  };
+
+  const handleSaveAllowlist = async () => {
+    try {
+      setAllowlistLoading(true);
+      const emails = allowlistText
+        .split(/[\n,]+/)
+        .map((e) => e.trim())
+        .filter(Boolean);
+
+      const res = await fetch('/api/admin/allowlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emails }),
+      });
+      const body = await res.json();
+
+      if (!res.ok) throw new Error(body?.error || 'Failed to save allowlist');
+
+      setAllowlist(body.allowlist || []);
+      message.success('Allowlist saved successfully');
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to save allowlist');
+    } finally {
+      setAllowlistLoading(false);
     }
   };
 
@@ -223,13 +253,35 @@ export default function AdminUsersPage() {
           type={requireAllowlist ? 'warning' : 'info'}
           showIcon
           style={{ marginBottom: 12 }}
-          message="Admin allowlist"
+          message="Admin Access Control"
           description={
             allowlist.length
-              ? `Only these emails can log in as admin: ${allowlist.join(', ')}`
-              : 'Allowlist is empty. Add emails to ADMIN_EMAIL_ALLOWLIST to enable Google/admin access.'
+              ? `Only ${allowlist.length} email(s) can log in as admin`
+              : 'Allowlist is empty. All emails can log in (if not restricted).'
           }
         />
+
+        {/* Allowlist Editor */}
+        <div style={{ marginBottom: 16, padding: 12, backgroundColor: '#f5f5f5', borderRadius: 6 }}>
+          <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>
+            Allowed Admin Emails
+          </Typography.Text>
+          <Input.TextArea
+            value={allowlistText}
+            onChange={(e) => setAllowlistText(e.target.value)}
+            placeholder="Enter emails, one per line or comma-separated&#10;example1@gmail.com&#10;example2@company.com"
+            rows={4}
+            style={{ marginBottom: 8 }}
+          />
+          <Button
+            type="primary"
+            onClick={handleSaveAllowlist}
+            loading={allowlistLoading}
+          >
+            Save Allowlist
+          </Button>
+        </div>
+
         <div style={{ overflowX: 'auto', fontSize: 10 }}>
           <Spin spinning={loading}>
             {error ? <Typography.Text type="danger">{error}</Typography.Text> : null}
