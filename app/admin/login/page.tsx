@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
 
-  const clientId = useMemo(() => process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '', []);
+  const [clientId, setClientId] = useState('');
   const deviceId = useMemo(() => `admin-${Date.now()}-${Math.random().toString(16).slice(2)}`, []);
 
   const handleLogin = async (values: { email: string; password: string }) => {
@@ -64,8 +64,30 @@ export default function AdminLoginPage() {
   };
 
   useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/google/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (!data?.clientId) {
+          setGisError('Missing Google client ID');
+          return;
+        }
+        setClientId(data.clientId);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setGisError('Failed to load Google client ID');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!clientId) {
-      setGisError('Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID');
       return;
     }
     loadGoogleScript(clientId);
