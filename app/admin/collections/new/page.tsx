@@ -19,8 +19,8 @@ export default function NewCollectionPage() {
 
         // Insert main collection
         const res = await query(
-            `INSERT INTO collections (title, handle, description, created_at, updated_at)
-        VALUES ($1, $2, $3, NOW(), NOW())
+            `INSERT INTO collections (title, handle, slug, source, visible, description, created_at, updated_at)
+        VALUES ($1, $2, $2, 'rideengine', true, $3, NOW(), NOW())
         RETURNING id`,
             [title_en, handle, desc_en]
         );

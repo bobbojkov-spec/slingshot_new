@@ -54,7 +54,7 @@ export async function POST(req: Request) {
                 values ($1, $2, $3, $4, $5, $6, NOW(), NOW())
                 RETURNING *
               `,
-            [title, slug, slug, source, nextOrder, false] // Default hidden
+            [title, slug, slug, source, nextOrder, true] // Default visible=true
         );
 
         return NextResponse.json({ collection: rows[0] });

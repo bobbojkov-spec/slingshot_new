@@ -35,15 +35,21 @@ export default function CollectionsListClient({
     const [viewLang, setViewLang] = useState<'en' | 'bg'>('en');
 
     const filteredCollections = collections.filter(c => {
-        const searchLower = searchTerm.toLowerCase();
-        // Search in both languages just in case, or just the active one?
-        // Let's search in all relevant fields
+        const searchLower = searchTerm.toLowerCase().trim();
+        if (!searchLower) return true;
+
+        const title = (c.title || '').toLowerCase();
+        const slug = (c.slug || '').toLowerCase();
+        const subtitle = (c.subtitle || '').toLowerCase();
+        const titleEn = (c.title_en || '').toLowerCase();
+        const titleBg = (c.title_bg || '').toLowerCase();
+
         return (
-            c.title.toLowerCase().includes(searchLower) ||
-            c.slug.toLowerCase().includes(searchLower) ||
-            (c.subtitle && c.subtitle.toLowerCase().includes(searchLower)) ||
-            (c.title_bg && c.title_bg.toLowerCase().includes(searchLower)) ||
-            (c.title_en && c.title_en.toLowerCase().includes(searchLower))
+            title.includes(searchLower) ||
+            slug.includes(searchLower) ||
+            subtitle.includes(searchLower) ||
+            titleEn.includes(searchLower) ||
+            titleBg.includes(searchLower)
         );
     });
 
