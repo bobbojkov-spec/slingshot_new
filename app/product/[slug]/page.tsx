@@ -129,7 +129,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     return product.availability.find((entry) => entry.variant_id === variantId && entry.color_id === colorId) || null;
   };
 
-  const getVariantColorId = (variant: Product['variants'][number]) => {
+  const getVariantColorId = (variant: NonNullable<Product['variants']>[number]) => {
     if (variant.product_color_id) return variant.product_color_id;
     if (!product?.colors) return null;
     const colorName = getColorFromVariantTitle(variant.title || '');
