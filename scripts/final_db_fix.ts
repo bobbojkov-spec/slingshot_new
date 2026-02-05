@@ -27,7 +27,7 @@ async function main() {
         console.log(`Set stock_qty = 100 for ${invRes.rowCount} ALL variants in the store.`);
 
         // 3. Final verification
-        const check = await pool.query(`
+        const check = await query(`
             SELECT 
                 (SELECT COUNT(*) FROM products WHERE brand IS NULL) as null_brands,
                 (SELECT MIN(stock_qty) FROM product_variant_availability) as min_stock
