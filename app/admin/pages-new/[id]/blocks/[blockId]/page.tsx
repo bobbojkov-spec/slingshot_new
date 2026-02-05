@@ -19,8 +19,8 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
 import SimpleEditor from '@/components/SimpleEditor';
-import BilingualInput from '../../../../components/BilingualInput';
-import type { PageRecord, PageBlock, BlockType } from '../../../../../types/page';
+import BilingualInput from '@/app/admin/components/BilingualInput';
+import type { PageRecord, PageBlock, BlockType } from '@/types/page';
 
 const { TextArea } = Input;
 

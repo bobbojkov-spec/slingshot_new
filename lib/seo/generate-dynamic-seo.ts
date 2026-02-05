@@ -81,7 +81,7 @@ function generateKeywords(product: DynamicSEOInput): string {
   }
 
   // Remove duplicates and limit to 6
-  const unique = [...new Set(keywords.map(k => k.toLowerCase()))];
+  const unique = Array.from(new Set(keywords.map(k => k.toLowerCase())));
   return unique.slice(0, 6).join(', ');
 }
 
