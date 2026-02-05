@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useBackgroundParallax } from "@/hooks/useParallax";
 
 const HeroSection = () => {
   const { t } = useLanguage();
+  const { containerRef, imageStyle } = useBackgroundParallax(0.4);
+
   return (
-    <section className="hero-section">
-      <div className="absolute inset-0">
+    <section className="hero-section" ref={containerRef}>
+      <div className="absolute inset-0 overflow-hidden">
         <img
           src="/lovable-uploads/hero-wave.jpg"
           alt="Slingshot Bulgaria - Premium Kitesurfing Action"
           className="image-cover"
+          style={imageStyle}
         />
         <div className="hero-overlay" />
       </div>

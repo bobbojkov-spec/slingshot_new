@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
+import { useBackgroundParallax } from '@/hooks/useParallax';
 
 interface BreadcrumbItem {
     label: string;
@@ -14,6 +17,7 @@ interface ShopHeroProps {
 }
 
 export function ShopHero({ title, breadcrumbs, variant = 'default', backgroundImage }: ShopHeroProps) {
+    const { containerRef, imageStyle } = useBackgroundParallax(0.3);
     const BreadcrumbsContainer = () => {
         if (!breadcrumbs || breadcrumbs.length === 0) return null;
         return (
@@ -52,12 +56,13 @@ export function ShopHero({ title, breadcrumbs, variant = 'default', backgroundIm
     const heroImage = backgroundImage || '/hero/slingshot-hero-lifestyle.jpg';
 
     return (
-        <div className="shop-hero relative w-full bg-primary flex items-center justify-center overflow-hidden mb-0">
-            <div className="absolute inset-0">
+        <div ref={containerRef} className="shop-hero relative w-full bg-primary flex items-center justify-center overflow-hidden mb-0">
+            <div className="absolute inset-0 overflow-hidden">
                 <img
                     src={heroImage}
                     alt={`${title} - Slingshot Bulgaria Shop Category`}
                     className="w-full h-full object-cover opacity-60"
+                    style={imageStyle}
                 />
             </div>
             <div className="absolute inset-0 bg-primary/40" />

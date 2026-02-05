@@ -114,20 +114,36 @@ export default function ShopOverview() {
         );
     }
 
+    // Translations
+    const t = {
+        heroTitle: language === 'bg'
+            ? 'Разгледай продуктите по филтър или използвай търсачката.'
+            : 'Browse products by filter, or use the search bar.',
+        heroSubtitle: language === 'bg'
+            ? 'Избери марка, колекция или ключова дума за да намериш правилната екипировка.'
+            : 'Pick a brand, a collection, or a keyword to jump into the right gear.',
+        filterByBrand: language === 'bg' ? 'Филтрирай по Марка' : 'Filter by Brand',
+        filterByCollection: language === 'bg' ? 'Филтрирай по Колекция' : 'Filter by Collection',
+        filterByTag: language === 'bg' ? 'Филтрирай по Таг' : 'Filter by Tag',
+        featuredProducts: language === 'bg' ? 'Избрани Продукти' : 'Featured Products',
+        viewAll: language === 'bg' ? 'Виж всички' : 'View all',
+        noFeatured: language === 'bg' ? 'Все още няма избрани продукти.' : 'No featured products selected yet.',
+    };
+
     return (
         <div className="container mx-auto px-4 py-12 space-y-12">
             <div className="text-center space-y-2">
                 <h2 className="text-2xl md:text-3xl font-logo font-bold text-deep-navy uppercase tracking-tight">
-                    Browse products by filter, or use the search bar.
+                    {t.heroTitle}
                 </h2>
                 <p className="text-gray-500 text-sm md:text-base">
-                    Pick a brand, a collection, or a keyword to jump into the right gear.
+                    {t.heroSubtitle}
                 </p>
             </div>
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Filter by Brand</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByBrand}</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {displayBrands.map((brand) => (
@@ -154,7 +170,7 @@ export default function ShopOverview() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Filter by Collection</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByCollection}</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {displayCollections.map((collection) => (
@@ -174,7 +190,7 @@ export default function ShopOverview() {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                             <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-base md:text-lg font-medium uppercase tracking-tight">
+                                <h4 className="text-white text-base md:text-lg font-bold uppercase tracking-tight">
                                     {collection.title}
                                 </h4>
                                 {collection.subtitle && (
@@ -190,16 +206,16 @@ export default function ShopOverview() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Filter by Tag</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByTag}</h3>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3">
                     {displayKeywords.map((keyword) => {
                         const label = language === 'bg' ? keyword.name_bg : keyword.name_en;
                         return (
                             <Link
                                 key={keyword.slug}
                                 href={`/shop?tag=${encodeURIComponent(keyword.name_en)}`}
-                                className="px-4 py-2 rounded-full bg-gray-100 text-sm font-medium text-deep-navy hover:bg-accent hover:text-white transition"
+                                className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-medium text-deep-navy shadow-sm hover:shadow-md hover:border-accent hover:bg-accent hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 ease-out"
                             >
                                 {label}
                             </Link>
@@ -210,13 +226,13 @@ export default function ShopOverview() {
 
             <section className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Featured Products</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.featuredProducts}</h3>
                     <Link href="/collections/featured-products" className="text-sm text-accent">
-                        View all
+                        {t.viewAll}
                     </Link>
                 </div>
                 {displayFeatured.length === 0 ? (
-                    <p className="text-gray-500">No featured products selected yet.</p>
+                    <p className="text-gray-500">{t.noFeatured}</p>
                 ) : (
                     <ProductGrid products={displayFeatured.slice(0, 8)} columns={4} />
                 )}

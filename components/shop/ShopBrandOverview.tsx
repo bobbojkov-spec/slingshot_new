@@ -123,20 +123,36 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
         );
     }
 
+    // Translations
+    const t = {
+        heroTitle: language === 'bg'
+            ? `${brandLabel} екипировка, филтрирана и готова за каране.`
+            : `${brandLabel} gear, filtered and ready to ride.`,
+        heroSubtitle: language === 'bg'
+            ? `Нови продукти, избрани колекции и тагове, филтрирани за ${brandLabel}.`
+            : `New arrivals, featured collections, and tags all filtered for ${brandLabel}.`,
+        filterByCollection: language === 'bg' ? 'Филтрирай по Колекция' : 'Filter by Collection',
+        filterByTag: language === 'bg' ? 'Филтрирай по Таг' : 'Filter by Tag',
+        featuredProducts: language === 'bg' ? 'Избрани Продукти' : 'Featured Products',
+        newProducts: language === 'bg' ? 'Нови Продукти' : 'New Products',
+        noFeatured: language === 'bg' ? 'Все още няма избрани продукти.' : 'No featured products available yet.',
+        noNew: language === 'bg' ? 'Все още няма нови продукти.' : 'No new products available yet.',
+    };
+
     return (
         <div className="container mx-auto px-4 py-12 space-y-12">
             <div className="text-center space-y-2">
                 <h2 className="text-2xl md:text-3xl font-logo font-bold text-deep-navy uppercase tracking-tight">
-                    {brandLabel} gear, filtered and ready to ride.
+                    {t.heroTitle}
                 </h2>
                 <p className="text-gray-500 text-sm md:text-base">
-                    New arrivals, featured collections, and tags all filtered for {brandLabel}.
+                    {t.heroSubtitle}
                 </p>
             </div>
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Filter by Collection</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByCollection}</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {displayCollections.map((collection) => (
@@ -158,7 +174,7 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                             <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-base md:text-lg font-medium uppercase tracking-tight">
+                                <h4 className="text-white text-base md:text-lg font-bold uppercase tracking-tight">
                                     {collection.title}
                                 </h4>
                                 {collection.subtitle && (
@@ -174,9 +190,9 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Filter by Tag</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByTag}</h3>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3">
                     {displayKeywords.map((keyword) => {
                         const label = language === "bg" ? keyword.name_bg : keyword.name_en;
                         const tagValue = keyword.slug || keyword.name_en;
@@ -186,7 +202,7 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                                 href={`/shop?brand=${encodeURIComponent(normalizedBrand)}&tag=${encodeURIComponent(
                                     tagValue
                                 )}`}
-                                className="px-4 py-2 rounded-full bg-gray-100 text-sm font-medium text-deep-navy hover:bg-accent hover:text-white transition"
+                                className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-medium text-deep-navy shadow-sm hover:shadow-md hover:border-accent hover:bg-accent hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 ease-out"
                             >
                                 {label}
                             </Link>
@@ -197,10 +213,10 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
 
             <section className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Featured Products</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.featuredProducts}</h3>
                 </div>
                 {displayFeatured.length === 0 ? (
-                    <p className="text-gray-500">No featured products available yet.</p>
+                    <p className="text-gray-500">{t.noFeatured}</p>
                 ) : (
                     <ProductGrid products={displayFeatured} columns={4} />
                 )}
@@ -208,10 +224,10 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
 
             <section className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">New Products</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">{t.newProducts}</h3>
                 </div>
                 {newProducts.length === 0 ? (
-                    <p className="text-gray-500">No new products available yet.</p>
+                    <p className="text-gray-500">{t.noNew}</p>
                 ) : (
                     <ProductGrid products={newProducts} columns={4} />
                 )}

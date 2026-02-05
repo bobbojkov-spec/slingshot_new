@@ -2,6 +2,7 @@
 
 import React from 'react';
 import BackgroundVideoPlayer from '@/components/ui/BackgroundVideoPlayer';
+import { useBackgroundParallax } from '@/hooks/useParallax';
 
 import Link from 'next/link';
 
@@ -25,6 +26,8 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     videoUrl,
     breadcrumbs
 }) => {
+    const { containerRef, imageStyle } = useBackgroundParallax(0.35);
+    const [imageError, setImageError] = React.useState(false);
 
     const BreadcrumbsContainer = () => {
         if (!breadcrumbs || breadcrumbs.length === 0) return null;
@@ -74,19 +77,17 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
         );
     }
 
-    const [imageError, setImageError] = React.useState(false);
-
-    // Image Hero
+    // Image Hero with Parallax
     if (imageUrl && !imageError) {
         return (
-            <div className="hero-media relative w-full overflow-hidden">
+            <div ref={containerRef} className="hero-media relative w-full overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={`${title} Collection - Slingshot Bulgaria`}
                     className="absolute inset-0 w-full h-full object-cover"
                     onError={() => setImageError(true)}
                     loading="eager"
-                    style={{ aspectRatio: '16/9' }}
+                    style={{ ...imageStyle, aspectRatio: '16/9' }}
                 />
                 <div className="absolute inset-0 bg-black/40 z-10" />
                 <div className="relative z-20 h-full flex items-center">
@@ -108,7 +109,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
         );
     }
 
-    // Case 4: Minimal Header (No Media)
+    // Minimal Header (No Media)
     return (
         <div className="relative bg-deep-navy pt-32 pb-16">
             <div className="section-container">
