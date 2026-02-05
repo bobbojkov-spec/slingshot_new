@@ -36,7 +36,7 @@ import {
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 import { calculateSEOScore } from '@/lib/seo/calculate-seo-score';
-import SimpleEditor from '@/components/SimpleEditor';
+import TiptapEditor from '@/components/TiptapEditor';
 import MediaPicker from '@/components/MediaPicker';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
 import BilingualInput from '../../components/BilingualInput';
@@ -87,6 +87,13 @@ export default function PageBuilderPage() {
     const [pageSaving, setPageSaving] = useState(false);
     const [imageUploading, setImageUploading] = useState<Record<number, boolean>>({});
     const [videoUploading, setVideoUploading] = useState<Record<number, boolean>>({});
+    const [mediaCache, setMediaCache] = useState<Record<number, string>>({});
+    const [mediaPickerConfig, setMediaPickerConfig] = useState<{
+        title?: string;
+        onSelect: (mediaId: number) => Promise<void> | void;
+    } | null>(null);
+    const [heroOgId, setHeroOgId] = useState<number | null>(null);
+    const [heroOgUrl, setHeroOgUrl] = useState<string | null>(null);
 
     const heroExists = useMemo(() => blocks.some((block) => block.type === 'HERO'), [blocks]);
 
