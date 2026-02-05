@@ -243,17 +243,26 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   if (loading) return <div className="min-h-screen pt-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
   if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">{t("product.notFound")}</div>;
 
+  // Normalize brand for URL
+  const brandSlug = product.brand?.toLowerCase() === "ride engine" || product.brand?.toLowerCase() === "rideengine"
+    ? "ride-engine"
+    : product.brand?.toLowerCase() === "slingshot"
+      ? "slingshot"
+      : null;
+
+  // Check if category is same as brand (to avoid duplication in breadcrumb)
+  const categoryIsBrand = product.category_name?.toLowerCase() === "ride engine" ||
+    product.category_name?.toLowerCase() === "rideengine" ||
+    product.category_name?.toLowerCase() === "slingshot";
+
   const breadcrumbItems = [
     { label: t("breadcrumbs.home"), href: "/" },
     { label: t("breadcrumbs.shop"), href: "/shop" },
-    ...(product.brand?.toLowerCase() === "ride engine" || product.brand?.toLowerCase() === "rideengine"
-      ? [{ label: "RIDEENGINE", href: "/shop?brand=Ride%20Engine" }]
+    ...(brandSlug
+      ? [{ label: brandSlug === "ride-engine" ? "RIDE ENGINE" : "SLINGSHOT", href: `/shop?brand=${brandSlug}` }]
       : []),
-    ...(product.brand?.toLowerCase() === "slingshot"
-      ? [{ label: "SLINGSHOT", href: "/shop?brand=Slingshot" }]
-      : []),
-    ...(product.category_name
-      ? [{ label: product.category_name, href: `/shop?category=${product.category_slug || product.category_name?.toLowerCase()}` }]
+    ...(product.category_name && !categoryIsBrand
+      ? [{ label: product.category_name, href: `/shop?brand=${brandSlug}&category=${product.category_slug || product.category_name?.toLowerCase()}` }]
       : []),
     { label: language === "bg" ? (product.name_bg || product.name) : product.name }
   ];
@@ -336,24 +345,19 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <span>/</span>
             <Link href="/shop" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{t("breadcrumbs.shop")}</Link>
 
-            {(product.brand?.toLowerCase() === 'ride engine' || product.brand?.toLowerCase() === 'rideengine') && (
+            {brandSlug && (
               <>
                 <span>/</span>
-                <Link href="/shop?brand=Ride%20Engine" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">RIDEENGINE</Link>
+                <Link href={`/shop?brand=${brandSlug}`} className="hover:text-black transition-colors text-black/60 whitespace-nowrap">
+                  {brandSlug === 'ride-engine' ? 'RIDE ENGINE' : 'SLINGSHOT'}
+                </Link>
               </>
             )}
 
-            {(product.brand?.toLowerCase() === 'slingshot') && (
+            {product.category_name && !categoryIsBrand && (
               <>
                 <span>/</span>
-                <Link href="/shop?brand=Slingshot" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">SLINGSHOT</Link>
-              </>
-            )}
-
-            {product.category_name && (
-              <>
-                <span>/</span>
-                <Link href={`/shop?category=${product.category_slug || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{product.category_name}</Link>
+                <Link href={`/shop?brand=${brandSlug}&category=${product.category_slug || product.category_name?.toLowerCase()}`} className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{product.category_name}</Link>
               </>
             )}
             <span className="hidden md:inline">/</span>
