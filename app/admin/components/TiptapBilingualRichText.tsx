@@ -5,8 +5,6 @@ import { Typography, Space, Button, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
@@ -171,10 +169,15 @@ const TiptapEditor = ({
 }) => {
     const editor = useEditor({
         extensions: [
-            StarterKit,
-            Underline,
-            Link.configure({
-                openOnClick: false,
+            StarterKit.configure({
+                heading: {
+                    levels: [1, 2, 3, 4, 5, 6],
+                },
+                bulletList: {},
+                orderedList: {},
+                link: {
+                    openOnClick: false,
+                },
             }),
             Image,
             Table.configure({

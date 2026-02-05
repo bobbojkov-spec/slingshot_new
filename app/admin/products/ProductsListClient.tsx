@@ -113,12 +113,12 @@ export default function ProductsListClient({ products }: { products: Product[] }
   const filtered = useMemo(() => {
     return rows.filter((p) => {
       // Search in name, title, and tags
-      const searchLower = search.toLowerCase();
+      const searchLower = (search || '').toLowerCase();
       const name = (p.title || p.name || '').toLowerCase();
       const tags = Array.isArray(p.tags) ? p.tags : [];
       const matchesSearch = !search ||
         name.includes(searchLower) ||
-        tags.some(t => t.toLowerCase().includes(searchLower));
+        tags.some(t => t && typeof t === 'string' && t.toLowerCase().includes(searchLower));
 
       // Filter by Brand
       const matchesBrand = !brand || p.brand === brand;
