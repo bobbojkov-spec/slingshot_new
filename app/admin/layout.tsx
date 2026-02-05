@@ -1,5 +1,4 @@
 import "antd/dist/reset.css";
-import "quill/dist/quill.snow.css";
 import "./admin.css";
 
 import AntdRegistry from "@/lib/antd/AntdRegistry";

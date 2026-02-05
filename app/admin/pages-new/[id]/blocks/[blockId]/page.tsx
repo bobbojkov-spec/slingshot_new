@@ -18,7 +18,7 @@ import {
     Typography,
 } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
-import SimpleEditor from '@/components/SimpleEditor';
+import TiptapEditor from '@/components/TiptapEditor';
 import BilingualInput from '@/app/admin/components/BilingualInput';
 import type { PageRecord, PageBlock, BlockType } from '@/types/page';
 
@@ -134,7 +134,7 @@ export default function BlockEditPage() {
                         <Form.Item name="content_en" noStyle>
                             <Form.Item noStyle shouldUpdate>
                                 {({ getFieldValue, setFieldValue }) => (
-                                    <SimpleEditor
+                                    <TiptapEditor
                                         value={getFieldValue('content_en') || ''}
                                         onChange={(v) => setFieldValue('content_en', v)}
                                     />
@@ -146,7 +146,7 @@ export default function BlockEditPage() {
                         <Form.Item name="content_bg" noStyle>
                             <Form.Item noStyle shouldUpdate>
                                 {({ getFieldValue, setFieldValue }) => (
-                                    <SimpleEditor
+                                    <TiptapEditor
                                         value={getFieldValue('content_bg') || ''}
                                         onChange={(v) => setFieldValue('content_bg', v)}
                                     />

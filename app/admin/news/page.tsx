@@ -34,7 +34,7 @@ import type { ColumnsType } from 'antd/es/table';
 import MediaPicker from '@/components/admin/MediaPicker';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
-import SimpleEditor from '@/components/SimpleEditor';
+import TiptapEditor from '@/components/TiptapEditor';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
 
 const { TextArea } = Input;

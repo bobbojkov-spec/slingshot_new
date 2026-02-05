@@ -5,7 +5,7 @@ import { Checkbox, Input, Select, Space, Typography, Divider, message, Upload, B
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import type { Product } from '../EditProduct';
 import BilingualInput from '@/app/admin/components/BilingualInput';
-import BilingualRichText from '@/app/admin/components/BilingualRichText';
+import TiptapBilingualRichText from '@/app/admin/components/TiptapBilingualRichText';
 import BilingualTags from '@/app/admin/components/BilingualTags';
 
 type Option = { label: string; value: string };
@@ -339,7 +339,7 @@ export default function InfoTab({
         </div>
       </div>
 
-      <BilingualRichText
+      <TiptapBilingualRichText
         label="Description HTML"
         enValue={draft.translation_en?.description_html}
         bgValue={draft.translation_bg?.description_html}
@@ -347,7 +347,7 @@ export default function InfoTab({
         onBgChange={(val) => updateTranslationBG('description_html', val)}
       />
 
-      <BilingualRichText
+      <TiptapBilingualRichText
         label="Description HTML 2"
         enValue={draft.translation_en?.description_html2}
         bgValue={draft.translation_bg?.description_html2}
@@ -355,7 +355,7 @@ export default function InfoTab({
         onBgChange={(val) => updateTranslationBG('description_html2', val)}
       />
 
-      <BilingualRichText
+      <TiptapBilingualRichText
         label="Specs HTML"
         enValue={draft.translation_en?.specs_html}
         bgValue={draft.translation_bg?.specs_html}
@@ -363,7 +363,7 @@ export default function InfoTab({
         onBgChange={(val) => updateTranslationBG('specs_html', val)}
       />
 
-      <BilingualRichText
+      <TiptapBilingualRichText
         label="Package Includes"
         enValue={draft.translation_en?.package_includes}
         bgValue={draft.translation_bg?.package_includes}
