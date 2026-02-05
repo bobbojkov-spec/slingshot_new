@@ -133,7 +133,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     `;
 
     const translationsSql = `
-      SELECT language_code, title, description_html, description_html2, specs_html, package_includes, subtitle
+      SELECT language_code, title, description_html, description_html2, specs_html, package_includes
       FROM product_translations
       WHERE product_id = $1
     `;
@@ -156,7 +156,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       product.description_html2_bg = bgTrans.description_html2;
       product.specs_html_bg = bgTrans.specs_html;
       product.package_includes_bg = bgTrans.package_includes;
-      product.subtitle_bg = bgTrans.subtitle;
     }
 
 

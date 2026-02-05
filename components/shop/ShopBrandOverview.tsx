@@ -42,6 +42,7 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
     const { language } = useLanguage();
     const [collections, setCollections] = useState<Collection[]>([]);
     const [keywords, setKeywords] = useState<Keyword[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [newProducts, setNewProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -51,9 +52,10 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
         async function fetchData() {
             setLoading(true);
             try {
-                const [collectionsRes, keywordsRes] = await Promise.all([
+                const [collectionsRes, keywordsRes, featuredRes] = await Promise.all([
                     fetch(`/api/homepage-collections?lang=${language}&brand=${normalizedBrand}`),
                     fetch(`/api/homepage-keywords?lang=${language}&brand=${normalizedBrand}`),
+                    fetch(`/api/products?lang=${language}&brand=${encodeURIComponent(normalizedBrand)}&collection=featured-products&limit=8`),
                 ]);
 
                 if (collectionsRes.ok) {
@@ -64,6 +66,11 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                 if (keywordsRes.ok) {
                     const data = await keywordsRes.json();
                     setKeywords(data.keywords || []);
+                }
+
+                if (featuredRes.ok) {
+                    const data = await featuredRes.json();
+                    setFeaturedProducts(data.products || []);
                 }
 
                 const newProductsRes = await fetch(
@@ -98,7 +105,8 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
     }, [language, normalizedBrand]);
 
     const displayCollections = useMemo(() => collections.slice(0, 12), [collections]);
-    const displayKeywords = useMemo(() => keywords.slice(0, 16), [keywords]);
+    const displayKeywords = useMemo(() => keywords.slice(0, 12), [keywords]);
+    const displayFeatured = useMemo(() => featuredProducts.slice(0, 8), [featuredProducts]);
 
     if (loading) {
         return (
@@ -122,24 +130,13 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                     {brandLabel} gear, filtered and ready to ride.
                 </h2>
                 <p className="text-gray-500 text-sm md:text-base">
-                    New arrivals, featured collections, and keywords all filtered for {brandLabel}.
+                    New arrivals, featured collections, and tags all filtered for {brandLabel}.
                 </p>
             </div>
 
-            <section className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">New Products</h3>
-                </div>
-                {newProducts.length === 0 ? (
-                    <p className="text-gray-500">No new products available yet.</p>
-                ) : (
-                    <ProductGrid products={newProducts} columns={4} />
-                )}
-            </section>
-
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Collections</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Filter by Collection</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {displayCollections.map((collection) => (
@@ -177,7 +174,7 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">Keywords</h3>
+                    <h3 className="text-lg font-medium text-deep-navy">Filter by Tag</h3>
                 </div>
                 <div className="flex flex-wrap gap-4">
                     {displayKeywords.map((keyword) => {
@@ -196,6 +193,28 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                         );
                     })}
                 </div>
+            </section>
+
+            <section className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-deep-navy">Featured Products</h3>
+                </div>
+                {displayFeatured.length === 0 ? (
+                    <p className="text-gray-500">No featured products available yet.</p>
+                ) : (
+                    <ProductGrid products={displayFeatured} columns={4} />
+                )}
+            </section>
+
+            <section className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-deep-navy">New Products</h3>
+                </div>
+                {newProducts.length === 0 ? (
+                    <p className="text-gray-500">No new products available yet.</p>
+                ) : (
+                    <ProductGrid products={newProducts} columns={4} />
+                )}
             </section>
         </div>
     );
