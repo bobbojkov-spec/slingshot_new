@@ -40,7 +40,12 @@ export async function POST(req: Request) {
     if (info.description_html2 !== undefined) updateFields.description_html2 = info.description_html2;
     if (info.specs_html !== undefined) updateFields.specs_html = info.specs_html;
     if (info.package_includes !== undefined) updateFields.package_includes = info.package_includes;
-    if (info.categoryId !== undefined) updateFields.category_id = info.categoryId;
+    if (info.categoryId !== undefined) {
+      // If it's an object with an 'id' property (common from UI), extract it.
+      // If it's a string, use it directly. If it's empty/null, set to null.
+      const rawId = info.categoryId?.id || (typeof info.categoryId === 'string' ? info.categoryId : null);
+      updateFields.category_id = rawId || null;
+    }
     if (info.meta_keywords !== undefined) updateFields.meta_keywords = info.meta_keywords;
     if (info.og_title !== undefined) updateFields.og_title = info.og_title;
     if (info.og_description !== undefined) updateFields.og_description = info.og_description;

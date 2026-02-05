@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Typography, Space, Button } from 'antd';
+import { Typography, Space, Button, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -257,7 +257,10 @@ const TiptapBilingualRichText: React.FC<TiptapBilingualRichTextProps> = ({
     };
 
     const handleTranslateText = async () => {
-        if (!enValue) return;
+        if (!enValue) {
+            message.warning('No English content to translate');
+            return;
+        }
         setTranslating(true);
         try {
             const res = await fetch('/api/admin/translate', {
@@ -266,11 +269,18 @@ const TiptapBilingualRichText: React.FC<TiptapBilingualRichTextProps> = ({
                 body: JSON.stringify({ text: enValue, type: 'html' }),
             });
             const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Translation failed');
+            }
             if (data.translated) {
                 onBgChange(data.translated);
+                message.success('Translation completed');
+            } else {
+                throw new Error('No translation received');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error('Translation failed', e);
+            message.error(e.message || 'Translation failed. Check if GEMINI_API_KEY is configured.');
         } finally {
             setTranslating(false);
         }
