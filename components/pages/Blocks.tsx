@@ -96,3 +96,83 @@ export const TextImageBlock: React.FC<BlockProps> = ({ data }) => {
     );
 };
 
+export const GalleryBlock: React.FC<BlockProps> = ({ data }) => {
+    const { title, images } = data;
+    return (
+        <section className="section-padding bg-white">
+            <div className="section-container">
+                {title && <h2 className="h2 text-center mb-12">{title}</h2>}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {images?.map((img: any, idx: number) => (
+                        <div key={idx} className="aspect-square overflow-hidden rounded-lg">
+                            <img
+                                src={img.media_id ? `/api/media/${img.media_id}` : PLACEHOLDER_IMAGE}
+                                alt={img.alt || `Gallery image ${idx + 1}`}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export const YoutubeBlock: React.FC<BlockProps> = ({ data }) => {
+    const { title, video_id } = data;
+    return (
+        <section className="section-padding bg-gray-50">
+            <div className="section-container">
+                {title && <h2 className="h2 text-center mb-8">{title}</h2>}
+                {video_id && (
+                    <div className="aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                        <iframe
+                            src={`https://www.youtube.com/embed/${video_id}`}
+                            title={title || 'YouTube video'}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+};
+
+export const FeaturedProductsBlock: React.FC<BlockProps> = ({ data }) => {
+    const { title, products } = data;
+    return (
+        <section className="section-padding bg-white">
+            <div className="section-container">
+                {title && <h2 className="h2 text-center mb-12">{title}</h2>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {products?.map((product: any, idx: number) => (
+                        <Link
+                            key={idx}
+                            href={`/product/${product.slug}`}
+                            className="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                        >
+                            <div className="aspect-square overflow-hidden bg-gray-100">
+                                <img
+                                    src={product.image || PLACEHOLDER_IMAGE}
+                                    alt={product.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                />
+                            </div>
+                            <div className="p-4">
+                                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                    {product.title}
+                                </h3>
+                                {product.price && (
+                                    <p className="text-accent mt-1">${product.price}</p>
+                                )}
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
