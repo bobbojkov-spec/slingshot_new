@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button, Typography, Space, Table, Tag, message, Alert } from 'antd';
+import { Card, Button, Typography, Space, Table, Tag, message, Alert, Select } from 'antd';
 import { TranslationOutlined, SyncOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -29,11 +29,12 @@ export default function TranslationsPage() {
     const [scanning, setScanning] = useState(false);
     const [products, setProducts] = useState<ProductMissing[]>([]);
     const [results, setResults] = useState<TranslationResult[]>([]);
+    const [brandFilter, setBrandFilter] = useState<string>('all');
 
     const handleScan = async () => {
         setScanning(true);
         try {
-            const res = await fetch('/api/admin/translations/rideengine-specs');
+            const res = await fetch(`/api/admin/translations/rideengine-specs?brand=${brandFilter}`);
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             setProducts(data.products || []);
@@ -52,7 +53,7 @@ export default function TranslationsPage() {
             const res = await fetch('/api/admin/translations/rideengine-specs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ limit }),
+                body: JSON.stringify({ limit, brand: brandFilter }),
             });
             const data = await res.json();
             if (data.error) throw new Error(data.error);
@@ -125,12 +126,22 @@ export default function TranslationsPage() {
             </Text>
 
             <Card style={{ marginTop: 24 }}>
-                <Title level={4}>RideEngine Products - Missing Bulgarian Translations</Title>
+                <Title level={4}>Products - Missing Bulgarian Translations</Title>
                 <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-                    Find and translate specs, descriptions, and package includes for RideEngine products.
+                    Find and translate specs, descriptions, and package includes for products.
                 </Text>
 
-                <Space style={{ marginBottom: 16 }}>
+                <Space style={{ marginBottom: 16 }} wrap>
+                    <Select
+                        value={brandFilter}
+                        onChange={setBrandFilter}
+                        style={{ width: 200 }}
+                        options={[
+                            { value: 'all', label: 'All Brands' },
+                            { value: 'ride-engine', label: 'Ride Engine' },
+                            { value: 'slingshot', label: 'Slingshot' },
+                        ]}
+                    />
                     <Button
                         type="default"
                         icon={<SyncOutlined spin={scanning} />}

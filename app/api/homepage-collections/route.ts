@@ -22,35 +22,38 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // When brand is specified, find collections that contain products from that brand
-    // This is more accurate than filtering by collection source
+    // When brand is specified, find ALL collections that contain products from that brand
+    // Don't limit to homepage_featured_collections - show any collection with brand products
     let result;
     if (brandFilter) {
+      // For brand pages: get ALL collections that have products from this brand
+      // Prioritize collections that are also in homepage_featured_collections
       result = await query(`
         SELECT DISTINCT
-          hfc.id,
-          hfc.collection_id,
-          hfc.sort_order,
+          c.id as collection_id,
           c.title as title_en,
           c.slug,
           c.source,
           c.image_url,
           c.subtitle as subtitle_en,
           ct.title as title_translated,
-          ct.subtitle as subtitle_translated
-        FROM homepage_featured_collections hfc
-        JOIN collections c ON c.id = hfc.collection_id
+          ct.subtitle as subtitle_translated,
+          CASE WHEN hfc.id IS NOT NULL THEN hfc.sort_order ELSE 9999 END as sort_order,
+          CASE WHEN hfc.id IS NOT NULL THEN 1 ELSE 0 END as is_featured
+        FROM collections c
         LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
+        LEFT JOIN homepage_featured_collections hfc ON hfc.collection_id = c.id
         WHERE c.visible = true
         AND EXISTS (
           SELECT 1 FROM collection_products cp
           JOIN products p ON p.id = cp.product_id
           WHERE cp.collection_id = c.id AND LOWER(p.brand) = LOWER($2)
         )
-        ORDER BY hfc.sort_order ASC
+        ORDER BY is_featured DESC, sort_order ASC, c.title ASC
         LIMIT 12
       `, [lang, brandFilter]);
     } else {
+      // For main shop: use featured collections from homepage_featured_collections
       result = await query(`
         SELECT
           hfc.id,
@@ -74,54 +77,28 @@ export async function GET(request: NextRequest) {
 
     let rawCollections = result.rows;
 
-    // If less than 12, fill with other visible collections that have products from this brand
-    if (rawCollections.length < 12) {
+    // If less than 12 and no brand filter, fill with other visible collections
+    if (rawCollections.length < 12 && !brandFilter) {
       const remainingCount = 12 - rawCollections.length;
       const featuredIds = rawCollections.map(r => r.collection_id).filter(id => id);
 
-      let fillResult;
-      if (brandFilter) {
-        fillResult = await query(`
-          SELECT DISTINCT
-            c.id as collection_id,
-            c.title as title_en,
-            c.slug,
-            c.source,
-            c.image_url,
-            c.subtitle as subtitle_en,
-            ct.title as title_translated,
-            ct.subtitle as subtitle_translated
-          FROM collections c
-          LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
-          WHERE c.visible = true
-          AND EXISTS (
-            SELECT 1 FROM collection_products cp
-            JOIN products p ON p.id = cp.product_id
-            WHERE cp.collection_id = c.id AND LOWER(p.brand) = LOWER($3)
-          )
-          ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
-          ORDER BY c.created_at DESC
-          LIMIT $2
-        `, [lang, remainingCount, brandFilter]);
-      } else {
-        fillResult = await query(`
-          SELECT
-            c.id as collection_id,
-            c.title as title_en,
-            c.slug,
-            c.source,
-            c.image_url,
-            c.subtitle as subtitle_en,
-            ct.title as title_translated,
-            ct.subtitle as subtitle_translated
-          FROM collections c
-          LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
-          WHERE c.visible = true
-          ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
-          ORDER BY c.created_at DESC
-          LIMIT $2
-        `, [lang, remainingCount]);
-      }
+      const fillResult = await query(`
+        SELECT
+          c.id as collection_id,
+          c.title as title_en,
+          c.slug,
+          c.source,
+          c.image_url,
+          c.subtitle as subtitle_en,
+          ct.title as title_translated,
+          ct.subtitle as subtitle_translated
+        FROM collections c
+        LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
+        WHERE c.visible = true
+        ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
+        ORDER BY c.created_at DESC
+        LIMIT $2
+      `, [lang, remainingCount]);
 
       rawCollections = [...rawCollections, ...fillResult.rows];
     }

@@ -23,9 +23,24 @@ ${text}`;
     return result.response.text().trim() || '';
 }
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
-        // Find RideEngine products with English specs but missing Bulgarian specs
+        const { searchParams } = new URL(req.url);
+        const brand = searchParams.get('brand'); // Optional: 'ride-engine', 'slingshot', or 'all'
+
+        // Build brand filter based on parameter
+        let brandFilter = '';
+        const params: any[] = [];
+
+        if (brand && brand !== 'all') {
+            if (brand === 'ride-engine' || brand === 'rideengine') {
+                brandFilter = `AND LOWER(p.brand) IN ('ride engine', 'rideengine')`;
+            } else if (brand === 'slingshot') {
+                brandFilter = `AND LOWER(p.brand) = 'slingshot'`;
+            }
+        }
+
+        // Find products with English content but missing Bulgarian translations
         const { rows: products } = await query(`
             SELECT
                 p.id,
@@ -43,15 +58,15 @@ export async function GET() {
                 pt.title as bg_title
             FROM products p
             LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.language_code = 'bg'
-            WHERE LOWER(p.brand) IN ('ride engine', 'rideengine')
-            AND p.status = 'active'
+            WHERE p.status = 'active'
+            ${brandFilter}
             AND (
                 (p.specs_html IS NOT NULL AND p.specs_html != '' AND (pt.specs_html IS NULL OR pt.specs_html = ''))
                 OR (p.description_html IS NOT NULL AND p.description_html != '' AND (pt.description_html IS NULL OR pt.description_html = ''))
                 OR (p.description_html2 IS NOT NULL AND p.description_html2 != '' AND (pt.description_html2 IS NULL OR pt.description_html2 = ''))
                 OR (p.package_includes IS NOT NULL AND p.package_includes != '' AND (pt.package_includes IS NULL OR pt.package_includes = ''))
             )
-            ORDER BY p.name
+            ORDER BY p.brand, p.name
         `);
 
         return NextResponse.json({
@@ -69,21 +84,31 @@ export async function GET() {
             }))
         });
     } catch (error: any) {
-        console.error('Failed to fetch RideEngine products:', error);
+        console.error('Failed to fetch products needing translation:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
 export async function POST(req: Request) {
     try {
-        const { limit = 10 } = await req.json().catch(() => ({}));
+        const { limit = 10, brand = 'all' } = await req.json().catch(() => ({}));
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
             return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
         }
 
-        // Find RideEngine products needing translation
+        // Build brand filter
+        let brandFilter = '';
+        if (brand && brand !== 'all') {
+            if (brand === 'ride-engine' || brand === 'rideengine') {
+                brandFilter = `AND LOWER(p.brand) IN ('ride engine', 'rideengine')`;
+            } else if (brand === 'slingshot') {
+                brandFilter = `AND LOWER(p.brand) = 'slingshot'`;
+            }
+        }
+
+        // Find products needing translation
         const { rows: products } = await query(`
             SELECT
                 p.id,
@@ -102,19 +127,19 @@ export async function POST(req: Request) {
                 pt.title as bg_title
             FROM products p
             LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.language_code = 'bg'
-            WHERE LOWER(p.brand) IN ('ride engine', 'rideengine')
-            AND p.status = 'active'
+            WHERE p.status = 'active'
+            ${brandFilter}
             AND (
                 (p.specs_html IS NOT NULL AND p.specs_html != '' AND (pt.specs_html IS NULL OR pt.specs_html = ''))
                 OR (p.description_html IS NOT NULL AND p.description_html != '' AND (pt.description_html IS NULL OR pt.description_html = ''))
                 OR (p.description_html2 IS NOT NULL AND p.description_html2 != '' AND (pt.description_html2 IS NULL OR pt.description_html2 = ''))
                 OR (p.package_includes IS NOT NULL AND p.package_includes != '' AND (pt.package_includes IS NULL OR pt.package_includes = ''))
             )
-            ORDER BY p.name
+            ORDER BY p.brand, p.name
             LIMIT $1
         `, [limit]);
 
-        console.log(`Found ${products.length} RideEngine products needing translation`);
+        console.log(`Found ${products.length} products needing translation (brand filter: ${brand})`);
 
         const results: Array<{ id: string; name: string; translated: string[] }> = [];
 
