@@ -72,7 +72,7 @@ export default async function CustomPage({ params }: PageProps) {
                     case 'TEXT_IMAGE':
                         return <TextImageBlock key={block.id} data={block.data} />;
                     case 'GALLERY':
-                        return <GalleryBlock key={block.id} blockId={block.id} />;
+                        return <GalleryBlock key={block.id} data={block.data} />;
                     case 'YOUTUBE':
                         return <YoutubeBlock key={block.id} data={block.data} />;
                     case 'FEATURED_PRODUCTS':
