@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Row, Col, Space, message, Card } from 'antd';
-import { RobotOutlined } from '@ant-design/icons';
+import { Button, Row, Col, Space, message, Card, Alert, Collapse } from 'antd';
+import { RobotOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import SeoSection, { SeoData } from './SeoSection';
 import type { Product } from '../EditProduct';
 
@@ -120,47 +120,69 @@ export default function CoMetaTab({
 
   return (
     <div style={{ padding: '24px 0' }}>
-      <Card
-        styles={{ body: { padding: 16 } }}
+      <Alert
+        message="SEO is Auto-Generated"
+        description="Meta tags (title, description, keywords) are automatically generated from product name, brand, category, tags, and collections. No manual input required for most products."
+        type="info"
+        showIcon
+        icon={<InfoCircleOutlined />}
         style={{ marginBottom: 24 }}
-      >
-        <Space orientation="vertical" style={{ width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ margin: 0 }}>SEO & Meta Management</h3>
-              <p style={{ color: '#666', fontSize: 13, margin: 0 }}>Manage search engine and social media optimization in both languages.</p>
-            </div>
-            <Button
-              type="primary"
-              icon={<RobotOutlined />}
-              loading={generating}
-              onClick={generateSEO}
-              size="large"
-            >
-              Generate SEO (EN & BG)
-            </Button>
-          </div>
-        </Space>
-      </Card>
+      />
 
-      <Row gutter={24}>
-        <Col span={12}>
-          <SeoSection
-            language="en"
-            seoData={draft.translation_en || {}}
-            onChange={(field, value) => handleSeoChange('en', field, value)}
-          />
-        </Col>
-        <Col span={12}>
-          <SeoSection
-            language="bg"
-            seoData={draft.translation_bg || {}}
-            onChange={(field, value) => handleSeoChange('bg', field, value)}
-            onTranslate={translateToBulgarian}
-            isTranslating={translating}
-          />
-        </Col>
-      </Row>
+      <Collapse
+        defaultActiveKey={[]}
+        items={[
+          {
+            key: 'manual-seo',
+            label: 'Advanced: Manual SEO Override',
+            children: (
+              <>
+                <Card
+                  styles={{ body: { padding: 16 } }}
+                  style={{ marginBottom: 24 }}
+                >
+                  <Space orientation="vertical" style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <h3 style={{ margin: 0 }}>SEO & Meta Management</h3>
+                        <p style={{ color: '#666', fontSize: 13, margin: 0 }}>Override auto-generated SEO for special cases.</p>
+                      </div>
+                      <Button
+                        type="primary"
+                        icon={<RobotOutlined />}
+                        loading={generating}
+                        onClick={generateSEO}
+                        size="large"
+                      >
+                        Generate SEO (EN & BG)
+                      </Button>
+                    </div>
+                  </Space>
+                </Card>
+
+                <Row gutter={24}>
+                  <Col span={12}>
+                    <SeoSection
+                      language="en"
+                      seoData={draft.translation_en || {}}
+                      onChange={(field, value) => handleSeoChange('en', field, value)}
+                    />
+                  </Col>
+                  <Col span={12}>
+                    <SeoSection
+                      language="bg"
+                      seoData={draft.translation_bg || {}}
+                      onChange={(field, value) => handleSeoChange('bg', field, value)}
+                      onTranslate={translateToBulgarian}
+                      isTranslating={translating}
+                    />
+                  </Col>
+                </Row>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

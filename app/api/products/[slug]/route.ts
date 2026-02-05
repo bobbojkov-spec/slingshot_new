@@ -38,7 +38,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         p.package_includes,
         p.subtitle,
         p.sku,
-        p.hero_image_url
+        p.hero_image_url,
+        p.tags
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE (p.slug = $1 OR p.id::text = $1) AND p.status = 'active'
@@ -138,13 +139,22 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       WHERE product_id = $1
     `;
 
-    const [variantsResult, imagesResult, localImagesResult, colorsResult, translationsResult, availabilityResult] = await Promise.all([
+    const collectionsSql = `
+      SELECT c.title, c.slug
+      FROM collections c
+      JOIN collection_products cp ON cp.collection_id = c.id
+      WHERE cp.product_id = $1 AND c.visible = true
+      ORDER BY c.title
+    `;
+
+    const [variantsResult, imagesResult, localImagesResult, colorsResult, translationsResult, availabilityResult, collectionsResult] = await Promise.all([
       query(variantsSql, [product.id]),
       query(imagesSql, [product.id]),
       query(localImagesSql, [product.id]),
       query(colorsSql, [product.id]),
       query(translationsSql, [product.id]),
       query(availabilitySql, [product.id]),
+      query(collectionsSql, [product.id]),
     ]);
 
     // Process Translations
@@ -268,6 +278,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       images = [mainImage];
     }
 
+    // Extract collection names for SEO
+    const collections = collectionsResult.rows.map((c: any) => c.title);
+
     return NextResponse.json({
       product: {
         ...product,
@@ -282,6 +295,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         features: product.features || [], // Return features
         colors: productColors,
         availability: availabilityResult.rows || [],
+        tags: product.tags || [], // For SEO keywords
+        collections, // For SEO keywords
       },
       related
     });

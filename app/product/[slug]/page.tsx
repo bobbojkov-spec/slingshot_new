@@ -13,6 +13,7 @@ import BackgroundVideoPlayer from "@/components/ui/BackgroundVideoPlayer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
 import { buildCanonicalUrlClient } from "@/lib/seo/url";
+import { generateDynamicSEO } from "@/lib/seo/generate-dynamic-seo";
 
 interface Product {
   id: string;
@@ -59,6 +60,8 @@ interface Product {
   subtitle?: string;
   subtitle_bg?: string;
   hero_image_url?: string;
+  tags?: string[];
+  collections?: string[];
 }
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -287,32 +290,41 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     ]
   };
 
-  const pageTitle = `${product.title || product.name} | Slingshot Bulgaria`;
-  const rawDescription =
-    language === 'bg'
-      ? (product.description_bg || product.description || "")
-      : (product.description || "");
-  const pageDescription = rawDescription
-    .replace(/<[^>]+>/g, '')
-    .slice(0, 300);
-  const ogImage = product.image || product.images?.[0];
+  // Generate dynamic SEO from product data
+  const seo = generateDynamicSEO({
+    name: product.name,
+    name_bg: product.name_bg,
+    title: product.title,
+    brand: product.brand,
+    category_name: product.category_name,
+    description: product.description,
+    description_bg: product.description_bg,
+    description_html: product.description_html,
+    description_html_bg: product.description_html_bg,
+    tags: product.tags,
+    collections: product.collections,
+    price: product.price,
+    image: product.image || product.images?.[0],
+    slug: product.slug,
+  }, language as 'en' | 'bg', origin);
 
   return (
     <div className="min-h-screen bg-background relative pt-16 md:pt-20">
       <Head>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={canonicalUrl} />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        <meta name="keywords" content={seo.keywords} />
+        <meta property="og:title" content={seo.ogTitle} />
+        <meta property="og:description" content={seo.ogDescription} />
+        <meta property="og:url" content={seo.canonicalUrl} />
         <meta property="og:site_name" content="Slingshot Bulgaria" />
         <meta property="og:type" content="product" />
-        {ogImage && <meta property="og:image" content={ogImage} />}
+        {seo.ogImage && <meta property="og:image" content={seo.ogImage} />}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        {ogImage && <meta name="twitter:image" content={ogImage} />}
-        <link rel="canonical" href={canonicalUrl} />
+        <meta name="twitter:title" content={seo.ogTitle} />
+        <meta name="twitter:description" content={seo.ogDescription} />
+        {seo.ogImage && <meta name="twitter:image" content={seo.ogImage} />}
+        <link rel="canonical" href={seo.canonicalUrl} />
       </Head>
       <SchemaJsonLd data={breadcrumbSchema} defer />
       <SchemaJsonLd data={productSchema} defer />

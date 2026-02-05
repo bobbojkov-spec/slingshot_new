@@ -1,4 +1,4 @@
-Implemented for real export async function GET() {
+export async function GET() {
     const content = `# Slingshot Bulgaria
 
 > Official Slingshot & Ride Engine distributor in Bulgaria.
