@@ -10,6 +10,7 @@ import { FloatingWarning } from '@/components/FloatingWarning';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ShopOverview from '@/components/shop/ShopOverview';
+import ShopBrandOverview from '@/components/shop/ShopBrandOverview';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
 import { buildBreadcrumbSchema } from '@/lib/seo/business';
@@ -34,6 +35,49 @@ function ShopContent() {
       setOrigin(window.location.origin);
     }
   }, [origin]);
+
+  const normalizedBrand = (brand: string | null) => {
+    if (!brand) return null;
+    const lowered = brand.toLowerCase();
+    if (lowered === 'rideengine') return 'ride-engine';
+    return lowered;
+  };
+
+  const brandParam = normalizedBrand(searchParams.get('brand'));
+  const categoryParam = searchParams.get('category');
+
+  useEffect(() => {
+    const categoryLower = categoryParam?.toLowerCase();
+    if (categoryLower === 'rideengine' || categoryLower === 'ride-engine') {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('category');
+      params.set('brand', 'ride-engine');
+      router.replace(`/shop?${params.toString()}`);
+      return;
+    }
+    if (categoryLower === 'slingshot') {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('category');
+      params.set('brand', 'slingshot');
+      router.replace(`/shop?${params.toString()}`);
+    }
+  }, [categoryParam, router, searchParams]);
+
+  const isBrandOverview =
+    (brandParam === 'ride-engine' || brandParam === 'slingshot') &&
+    !searchParams.has('collection') &&
+    !searchParams.has('tag') &&
+    !searchParams.has('q') &&
+    !searchParams.has('type') &&
+    !searchParams.has('category') &&
+    parseInt(searchParams.get('page') || '1') === 1;
+
+  const brandLabel =
+    brandParam === 'ride-engine'
+      ? 'Ride Engine'
+      : brandParam === 'slingshot'
+        ? 'Slingshot'
+        : '';
 
   // If ANY filter is active, we should NOT show the Featured/BestSellers sections
   // Filters: category, collection, type, tag, brand, q
@@ -124,7 +168,7 @@ function ShopContent() {
       <SchemaJsonLd data={pageSchema} defer />
       {/* Pass breadcrumbs to Hero to render them inside, bottom-left */}
       <ShopHero
-        title={searchParams.get('q') ? t("shop.search") : (searchParams.get('category') || t("shop.allProducts"))}
+        title={searchParams.get('q') ? t("shop.search") : (searchParams.get('category') || brandLabel || t("shop.allProducts"))}
         breadcrumbs={breadcrumbItems}
         variant={hasFilters ? 'minimal' : 'default'}
       />
@@ -136,6 +180,10 @@ function ShopContent() {
 
         {!hasFilters && !loading && !error && (
           <ShopOverview />
+        )}
+
+        {isBrandOverview && !loading && !error && (
+          <ShopBrandOverview brandSlug={brandParam || ''} brandLabel={brandLabel} />
         )}
 
         {error ? (
@@ -164,10 +212,10 @@ function ShopContent() {
           </div>
         ) : (
           <>
-            {hasFilters && <ProductGrid products={products} />}
+            {hasFilters && !isBrandOverview && <ProductGrid products={products} />}
 
             {/* Pagination */}
-            {hasFilters && pagination.totalPages > 1 && (
+            {hasFilters && !isBrandOverview && pagination.totalPages > 1 && (
               <div className="flex justify-center items-center mt-12 space-x-4">
                 <Button
                   variant="outline"

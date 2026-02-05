@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const lang = searchParams.get('lang') || 'en';
+    const brandParam = searchParams.get('brand');
+    const normalizedBrand = brandParam?.toLowerCase() === 'rideengine' ? 'rideengine' : brandParam?.toLowerCase();
+    const sourceFilter = normalizedBrand === 'ride-engine' ? 'rideengine' : normalizedBrand;
 
     const result = await query(`
       SELECT
@@ -26,9 +29,10 @@ export async function GET(request: NextRequest) {
       JOIN collections c ON c.id = hfc.collection_id
       LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
       WHERE c.visible = true
+      ${sourceFilter ? 'AND c.source = $2' : ''}
       ORDER BY hfc.sort_order ASC
       LIMIT 12
-    `, [lang]);
+    `, sourceFilter ? [lang, sourceFilter] : [lang]);
 
     let rawCollections = result.rows;
 
@@ -50,10 +54,11 @@ export async function GET(request: NextRequest) {
         FROM collections c
         LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
         WHERE c.visible = true
+        ${sourceFilter ? 'AND c.source = $3' : ''}
         ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
         ORDER BY c.created_at DESC
         LIMIT $2
-      `, [lang, remainingCount]);
+      `, sourceFilter ? [lang, remainingCount, sourceFilter] : [lang, remainingCount]);
 
       rawCollections = [...rawCollections, ...fillResult.rows];
     }

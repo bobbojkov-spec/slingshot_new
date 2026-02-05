@@ -8,6 +8,7 @@ import {
   ensureAdminTables,
 } from '@/lib/auth/admin-login';
 import { ensureFirstAdmin } from '@/lib/auth/admin-login';
+import { isEmailAllowlisted } from '@/lib/auth/admin-allowlist';
 
 export const runtime = 'nodejs';
 
@@ -25,6 +26,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email and deviceId are required' },
         MISSING_PAYLOAD_RESP
+      );
+    }
+
+    if (!isEmailAllowlisted(email)) {
+      return NextResponse.json(
+        { error: 'Email is not allowlisted' },
+        INVALID_ADMIN_RESP
       );
     }
 

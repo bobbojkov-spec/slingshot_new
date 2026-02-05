@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { SESSION_COOKIE_NAME, AdminSessionData } from '@/lib/auth/admin-login';
+import { isEmailAllowlisted } from '@/lib/auth/admin-allowlist';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +15,10 @@ export async function GET(_request: NextRequest) {
     }
 
     const sessionData: AdminSessionData = JSON.parse(sessionCookie.value);
+
+    if (!isEmailAllowlisted(sessionData.email)) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
 
     return NextResponse.json({
       authenticated: true,

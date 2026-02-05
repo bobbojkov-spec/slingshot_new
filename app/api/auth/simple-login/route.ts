@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from '@/lib/auth/admin-login';
+import { isEmailAllowlisted } from '@/lib/auth/admin-allowlist';
 
 export const runtime = 'nodejs';
 
@@ -17,6 +18,10 @@ export async function POST(request: NextRequest) {
 
         if (password !== DEFAULT_ADMIN_PASSWORD) {
             return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+        }
+
+        if (!isEmailAllowlisted('admin@local')) {
+            return NextResponse.json({ error: 'Email is not allowlisted' }, { status: 401 });
         }
 
         const cookieStore = await cookies();

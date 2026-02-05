@@ -20,6 +20,8 @@ export default function UsersTable({ initialUsers, initialError }: { initialUser
   const [resetModal, setResetModal] = useState<{ open: boolean; id?: string }>({ open: false });
   const [resetPassword, setResetPassword] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
+  const [allowlist, setAllowlist] = useState<string[]>([]);
+  const [requireAllowlist, setRequireAllowlist] = useState(false);
 
   const refresh = async () => {
     try {
@@ -37,6 +39,16 @@ export default function UsersTable({ initialUsers, initialError }: { initialUser
     setUsers(initialUsers || []);
     setError(initialError || null);
   }, [initialUsers, initialError]);
+
+  useEffect(() => {
+    fetch('/api/admin/allowlist')
+      .then((res) => res.json())
+      .then((data) => {
+        setAllowlist(data.allowlist || []);
+        setRequireAllowlist(Boolean(data.requireAllowlist));
+      })
+      .catch(() => undefined);
+  }, []);
 
   const doActivate = async (id: string) => {
     setActionLoading(id);
@@ -171,6 +183,16 @@ export default function UsersTable({ initialUsers, initialError }: { initialUser
         Admin Users
       </Typography.Title>
       {error ? <Alert type="error" message="Failed to load users" description={error} /> : null}
+      <Alert
+        type={requireAllowlist ? 'warning' : 'info'}
+        showIcon
+        message="Admin allowlist"
+        description={
+          allowlist.length
+            ? `Only these emails can log in as admin: ${allowlist.join(', ')}`
+            : 'Allowlist is empty. Add emails to ADMIN_EMAIL_ALLOWLIST to enable Google/admin access.'
+        }
+      />
       <Button type="primary" onClick={() => setCreateOpen(true)}>
         Create admin user
       </Button>

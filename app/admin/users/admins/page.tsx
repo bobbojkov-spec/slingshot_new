@@ -1,7 +1,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Table, Typography, message, Spin } from 'antd';
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Typography,
+  message,
+  Spin,
+  Alert,
+} from 'antd';
 
 export default function AdminUsersPage() {
   const [rows, setRows] = useState<any[]>([]);
@@ -17,6 +30,8 @@ export default function AdminUsersPage() {
   const [passwordUser, setPasswordUser] = useState<any>(null);
   const [passwordForm] = Form.useForm();
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [allowlist, setAllowlist] = useState<string[]>([]);
+  const [requireAllowlist, setRequireAllowlist] = useState(false);
 
   const roleOptions = useMemo(
     () => [
@@ -94,8 +109,22 @@ export default function AdminUsersPage() {
     }
   };
 
+  const loadAllowlist = async () => {
+    try {
+      const res = await fetch('/api/admin/allowlist');
+      const body = await res.json();
+      if (res.ok) {
+        setAllowlist(body.allowlist || []);
+        setRequireAllowlist(Boolean(body.requireAllowlist));
+      }
+    } catch (err: any) {
+      console.warn('Failed to load allowlist', err?.message || err);
+    }
+  };
+
   useEffect(() => {
     loadUsers();
+    loadAllowlist();
   }, []);
 
   const toggleActive = async (record: any) => {
@@ -190,6 +219,17 @@ export default function AdminUsersPage() {
           </div>
         }
       >
+        <Alert
+          type={requireAllowlist ? 'warning' : 'info'}
+          showIcon
+          style={{ marginBottom: 12 }}
+          message="Admin allowlist"
+          description={
+            allowlist.length
+              ? `Only these emails can log in as admin: ${allowlist.join(', ')}`
+              : 'Allowlist is empty. Add emails to ADMIN_EMAIL_ALLOWLIST to enable Google/admin access.'
+          }
+        />
         <div style={{ overflowX: 'auto', fontSize: 10 }}>
           <Spin spinning={loading}>
             {error ? <Typography.Text type="danger">{error}</Typography.Text> : null}

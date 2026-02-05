@@ -8,6 +8,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_MAX_AGE_SECONDS,
 } from '@/lib/auth/admin-login';
+import { isEmailAllowlisted } from '@/lib/auth/admin-allowlist';
 
 export const runtime = 'nodejs';
 
@@ -21,6 +22,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email and deviceId are required' },
         { status: 400 }
+      );
+    }
+
+    if (!isEmailAllowlisted(email)) {
+      return NextResponse.json(
+        { error: 'Email is not allowlisted' },
+        { status: 401 }
       );
     }
 

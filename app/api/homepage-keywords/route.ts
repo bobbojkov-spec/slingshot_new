@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const lang = searchParams.get('lang') || 'en';
+    const brandParam = searchParams.get('brand');
+    const normalizedBrand = brandParam?.toLowerCase() === 'rideengine' ? 'rideengine' : brandParam?.toLowerCase();
+    const brandFilter = normalizedBrand === 'ride-engine' ? 'ride-engine' : normalizedBrand;
 
     const result = await query(`
       SELECT
@@ -17,9 +20,33 @@ export async function GET(request: NextRequest) {
         t.slug
       FROM homepage_featured_keywords hfk
       LEFT JOIN tags t ON lower(t.name_en) = lower(hfk.tag_name_en)
+      WHERE 1 = 1
+      ${brandFilter ? `AND EXISTS (
+        SELECT 1
+        FROM products p
+        WHERE p.status = 'active'
+          AND LOWER(REPLACE(p.brand, ' ', '-')) = $1
+          AND (
+            p.tags && ARRAY[hfk.tag_name_en]::text[]
+            OR EXISTS (
+              SELECT 1
+              FROM product_translations pt
+              WHERE pt.product_id = p.id
+                AND pt.language_code = 'en'
+                AND pt.tags && ARRAY[hfk.tag_name_en]::text[]
+            )
+            OR EXISTS (
+              SELECT 1
+              FROM product_translations pt
+              WHERE pt.product_id = p.id
+                AND pt.language_code = 'bg'
+                AND pt.tags && ARRAY[hfk.tag_name_en]::text[]
+            )
+          )
+      )` : ''}
       ORDER BY hfk.sort_order ASC
       LIMIT 20
-    `);
+    `, brandFilter ? [brandFilter] : []);
 
     const keywords = result.rows.map(row => ({
       name_en: row.name_en,
