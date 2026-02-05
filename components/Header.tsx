@@ -211,7 +211,7 @@ const Header = () => {
                     onMouseLeave={handleNavLeave}
                   >
                     <span
-                      className={`nav-link-white h-full flex items-center px-4 cursor-default bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
+                      className={`nav-link-white h-full flex items-center px-4 bg-transparent border-0 uppercase tracking-wide font-bold text-sm transition-all duration-200 ${activeMenu === sport.slug && isMegaOpen ? "text-accent bg-white/5" : "hover:bg-white/5"
                         }`}
                     >
                       {sport.name}
@@ -226,7 +226,7 @@ const Header = () => {
                   onMouseLeave={handleNavLeave}
                 >
                   <span
-                    className={`h-full flex items-center px-4 cursor-default bg-transparent border-0 uppercase tracking-xl font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
+                    className={`h-full flex items-center px-4 bg-transparent border-0 uppercase tracking-xl font-bold text-sm transition-colors text-orange-500 ${activeMenu === 'ride-engine' && isMegaOpen ? "text-orange-400 bg-white/5" : "hover:bg-white/5"
                       }`}
                   >
                     RIDEENGINE

@@ -61,7 +61,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                         <div key={sport.slug} className="border-b border-white/5 last:border-0 pb-2">
                             <button
                                 onClick={() => toggleSport(sport.slug)}
-                                className="w-full flex items-center justify-between text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors"
+                                className="w-full flex items-center justify-between text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors active:scale-95 active:bg-white/10"
                             >
                                 {sport.name}
                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -88,7 +88,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                                     <Link
                                                         key={col.id}
                                                         href={`/collections/${col.slug}`}
-                                                        className="text-white/60 hover:text-accent text-sm py-2 transition-colors"
+                                                        className="text-white/60 hover:text-accent text-sm py-2 transition-colors active:scale-95 active:bg-white/10"
                                                         onClick={onClose}
                                                     >
                                                         {col.title}
@@ -99,7 +99,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                     );
                                 })}
                                 {sportGroups.length === 0 && (
-                                    <Link href={`/category/${sport.slug}`} onClick={onClose} className="text-white/50 text-sm italic">
+                                    <Link href={`/category/${sport.slug}`} onClick={onClose} className="text-white/50 text-sm italic active:scale-95 active:bg-white/10">
                                         View all {sport.name}
                                     </Link>
                                 )}
@@ -112,7 +112,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                 <div className="border-b border-white/5 pb-2">
                     <button
                         onClick={() => toggleSport('rideengine')}
-                        className="w-full flex items-center justify-between text-lg py-2 font-bold text-accent hover:text-orange-400 uppercase tracking-wide transition-colors"
+                        className="w-full flex items-center justify-between text-lg py-2 font-bold text-accent hover:text-orange-400 uppercase tracking-wide transition-colors active:scale-95 active:bg-white/10"
                     >
                         RIDEENGINE
                         {expandedSports['rideengine'] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -131,7 +131,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                             <Link
                                                 key={col.id}
                                                 href={`/collections/${col.slug}`}
-                                                className="text-white/60 hover:text-white text-sm py-2"
+                                                className="text-white/60 hover:text-white text-sm py-2 active:scale-95 active:bg-white/10"
                                                 onClick={onClose}
                                             >
                                                 {col.title}
@@ -149,7 +149,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                     <div key={page.id} className="border-b border-white/5 last:border-0 pb-2">
                         <Link
                             href={`/p/${page.slug}`}
-                            className="w-full block text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors"
+                            className="w-full block text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors active:scale-95 active:bg-white/10"
                             onClick={onClose}
                         >
                             {page.title}
