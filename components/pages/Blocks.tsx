@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
+import { useBackgroundParallax } from '@/hooks/useParallax';
 
 interface BlockProps {
     data: any;
@@ -12,14 +13,16 @@ interface BlockProps {
 export const HeroBlock: React.FC<BlockProps> = ({ data }) => {
     const { title, subtitle, description, cta_text, cta_link, background_image } = data;
     const imageUrl = background_image?.media_id ? `/api/media/${background_image.media_id}` : PLACEHOLDER_IMAGE;
+    const { containerRef, imageStyle } = useBackgroundParallax(0.35);
 
     return (
-        <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-            <div className="absolute inset-0">
+        <section ref={containerRef} className="relative min-h-[60vh] flex items-center overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={title || 'Hero'}
                     className="w-full h-full object-cover"
+                    style={imageStyle}
                 />
                 <div className="absolute inset-0 bg-black/40" />
             </div>
