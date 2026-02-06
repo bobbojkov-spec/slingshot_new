@@ -65,7 +65,7 @@ function CollectionCard({ collection, index }: CollectionCardProps) {
         <Link
             ref={cardRef}
             href={`/collections/${collection.slug}`}
-            className="collection-3d-card stagger-load block"
+            className="collection-3d-card stagger-load block group"
             style={{
                 animationDelay: `${index * 60}ms`,
                 transform: transform,
@@ -100,26 +100,18 @@ function CollectionCard({ collection, index }: CollectionCardProps) {
 
             {/* Content */}
             <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-5 z-10">
-                {/* Title with Underline */}
-                <div className="mb-2">
-                    <h3 className="collection-card-title text-white text-lg lg:text-xl mb-2">
-                        <span className="collection-underline">
-                            {collection.title}
-                        </span>
-                    </h3>
+                {/* Title - Positioned at bottom */}
+                <h3 className="collection-card-title text-white text-base lg:text-lg leading-tight">
+                    <span className="collection-underline">
+                        {collection.title}
+                    </span>
+                </h3>
+            </div>
 
-                    {/* Subtitle - Always visible */}
-                    {collection.subtitle && (
-                        <p className="text-xs lg:text-sm text-white/70 font-body line-clamp-2 mb-3">
-                            {collection.subtitle}
-                        </p>
-                    )}
-                </div>
-
-                {/* Arrow Reveal */}
-                <div className="collection-arrow text-signal-orange font-display text-xs uppercase tracking-wider font-semibold">
-                    <span>Explore</span>
-                    <ArrowRight className="w-3 h-3" />
+            {/* Arrow - Positioned top-right, appears on hover */}
+            <div className="absolute top-4 right-4 z-10 opacity-0 transform translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                <div className="w-8 h-8 rounded-full bg-signal-orange/90 flex items-center justify-center backdrop-blur-sm">
+                    <ArrowRight className="w-4 h-4 text-white" />
                 </div>
             </div>
 
