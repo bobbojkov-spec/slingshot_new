@@ -54,6 +54,8 @@ const ADMIN_MENU: AdminMenuNode[] = [
     ],
   },
 
+  { key: "inquiries", icon: <ShoppingCartOutlined />, labelText: "Inquiries", href: "/admin/inquiries" },
+
   { key: "pages-new", icon: <FileProtectOutlined />, labelText: "Pages", href: "/admin/pages-new" },
   { key: "shop", icon: <ShoppingCartOutlined />, labelText: "Shop" },
   {
@@ -239,7 +241,7 @@ export default function AdminShellClient({
           />
           <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <Typography.Text type="secondary" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
-              v 1.7.7
+              v 1.7.8
             </Typography.Text>
           </div>
         </div>

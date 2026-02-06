@@ -61,13 +61,6 @@ export default function SummaryPage() {
               </span>
               <h1 className="h1 font-heading mt-2">{t("inquiry.yourItems")}</h1>
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="rounded-full bg-muted/60 text-white px-4 py-2">{t("inquiry.steps.summary")}</span>
-              <span className="h-px w-10 bg-border" />
-              <span className="px-4 py-2 text-muted-foreground">{t("inquiry.steps.contact")}</span>
-              <span className="h-px w-10 bg-border" />
-              <span className="px-4 py-2 text-muted-foreground">{t("inquiry.steps.confirmation")}</span>
-            </div>
           </div>
 
           {items.length === 0 && (

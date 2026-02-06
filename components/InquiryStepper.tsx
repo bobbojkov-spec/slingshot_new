@@ -18,23 +18,27 @@ export const InquiryStepper = ({ activeIndex }: InquiryStepperProps) => {
   const { t } = useLanguage();
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="w-full flex flex-wrap items-center gap-2 md:gap-3">
       {steps.map((step, index) => (
-        <div key={step.key} className="flex items-center gap-4">
+        <div key={step.key} className="flex items-center gap-2 md:gap-3">
           <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-full border ${
+            className={`flex items-center gap-2 rounded-full border px-3 py-2 md:px-4 ${
               index === activeIndex
                 ? "bg-deep-navy text-white border-deep-navy"
                 : "bg-muted/60 text-muted-foreground border-border"
             }`}
           >
             <step.Icon className="w-4 h-4" />
-            <span className="text-xs font-medium uppercase tracking-[0.4em]">
+            <span
+              className={`text-[10px] md:text-xs font-medium uppercase tracking-[0.35em] ${
+                step.key === "inquiry.steps.contact" ? "md:text-[10px]" : ""
+              }`}
+            >
               {t(step.key)}
             </span>
           </div>
           {index < steps.length - 1 && (
-            <div className="hidden sm:block h-px w-10 bg-border" />
+            <div className="h-px w-6 md:w-10 bg-border" />
           )}
         </div>
       ))}

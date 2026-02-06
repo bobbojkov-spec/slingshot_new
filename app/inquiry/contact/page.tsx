@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { InquiryStepper } from "@/components/InquiryStepper";
 import { buildCanonicalUrlClient } from "@/lib/seo/url";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useCart } from "@/lib/cart/CartContext";
 
 export default function ContactPage() {
   const { t } = useLanguage();
@@ -27,6 +28,8 @@ export default function ContactPage() {
     phone: false,
     email: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { items, clear } = useCart();
 
   const errors = useMemo(() => {
     const next: Record<string, string> = {};
@@ -47,6 +50,49 @@ export default function ContactPage() {
     name: t("inquiry.contactPage.title"),
     url: canonicalUrl,
     description: t("inquiry.contactPage.helper"),
+  };
+
+  const handleSubmit = async () => {
+    if (!isValid || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      const payload = {
+        name: formValues.name.trim(),
+        email: formValues.email.trim(),
+        phone: formValues.phone.trim(),
+        message: formValues.message?.trim() || null,
+        items: items.map((item) => ({
+          product_id: item.id,
+          product_name: item.name,
+          product_slug: item.slug || null,
+          product_image: item.image || null,
+          variant_id: item.id,
+          size: item.size || null,
+          color: item.color || null,
+          quantity: item.qty,
+          price: item.price ?? null,
+        })),
+      };
+
+      const res = await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to submit inquiry');
+      }
+
+      clear();
+      window.location.href = "/inquiry/success";
+    } catch (error) {
+      console.error(error);
+      alert('Failed to submit inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -136,9 +182,9 @@ export default function ContactPage() {
           </div>
           <div className="flex justify-end">
             <button
-              disabled={!isValid}
-              onClick={() => isValid && (window.location.href = "/inquiry/success")}
-              className={`btn-primary px-6 py-4 ${!isValid ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={!isValid || isSubmitting}
+              onClick={handleSubmit}
+              className={`btn-primary px-6 py-4 ${!isValid || isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {t("inquiry.contactPage.submitButton")}
             </button>
