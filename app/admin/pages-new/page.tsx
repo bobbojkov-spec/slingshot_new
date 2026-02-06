@@ -262,14 +262,12 @@ export default function PagesNewAdminPage() {
                     >
                         Edit
                     </Button>
-                    {record.status === 'draft' && (
-                        <Button
-                            type="link"
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => handleDelete(record)}
-                        />
-                    )}
+                    <Button
+                        type="link"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDelete(record)}
+                    />
                 </Space>
             ),
         },

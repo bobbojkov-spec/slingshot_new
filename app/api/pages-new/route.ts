@@ -21,6 +21,7 @@ const PAGE_COLUMNS = [
     'og_description',
     'og_image_id',
     'canonical_url',
+    'show_footer',
     'created_at',
     'updated_at',
 ];
@@ -89,13 +90,16 @@ export async function POST(request: NextRequest) {
         );
         const nextOrderValue = Number(orderRows[0]?.max_order ?? 0) + 1;
 
+        const showFooter = payload?.show_footer !== undefined ? Boolean(payload.show_footer) : true;
+        const footerColumn = showFooter ? (payload?.footer_column || 2) : null;
+
         const { rows } = await query(
             `
-      INSERT INTO pages (title, title_bg, slug, "order")
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO pages (title, title_bg, slug, "order", show_footer, footer_column)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING ${PAGE_COLUMNS.join(', ')}
     `,
-            [title, titleBg || null, slug, nextOrderValue]
+            [title, titleBg || null, slug, nextOrderValue, showFooter, footerColumn]
         );
 
         return NextResponse.json({

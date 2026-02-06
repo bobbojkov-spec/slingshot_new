@@ -131,10 +131,10 @@ export async function getNavigationData(lang: string = 'en') {
 
     const { rows: customPages } = await query(
         `
-        SELECT id, title, title_bg, slug, status, show_header, header_order, show_dropdown, dropdown_order, footer_column, footer_order
+        SELECT id, title, title_bg, slug, status, show_header, header_order, show_dropdown, dropdown_order, show_footer, footer_column, footer_order
         FROM pages
         WHERE status = 'published'
-          AND (show_header = true OR show_dropdown = true OR footer_column IS NOT NULL)
+          AND (show_header = true OR show_dropdown = true OR show_footer = true OR footer_column IS NOT NULL)
         ORDER BY header_order ASC, footer_order ASC
         `
     );
@@ -154,6 +154,7 @@ export async function getNavigationData(lang: string = 'en') {
             header_order: p.header_order ? Number(p.header_order) : null,
             show_dropdown: Boolean(p.show_dropdown),
             dropdown_order: p.dropdown_order ? Number(p.dropdown_order) : null,
+            show_footer: Boolean(p.show_footer),
             footer_column: p.footer_column ? Number(p.footer_column) : null,
             footer_order: p.footer_order ? Number(p.footer_order) : null,
         })),

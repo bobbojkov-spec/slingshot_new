@@ -431,7 +431,7 @@ export async function DELETE(
         const { id } = await context.params;
         const numId = parseId(id);
         const { rows } = await query(
-            `DELETE FROM pages WHERE id = $1 AND status = 'draft' RETURNING id`,
+            `DELETE FROM pages WHERE id = $1 RETURNING id`,
             [numId]
         );
 
