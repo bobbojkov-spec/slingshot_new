@@ -240,12 +240,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
     const variantId = variant.id;
     const price = variant.price || product.price;
+    const selectedColor = colorId ? product.colors?.find(c => c.id === colorId) : undefined;
+    const itemImage = selectedColor?.url || selectedColor?.image_path || product.image;
 
     addItem({
       id: variantId,
       name: product.name,
       price: price,
-      image: product.image,
+      image: itemImage,
       size: effectiveSize || selectedSize,
       color: colorId ? product.colors?.find(c => c.id === colorId)?.name : undefined,
       category: product.category,
