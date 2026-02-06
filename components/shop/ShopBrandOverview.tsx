@@ -188,26 +188,65 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                 </div>
             </section>
 
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByTag}</h3>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    {displayKeywords.map((keyword) => {
-                        const label = language === "bg" ? keyword.name_bg : keyword.name_en;
-                        const tagValue = keyword.slug || keyword.name_en;
-                        return (
-                            <Link
-                                key={keyword.slug}
-                                href={`/shop?brand=${encodeURIComponent(normalizedBrand)}&tag=${encodeURIComponent(
-                                    tagValue
-                                )}`}
-                                className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-medium text-deep-navy shadow-sm hover:shadow-md hover:border-accent hover:bg-accent hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 ease-out"
-                            >
-                                {label}
-                            </Link>
-                        );
-                    })}
+            {/* Filter by Tag — Full-bleed colorful section */}
+            <section
+                className="relative py-10 md:py-14 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 overflow-hidden"
+                style={{
+                    marginLeft: 'calc(-50vw + 50%)',
+                    marginRight: 'calc(-50vw + 50%)',
+                    width: '100vw',
+                }}
+            >
+                {/* Colorful gradient background */}
+                <div
+                    className="absolute inset-0 -z-10"
+                    style={{
+                        background: 'linear-gradient(135deg, hsl(29 100% 92%) 0%, hsl(36 100% 88%) 20%, hsl(170 60% 85%) 50%, hsl(207 60% 85%) 75%, hsl(260 50% 90%) 100%)',
+                    }}
+                />
+                {/* Subtle decorative blobs */}
+                <div
+                    className="absolute -z-[5] rounded-full blur-3xl opacity-40"
+                    style={{
+                        width: '400px',
+                        height: '400px',
+                        top: '-120px',
+                        left: '10%',
+                        background: 'radial-gradient(circle, hsl(29 100% 70%) 0%, transparent 70%)',
+                    }}
+                />
+                <div
+                    className="absolute -z-[5] rounded-full blur-3xl opacity-30"
+                    style={{
+                        width: '350px',
+                        height: '350px',
+                        bottom: '-100px',
+                        right: '15%',
+                        background: 'radial-gradient(circle, hsl(207 80% 70%) 0%, transparent 70%)',
+                    }}
+                />
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h3 className="text-lg md:text-xl font-heading font-semibold text-deep-navy/80 mb-6 tracking-wide uppercase">
+                        {t.filterByTag}
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                        {displayKeywords.map((keyword) => {
+                            const label = language === "bg" ? keyword.name_bg : keyword.name_en;
+                            const tagValue = keyword.slug || keyword.name_en;
+                            return (
+                                <Link
+                                    key={keyword.slug}
+                                    href={`/shop?brand=${encodeURIComponent(normalizedBrand)}&tag=${encodeURIComponent(
+                                        tagValue
+                                    )}`}
+                                    className="px-5 py-2.5 rounded-full bg-white text-sm font-semibold text-deep-navy shadow-md hover:shadow-xl hover:bg-accent hover:text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 ease-out border border-white/60"
+                                >
+                                    {label}
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </div>
             </section>
 

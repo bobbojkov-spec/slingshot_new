@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { Layers } from "lucide-react";
+import { Layers, ArrowRight } from "lucide-react";
 
 interface Collection {
     id: string;
@@ -14,10 +14,149 @@ interface Collection {
     image_url: string | null;
 }
 
+interface CategoryCardProps {
+    collection: Collection;
+    index: number;
+}
+
+// 3D Parallax Card Component
+function CategoryCard({ collection, index }: CategoryCardProps) {
+    const cardRef = useRef<HTMLAnchorElement>(null);
+    const [transform, setTransform] = useState("rotateX(0deg) rotateY(0deg)");
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!cardRef.current) return;
+
+        const card = cardRef.current;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        setTransform(`rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+        setIsHovered(false);
+    }, []);
+
+    const handleMouseEnter = useCallback(() => {
+        setIsHovered(true);
+    }, []);
+
+    return (
+        <Link
+            ref={cardRef}
+            href={`/collections/${collection.slug}`}
+            className="category-3d-card stagger-load block"
+            style={{
+                animationDelay: `${index * 80}ms`,
+                transform: transform,
+                transformStyle: "preserve-3d",
+                perspective: "1000px"
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            onMouseEnter={handleMouseEnter}
+        >
+            {/* Background Image */}
+            {collection.image_url ? (
+                <img
+                    src={collection.image_url}
+                    alt={`${collection.title} Collection`}
+                    className="category-image"
+                />
+            ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
+                    <Layers className="w-16 h-16 text-white/20" />
+                </div>
+            )}
+
+            {/* Cinematic Overlay */}
+            <div className="category-cinematic-overlay" />
+
+            {/* Shine Sweep Effect */}
+            <div
+                className="category-shine"
+                style={{ animationDelay: isHovered ? "0s" : "-1s" }}
+            />
+
+            {/* Glassmorphism Source Tag */}
+            <div className="absolute top-4 right-4 z-10">
+                <span className="glassmorphism-tag">
+                    {collection.source}
+                </span>
+            </div>
+
+            {/* Content */}
+            <div className="absolute inset-0 flex flex-col justify-end p-5 z-10">
+                {/* Title with Underline */}
+                <div className="mb-3">
+                    <h3 className="category-card-title text-white text-xl lg:text-2xl mb-2">
+                        <span className="category-underline">
+                            {collection.title}
+                        </span>
+                    </h3>
+
+                    {/* Subtitle */}
+                    {collection.subtitle && (
+                        <p className="text-sm text-white/70 font-body line-clamp-2 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                            {collection.subtitle}
+                        </p>
+                    )}
+                </div>
+
+                {/* Arrow Reveal */}
+                <div className="category-arrow text-signal-orange font-display text-sm uppercase tracking-wider font-semibold">
+                    <span>Explore</span>
+                    <ArrowRight className="w-4 h-4" />
+                </div>
+            </div>
+
+            {/* Hover Border Glow */}
+            <div
+                className="absolute inset-0 rounded-lg border-2 border-transparent transition-all duration-300 pointer-events-none"
+                style={{
+                    borderColor: isHovered ? "hsla(29, 100%, 50%, 0.5)" : "transparent",
+                    boxShadow: isHovered ? "0 0 30px hsla(29, 100%, 50%, 0.2), inset 0 0 30px hsla(29, 100%, 50%, 0.05)" : "none"
+                }}
+            />
+        </Link>
+    );
+}
+
 export default function ShopByCategories() {
     const { t, language } = useLanguage();
     const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
+    const sectionRef = useRef<HTMLElement>(null);
+
+    // Intersection Observer for section visibility
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1, rootMargin: "50px" }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
 
     useEffect(() => {
         async function fetchCollections() {
@@ -39,13 +178,17 @@ export default function ShopByCategories() {
 
     if (loading) {
         return (
-            <section className="section-padding bg-background">
-                <div className="section-container">
+            <section ref={sectionRef} className="categories-section py-20 lg:py-28">
+                {/* Grid Pattern */}
+                <div className="categories-grid-pattern" />
+
+                <div className="section-container relative z-10">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                        {[...Array(12)].map((_, i) => (
+                        {[...Array(8)].map((_, i) => (
                             <div
                                 key={i}
-                                className="aspect-[4/3] bg-gray-200 rounded animate-pulse"
+                                className="aspect-square bg-white/5 rounded-lg animate-pulse"
+                                style={{ animationDelay: `${i * 100}ms` }}
                             />
                         ))}
                     </div>
@@ -59,63 +202,60 @@ export default function ShopByCategories() {
     }
 
     return (
-        <section className="section-padding bg-background">
-            <div className="section-container">
+        <section ref={sectionRef} className="categories-section py-20 lg:py-28">
+            {/* Background Effects */}
+            <div className="categories-grid-pattern" />
+            <div className="categories-noise" />
+
+            {/* Glowing Orbs */}
+            <div
+                className="categories-glow-orb"
+                style={{
+                    top: "10%",
+                    left: "-10%",
+                    animationDelay: "0s"
+                }}
+            />
+            <div
+                className="categories-glow-orb"
+                style={{
+                    bottom: "20%",
+                    right: "-5%",
+                    animationDelay: "2s",
+                    background: "radial-gradient(circle, hsla(207 67% 17% / 0.3) 0%, transparent 70%)"
+                }}
+            />
+
+            {/* Content Container */}
+            <div className="section-container relative z-10">
                 {/* Section Header */}
-                <div className="text-center mb-12">
-                    <span className="text-section-title block mb-4">
+                <div
+                    className={`text-center mb-14 lg:mb-20 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                >
+                    <span className="categories-section-subtitle text-signal-orange block mb-4">
                         {t("shopByCategories.browseLabel")}
                     </span>
-                    <h2 className="h2 text-foreground">{t("shopByCategories.title")}</h2>
+                    <h2 className="categories-section-title text-4xl md:text-5xl lg:text-6xl">
+                        {t("shopByCategories.title")}
+                    </h2>
+
+                    {/* Decorative Line */}
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                        <div className="w-16 h-px bg-gradient-to-r from-transparent to-signal-orange/50" />
+                        <div className="w-2 h-2 rounded-full bg-signal-orange" />
+                        <div className="w-16 h-px bg-gradient-to-l from-transparent to-signal-orange/50" />
+                    </div>
                 </div>
 
-                {/* Collections Grid - Desktop: 4x3 (12 items), Mobile: 2x6 (12 items) */}
+                {/* Collections Grid - 4 columns on all screens, square aspect ratio */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                     {collections.slice(0, 12).map((collection, index) => (
-                        <Link
+                        <CategoryCard
                             key={collection.id}
-                            href={`/collections/${collection.slug}`}
-                            className="group relative aspect-[4/3] overflow-hidden rounded bg-gray-100 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
-                            style={{ animationDelay: `${index * 50}ms` }}
-                        >
-                            {/* Background Image */}
-                            {collection.image_url ? (
-                                <img
-                                    src={collection.image_url}
-                                    alt={`${collection.title} Collection`}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                                    <Layers className="w-10 h-10" />
-                                </div>
-                            )}
-
-                            {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-                            {/* Content */}
-                            <div className="absolute inset-0 flex flex-col justify-end p-4 lg:p-5">
-                                <h3 className="h3 font-bold text-white uppercase tracking-tighter mb-2 transition-colors">
-                                    {collection.title}
-                                </h3>
-                                {collection.subtitle && (
-                                    <p className="text-xs text-gray-300 line-clamp-2 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                                        {collection.subtitle}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Source Badge */}
-                            <div className="absolute top-3 right-3">
-                                <span className="bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full text-[10px] font-medium text-white uppercase tracking-wide">
-                                    {collection.source}
-                                </span>
-                            </div>
-
-                            {/* Hover Border Effect */}
-                            <div className="absolute inset-0 border-2 border-transparent group-hover:border-accent rounded transition-colors duration-300" />
-                        </Link>
+                            collection={collection}
+                            index={index}
+                        />
                     ))}
                 </div>
             </div>

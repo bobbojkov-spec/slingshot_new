@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { cartStore, type CartItem } from "./cartStore";
+import { toast } from "sonner";
 
 type CartContextType = {
   items: CartItem[];
@@ -27,6 +28,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     cartStore.addItem(item);
     refresh();
     setIsOpen(true);
+    toast.success("Added to cart", {
+      description: item.name,
+      action: {
+        label: "View Cart",
+        onClick: () => setIsOpen(true),
+      },
+    });
   };
 
   const removeItem = (id: string, size?: string, color?: string) => {

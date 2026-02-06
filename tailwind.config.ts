@@ -56,6 +56,7 @@ export default {
         "deep-navy": "hsl(var(--deep-navy))",
         "wind-green": "hsl(var(--wind-green))",
         "signal-orange": "hsl(var(--signal-orange))",
+        "neon-lime": "hsl(var(--neon-lime))",
         "light-gray": "hsl(var(--light-gray))",
         "dark-gray": "hsl(var(--dark-gray))",
         success: {
@@ -66,7 +67,8 @@ export default {
       fontFamily: {
         logo: ["Montserrat", "sans-serif"],
         heading: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"]
+        body: ["Inter", "sans-serif"],
+        display: ["Oswald", "sans-serif"]
       },
       fontWeight: {
         normal: "400",
@@ -113,6 +115,26 @@ export default {
         float: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" }
+        },
+        "shine-sweep": {
+          "0%": { transform: "translateX(-100%) skewX(-15deg)" },
+          "100%": { transform: "translateX(200%) skewX(-15deg)" }
+        },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
+          "50%": { opacity: "0.7", transform: "scale(1.1)" }
+        },
+        "stagger-fade-in": {
+          "0%": { opacity: "0", transform: "translateY(30px) scale(0.95)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" }
+        },
+        "underline-expand": {
+          "0%": { transform: "scaleX(0)" },
+          "100%": { transform: "scaleX(1)" }
+        },
+        "arrow-slide": {
+          "0%": { transform: "translateX(-100%)", opacity: "0" },
+          "100%": { transform: "translateX(0)", opacity: "1" }
         }
       },
       animation: {
@@ -122,7 +144,12 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
-        float: "float 3s ease-in-out infinite"
+        float: "float 3s ease-in-out infinite",
+        "shine-sweep": "shine-sweep 0.8s ease-out",
+        "glow-pulse": "glow-pulse 4s ease-in-out infinite",
+        "stagger-fade-in": "stagger-fade-in 0.6s ease-out forwards",
+        "underline-expand": "underline-expand 0.4s ease-out forwards",
+        "arrow-slide": "arrow-slide 0.3s ease-out forwards"
       },
       boxShadow: {
         card: "var(--card-shadow)",

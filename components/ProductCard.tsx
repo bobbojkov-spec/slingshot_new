@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { useState } from "react";
+import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
 
 interface Product {
@@ -12,6 +13,7 @@ interface Product {
   price: number;
   originalPrice?: number;
   image: string;
+  secondaryImage?: string;
   badge?: string;
   slug: string;
 }
@@ -23,8 +25,11 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const { addItem } = useCart();
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addItem({
       id: product.id,
       name: product.name,
@@ -35,56 +40,96 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       qty: 1
     });
   };
+
+  // Determine badge style
+  const getBadgeClasses = () => {
+    if (!product.badge) return "";
+    const badgeLower = product.badge.toLowerCase();
+    if (badgeLower === "new") {
+      return "badge-new";
+    }
+    if (badgeLower === "best seller" || badgeLower === "bestseller") {
+      return "badge-bestseller";
+    }
+    if (badgeLower === "sale") {
+      return "badge-sale";
+    }
+    return "badge-default";
+  };
+
+  const hasSecondaryImage = product.secondaryImage && product.secondaryImage !== product.image;
+
   return (
-    <div className="product-card group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-      <div className="relative">
-        <Link href={`/product/${product.slug}`}>
+    <div
+      className="product-card group"
+      style={{ animationDelay: `${index * 50}ms` }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link href={`/product/${product.slug}`} className="block">
+        {/* Image Container */}
+        <div className="product-card-image-container">
           {product.image ? (
-            <img
-              src={product.image}
-              alt={`${product.name} ${product.category} - Slingshot Bulgaria`}
-              className="product-card-image transition-transform duration-300 group-hover:scale-105"
-            />
+            <>
+              {/* Primary Image */}
+              <img
+                src={product.image}
+                alt={`${product.name} - ${product.category}`}
+                className={`product-card-image ${hasSecondaryImage ? (isHovered ? 'opacity-0' : 'opacity-100') : ''}`}
+              />
+              {/* Secondary Image (shown on hover) */}
+              {hasSecondaryImage && (
+                <img
+                  src={product.secondaryImage}
+                  alt={`${product.name} - ${product.category} alternate view`}
+                  className={`product-card-image product-card-image-secondary ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                />
+              )}
+            </>
           ) : (
-            <div className="product-card-image bg-gray-100 flex items-center justify-center text-gray-400 aspect-[4/5] object-cover w-full h-full transition-transform duration-300 group-hover:scale-105">
-              No Image
+            <div className="product-card-image-placeholder">
+              <span>No Image</span>
             </div>
           )}
-        </Link>
-        {product.badge && (
-          <div className="absolute top-3 left-3">
-            <span className={`product-badge ${product.badge === "New" ? "badge-new" : "badge-sale"}`}>
-              {product.badge}
-            </span>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            handleAdd();
-          }}
-          className="absolute bottom-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-accent hover:text-white"
-        >
-          <Eye className="w-5 h-5" />
-        </button>
-      </div>
-      <Link href={`/product/${product.slug}`} className="block p-4">
-        <h3 className="font-heading font-medium text-lg md:text-xl text-foreground mb-2 group-hover:text-accent transition-colors">
-          {product.name}
-        </h3>
-        <span className="font-body text-base text-muted-foreground uppercase tracking-wide block mb-4">
-          {product.category}
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="price-display">
-            ${parseFloat(product.price.toString()).toFixed(2)}
-          </span>
-          {product.originalPrice && parseFloat(product.originalPrice.toString()) > parseFloat(product.price.toString()) && (
-            <span className="price-original">
-              (${parseFloat(product.originalPrice.toString()).toFixed(2)})
-            </span>
+
+          {/* Badge */}
+          {product.badge && (
+            <div className="absolute top-3 left-3 z-10">
+              <span className={`product-badge ${getBadgeClasses()}`}>
+                {product.badge}
+              </span>
+            </div>
           )}
+
+          {/* Quick Add Button */}
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="product-card-quick-add"
+            aria-label={`Add ${product.name} to cart`}
+          >
+            <ShoppingBag className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Product Info */}
+        <div className="product-card-info">
+          <span className="product-card-category">
+            {product.category}
+          </span>
+          <h3 className="product-card-title">
+            {product.name}
+          </h3>
+          <div className="product-card-price">
+            <span className="product-card-price-current">
+              €{parseFloat(product.price.toString()).toFixed(2)}
+            </span>
+            {product.originalPrice && parseFloat(product.originalPrice.toString()) > parseFloat(product.price.toString()) && (
+              <span className="product-card-price-original">
+                €{parseFloat(product.originalPrice.toString()).toFixed(2)}
+              </span>
+            )}
+          </div>
         </div>
       </Link>
     </div>
@@ -92,4 +137,3 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
 };
 
 export default ProductCard;
-

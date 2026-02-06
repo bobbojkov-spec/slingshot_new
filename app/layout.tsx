@@ -11,6 +11,7 @@ import type { Language } from "@/lib/i18n/LanguageContext";
 import { getFullNavigation } from "@/lib/railway/navigation-server";
 import { buildLocalBusinessSchema, buildWebSiteSchema } from "@/lib/seo/business";
 import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Slingshot Bulgaria",
@@ -93,7 +94,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Poppins:wght@500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Oswald:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
         <link rel="canonical" href={canonicalUrl} />
@@ -123,6 +124,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer />
           </div>
           <CartDrawer />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: 'hsl(207 72% 11%)',
+                color: 'white',
+                border: 'none',
+              },
+              className: 'font-body',
+            }}
+          />
         </Providers>
       </body>
     </html>

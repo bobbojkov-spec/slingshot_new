@@ -207,6 +207,7 @@ export async function GET(req: Request) {
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
         (SELECT compare_at_price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as "originalPrice",
         (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1) as image_path,
+        (SELECT storage_path FROM product_images_railway pir WHERE pir.product_id = p.id ORDER BY CASE size WHEN 'small' THEN 1 WHEN 'thumb' THEN 2 ELSE 3 END ASC, display_order ASC LIMIT 1 OFFSET 1) as secondary_image_path,
         c.slug as category_slug,
         COALESCE(ct.name, c.name) as category_name,
         pt.name as type_name,
@@ -247,6 +248,16 @@ export async function GET(req: Request) {
       // Simple logic for new, can be refined
       if (hasNewTag) badge = 'New';
 
+      // Get secondary image URL if available
+      let secondaryImageUrl: string | undefined = undefined;
+      if (row.secondary_image_path) {
+        try {
+          secondaryImageUrl = await getPresignedUrl(row.secondary_image_path);
+        } catch (e) {
+          console.warn(`Failed to sign secondary image for product ${row.id}:`, e);
+        }
+      }
+
       return {
         id: row.id,
         name: row.name,
@@ -254,6 +265,7 @@ export async function GET(req: Request) {
         price: row.price ? parseFloat(row.price) : 0,
         originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : undefined,
         image: imageUrl,
+        secondaryImage: secondaryImageUrl,
         badge: badge,
         category: row.category_name,
         categorySlug: row.category_slug,

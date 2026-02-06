@@ -7,6 +7,7 @@ interface Product {
     price: number;
     originalPrice?: number;
     image: string;
+    secondaryImage?: string;
     badge?: string;
     slug: string;
 }
