@@ -476,27 +476,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               })()}
             </div>
 
-            {/* Stock Info */}
-            {(() => {
-              const stockInfo = getStockInfo();
-              if (!stockInfo || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)) return null;
-
-              return (
-                <div className="mb-4 flex items-center gap-2">
-                  <span className={`inline-block w-2 h-2 rounded-full ${stockInfo.inStock ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="text-sm text-gray-600">
-                    {stockInfo.inStock
-                      ? (language === 'bg' ? `В наличност (${stockInfo.quantity})` : `In stock (${stockInfo.quantity})`)
-                      : (language === 'bg' ? 'Изчерпано' : 'Out of stock')
-                    }
-                  </span>
-                  {stockInfo.sku && (
-                    <span className="text-xs text-gray-400 ml-2">SKU: {stockInfo.sku}</span>
-                  )}
-                </div>
-              );
-            })()}
-
             {(language === 'bg' ? (product.description_html_bg || product.description_html) : product.description_html) && (
               <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.description_html_bg || product.description_html) : product.description_html) }}
