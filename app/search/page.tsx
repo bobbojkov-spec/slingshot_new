@@ -87,7 +87,7 @@ function SearchContent() {
     const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
 
     return (
-        <div className="min-h-screen bg-zinc-100 pt-20">
+        <div className="min-h-screen product-listing-bg pt-20">
             <Head>
                 <title>{pageTitle}</title>
                 <meta name="description" content={pageDescription} />

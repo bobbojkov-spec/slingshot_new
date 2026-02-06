@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductSection } from "@/components/products/ProductSection";
+import { ArrowRight, Layers } from "lucide-react";
+import { ShopCollectionsSection } from "./ShopCollectionsSection";
+import { ShopTagsSection } from "./ShopTagsSection";
+
 
 type Collection = {
     id: string;
@@ -43,7 +48,6 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
     const [collections, setCollections] = useState<Collection[]>([]);
     const [keywords, setKeywords] = useState<Keyword[]>([]);
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-    const [newProducts, setNewProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
     const normalizedBrand = normalizeBrandSlug(brandSlug);
@@ -73,27 +77,6 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                     setFeaturedProducts(data.products || []);
                 }
 
-                const newProductsRes = await fetch(
-                    `/api/products?lang=${language}&brand=${encodeURIComponent(normalizedBrand)}&tag=New&limit=4`
-                );
-
-                let newProductsData = [] as Product[];
-                if (newProductsRes.ok) {
-                    const data = await newProductsRes.json();
-                    newProductsData = data.products || [];
-                }
-
-                if (newProductsData.length === 0) {
-                    const fallbackRes = await fetch(
-                        `/api/products?lang=${language}&brand=${encodeURIComponent(normalizedBrand)}&limit=4`
-                    );
-                    if (fallbackRes.ok) {
-                        const data = await fallbackRes.json();
-                        newProductsData = data.products || [];
-                    }
-                }
-
-                setNewProducts(newProductsData);
             } catch (error) {
                 console.error("Error loading brand overview data:", error);
             } finally {
@@ -134,9 +117,8 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
         filterByCollection: language === 'bg' ? 'Филтрирай по Колекция' : 'Filter by Collection',
         filterByTag: language === 'bg' ? 'Филтрирай по Таг' : 'Filter by Tag',
         featuredProducts: language === 'bg' ? 'Избрани Продукти' : 'Featured Products',
-        newProducts: language === 'bg' ? 'Нови Продукти' : 'New Products',
+        viewAll: language === 'bg' ? 'Виж Всички' : 'View all',
         noFeatured: language === 'bg' ? 'Все още няма избрани продукти.' : 'No featured products available yet.',
-        noNew: language === 'bg' ? 'Все още няма нови продукти.' : 'No new products available yet.',
     };
 
     return (
@@ -150,127 +132,32 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
                 </p>
             </div>
 
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByCollection}</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    {displayCollections.map((collection) => (
-                        <Link
-                            key={collection.id}
-                            href={`/shop?brand=${encodeURIComponent(normalizedBrand)}&collection=${encodeURIComponent(
-                                collection.slug
-                            )}`}
-                            className="group relative aspect-[16/9] rounded overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
-                        >
-                            {collection.image_url ? (
-                                <img
-                                    src={collection.image_url}
-                                    alt={collection.title}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 bg-gray-100" />
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                            <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-base md:text-lg font-bold uppercase tracking-tight">
-                                    {collection.title}
-                                </h4>
-                                {collection.subtitle && (
-                                    <p className="text-white/80 text-xs md:text-sm mt-2 line-clamp-2">
-                                        {collection.subtitle}
-                                    </p>
-                                )}
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            {/* Filter by Tag — Full-bleed colorful section */}
-            <section
-                className="relative py-10 md:py-14 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 overflow-hidden"
-                style={{
-                    marginLeft: 'calc(-50vw + 50%)',
-                    marginRight: 'calc(-50vw + 50%)',
-                    width: '100vw',
-                }}
-            >
-                {/* Colorful gradient background */}
-                <div
-                    className="absolute inset-0 -z-10"
-                    style={{
-                        background: 'linear-gradient(135deg, hsl(29 100% 92%) 0%, hsl(36 100% 88%) 20%, hsl(170 60% 85%) 50%, hsl(207 60% 85%) 75%, hsl(260 50% 90%) 100%)',
-                    }}
-                />
-                {/* Subtle decorative blobs */}
-                <div
-                    className="absolute -z-[5] rounded-full blur-3xl opacity-40"
-                    style={{
-                        width: '400px',
-                        height: '400px',
-                        top: '-120px',
-                        left: '10%',
-                        background: 'radial-gradient(circle, hsl(29 100% 70%) 0%, transparent 70%)',
-                    }}
-                />
-                <div
-                    className="absolute -z-[5] rounded-full blur-3xl opacity-30"
-                    style={{
-                        width: '350px',
-                        height: '350px',
-                        bottom: '-100px',
-                        right: '15%',
-                        background: 'radial-gradient(circle, hsl(207 80% 70%) 0%, transparent 70%)',
-                    }}
+            {/* Reusable Collections and Tags sections with space-y-0 gap fix */}
+            <div className="space-y-0">
+                <ShopCollectionsSection
+                    title={t.filterByCollection}
+                    collections={displayCollections}
+                    getCollectionHref={(collection) => `/shop?brand=${encodeURIComponent(normalizedBrand)}&collection=${encodeURIComponent(collection.slug)}`}
                 />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h3 className="text-lg md:text-xl font-heading font-semibold text-deep-navy/80 mb-6 tracking-wide uppercase">
-                        {t.filterByTag}
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                        {displayKeywords.map((keyword) => {
-                            const label = language === "bg" ? keyword.name_bg : keyword.name_en;
-                            const tagValue = keyword.slug || keyword.name_en;
-                            return (
-                                <Link
-                                    key={keyword.slug}
-                                    href={`/shop?brand=${encodeURIComponent(normalizedBrand)}&tag=${encodeURIComponent(
-                                        tagValue
-                                    )}`}
-                                    className="px-5 py-2.5 rounded-full bg-white text-sm font-semibold text-deep-navy shadow-md hover:shadow-xl hover:bg-accent hover:text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 ease-out border border-white/60"
-                                >
-                                    {label}
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
+                <ShopTagsSection
+                    title={t.filterByTag}
+                    keywords={displayKeywords}
+                    getKeywordHref={(keyword) => {
+                        const tagValue = keyword.slug || keyword.name_en;
+                        return `/shop?brand=${encodeURIComponent(normalizedBrand)}&tag=${encodeURIComponent(tagValue)}`;
+                    }}
+                />
+            </div>
 
-            <section className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.featuredProducts}</h3>
-                </div>
-                {displayFeatured.length === 0 ? (
-                    <p className="text-gray-500">{t.noFeatured}</p>
-                ) : (
-                    <ProductGrid products={displayFeatured} columns={4} />
-                )}
-            </section>
-
-            <section className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.newProducts}</h3>
-                </div>
-                {newProducts.length === 0 ? (
-                    <p className="text-gray-500">{t.noNew}</p>
-                ) : (
-                    <ProductGrid products={newProducts} columns={4} />
-                )}
-            </section>
+            <ProductSection
+                title={t.featuredProducts}
+                products={displayFeatured}
+                columns={4}
+                className="space-y-6 pt-12"
+                viewAllHref={`/shop?brand=${encodeURIComponent(normalizedBrand)}&collection=featured-products`}
+                viewAllText={t.viewAll}
+            />
         </div>
     );
 }

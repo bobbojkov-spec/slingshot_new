@@ -52,7 +52,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     // Video Hero (YouTube or Direct)
     if (videoUrl) {
         return (
-            <div className="hero-media relative w-full overflow-hidden bg-black">
+            <div className="hero-media hero-shadow relative w-full overflow-hidden bg-black">
                 <BackgroundVideoPlayer
                     videoUrl={videoUrl}
                     poster={imageUrl}
@@ -80,7 +80,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
     // Image Hero with Parallax
     if (imageUrl && !imageError) {
         return (
-            <div ref={containerRef} className="hero-media relative w-full overflow-hidden">
+            <div ref={containerRef} className="hero-media hero-shadow relative w-full overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={`${title} Collection - Slingshot Bulgaria`}
@@ -111,7 +111,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
 
     // Minimal Header (No Media)
     return (
-        <div className="relative bg-deep-navy pt-32 pb-16">
+        <div className="relative hero-shadow bg-deep-navy pt-32 pb-16">
             <div className="section-container">
                 <div className="max-w-4xl">
                     <h1 className="text-4xl md:text-5xl font-logo font-bold text-white mb-6 uppercase tracking-tight">

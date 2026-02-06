@@ -9,6 +9,7 @@ import PriceNote from "@/components/PriceNote";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductSection } from "@/components/products/ProductSection";
 import BackgroundVideoPlayer from "@/components/ui/BackgroundVideoPlayer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
@@ -240,6 +241,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
   // Translation keys - using centralized t() function
 
+  // Clean HTML content from markdown artifacts
+  const cleanHtml = (html: string | undefined | null) => {
+    if (!html) return '';
+    return html.replace(/```html\s*/g, '').replace(/```\s*/g, '').trim();
+  };
+
   if (loading) return <div className="min-h-screen pt-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
   if (error || !product) return <div className="min-h-screen pt-32 text-center text-red-500">{t("product.notFound")}</div>;
 
@@ -318,7 +325,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   }, language as 'en' | 'bg', origin);
 
   return (
-    <div className="min-h-screen bg-background relative pt-16 md:pt-20">
+    <div className="min-h-screen bg-white relative pt-16 md:pt-20">
       <Head>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
@@ -398,7 +405,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
             <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-2 md:mb-2 uppercase">{product.category_name}</span>
-            <h1 className="h1 font-bold uppercase tracking-tighter mb-2 md:mb-2">
+            <h1 className="font-heading text-3xl md:text-5xl font-bold uppercase tracking-tighter mb-2 md:mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
 
@@ -422,11 +429,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   return (
                     <>
                       <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                        ${selectedVariant.price.toFixed(2)}
+                        €{Math.round(selectedVariant.price).toLocaleString('de-DE')}
                       </span>
                       {selectedVariant.compareAtPrice && selectedVariant.compareAtPrice > selectedVariant.price && (
                         <span className="text-lg md:text-xl text-muted-foreground line-through font-medium">
-                          ${selectedVariant.compareAtPrice.toFixed(2)}
+                          €{Math.round(selectedVariant.compareAtPrice).toLocaleString('de-DE')}
                         </span>
                       )}
                     </>
@@ -439,13 +446,13 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   if (prices.length > 0) {
                     const min = Math.min(...prices);
                     const max = Math.max(...prices);
-                    const displayPrice = min === max ? `$${min.toFixed(2)}` : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+                    const displayPrice = min === max ? `€${Math.round(min).toLocaleString('de-DE')}` : `€${Math.round(min).toLocaleString('de-DE')} - €${Math.round(max).toLocaleString('de-DE')}`;
                     return <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">{displayPrice}</span>;
                   }
                 }
 
                 // Fallback to product price
-                return <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">${(product.price || 0).toFixed(2)}</span>;
+                return <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">€{Math.round(product.price || 0).toLocaleString('de-DE')}</span>;
               })()}
             </div>
 
@@ -472,12 +479,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {(language === 'bg' ? (product.description_html_bg || product.description_html) : product.description_html) && (
               <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_html_bg || product.description_html || '') : (product.description_html || '') }}
+                dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.description_html_bg || product.description_html) : product.description_html) }}
               />
             )}
 
             <div className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_bg || product.description) : product.description }} />
+              dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.description_bg || product.description) : product.description) }} />
 
             {/* Key Features */}
             {product.features && product.features.length > 0 && (
@@ -642,7 +649,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {(language === 'bg' ? (product.description_html2_bg || product.description_html2) : product.description_html2) && (
         <div className="section-container py-8 border-t border-gray-100 mb-8">
           <div className="prose prose-sm max-w-none text-gray-800"
-            dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.description_html2_bg || product.description_html2 || '') : (product.description_html2 || '') }}
+            dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.description_html2_bg || product.description_html2) : product.description_html2) }}
           />
         </div>
       )}
@@ -654,20 +661,20 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {t("specs")}
           </h3>
           <div className="prose prose-sm max-w-none text-gray-800"
-            dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.specs_html_bg || product.specs_html || '') : (product.specs_html || '') }}
+            dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.specs_html_bg || product.specs_html) : product.specs_html) }}
           />
         </div>
       )}
 
       {/* Package Includes */}
       {(language === 'bg' ? (product.package_includes_bg || product.package_includes) : product.package_includes) && (
-        <div className="bg-gray-50 py-16 border-t border-gray-100">
-          <div className="section-container">
+        <div className="section-container py-16 border-t border-gray-100">
+          <div className="">
             <h3 className="h2 font-bold uppercase tracking-tight mb-8">
               {language === 'bg' ? 'Пакетът включва' : 'Package Includes'}
             </h3>
             <div className="prose prose-sm max-w-none text-gray-800"
-              dangerouslySetInnerHTML={{ __html: language === 'bg' ? (product.package_includes_bg || product.package_includes || '') : (product.package_includes || '') }}
+              dangerouslySetInnerHTML={{ __html: cleanHtml(language === 'bg' ? (product.package_includes_bg || product.package_includes) : product.package_includes) }}
             />
           </div>
         </div>
@@ -676,10 +683,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {/* Related Products */}
       {
         related.length > 0 && (
-          <div className="section-container py-16 border-t border-gray-100">
-            <h2 className="h2 font-bold uppercase tracking-tight mb-12 text-center">{t("related")}</h2>
-            <ProductGrid products={related} />
-          </div>
+          <ProductSection
+            title={t("related")}
+            subtitle="You Might Also Like"
+            products={related}
+            className="product-listing-bg section-padding border-t border-gray-100"
+          />
         )
       }
     </div>

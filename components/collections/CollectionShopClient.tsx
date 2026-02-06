@@ -83,7 +83,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen product-listing-bg">
             {/* Hero Section - Static from server data */}
             <CollectionHero
                 title={initialCollection.title}

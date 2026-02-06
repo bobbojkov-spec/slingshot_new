@@ -101,7 +101,7 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
   const pageDescription = description;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen product-listing-bg">
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />

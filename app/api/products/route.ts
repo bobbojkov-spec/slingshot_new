@@ -244,9 +244,16 @@ export async function GET(req: Request) {
         }
       }
       let badge = null;
-      const hasNewTag = row.tags && Array.isArray(row.tags) && row.tags.includes('New');
-      // Simple logic for new, can be refined
-      if (hasNewTag) badge = 'New';
+      const tags = (row.tags && Array.isArray(row.tags)) ? row.tags : [];
+      const hasTag = (t: string) => tags.some((tag: string) => tag.toLowerCase() === t.toLowerCase());
+
+      if (hasTag('new')) {
+        badge = 'New';
+      } else if (hasTag('best seller') || hasTag('bestseller')) {
+        badge = 'Best Seller';
+      } else if (hasTag('sale')) {
+        badge = 'Sale';
+      }
 
       // Get secondary image URL if available
       let secondaryImageUrl: string | undefined = undefined;

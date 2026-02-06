@@ -1,238 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-interface ProductImage {
-    src: string;
-    alt: string;
-}
 
 interface Product {
     id: string;
     name: string;
     slug: string;
-    images: ProductImage[];
+    category: string;
+    price: number;
+    originalPrice?: number;
+    image: string;
+    secondaryImage?: string;
     badge?: string;
-}
-
-const PRODUCTS_PER_PAGE = 5;
-
-// Hero Card - Large left panel (40%)
-function HeroCard({ product }: { product: Product }) {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const currentImage = product.images[currentImageIndex];
-
-    const nextImage = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev >= product.images.length - 1 ? 0 : prev + 1
-        );
-    };
-
-    const prevImage = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev <= 0 ? product.images.length - 1 : prev - 1
-        );
-    };
-
-    return (
-        <Link
-            href={`/product/${product.slug}`}
-            className="group block relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 h-full"
-        >
-            {/* Image */}
-            {currentImage ? (
-                <img
-                    src={currentImage.src}
-                    alt={currentImage.alt || product.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-            ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-100">
-                    <span className="text-gray-400 font-heading select-none">No Image</span>
-                </div>
-            )}
-
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30 pointer-events-none" />
-
-            {/* Product Name - Top Left, Bold */}
-            <div className="absolute top-6 left-6 right-6 z-10">
-                <h3
-                    className="text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg leading-tight text-left"
-                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
-                >
-                    {product.name}
-                </h3>
-            </div>
-
-            {/* Badge */}
-            {product.badge && (
-                <div className="absolute top-6 right-6 z-10">
-                    <span className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full ${
-                        product.badge.toLowerCase() === 'new'
-                            ? 'bg-[#e5ff00] text-black'
-                            : product.badge.toLowerCase().includes('seller')
-                                ? 'bg-[#001f3f] text-white'
-                                : 'bg-white/90 text-black'
-                    }`}>
-                        {product.badge}
-                    </span>
-                </div>
-            )}
-
-            {/* Image navigation (if multiple images) */}
-            {product.images.length > 1 && (
-                <>
-                    <button
-                        onClick={prevImage}
-                        className="absolute left-4 bottom-6 w-10 h-10 backdrop-blur-md bg-white/20 border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/40 z-10"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-white" />
-                    </button>
-                    <button
-                        onClick={nextImage}
-                        className="absolute left-16 bottom-6 w-10 h-10 backdrop-blur-md bg-white/20 border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/40 z-10"
-                    >
-                        <ChevronRight className="w-5 h-5 text-white" />
-                    </button>
-
-                    {/* Image dots */}
-                    <div className="absolute bottom-6 right-6 flex gap-1.5 z-10">
-                        {product.images.map((_, idx) => (
-                            <span
-                                key={idx}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                    idx === currentImageIndex
-                                        ? "bg-white"
-                                        : "bg-white/40"
-                                }`}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
-        </Link>
-    );
-}
-
-// Small Card - For the 2x2 grid on the right
-function SmallCard({ product }: { product: Product }) {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const currentImage = product.images[currentImageIndex];
-
-    const nextImage = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev >= product.images.length - 1 ? 0 : prev + 1
-        );
-    };
-
-    const prevImage = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex((prev) =>
-            prev <= 0 ? product.images.length - 1 : prev - 1
-        );
-    };
-
-    return (
-        <Link
-            href={`/product/${product.slug}`}
-            className="group block relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 h-full"
-        >
-            {/* Image */}
-            {currentImage ? (
-                <img
-                    src={currentImage.src}
-                    alt={currentImage.alt || product.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-            ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-100">
-                    <span className="text-gray-400 font-heading select-none">No Image</span>
-                </div>
-            )}
-
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-            {/* Badge */}
-            {product.badge && (
-                <div className="absolute top-3 left-3 z-10">
-                    <span className={`px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full ${
-                        product.badge.toLowerCase() === 'new'
-                            ? 'bg-[#e5ff00] text-black'
-                            : product.badge.toLowerCase().includes('seller')
-                                ? 'bg-[#001f3f] text-white'
-                                : 'bg-white/90 text-black'
-                    }`}>
-                        {product.badge}
-                    </span>
-                </div>
-            )}
-
-            {/* Product Name - Bottom Left */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <h3
-                    className="text-sm md:text-base font-semibold text-white drop-shadow-md leading-tight text-left line-clamp-2"
-                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
-                >
-                    {product.name}
-                </h3>
-            </div>
-
-            {/* Image navigation (if multiple images) */}
-            {product.images.length > 1 && (
-                <>
-                    <button
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 backdrop-blur-md bg-white/20 border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/40 z-10"
-                    >
-                        <ChevronLeft className="w-4 h-4 text-white" />
-                    </button>
-                    <button
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 backdrop-blur-md bg-white/20 border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/40 z-10"
-                    >
-                        <ChevronRight className="w-4 h-4 text-white" />
-                    </button>
-                </>
-            )}
-        </Link>
-    );
-}
-
-// Loading skeleton
-function BentoSkeleton() {
-    return (
-        <div className="flex flex-col md:flex-row gap-4 md:gap-5">
-            {/* Hero skeleton */}
-            <div className="w-full md:w-1/2 aspect-square bg-gray-200 rounded-xl animate-pulse" />
-            {/* 2x2 grid skeleton */}
-            <div className="w-full md:w-1/2 grid grid-cols-2 gap-4 md:gap-5">
-                <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
-                <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
-                <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
-                <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
-            </div>
-        </div>
-    );
 }
 
 export default function NewProductsFromCollection() {
     const { t, language } = useLanguage();
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0);
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         async function fetchProducts() {
@@ -244,28 +32,34 @@ export default function NewProductsFromCollection() {
 
                     const productsWithImages = await Promise.all(
                         fetchedProducts.map(async (p: any) => {
+                            let image = p.image || p.image_url || '';
+                            let secondaryImage: string | undefined;
+                            let category = p.category || 'Product';
+                            let price = p.price || 0;
+                            let originalPrice = p.originalPrice || undefined;
+
                             const productRes = await fetch(`/api/products/${p.slug}?lang=${language}`);
-                            let allImages: ProductImage[] = [];
                             if (productRes.ok) {
                                 const productData = await productRes.json();
                                 const prod = productData.product;
                                 if (prod?.images && prod.images.length > 0) {
-                                    allImages = prod.images.map((imgUrl: string) => ({
-                                        src: imgUrl,
-                                        alt: prod.name
-                                    }));
+                                    image = prod.images[0];
+                                    secondaryImage = prod.images[1];
                                 }
-                            }
-
-                            if (allImages.length === 0 && p.image) {
-                                allImages = [{ src: p.image, alt: p.name }];
+                                category = prod?.category || category;
+                                price = prod?.price ?? price;
+                                originalPrice = prod?.originalPrice ?? originalPrice;
                             }
 
                             return {
                                 id: p.id,
                                 name: p.name,
                                 slug: p.slug,
-                                images: allImages,
+                                category,
+                                price,
+                                originalPrice,
+                                image,
+                                secondaryImage,
                                 badge: "New"
                             };
                         })
@@ -283,31 +77,22 @@ export default function NewProductsFromCollection() {
         fetchProducts();
     }, [language]);
 
-    const totalPages = Math.ceil(allProducts.length / PRODUCTS_PER_PAGE);
-
-    const goToPage = (page: number) => {
-        if (page < 0 || page >= totalPages) return;
-        setCurrentPage(page);
-    };
-
-    const nextPage = () => goToPage(currentPage + 1);
-    const prevPage = () => goToPage(currentPage - 1);
-
-    // Get current page products
-    const startIndex = currentPage * PRODUCTS_PER_PAGE;
-    const currentProducts = allProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
-    const heroProduct = currentProducts[0];
-    const gridProducts = currentProducts.slice(1, 5);
-
     if (loading) {
         return (
-            <section className="section-padding bg-background">
+            <section className="section-padding bg-gradient-to-b from-deep-navy to-[hsl(207,100%,9%)] relative">
                 <div className="section-container">
-                    <div className="mb-10">
-                        <div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-3" />
-                        <div className="h-10 w-48 bg-gray-200 rounded animate-pulse" />
+                    <div className="mb-12">
+                        <div className="h-7 w-28 bg-white/10 rounded-full animate-pulse mb-4" />
+                        <div className="h-10 w-60 bg-white/[0.06] rounded-lg animate-pulse" />
                     </div>
-                    <BentoSkeleton />
+                    <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-5">
+                        <div className="aspect-square bg-white/[0.04] rounded-[24px] animate-pulse" />
+                        <div className="grid grid-cols-2 gap-4 lg:gap-5">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="aspect-square bg-white/[0.04] rounded-[20px] animate-pulse" />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </section>
         );
@@ -317,82 +102,162 @@ export default function NewProductsFromCollection() {
         return null;
     }
 
+    const displayProducts = allProducts.slice(0, 5);
+    const heroProduct = displayProducts[0];
+    const gridProducts = displayProducts.slice(1, 5);
+
     return (
-        <section className="section-padding bg-background">
-            <div className="section-container">
-                {/* Section Header - Left Aligned */}
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
-                    <div className="text-left">
-                        <span className="text-section-title block mb-3">{t("newProducts.label")}</span>
-                        <h2 className="h2 text-foreground">{t("newProducts.title")}</h2>
+        <section className="section-padding bg-gradient-to-b from-deep-navy to-[hsl(207,100%,9%)] relative overflow-hidden">
+            {/* Ambient background glow */}
+            <div className="absolute -top-48 -right-48 w-[600px] h-[600px] bg-neon-lime/[0.03] rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-signal-orange/[0.02] rounded-full blur-[120px] pointer-events-none" />
+
+            <div className="section-container relative z-10">
+                {/* Section Header */}
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+                    <div>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon-lime/10 border border-neon-lime/20 mb-4">
+                            <Sparkles className="w-3.5 h-3.5 text-neon-lime" />
+                            <span className="text-xs font-bold uppercase tracking-[0.2em] text-neon-lime">
+                                {t("newProducts.label")}
+                            </span>
+                        </div>
+                        <h2 className="h2 text-white">{t("newProducts.title")}</h2>
                     </div>
 
-                    {/* Ghost View All Button with Arrow Animation */}
                     <Link
-                        href="/collections/new-products"
-                        className="group inline-flex items-center gap-2 px-6 py-3 border-2 border-foreground/20 rounded-full text-foreground font-semibold hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-300"
+                        href="/collections/featured-products"
+                        className="group inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 text-white/60 font-semibold hover:border-neon-lime/50 hover:text-neon-lime transition-all duration-300"
                     >
-                        <span>{t("newProducts.viewAll") || "View All"}</span>
+                        <span>{language === "bg" ? "Виж всички" : "View all"}</span>
                         <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                     </Link>
                 </div>
 
-                {/* Bento Box Layout: Hero Left | 2x2 Grid Right - Perfectly Aligned Block */}
-                <div ref={scrollContainerRef} className="flex flex-col md:flex-row gap-4 md:gap-5">
-                    {/* Hero Card - Square, matches combined height of 2x2 grid */}
+                {/* ── Bento Grid ──
+                    Desktop (lg):
+                    ┌────────────────────┬──────────┬──────────┐
+                    │                    │   P2     │   P3     │
+                    │   HERO (left)      ├──────────┼──────────┤
+                    │                    │   P4     │   P5     │
+                    └────────────────────┴──────────┴──────────┘
+
+                    Mobile:
+                    ┌──────────────────┐
+                    │      HERO        │
+                    ├────────┬─────────┤
+                    │  P2    │   P3    │
+                    ├────────┼─────────┤
+                    │  P4    │   P5    │
+                    └────────┴─────────┘
+                */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-5">
+
+                    {/* ═══ Hero Card (left) ═══ */}
                     {heroProduct && (
-                        <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:h-auto flex-shrink-0">
-                            <div className="h-full w-full" style={{ aspectRatio: '1/1' }}>
-                                <HeroCard product={heroProduct} />
+                        <Link
+                            href={`/product/${heroProduct.slug}`}
+                            className="group relative overflow-hidden rounded-[24px] ring-1 ring-white/[0.08] hover:ring-neon-lime/30 transition-all duration-500"
+                        >
+                            <img
+                                src={heroProduct.image}
+                                alt={heroProduct.name}
+                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
+                            />
+                            {/* Layered gradient for depth */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+
+                            {/* NEW badge with glow */}
+                            <div className="absolute top-5 left-5 z-10">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neon-lime text-[11px] font-extrabold uppercase tracking-wider text-black shadow-[0_0_30px_rgba(204,255,0,0.35)]">
+                                    <Sparkles className="w-3 h-3" />
+                                    New
+                                </span>
                             </div>
-                        </div>
+
+                            {/* Content overlay */}
+                            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/40 block mb-2">
+                                    {heroProduct.category}
+                                </span>
+                                <h3
+                                    className="text-xl sm:text-2xl lg:text-[2.5rem] font-extrabold text-white leading-[1.1] mb-3 tracking-tight"
+                                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                                >
+                                    {heroProduct.name}
+                                </h3>
+                                <div className="flex items-end justify-between gap-4">
+                                    <div className="flex items-baseline gap-3">
+                                        <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                                            €{heroProduct.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
+                                        </span>
+                                        {heroProduct.originalPrice && heroProduct.originalPrice > heroProduct.price && (
+                                            <span className="text-base sm:text-lg text-white/30 line-through">
+                                                €{heroProduct.originalPrice.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="hidden sm:inline-flex items-center gap-1.5 text-sm text-white/40 font-medium group-hover:text-neon-lime transition-colors duration-300">
+                                        Shop now
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Hover shine sweep */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-[1200ms] ease-out" />
+                            </div>
+                        </Link>
                     )}
 
-                    {/* 2x2 Grid - Right Side */}
-                    <div className="w-full md:w-1/2 grid grid-cols-2 gap-4 md:gap-5">
+                    {/* ═══ 2×2 Grid (right) ═══ */}
+                    <div className="grid grid-cols-2 gap-4 lg:gap-5">
                         {gridProducts.map((product) => (
-                            <div key={product.id} className="aspect-square">
-                                <SmallCard product={product} />
-                            </div>
+                            <Link
+                                key={product.id}
+                                href={`/product/${product.slug}`}
+                                className="group relative overflow-hidden rounded-[20px] ring-1 ring-white/[0.08] hover:ring-white/20 transition-all duration-500 hover:-translate-y-1 aspect-square"
+                            >
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                />
+
+                                {/* Gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/5 group-hover:from-black/95 transition-all duration-500" />
+
+                                {/* NEW badge */}
+                                <div className="absolute top-3 left-3 z-10">
+                                    <span className="inline-block px-2.5 py-[3px] rounded-full bg-neon-lime text-[10px] font-extrabold uppercase tracking-wider text-black">
+                                        New
+                                    </span>
+                                </div>
+
+                                {/* Content - slides up on hover */}
+                                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-0 group-hover:-translate-y-1 transition-transform duration-500">
+                                    <h3
+                                        className="text-sm font-bold text-white leading-tight line-clamp-2 mb-1.5 tracking-tight"
+                                        style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                                    >
+                                        {product.name}
+                                    </h3>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-lg font-extrabold text-white tracking-tight">
+                                            €{product.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
+                                        </span>
+                                        <span className="text-white/0 group-hover:text-white/50 transition-all duration-300 text-xs font-medium flex items-center gap-1">
+                                            View
+                                            <ArrowRight className="w-3 h-3" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-4 mt-10">
-                        <button
-                            onClick={prevPage}
-                            disabled={currentPage === 0}
-                            className="w-12 h-12 rounded-full border-2 border-foreground/20 flex items-center justify-center hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-foreground/20 disabled:hover:text-foreground"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-
-                        {/* Page Dots */}
-                        <div className="flex items-center gap-2">
-                            {Array.from({ length: totalPages }).map((_, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => goToPage(idx)}
-                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                        idx === currentPage
-                                            ? "bg-foreground scale-110"
-                                            : "bg-foreground/20 hover:bg-foreground/40"
-                                    }`}
-                                />
-                            ))}
-                        </div>
-
-                        <button
-                            onClick={nextPage}
-                            disabled={currentPage === totalPages - 1}
-                            className="w-12 h-12 rounded-full border-2 border-foreground/20 flex items-center justify-center hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-foreground/20 disabled:hover:text-foreground"
-                        >
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-                )}
             </div>
         </section>
     );

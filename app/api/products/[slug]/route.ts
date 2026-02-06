@@ -206,6 +206,16 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       product_color_id: v.product_color_id
     }));
 
+    // Helper for Badge Logic
+    const calculateBadge = (tags: string[]) => {
+      if (!tags || !Array.isArray(tags)) return null;
+      const hasTag = (t: string) => tags.some((tag: string) => tag.toLowerCase() === t.toLowerCase());
+      if (hasTag('new')) return 'New';
+      if (hasTag('best seller') || hasTag('bestseller')) return 'Best Seller';
+      if (hasTag('sale')) return 'Sale';
+      return null;
+    };
+
     // 3. Fetch Related Products (Same Product Type or Category, max 4)
     // Prefer same type, fallback to category.
     const relatedSql = `
@@ -218,10 +228,18 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
           ORDER BY CASE WHEN pir.size='medium' THEN 1 ELSE 2 END ASC, display_order ASC 
           LIMIT 1
         ) as image_path,
+        (
+          SELECT storage_path 
+          FROM product_images_railway pir 
+          WHERE pir.product_id = p.id AND pir.size IN ('medium', 'big') 
+          ORDER BY CASE WHEN pir.size='medium' THEN 1 ELSE 2 END ASC, display_order ASC 
+          OFFSET 1 LIMIT 1
+        ) as secondary_image_path,
         (SELECT price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as price,
         (SELECT compare_at_price FROM product_variants pv WHERE pv.product_id = p.id ORDER BY position ASC LIMIT 1) as original_price,
          c.name as category_name,
-         c.slug as category_slug
+         c.slug as category_slug,
+         p.tags
       FROM products p
       JOIN categories c ON p.category_id = c.id
       WHERE p.category_id = $1 
@@ -239,7 +257,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       price: parseFloat(row.price || '0'),
       originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
       image: row.image_path ? await getPresignedUrl(row.image_path) : null,
-      slug: row.slug
+      secondaryImage: row.secondary_image_path ? await getPresignedUrl(row.secondary_image_path) : null,
+      slug: row.slug,
+      badge: calculateBadge(row.tags)
     })));
 
     // 4. Specs - Hardcoded for now or fetch?
@@ -297,6 +317,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         availability: availabilityResult.rows || [],
         tags: product.tags || [], // For SEO keywords
         collections, // For SEO keywords
+        badge: calculateBadge(product.tags)
       },
       related
     });

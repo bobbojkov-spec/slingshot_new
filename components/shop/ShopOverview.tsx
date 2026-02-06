@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductSection } from "@/components/products/ProductSection";
+import { ArrowRight, Layers } from "lucide-react";
+import { ShopCollectionsSection } from "./ShopCollectionsSection";
+import { ShopTagsSection } from "./ShopTagsSection";
+
+// Collection Card Component
 
 type Brand = {
     id: number;
@@ -168,75 +174,29 @@ export default function ShopOverview() {
                 </div>
             </section>
 
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByCollection}</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    {displayCollections.map((collection) => (
-                        <Link
-                            key={collection.id}
-                            href={`/shop?collection=${encodeURIComponent(collection.slug)}`}
-                            className="group relative aspect-[16/9] rounded overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition"
-                        >
-                            {collection.image_url ? (
-                                <img
-                                    src={collection.image_url}
-                                    alt={collection.title}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 bg-gray-100" />
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                            <div className="absolute inset-0 flex flex-col justify-end p-3">
-                                <h4 className="text-white text-base md:text-lg font-bold uppercase tracking-tight">
-                                    {collection.title}
-                                </h4>
-                                {collection.subtitle && (
-                                    <p className="text-white/80 text-xs md:text-sm mt-2 line-clamp-2">
-                                        {collection.subtitle}
-                                    </p>
-                                )}
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+            {/* Groups Collections and Tags to remove gap between them */}
+            <div className="space-y-0">
+                <ShopCollectionsSection
+                    title={t.filterByCollection}
+                    collections={displayCollections}
+                    getCollectionHref={(collection) => `/shop?collection=${encodeURIComponent(collection.slug)}`}
+                />
+                <ShopTagsSection
+                    title={t.filterByTag}
+                    keywords={displayKeywords}
+                    getKeywordHref={(keyword) => `/shop?tag=${encodeURIComponent(keyword.name_en)}`}
+                />
+            </div>
 
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.filterByTag}</h3>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    {displayKeywords.map((keyword) => {
-                        const label = language === 'bg' ? keyword.name_bg : keyword.name_en;
-                        return (
-                            <Link
-                                key={keyword.slug}
-                                href={`/shop?tag=${encodeURIComponent(keyword.name_en)}`}
-                                className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-medium text-deep-navy shadow-sm hover:shadow-md hover:border-accent hover:bg-accent hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 ease-out"
-                            >
-                                {label}
-                            </Link>
-                        );
-                    })}
-                </div>
-            </section>
-
-            <section className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-deep-navy">{t.featuredProducts}</h3>
-                    <Link href="/collections/featured-products" className="text-sm text-accent">
-                        {t.viewAll}
-                    </Link>
-                </div>
-                {displayFeatured.length === 0 ? (
-                    <p className="text-gray-500">{t.noFeatured}</p>
-                ) : (
-                    <ProductGrid products={displayFeatured.slice(0, 8)} columns={4} />
-                )}
-            </section>
+            <ProductSection
+                title={t.featuredProducts}
+                products={displayFeatured.slice(0, 8)}
+                viewAllHref="/collections/featured-products"
+                viewAllText={t.viewAll}
+                columns={4}
+                className="space-y-6 pt-12"
+                wrapContainer={false}
+            />
         </div>
     );
 }

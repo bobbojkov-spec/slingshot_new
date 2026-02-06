@@ -15,6 +15,7 @@ interface Product {
     price: number;
     originalPrice?: number;
     image: string;
+    secondaryImage?: string;
     badge?: string;
 }
 
@@ -42,17 +43,49 @@ export default function BestSellersFromCollection() {
                     const data = await res.json();
                     // Get random 8 products from the collection
                     const randomProducts = shuffleAndLimit(data.products || [], 8);
-                    setProducts(randomProducts.map((p: any) => ({
-                        id: p.id,
-                        name: p.name,
-                        slug: p.slug,
-                        category: p.category || 'Product',
-                        categorySlug: p.categorySlug,
-                        price: p.price || 0,
-                        originalPrice: p.originalPrice,
-                        image: p.image || p.image_url || '',
-                        badge: p.badge
-                    })));
+
+                    const productsWithImages = await Promise.all(
+                        randomProducts.map(async (p: any) => {
+                            let image = p.image || p.image_url || '';
+                            let secondaryImage: string | undefined;
+                            let category = p.category || 'Product';
+                            let price = p.price || 0;
+                            let originalPrice = p.originalPrice || undefined;
+
+                            // Fetch full product details to get secondary image
+                            try {
+                                const productRes = await fetch(`/api/products/${p.slug}?lang=${language}`);
+                                if (productRes.ok) {
+                                    const productData = await productRes.json();
+                                    const prod = productData.product;
+                                    if (prod?.images && prod.images.length > 0) {
+                                        image = prod.images[0];
+                                        secondaryImage = prod.images[1]; // Get secondary image
+                                    }
+                                    category = prod?.category || category;
+                                    price = prod?.price ?? price;
+                                    originalPrice = prod?.originalPrice ?? originalPrice;
+                                }
+                            } catch (e) {
+                                console.error(`Error fetching details for ${p.slug}`, e);
+                            }
+
+                            return {
+                                id: p.id,
+                                name: p.name,
+                                slug: p.slug,
+                                category,
+                                categorySlug: p.categorySlug,
+                                price,
+                                originalPrice,
+                                image,
+                                secondaryImage,
+                                badge: p.badge || "Best Seller"
+                            };
+                        })
+                    );
+
+                    setProducts(productsWithImages);
                 }
             } catch (error) {
                 console.error("Error fetching best sellers:", error);
@@ -83,7 +116,7 @@ export default function BestSellersFromCollection() {
     }
 
     return (
-        <section className="section-padding bg-secondary/30">
+        <section className="section-padding product-listing-bg">
             <div className="section-container">
                 {/* Section Header */}
                 <div className="flex items-end justify-between mb-12">
@@ -93,10 +126,10 @@ export default function BestSellersFromCollection() {
                     </div>
                     <Link
                         href="/collections/best-sellers"
-                        className="hidden sm:inline-flex items-center gap-2 font-heading font-medium text-primary hover:text-accent transition-colors uppercase tracking-wider text-sm"
+                        className="group inline-flex items-center gap-2 px-6 py-3 border-2 border-foreground/20 rounded-full text-foreground font-semibold hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-300"
                     >
-                        {t("bestSellers.viewAll")}
-                        <ArrowRight className="w-4 h-4" />
+                        <span>{t("bestSellers.viewAll")}</span>
+                        <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                     </Link>
                 </div>
 

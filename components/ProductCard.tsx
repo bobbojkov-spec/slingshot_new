@@ -122,11 +122,11 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           </h3>
           <div className="product-card-price">
             <span className="product-card-price-current">
-              €{parseFloat(product.price.toString()).toFixed(2)}
+              €{Math.round(parseFloat(product.price.toString())).toLocaleString('de-DE')}
             </span>
             {product.originalPrice && parseFloat(product.originalPrice.toString()) > parseFloat(product.price.toString()) && (
               <span className="product-card-price-original">
-                €{parseFloat(product.originalPrice.toString()).toFixed(2)}
+                €{Math.round(parseFloat(product.originalPrice.toString())).toLocaleString('de-DE')}
               </span>
             )}
           </div>

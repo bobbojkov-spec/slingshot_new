@@ -204,6 +204,12 @@
     min-height: var(--hero-media-min-height);
   }
 
+  .hero-shadow {
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    position: relative;
+  }
+
   .shop-hero {
     height: var(--shop-hero-height);
     min-height: var(--shop-hero-min-height);
@@ -249,21 +255,23 @@
 
   /* Product Cards */
   .product-card {
-    @apply bg-card rounded-lg overflow-hidden transition-all duration-300 animate-fade-in;
+    @apply bg-card rounded-lg overflow-hidden transition-all duration-300 animate-fade-in border border-border/60;
     box-shadow: var(--card-shadow);
   }
 
   .product-card:hover {
-    box-shadow: var(--card-shadow-hover);
+    box-shadow: 0 16px 45px -12px hsl(207 72% 11% / 0.25);
     @apply -translate-y-1;
   }
 
   .product-card-image-container {
     @apply relative aspect-square overflow-hidden bg-white rounded-lg m-2;
+    border-radius: var(--radius);
   }
 
   .product-card-image {
-    @apply absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-300;
+    @apply absolute inset-0 w-full h-full object-cover transition-transform duration-300 rounded-lg;
+    border-radius: inherit;
   }
 
   .product-card:hover .product-card-image:not(.product-card-image-secondary) {
@@ -271,7 +279,8 @@
   }
 
   .product-card-image-secondary {
-    @apply absolute inset-0;
+    @apply absolute inset-0 rounded-lg;
+    border-radius: inherit;
   }
 
   .product-card-image-placeholder {
@@ -413,6 +422,10 @@
   .filter-tag {
     @apply inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground font-body text-sm rounded-full;
     min-height: 32px;
+  }
+
+  .product-listing-bg {
+    background-color: #f1f4f84d;
   }
 
   /* Scraped Content Styling */
@@ -815,7 +828,7 @@
 /* Collections Section Background */
 .collections-section {
   @apply relative w-full overflow-hidden;
-  background: linear-gradient(180deg, hsl(207 67% 17%) 0%, hsl(207 100% 8%) 100%);
+  background: linear-gradient(#0e2e48 0%, #001629 100%);
 }
 
 /* Collection 3D Card */
