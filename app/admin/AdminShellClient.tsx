@@ -32,7 +32,7 @@ type AdminMenuNode = {
 
 const ADMIN_MENU: AdminMenuNode[] = [
   { key: "dashboard", icon: <HomeOutlined />, labelText: "Dashboard", href: "/admin" },
-  { key: "hero-slides", icon: <FileProtectOutlined />, labelText: "Hero Slides", href: "/admin/hero-slides" },
+  { key: "hero-slides", icon: <FileProtectOutlined />, labelText: "Homepage Hero", href: "/admin/hero-slides" },
   {
     key: "catalog",
     icon: <AppstoreOutlined />,

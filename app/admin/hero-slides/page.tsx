@@ -35,6 +35,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import MediaPicker from '@/components/admin/MediaPicker';
 import { PLACEHOLDER_IMAGE } from '@/lib/utils/placeholder-image';
+import { getCloudImageUrl } from '@/lib/utils/image-url';
 
 const { TextArea } = Input;
 
@@ -73,6 +74,7 @@ export default function HeroSlidesPage() {
     const [enableCrop, setEnableCrop] = useState(true);
     const [originalFile, setOriginalFile] = useState<File | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const updateScreenWidth = () => {
@@ -178,6 +180,7 @@ export default function HeroSlidesPage() {
                 } else {
                     if (editVisible) {
                         form.setFieldsValue({ backgroundImage: result.data.url });
+                        setUploadedPreviewUrl(result.data.url);
                     }
                     message.success('Image selected');
                 }
@@ -255,18 +258,21 @@ export default function HeroSlidesPage() {
 
             const formData = new FormData();
             formData.append('file', croppedFile);
-            formData.append('derived', 'true');
+            formData.append('collectionId', 'homepage-hero');
 
-            const response = await fetch('/api/media', {
+            const response = await fetch('/api/admin/collections/hero/upload', {
                 method: 'POST',
                 body: formData,
             });
 
             const result = await response.json();
+            const path = result?.paths?.full || result?.paths?.middle || result?.paths?.thumb;
+            const url = result?.urls?.full || result?.urls?.middle || result?.urls?.thumb;
 
-            if (result.data && result.data.url) {
+            if (path) {
                 if (editVisible) {
-                    form.setFieldsValue({ backgroundImage: result.data.url });
+                    form.setFieldsValue({ backgroundImage: path });
+                    setUploadedPreviewUrl(url || null);
                 }
                 message.success({ content: 'Image cropped and uploaded successfully', key: 'upload' });
                 setCropVisible(false);
@@ -287,6 +293,7 @@ export default function HeroSlidesPage() {
 
     const handleAdd = () => {
         setEditingSlide(null);
+        setUploadedPreviewUrl(null);
         setEditVisible(true);
     };
 
@@ -309,6 +316,7 @@ export default function HeroSlidesPage() {
                 const slide = result.data;
                 console.log('📝 Loaded slide:', slide);
                 setEditingSlide(slide);
+                setUploadedPreviewUrl(null);
                 setEditVisible(true);
                 // Set form values after Form is mounted
                 setTimeout(() => {
@@ -654,7 +662,7 @@ export default function HeroSlidesPage() {
                             icon={<PlusOutlined />}
                             onClick={handleAdd}
                         >
-                            Add Hero Slide
+                            Add Homepage Hero
                         </Button>
                     </Col>
                 </Row>
@@ -676,12 +684,13 @@ export default function HeroSlidesPage() {
 
             {/* Edit/Create Modal */}
             <Modal
-                title={editingSlide ? `Edit Hero Slide: ${editingSlide.title}` : 'Add Hero Slide'}
+                title={editingSlide ? `Edit Homepage Hero: ${editingSlide.title}` : 'Add Homepage Hero'}
                 open={editVisible}
                 onCancel={() => {
                     form.resetFields();
                     setEditVisible(false);
                     setEditingSlide(null);
+                    setUploadedPreviewUrl(null);
                 }}
                 footer={[
                     <Button
@@ -690,6 +699,7 @@ export default function HeroSlidesPage() {
                             form.resetFields();
                             setEditVisible(false);
                             setEditingSlide(null);
+                            setUploadedPreviewUrl(null);
                         }}
                     >
                         Cancel
@@ -720,7 +730,7 @@ export default function HeroSlidesPage() {
                         name="title"
                         rules={[{ required: true, message: 'Please enter title' }]}
                     >
-                        <Input placeholder="Hero slide title" />
+                        <Input placeholder="Homepage hero title" />
                     </Form.Item>
 
                     <Form.Item
@@ -795,13 +805,17 @@ export default function HeroSlidesPage() {
                                                     message.loading({ content: 'Uploading image...', key: 'upload' });
                                                     const formData = new FormData();
                                                     formData.append('file', file);
-                                                    const response = await fetch('/api/media', {
+                                                    formData.append('collectionId', 'homepage-hero');
+                                                    const response = await fetch('/api/admin/collections/hero/upload', {
                                                         method: 'POST',
                                                         body: formData,
                                                     });
                                                     const result = await response.json();
-                                                    if (result.data && result.data.url) {
-                                                        form.setFieldsValue({ backgroundImage: result.data.url });
+                                                    const path = result?.paths?.full || result?.paths?.middle || result?.paths?.thumb;
+                                                    const url = result?.urls?.full || result?.urls?.middle || result?.urls?.thumb;
+                                                    if (path) {
+                                                        form.setFieldsValue({ backgroundImage: path });
+                                                        setUploadedPreviewUrl(url || null);
                                                         message.success({ content: 'Image uploaded successfully', key: 'upload' });
                                                     } else {
                                                         message.error({ content: result.error || 'Failed to upload image', key: 'upload' });
@@ -831,9 +845,12 @@ export default function HeroSlidesPage() {
                             >
                                 {({ getFieldValue }) => {
                                     const backgroundImage = getFieldValue('backgroundImage');
-                                    return backgroundImage ? (
+                                    const previewUrl = backgroundImage?.startsWith('http')
+                                        ? backgroundImage
+                                        : (uploadedPreviewUrl || (backgroundImage ? getCloudImageUrl(backgroundImage) : ''));
+                                    return previewUrl ? (
                                         <AntImage
-                                            src={backgroundImage}
+                                            src={previewUrl}
                                             alt="Background preview"
                                             width={300}
                                             height={200}
@@ -910,7 +927,6 @@ export default function HeroSlidesPage() {
                         Cancel
                     </Button>,
                     <Button
-                        key="crop"
                         type="primary"
                         loading={uploadingImage}
                         onClick={handleCropAndUpload}
