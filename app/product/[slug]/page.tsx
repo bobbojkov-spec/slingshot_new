@@ -126,7 +126,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   };
 
   const getAvailabilityEntry = (variantId?: string | null, colorId?: string | null) => {
-    if (!variantId || !colorId || !product?.availability) return null;
+    if (!variantId || !product?.availability) return null;
+    if (!colorId) {
+      return product.availability.find((entry) => entry.variant_id === variantId) || null;
+    }
     return product.availability.find((entry) => entry.variant_id === variantId && entry.color_id === colorId) || null;
   };
 
@@ -170,10 +173,17 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const getSelectedVariant = () => {
     if (!product?.variants || product.variants.length === 0) return null;
 
-    if (selectedSize) {
+    const sizeOptions = getUniqueSizeOptions();
+    const effectiveSize = selectedSize || (sizeOptions.length === 1 ? sizeOptions[0].numericSize : '');
+
+    if (!effectiveSize && sizeOptions.length === 0) {
+      return product.variants[0];
+    }
+
+    if (effectiveSize) {
       // Find variant where title starts with selected size
       const matchingVariants = product.variants.filter(v =>
-        parseVariantTitle(v.title) === selectedSize
+        parseVariantTitle(v.title) === effectiveSize
       );
 
       if (matchingVariants.length === 0) return null;
@@ -215,11 +225,16 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   const handleAddToInquiry = () => {
     if (!product) return;
 
+    const sizeOptions = getUniqueSizeOptions();
+    const effectiveSize = selectedSize || (sizeOptions.length === 1 ? sizeOptions[0].numericSize : '');
+    const requiresSize = sizeOptions.length > 1;
+
+    if (requiresSize && !effectiveSize) return;
+
     const variant = getSelectedVariant();
     if (!variant) return;
 
     const colorId = selectedColorId || getVariantColorId(variant);
-    if (!colorId) return;
     const availabilityEntry = getAvailabilityEntry(variant.id, colorId);
     if (availabilityEntry && (!availabilityEntry.is_active || availabilityEntry.stock_qty <= 0)) return;
 
@@ -231,7 +246,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       name: product.name,
       price: price,
       image: product.image,
-      size: selectedSize,
+      size: effectiveSize || selectedSize,
       color: colorId ? product.colors?.find(c => c.id === colorId)?.name : undefined,
       category: product.category,
       slug: product.slug,
@@ -323,6 +338,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     image: product.image || product.images?.[0],
     slug: product.slug,
   }, language as 'en' | 'bg', origin);
+
+  const sizeOptions = getUniqueSizeOptions();
+  const effectiveSize = selectedSize || (sizeOptions.length === 1 ? sizeOptions[0].numericSize : '');
+  const requiresSize = sizeOptions.length > 1;
+  const requiresColor = (product.colors?.length || 0) > 0;
 
   return (
     <div className="min-h-screen bg-white relative pt-16 md:pt-20">
@@ -459,7 +479,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {/* Stock Info */}
             {(() => {
               const stockInfo = getStockInfo();
-              if (!stockInfo || !selectedSize || !selectedColorId) return null;
+              if (!stockInfo || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)) return null;
 
               return (
                 <div className="mb-4 flex items-center gap-2">
@@ -631,8 +651,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               </div>
               <button
                 onClick={handleAddToInquiry}
-                disabled={!selectedSize || !selectedColorId}
-                className={`flex-1 font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${!selectedSize || !selectedColorId
+                disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
+                className={`flex-1 font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
                   }`}
@@ -684,8 +704,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       {
         related.length > 0 && (
           <ProductSection
-            title={t("related")}
-            subtitle="You Might Also Like"
+            title={language === 'bg' ? "Свързани продукти" : "Related products"}
             products={related}
             className="product-listing-bg section-padding border-t border-gray-100"
           />

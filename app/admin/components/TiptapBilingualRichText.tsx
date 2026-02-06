@@ -197,6 +197,7 @@ const TiptapEditor = ({
                 style: 'min-height: 200px; padding: 12px;',
             },
         },
+        immediatelyRender: false,
     });
 
     useEffect(() => {
@@ -290,13 +291,13 @@ const TiptapBilingualRichText: React.FC<TiptapBilingualRichTextProps> = ({
     };
 
     return (
-        <Space direction="vertical" size={12} style={{ width: '100%', maxWidth: '80vw' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '80vw' }}>
             <div>
                 <Typography.Text strong>{label} (English)</Typography.Text>
                 <TiptapEditor value={enValue} onChange={onEnChange} />
             </div>
 
-            <Space style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                 <Typography.Text strong>{label} (Bulgarian)</Typography.Text>
                 <Space>
                     {showCopyButton && (
@@ -322,13 +323,13 @@ const TiptapBilingualRichText: React.FC<TiptapBilingualRichTextProps> = ({
                         </>
                     )}
                 </Space>
-            </Space>
+            </div>
             <div>
                 <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, backgroundColor: '#fffbe6' }}>
                     <TiptapEditor value={bgValue} onChange={onBgChange} />
                 </div>
             </div>
-        </Space>
+        </div>
     );
 };
 
