@@ -66,6 +66,7 @@ export default {
       },
       fontFamily: {
         logo: ["Montserrat", "sans-serif"],
+        hero: ["Poppins", "sans-serif"],
         heading: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"],
         display: ["Oswald", "sans-serif"]

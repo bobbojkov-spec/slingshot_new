@@ -50,10 +50,12 @@ export interface MenuGroup {
 export interface NavigationPage {
   id: number;
   title: string;
+  title_bg?: string;
   slug: string;
   status: string;
   show_header: boolean;
   show_dropdown: boolean;
+  show_footer: boolean;
   footer_column: number | null;
   header_order: number | null;
   footer_order: number | null;

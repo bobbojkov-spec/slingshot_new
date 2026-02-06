@@ -139,7 +139,7 @@ export default function ShopOverview() {
     return (
         <div className="container mx-auto px-4 py-12 space-y-12">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl md:text-3xl font-logo font-bold text-deep-navy uppercase tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-hero font-bold text-deep-navy uppercase tracking-tight">
                     {t.heroTitle}
                 </h2>
                 <p className="text-gray-500 text-sm md:text-base">

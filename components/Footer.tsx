@@ -14,14 +14,6 @@ const shopLinks = [
   { key: "header.nav.accessories", href: "/category/accessories" }
 ];
 
-const supportLinks = [
-  { key: "footer.links.about", href: "/about" },
-  { key: "footer.links.contact", href: "/contact" },
-  { key: "footer.links.shipping", href: "/shipping" },
-  { key: "footer.links.returns", href: "/returns" },
-  { key: "footer.links.faq", href: "/faq" }
-];
-
 const Footer = () => {
   const pathname = usePathname();
   const { t, language, setLanguage } = useLanguage();
@@ -31,6 +23,9 @@ const Footer = () => {
   if (pathname?.startsWith('/admin')) return null;
 
   const customPages = navigation?.customPages || [];
+  const footerPages = customPages
+    .filter(page => page.status === 'published' && page.show_footer)
+    .sort((a, b) => (a.footer_order || 0) - (b.footer_order || 0));
 
   return (
     <footer className="footer-section">
@@ -111,13 +106,6 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
-              {customPages.filter(p => p.footer_column === 1).sort((a, b) => (a.footer_order || 0) - (b.footer_order || 0)).map(page => (
-                <li key={page.id}>
-                  <Link href={`/p/${page.slug}`} className="footer-link font-body text-sm">
-                    {page.title}
-                  </Link>
-                </li>
-              ))}
             </ul>
           </div>
 
@@ -125,22 +113,22 @@ const Footer = () => {
             <h4 className="font-heading font-medium text-white uppercase tracking-wider text-sm mb-6">
               {t("footer.sections.support")}
             </h4>
-            <ul className="space-y-3">
-              {supportLinks.map((link) => (
-                <li key={link.key}>
-                  <Link href={link.href} className="footer-link font-body text-sm">
-                    {t(link.key)}
-                  </Link>
-                </li>
-              ))}
-              {customPages.filter(p => p.footer_column === 2).sort((a, b) => (a.footer_order || 0) - (b.footer_order || 0)).map(page => (
-                <li key={page.id}>
-                  <Link href={`/p/${page.slug}`} className="footer-link font-body text-sm">
-                    {page.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-6">
+              <div>
+                <span className="font-body text-xs text-white/50 uppercase tracking-wider mb-3 block">
+                  {t("footer.sections.pages")}
+                </span>
+                <ul className="space-y-3">
+                  {footerPages.map(page => (
+                    <li key={page.id}>
+                      <Link href={`/${page.slug}`} className="footer-link font-body text-sm">
+                        {language === 'bg' ? (page.title_bg || page.title) : page.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -168,13 +156,6 @@ const Footer = () => {
                   {t("footer.contact.email")}
                 </a>
               </li>
-              {customPages.filter(p => p.footer_column === 3).sort((a, b) => (a.footer_order || 0) - (b.footer_order || 0)).map(page => (
-                <li key={page.id} className="pt-2">
-                  <Link href={`/p/${page.slug}`} className="footer-link font-body text-sm">
-                    {page.title}
-                  </Link>
-                </li>
-              ))}
             </ul>
           </div>
         </div>

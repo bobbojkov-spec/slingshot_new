@@ -27,6 +27,9 @@ const PAGE_COLUMNS = [
     'canonical_url',
     'created_at',
     'updated_at',
+    'content',
+    'content_bg',
+    'show_footer',
 ];
 
 const quoteColumn = (column: string) => (column === 'order' ? '"order"' : column);
@@ -119,12 +122,26 @@ export async function GET(
             );
         }
 
-        return NextResponse.json({ ok: true, data: rows[0] });
+        const page = rows[0];
+
+        // Sign the hero image URL if it's a private path/key and not a full http URL
+        if (page.hero_image_url && !page.hero_image_url.startsWith('http')) {
+            try {
+                const { getPresignedUrl } = await import('@/lib/railway/storage');
+                const signed = await getPresignedUrl(page.hero_image_url);
+                page.signed_hero_image_url = signed;
+            } catch (e) {
+                console.error('Failed to sign hero image for page', numId, e);
+            }
+        }
+
+        return NextResponse.json({ ok: true, data: page });
     } catch (error) {
+        console.error('PAGES-NEW GET FAILED:', error);
         return NextResponse.json(
             {
                 ok: false,
-                error: 'Failed to load page',
+                error: error instanceof Error ? error.message : 'Failed to load page',
             },
             { status: 500 }
         );
@@ -348,6 +365,18 @@ export async function PATCH(
                 );
             }
             updates.push({ column: '"order"', value: Number(payload.order) });
+        }
+
+        if (payload.content !== undefined && available.has('content')) {
+            updates.push({ column: 'content', value: payload.content || null });
+        }
+
+        if (payload.content_bg !== undefined && available.has('content_bg')) {
+            updates.push({ column: 'content_bg', value: payload.content_bg || null });
+        }
+
+        if (payload.show_footer !== undefined && available.has('show_footer')) {
+            updates.push({ column: 'show_footer', value: Boolean(payload.show_footer) });
         }
 
         if (updates.length === 0) {

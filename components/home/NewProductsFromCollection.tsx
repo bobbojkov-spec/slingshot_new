@@ -162,6 +162,7 @@ export default function NewProductsFromCollection() {
                             <img
                                 src={heroProduct.image}
                                 alt={heroProduct.name}
+                                loading="lazy"
                                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
                             />
                             {/* Layered gradient for depth */}
@@ -172,7 +173,7 @@ export default function NewProductsFromCollection() {
                             <div className="absolute top-5 left-5 z-10">
                                 <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neon-lime text-[11px] font-extrabold uppercase tracking-wider text-black shadow-[0_0_30px_rgba(204,255,0,0.35)]">
                                     <Sparkles className="w-3 h-3" />
-                                    New
+                                    {language === "bg" ? "Ново" : "New"}
                                 </span>
                             </div>
 
@@ -181,10 +182,7 @@ export default function NewProductsFromCollection() {
                                 <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/40 block mb-2">
                                     {heroProduct.category}
                                 </span>
-                                <h3
-                                    className="text-xl sm:text-2xl lg:text-[2.5rem] font-extrabold text-white leading-[1.1] mb-3 tracking-tight"
-                                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
-                                >
+                                <h3 className="text-xl sm:text-2xl lg:text-[2.5rem] font-heading font-extrabold text-white leading-[1.1] mb-3 tracking-tight">
                                     {heroProduct.name}
                                 </h3>
                                 <div className="flex items-end justify-between gap-4">
@@ -199,7 +197,7 @@ export default function NewProductsFromCollection() {
                                         )}
                                     </div>
                                     <span className="hidden sm:inline-flex items-center gap-1.5 text-sm text-white/40 font-medium group-hover:text-neon-lime transition-colors duration-300">
-                                        Shop now
+                                        {language === "bg" ? "Виж продукта" : "Shop now"}
                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                                     </span>
                                 </div>
@@ -223,6 +221,7 @@ export default function NewProductsFromCollection() {
                                 <img
                                     src={product.image}
                                     alt={product.name}
+                                    loading="lazy"
                                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                                 />
 
@@ -232,16 +231,13 @@ export default function NewProductsFromCollection() {
                                 {/* NEW badge */}
                                 <div className="absolute top-3 left-3 z-10">
                                     <span className="inline-block px-2.5 py-[3px] rounded-full bg-neon-lime text-[10px] font-extrabold uppercase tracking-wider text-black">
-                                        New
+                                        {language === "bg" ? "Ново" : "New"}
                                     </span>
                                 </div>
 
                                 {/* Content - slides up on hover */}
                                 <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-0 group-hover:-translate-y-1 transition-transform duration-500">
-                                    <h3
-                                        className="text-sm font-bold text-white leading-tight line-clamp-2 mb-1.5 tracking-tight"
-                                        style={{ fontFamily: "'Inter Tight', sans-serif" }}
-                                    >
+                                    <h3 className="text-sm font-bold text-white leading-tight line-clamp-2 mb-1.5 tracking-tight font-heading">
                                         {product.name}
                                     </h3>
                                     <div className="flex items-center justify-between">
@@ -249,7 +245,7 @@ export default function NewProductsFromCollection() {
                                             €{product.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
                                         </span>
                                         <span className="text-white/0 group-hover:text-white/50 transition-all duration-300 text-xs font-medium flex items-center gap-1">
-                                            View
+                                            {language === "bg" ? "Виж" : "View"}
                                             <ArrowRight className="w-3 h-3" />
                                         </span>
                                     </div>

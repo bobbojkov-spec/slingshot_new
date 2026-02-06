@@ -21,14 +21,10 @@ import type { PageRecord } from '../../../types/page';
 
 type EditFormValues = {
     title: string;
+    title_bg?: string;
     slug: string;
     status: 'draft' | 'published';
-    show_header: boolean;
-    header_order?: number;
-    show_dropdown: boolean;
-    dropdown_order?: number;
     show_footer: boolean;
-    footer_column: '' | 1 | 2 | 3;
     footer_order?: number;
     order?: number;
 };
@@ -120,15 +116,11 @@ export default function PagesNewAdminPage() {
         setSelectedPage(page);
         editForm.setFieldsValue({
             title: page.title,
+            title_bg: page.title_bg,
             slug: page.slug,
             status: (page.status || 'draft') as 'draft' | 'published',
             order: page.order ?? undefined,
-            show_header: Boolean(page.show_header),
-            header_order: page.header_order ?? undefined,
-            show_dropdown: Boolean(page.show_dropdown),
-            dropdown_order: page.dropdown_order ?? undefined,
-            show_footer: Boolean(page.footer_column),
-            footer_column: (page.footer_column ?? '') as '' | 1 | 2 | 3,
+            show_footer: Boolean(page.show_footer),
             footer_order: page.footer_order ?? undefined,
         });
         setShowEdit(true);
@@ -142,14 +134,12 @@ export default function PagesNewAdminPage() {
             const showFooter = Boolean(values.show_footer);
             const payload = {
                 title: values.title,
+                title_bg: values.title_bg,
                 slug: values.slug,
                 status: values.status,
                 order: values.order,
-                show_header: values.show_header,
-                header_order: values.header_order,
-                show_dropdown: values.show_dropdown,
-                dropdown_order: values.dropdown_order,
-                footer_column: showFooter ? (values.footer_column === '' ? null : values.footer_column) : null,
+                show_footer: showFooter,
+                footer_column: showFooter ? 2 : null, // Default to column 2 as previously requested
                 footer_order: showFooter ? values.footer_order : null,
             };
 
@@ -218,12 +208,17 @@ export default function PagesNewAdminPage() {
             dataIndex: 'title',
             key: 'title',
             render: (value: string, record: PageRecord) => (
-                <Link
-                    href={`/admin/pages-new/${record.id}`}
-                    style={{ color: '#1890ff', textDecoration: 'underline' }}
-                >
-                    {value}
-                </Link>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Link
+                        href={`/admin/pages-new/${record.id}`}
+                        style={{ color: '#1890ff', textDecoration: 'underline' }}
+                    >
+                        {value}
+                    </Link>
+                    {record.title_bg ? (
+                        <span style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.6)' }}>{record.title_bg}</span>
+                    ) : null}
+                </div>
             ),
         },
         {
@@ -242,22 +237,10 @@ export default function PagesNewAdminPage() {
             ),
         },
         {
-            title: 'Header',
-            dataIndex: 'show_header',
-            key: 'show_header',
-            render: (value: boolean | null) => <Checkbox checked={Boolean(value)} disabled />,
-        },
-        {
-            title: 'Dropdown',
-            dataIndex: 'show_dropdown',
-            key: 'show_dropdown',
-            render: (value: boolean | null) => <Checkbox checked={Boolean(value)} disabled />,
-        },
-        {
             title: 'Footer',
-            dataIndex: 'footer_column',
-            key: 'footer_column',
-            render: (value: number | null) => <span>{value ?? '—'}</span>,
+            dataIndex: 'show_footer',
+            key: 'show_footer',
+            render: (value: boolean | null) => <Checkbox checked={Boolean(value)} disabled />,
         },
         {
             title: 'Updated',
@@ -316,16 +299,28 @@ export default function PagesNewAdminPage() {
                 confirmLoading={submitting}
                 onCancel={() => setShowCreate(false)}
                 onOk={() => createForm.submit()}
+                forceRender
             >
-                <Form layout="vertical" form={createForm} onFinish={handleCreate}>
-                    <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
+                <Form
+                    layout="vertical"
+                    form={createForm}
+                    onFinish={handleCreate}
+                    initialValues={{ show_footer: true }}
+                >
+                    <Form.Item name="title" label="Title (EN)" rules={[{ required: true, message: 'Title is required' }]}>
                         <Input placeholder="Title" />
+                    </Form.Item>
+                    <Form.Item name="title_bg" label="Title (BG)">
+                        <Input placeholder="Заглавие" />
                     </Form.Item>
                     <Form.Item name="slug" label="Slug" rules={[{ required: true, message: 'Slug is required' }]}>
                         <Input placeholder="slug-name" />
                     </Form.Item>
                     <Form.Item name="order" label="Order">
                         <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item name="show_footer" valuePropName="checked">
+                        <Checkbox>Show in Footer</Checkbox>
                     </Form.Item>
                 </Form>
             </Modal>
@@ -340,9 +335,17 @@ export default function PagesNewAdminPage() {
                 }}
                 onOk={() => editForm.submit()}
                 width={600}
+                forceRender
             >
-                <Form layout="vertical" form={editForm} onFinish={handleEdit}>
-                    <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+                <Form
+                    layout="vertical"
+                    form={editForm}
+                    onFinish={handleEdit}
+                >
+                    <Form.Item name="title" label="Title (EN)" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="title_bg" label="Title (BG)">
                         <Input />
                     </Form.Item>
                     <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
@@ -357,83 +360,23 @@ export default function PagesNewAdminPage() {
 
                     <h3 style={{ marginTop: 24, marginBottom: 16 }}>Navigation Settings</h3>
 
-                    <Form.Item name="show_header" valuePropName="checked">
-                        <Checkbox>Show in Header</Checkbox>
-                    </Form.Item>
-                    <Form.Item
-                        noStyle
-                        shouldUpdate={(prev, curr) => prev.show_header !== curr.show_header}
-                    >
-                        {({ getFieldValue }) =>
-                            getFieldValue('show_header') ? (
-                                <Form.Item
-                                    name="header_order"
-                                    label="Header Order"
-                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
-                                >
-                                    <InputNumber min={1} style={{ width: '100%' }} />
-                                </Form.Item>
-                            ) : null
-                        }
-                    </Form.Item>
-
-                    <Form.Item name="show_dropdown" valuePropName="checked">
-                        <Checkbox>Show in Dropdown</Checkbox>
-                    </Form.Item>
-                    <Form.Item
-                        noStyle
-                        shouldUpdate={(prev, curr) => prev.show_dropdown !== curr.show_dropdown}
-                    >
-                        {({ getFieldValue }) =>
-                            getFieldValue('show_dropdown') ? (
-                                <Form.Item
-                                    name="dropdown_order"
-                                    label="Dropdown Order"
-                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
-                                >
-                                    <InputNumber min={1} style={{ width: '100%' }} />
-                                </Form.Item>
-                            ) : null
-                        }
-                    </Form.Item>
-
                     <Form.Item name="show_footer" valuePropName="checked">
                         <Checkbox>Show in Footer</Checkbox>
                     </Form.Item>
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prev, curr) => prev.show_footer !== curr.show_footer || prev.footer_column !== curr.footer_column}
+                        shouldUpdate={(prev, curr) => prev.show_footer !== curr.show_footer}
                     >
-                        {({ getFieldValue, setFieldValue }) => {
-                            const showFooter = getFieldValue('show_footer');
-                            if (!showFooter) {
-                                if (getFieldValue('footer_column')) {
-                                    setFieldValue('footer_column', '');
-                                }
-                                if (getFieldValue('footer_order')) {
-                                    setFieldValue('footer_order', undefined);
-                                }
-                                return null;
-                            }
-
-                            if (!getFieldValue('footer_column')) {
-                                setFieldValue('footer_column', 1);
-                            }
-
-                            return (
-                                <>
-                                    <Form.Item name="footer_column" label="Footer Column" rules={[{ required: true }]}>
-                                        <Select<number | ''> options={footerOptions} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        name="footer_order"
-                                        label="Footer Order"
-                                        rules={[{ required: true }, { type: 'number', min: 1 }]}
-                                    >
-                                        <InputNumber min={1} style={{ width: '100%' }} />
-                                    </Form.Item>
-                                </>
-                            );
+                        {({ getFieldValue }) => {
+                            return getFieldValue('show_footer') ? (
+                                <Form.Item
+                                    name="footer_order"
+                                    label="Footer Order"
+                                    rules={[{ required: true }, { type: 'number', min: 1 }]}
+                                >
+                                    <InputNumber min={1} style={{ width: '100%' }} />
+                                </Form.Item>
+                            ) : null;
                         }}
                     </Form.Item>
                 </Form>

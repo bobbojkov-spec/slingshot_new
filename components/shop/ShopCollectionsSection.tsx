@@ -146,7 +146,7 @@ export function ShopCollectionsSection({ title, collections, getCollectionHref }
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h3 className="text-lg md:text-xl font-display font-bold text-white/90 mb-8 tracking-wide uppercase">
+                <h3 className="text-lg md:text-xl font-heading font-semibold text-white/90 mb-8 tracking-wide uppercase">
                     {title}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-5">

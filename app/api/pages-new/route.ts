@@ -4,6 +4,7 @@ import { query } from '@/lib/db';
 const PAGE_COLUMNS = [
     'id',
     'title',
+    'title_bg',
     'slug',
     'status',
     'show_header',
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
     try {
         const payload = await request.json();
         const title = typeof payload?.title === 'string' ? payload.title.trim() : '';
+        const titleBg = typeof payload?.title_bg === 'string' ? payload.title_bg.trim() : '';
         const slug = typeof payload?.slug === 'string' ? payload.slug.trim() : '';
 
         if (!title) {
@@ -89,11 +91,11 @@ export async function POST(request: NextRequest) {
 
         const { rows } = await query(
             `
-      INSERT INTO pages (title, slug, "order")
-      VALUES ($1, $2, $3)
+      INSERT INTO pages (title, title_bg, slug, "order")
+      VALUES ($1, $2, $3, $4)
       RETURNING ${PAGE_COLUMNS.join(', ')}
     `,
-            [title, slug, nextOrderValue]
+            [title, titleBg || null, slug, nextOrderValue]
         );
 
         return NextResponse.json({

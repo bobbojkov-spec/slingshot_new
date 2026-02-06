@@ -21,6 +21,7 @@ interface CategoryCardProps {
 
 // 3D Parallax Card Component
 function CategoryCard({ collection, index }: CategoryCardProps) {
+    const { language } = useLanguage();
     const cardRef = useRef<HTMLAnchorElement>(null);
     const [transform, setTransform] = useState("rotateX(0deg) rotateY(0deg)");
     const [isHovered, setIsHovered] = useState(false);
@@ -71,6 +72,7 @@ function CategoryCard({ collection, index }: CategoryCardProps) {
                 <img
                     src={collection.image_url}
                     alt={`${collection.title} Collection`}
+                    loading="lazy"
                     className="category-image"
                 />
             ) : (
@@ -114,8 +116,8 @@ function CategoryCard({ collection, index }: CategoryCardProps) {
                 </div>
 
                 {/* Arrow Reveal */}
-                <div className="category-arrow text-signal-orange font-display text-sm uppercase tracking-wider font-semibold">
-                    <span>Explore</span>
+                <div className="category-arrow text-signal-orange font-body text-sm uppercase tracking-wider font-semibold">
+                    <span>{language === "bg" ? "Разгледай" : "Explore"}</span>
                     <ArrowRight className="w-4 h-4" />
                 </div>
             </div>
@@ -233,10 +235,10 @@ export default function ShopByCategories() {
                     className={`text-center mb-14 lg:mb-20 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                         }`}
                 >
-                    <span className="categories-section-subtitle text-signal-orange block mb-4">
+                    <span className="text-sm md:text-base font-hero font-medium uppercase tracking-wider text-signal-orange block mb-3">
                         {t("shopByCategories.browseLabel")}
                     </span>
-                    <h2 className="categories-section-title text-4xl md:text-5xl lg:text-6xl">
+                    <h2 className="h2 font-hero text-white uppercase">
                         {t("shopByCategories.title")}
                     </h2>
 

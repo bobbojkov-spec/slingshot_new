@@ -43,7 +43,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default', backgroundIm
             <div className="relative bg-primary pt-16 pb-16">
                 <div className="section-container">
                     <div className="max-w-4xl">
-                        <h1 className="h1 font-logo font-bold text-white mb-6 uppercase tracking-tight">
+                        <h1 className="h1 font-hero font-bold text-white mb-6 uppercase tracking-tight">
                             Shop / <span className="text-accent">{title}</span>
                         </h1>
                     </div>
@@ -68,7 +68,7 @@ export function ShopHero({ title, breadcrumbs, variant = 'default', backgroundIm
             <div className="absolute inset-0 bg-primary/40" />
 
             <div className="relative z-10 text-center text-white px-4 section-container">
-                <h1 className="h1 font-bold uppercase tracking-tighter mb-4 shadow-sm">
+                <h1 className="h1 font-hero font-bold uppercase tracking-tighter mb-4 shadow-sm">
                     Shop / <span className="text-accent">{title}</span>
                 </h1>
             </div>

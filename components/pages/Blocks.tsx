@@ -168,7 +168,7 @@ export const FeaturedProductsBlock: React.FC<BlockProps> = ({ data }) => {
                                     {product.title}
                                 </h3>
                                 {product.price && (
-                                    <p className="text-accent mt-1">${product.price}</p>
+                                    <p className="text-accent mt-1">€{Math.round(Number(product.price) || 0).toLocaleString('de-DE')}</p>
                                 )}
                             </div>
                         </Link>

@@ -233,16 +233,6 @@ const Header = () => {
                   </span>
                 </div>
 
-                {/* Custom Pages */}
-                {navigation?.customPages?.filter(p => p.show_header).sort((a, b) => (a.header_order || 0) - (b.header_order || 0)).map(page => (
-                  <Link
-                    key={page.id}
-                    href={`/p/${page.slug}`}
-                    className="nav-link-white h-full flex items-center px-4 uppercase tracking-wide font-bold text-sm transition-all duration-200 hover:bg-white/5 whitespace-nowrap"
-                  >
-                    {page.title}
-                  </Link>
-                ))}
               </nav>
             </div>
           </div>
@@ -421,20 +411,20 @@ const Header = () => {
 
               {/* LIVE SUGGESTIONS DROPDOWN */}
               {(suggestions.products.length > 0 || suggestions.collections.length > 0 || (suggestions.tags && suggestions.tags.length > 0)) && (
-                <div className="mt-4 w-full bg-white/90 backdrop-blur-md rounded shadow-2xl py-6 z-50 text-black overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-dropdown-height overflow-y-auto border border-gray-200">
+                <div className="mt-4 w-full bg-deep-navy/95 backdrop-blur-xl rounded shadow-2xl py-6 z-50 text-white overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 max-dropdown-height overflow-y-auto border border-white/10">
                   <div className="flex flex-col gap-8">
 
                     {/* TAGS */}
                     {suggestions.tags && suggestions.tags.length > 0 && (
                       <div className="px-6">
-                        <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.suggestions")}</h4>
+                        <h4 className="text-2xs font-bold text-white/40 uppercase tracking-xxl mb-4">{t("search.suggestions")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.name}
                               href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
                               onClick={() => setIsSearchOpen(false)}
-                              className="px-4 py-2 bg-gray-100 hover:bg-accent hover:text-white rounded-full text-base font-bold text-gray-900 transition-all border-2 border-gray-200 shadow-md hover:scale-105 active:scale-95"
+                              className="px-4 py-2 bg-white/10 hover:bg-accent hover:text-white rounded-full text-base font-bold text-white/90 transition-all border border-white/15 hover:scale-105 active:scale-95"
                             >
                               {tag.name}
                             </Link>
@@ -447,7 +437,7 @@ const Header = () => {
                       {/* COLLECTIONS */}
                       {suggestions.collections.length > 0 && (
                         <div>
-                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.collections")}</h4>
+                          <h4 className="text-2xs font-bold text-white/40 uppercase tracking-xxl mb-4">{t("search.collections")}</h4>
                           <div className="space-y-1">
                             {suggestions.collections.map((col: any) => (
                               <Link
@@ -456,7 +446,7 @@ const Header = () => {
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center group py-2"
                               >
-                                <span className="text-sm font-medium text-gray-800 group-hover:text-accent transition-colors underline-offset-4 group-hover:underline">
+                                <span className="text-sm font-medium text-white/70 group-hover:text-accent transition-colors underline-offset-4 group-hover:underline">
                                   {col.title}
                                 </span>
                               </Link>
@@ -468,7 +458,7 @@ const Header = () => {
                       {/* PRODUCTS */}
                       {suggestions.products.length > 0 && (
                         <div>
-                          <h4 className="text-2xs font-bold text-gray-400 uppercase tracking-xxl mb-4">{t("search.products")}</h4>
+                          <h4 className="text-2xs font-bold text-white/40 uppercase tracking-xxl mb-4">{t("search.products")}</h4>
                           <div className="space-y-4">
                             {suggestions.products.map((prod: any) => (
                               <Link
@@ -477,19 +467,19 @@ const Header = () => {
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center gap-4 group"
                               >
-                                <div className="w-12 h-12 rounded bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-200 p-2">
+                                <div className="w-12 h-12 rounded bg-white/10 overflow-hidden flex-shrink-0 border border-white/10 p-2">
                                   <img
                                     src={prod.image || '/placeholder.jpg'}
                                     alt={`${prod.name} - Slingshot Bulgaria Gear`}
-                                    className="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-110"
+                                    className="w-full h-full object-contain transition-transform group-hover:scale-110"
                                   />
                                 </div>
                                 <div className="flex flex-col min-w-0">
-                                  <span className="text-sm font-bold text-gray-900 truncate group-hover:text-accent transition-colors leading-tight">
+                                  <span className="text-sm font-bold text-white/90 truncate group-hover:text-accent transition-colors leading-tight">
                                     {prod.name}
                                   </span>
                                   {prod.sku && (
-                                    <span className="text-2xs text-gray-400 font-mono mt-0.5">
+                                    <span className="text-2xs text-white/30 font-mono mt-0.5">
                                       {prod.sku}
                                     </span>
                                   )}
@@ -502,7 +492,7 @@ const Header = () => {
                     </div>
 
                     {/* View full results link if matching results exist */}
-                    <div className="border-t border-gray-100 pt-4 px-6 flex justify-center">
+                    <div className="border-t border-white/10 pt-4 px-6 flex justify-center">
                       <Link
                         href={`/search?q=${encodeURIComponent(searchQuery)}&lang=${language}`}
                         onClick={() => setIsSearchOpen(false)}

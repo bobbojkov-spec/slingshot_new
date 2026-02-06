@@ -461,5 +461,475 @@ export default function NewsPage() {
         await updateArticleOrders(newArticles);
     };
 
-    // COLUMNS_AND_RENDER_HERE
+    const columns: ColumnsType<NewsArticle> = useMemo(() => [
+        {
+            title: 'Order',
+            dataIndex: 'order',
+            key: 'order',
+            width: 70,
+            render: (_: number, record: NewsArticle) => {
+                const articleIndex = articles.findIndex(a => a.id === record.id);
+                return (
+                    <div
+                        draggable
+                        onDragStart={() => setDraggedArticleIndex(articleIndex)}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            e.currentTarget.style.opacity = '0.5';
+                        }}
+                        onDragLeave={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                        }}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            e.currentTarget.style.opacity = '1';
+                            if (draggedArticleIndex !== null && draggedArticleIndex !== articleIndex) {
+                                const newArticles = [...articles];
+                                const dragged = newArticles[draggedArticleIndex];
+                                newArticles.splice(draggedArticleIndex, 1);
+                                newArticles.splice(articleIndex, 0, dragged);
+                                updateArticleOrders(newArticles);
+                            }
+                            setDraggedArticleIndex(null);
+                        }}
+                        style={{
+                            cursor: 'move',
+                            padding: '4px 8px',
+                            borderRadius: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                        }}
+                    >
+                        <DragOutlined style={{ color: '#999' }} />
+                        <Space size="small">
+                            <Button
+                                type="text"
+                                icon={<ArrowUpOutlined />}
+                                size="small"
+                                disabled={articleIndex === 0}
+                                onClick={() => handleMoveOrder(record.id, 'up')}
+                                title="Move up"
+                            />
+                            <span>{articleIndex + 1}</span>
+                            <Button
+                                type="text"
+                                icon={<ArrowDownOutlined />}
+                                size="small"
+                                disabled={articleIndex === articles.length - 1}
+                                onClick={() => handleMoveOrder(record.id, 'down')}
+                                title="Move down"
+                            />
+                        </Space>
+                    </div>
+                );
+            },
+        },
+        {
+            title: 'Image',
+            dataIndex: 'featuredImage',
+            key: 'image',
+            width: 80,
+            render: (image: string) => (
+                <AntImage
+                    src={image || PLACEHOLDER_IMAGE}
+                    alt="News"
+                    width={60}
+                    height={40}
+                    style={{ objectFit: 'cover', borderRadius: 4 }}
+                    fallback={PLACEHOLDER_IMAGE}
+                />
+            ),
+        },
+        {
+            title: 'Title',
+            dataIndex: 'title',
+            key: 'title',
+            ellipsis: { showTitle: false },
+            render: (text: string) => (
+                <Tooltip title={text}>
+                    <span>{text}</span>
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Status',
+            dataIndex: 'publishStatus',
+            key: 'publishStatus',
+            width: 120,
+            render: (status: string) => (
+                <Tag color={status === 'published' ? 'green' : 'default'}>
+                    {(status || 'draft').toUpperCase()}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Active',
+            dataIndex: 'active',
+            key: 'active',
+            width: 80,
+            align: 'center',
+            render: (active: boolean) => (
+                <Tag color={active ? 'green' : 'red'}>
+                    {active ? 'Active' : 'Inactive'}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            width: 120,
+            fixed: 'right',
+            render: (_: any, record: NewsArticle) => (
+                <Space size="small">
+                    <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEdit(record.id)}
+                        size="small"
+                        title="Edit"
+                    />
+                    <Popconfirm
+                        title="Delete article"
+                        description="Are you sure you want to delete this article?"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                        okType="danger"
+                    >
+                        <Button
+                            type="text"
+                            danger
+                            icon={<DeleteOutlined />}
+                            size="small"
+                            title="Delete"
+                        />
+                    </Popconfirm>
+                </Space>
+            ),
+        },
+    ], [articles, draggedArticleIndex, handleEdit, handleDelete, handleMoveOrder, updateArticleOrders]);
+
+    return (
+        <div>
+            <Card>
+                <Row gutter={16} style={{ marginBottom: 16 }}>
+                    <Col>
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={handleAdd}
+                        >
+                            Add Article
+                        </Button>
+                    </Col>
+                </Row>
+
+                <div style={{ width: '100%' }}>
+                    <Table
+                        columns={columns}
+                        dataSource={articles}
+                        rowKey="id"
+                        loading={loading}
+                        pagination={false}
+                        scroll={{
+                            y: isMobile ? 400 : undefined,
+                        }}
+                        size={isMobile ? 'small' : 'middle'}
+                    />
+                </div>
+            </Card>
+
+            <Modal
+                title={editingArticle ? `Edit Article: ${editingArticle.title}` : 'Add Article'}
+                open={editVisible}
+                onCancel={() => {
+                    form.resetFields();
+                    setEditVisible(false);
+                    setEditingArticle(null);
+                }}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => {
+                            form.resetFields();
+                            setEditVisible(false);
+                            setEditingArticle(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="save"
+                        type="primary"
+                        loading={saving}
+                        onClick={handleSave}
+                    >
+                        {editingArticle ? 'Update' : 'Create'}
+                    </Button>,
+                ]}
+                width={isMobile ? '95%' : isTablet ? '90%' : 900}
+                zIndex={1001}
+                style={{ top: isMobile ? 20 : undefined }}
+                centered={!isMobile}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    initialValues={{
+                        active: true,
+                        publishStatus: 'draft',
+                    }}
+                >
+                    <Form.Item
+                        label="Title"
+                        name="title"
+                        rules={[{ required: true, message: 'Please enter title' }]}
+                    >
+                        <Input placeholder="Article title" />
+                    </Form.Item>
+
+                    <Form.Item label="Slug" name="slug">
+                        <Input placeholder="auto-generated if empty" />
+                    </Form.Item>
+
+                    <Form.Item label="Subtitle" name="subtitle">
+                        <Input placeholder="Optional subtitle" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Featured Image"
+                        name="featuredImage"
+                        rules={[{ required: true, message: 'Please upload an image' }]}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <Space style={{ marginBottom: 16 }}>
+                                <Switch
+                                    checked={enableCrop}
+                                    onChange={setEnableCrop}
+                                    checkedChildren="Crop"
+                                    unCheckedChildren="No Crop"
+                                />
+                                {enableCrop && (
+                                    <Select
+                                        value={aspectRatio}
+                                        onChange={(value) => setAspectRatio(value)}
+                                        placeholder="Aspect Ratio (Free if empty)"
+                                        style={{ width: 150 }}
+                                        allowClear
+                                    >
+                                        <Select.Option value={1}>1:1 (Square)</Select.Option>
+                                        <Select.Option value={4 / 3}>4:3</Select.Option>
+                                        <Select.Option value={16 / 9}>16:9</Select.Option>
+                                        <Select.Option value={3 / 4}>3:4 (Portrait)</Select.Option>
+                                        <Select.Option value={9 / 16}>9:16 (Vertical)</Select.Option>
+                                    </Select>
+                                )}
+                                <Button
+                                    type="primary"
+                                    icon={<UploadOutlined />}
+                                    onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = 'image/*';
+                                        input.onchange = async (e) => {
+                                            const file = (e.target as HTMLInputElement).files?.[0];
+                                            if (file) {
+                                                if (enableCrop) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = () => {
+                                                        setImageToCrop(reader.result as string);
+                                                        setOriginalFile(file);
+                                                        setCropVisible(true);
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                    return;
+                                                }
+
+                                                try {
+                                                    message.loading({ content: 'Uploading image...', key: 'upload' });
+                                                    const formData = new FormData();
+                                                    formData.append('file', file);
+                                                    const response = await fetch('/api/media', {
+                                                        method: 'POST',
+                                                        body: formData,
+                                                    });
+                                                    const result = await response.json();
+                                                    if (result.data && result.data.url) {
+                                                        form.setFieldsValue({ featuredImage: result.data.url });
+                                                        message.success({ content: 'Image uploaded successfully', key: 'upload' });
+                                                    } else {
+                                                        message.error({ content: result.error || 'Failed to upload image', key: 'upload' });
+                                                    }
+                                                } catch (error) {
+                                                    message.error({ content: 'Failed to upload image', key: 'upload' });
+                                                    console.error('Upload error:', error);
+                                                }
+                                            }
+                                        };
+                                        input.click();
+                                    }}
+                                >
+                                    Upload
+                                </Button>
+                                <Button
+                                    icon={<FolderOutlined />}
+                                    onClick={() => setMediaPickerVisible(true)}
+                                >
+                                    Select Media
+                                </Button>
+                            </Space>
+                            <Form.Item
+                                noStyle
+                                shouldUpdate={(prevValues, currentValues) => prevValues.featuredImage !== currentValues.featuredImage}
+                                style={{ marginTop: 12, width: '100%' }}
+                            >
+                                {({ getFieldValue }) => {
+                                    const featuredImage = getFieldValue('featuredImage');
+                                    return featuredImage ? (
+                                        <AntImage
+                                            src={featuredImage}
+                                            alt="Featured preview"
+                                            width={300}
+                                            height={200}
+                                            style={{ objectFit: 'cover', borderRadius: 4, marginTop: 8 }}
+                                            fallback={PLACEHOLDER_IMAGE}
+                                        />
+                                    ) : null;
+                                }}
+                            </Form.Item>
+                        </div>
+                    </Form.Item>
+
+                    <Form.Item label="Excerpt" name="excerpt">
+                        <TextArea rows={3} placeholder="Short excerpt" />
+                    </Form.Item>
+
+                    <Form.Item label="Content" name="content">
+                        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.content !== currentValues.content}>
+                            {({ getFieldValue, setFieldValue }) => (
+                                <TiptapEditor
+                                    value={getFieldValue('content') || ''}
+                                    onChange={(val) => setFieldValue('content', val)}
+                                />
+                            )}
+                        </Form.Item>
+                    </Form.Item>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="CTA Text" name="ctaText">
+                                <Input placeholder="Button text" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="CTA Link" name="ctaLink">
+                                <Input placeholder="https://..." />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="Active" name="active" valuePropName="checked">
+                                <Switch />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Author" name="author">
+                                <Input placeholder="Author name" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Form.Item label="Publish Status" name="publishStatus">
+                        <Select
+                            options={[
+                                { label: 'Draft', value: 'draft' },
+                                { label: 'Published', value: 'published' },
+                            ]}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <MediaPicker
+                open={mediaPickerVisible}
+                onCancel={() => setMediaPickerVisible(false)}
+                onSelect={handleMediaSelect}
+                title="Select Featured Image"
+            />
+
+            <Modal
+                title="Crop Image"
+                open={cropVisible}
+                onCancel={() => {
+                    setCropVisible(false);
+                    setImageToCrop(null);
+                    setOriginalFile(null);
+                    setCroppedAreaPixels(null);
+                    setCrop({ x: 0, y: 0 });
+                    setZoom(1);
+                }}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => {
+                            setCropVisible(false);
+                            setImageToCrop(null);
+                            setOriginalFile(null);
+                            setCroppedAreaPixels(null);
+                            setCrop({ x: 0, y: 0 });
+                            setZoom(1);
+                        }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button
+                        type="primary"
+                        loading={uploadingImage}
+                        onClick={handleCropAndUpload}
+                    >
+                        Crop & Upload
+                    </Button>,
+                ]}
+                width={isMobile ? '95%' : isTablet ? '90%' : 800}
+                zIndex={1002}
+                style={{ top: isMobile ? 20 : undefined }}
+                centered={!isMobile}
+            >
+                {imageToCrop && (
+                    <div style={{ position: 'relative', width: '100%', height: 400, background: '#000' }}>
+                        <Cropper
+                            image={imageToCrop}
+                            crop={crop}
+                            zoom={zoom}
+                            aspect={aspectRatio}
+                            onCropChange={setCrop}
+                            onZoomChange={setZoom}
+                            onCropComplete={onCropComplete}
+                            style={{
+                                containerStyle: {
+                                    width: '100%',
+                                    height: '100%',
+                                    position: 'relative',
+                                },
+                            }}
+                        />
+                    </div>
+                )}
+                <div style={{ marginTop: 16 }}>
+                    <label>Zoom: </label>
+                    <Slider
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        value={zoom}
+                        onChange={setZoom}
+                        style={{ width: '100%', marginTop: 8 }}
+                    />
+                </div>
+            </Modal>
+        </div>
+    );
 }

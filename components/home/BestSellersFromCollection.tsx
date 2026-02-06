@@ -126,9 +126,9 @@ export default function BestSellersFromCollection() {
                     </div>
                     <Link
                         href="/collections/best-sellers"
-                        className="group inline-flex items-center gap-2 px-6 py-3 border-2 border-foreground/20 rounded-full text-foreground font-semibold hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-300"
+                        className="group inline-flex items-center gap-2 px-6 py-3 border-2 border-foreground/20 rounded-full text-foreground font-semibold hover:border-foreground hover:bg-foreground hover:text-white transition-all duration-200"
                     >
-                        <span>{t("bestSellers.viewAll")}</span>
+                        <span>{t("bestSellers.viewAll") || (language === "bg" ? "Виж всички" : "View all")}</span>
                         <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                     </Link>
                 </div>
@@ -142,7 +142,7 @@ export default function BestSellersFromCollection() {
 
                 <div className="mt-8 text-center sm:hidden">
                     <Link href="/collections/best-sellers" className="btn-outline">
-                        {t("bestSellers.viewAllProducts")}
+                        {t("bestSellers.viewAllProducts") || (language === "bg" ? "Виж всички продукти" : "View all products")}
                     </Link>
                 </div>
             </div>

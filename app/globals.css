@@ -307,9 +307,7 @@
   }
 
   .product-card-title {
-    @apply text-base md:text-lg text-foreground leading-tight line-clamp-2 transition-colors duration-200 flex-1;
-    font-family: 'Inter Tight', sans-serif;
-    font-weight: 600;
+    @apply font-heading text-base md:text-lg text-foreground leading-tight line-clamp-2 transition-colors duration-200 flex-1;
   }
 
   .product-card:hover .product-card-title {
@@ -510,7 +508,7 @@
 
   /* Text Styles */
   .text-hero {
-    @apply font-heading font-bold uppercase tracking-tight;
+    @apply font-hero font-bold uppercase tracking-tight;
     font-size: clamp(2.5rem, 6vw, 5rem);
     line-height: 1.2;
   }
@@ -521,7 +519,7 @@
   }
 
   .text-section-title {
-    @apply font-heading font-semibold uppercase tracking-wider text-sm text-muted-foreground;
+    @apply font-body font-semibold uppercase tracking-wider text-sm text-muted-foreground;
   }
 
   /* Spacing Harmony */
@@ -755,32 +753,28 @@
 }
 
 /* Section Typography */
-.categories-section-title {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+  .categories-section-title {
+    @apply font-display uppercase tracking-wide;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-.categories-section-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
+  .categories-section-subtitle {
+    @apply font-body uppercase;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+  }
 
-/* Category Card Content */
-.category-card-title {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  line-height: 1.1;
-}
+  /* Category Card Content */
+  .category-card-title {
+    @apply font-display uppercase;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
 
 /* Keyframes for glow pulse */
 @keyframes glow-pulse {
@@ -884,14 +878,13 @@
   animation: shine-sweep 0.8s ease-out;
 }
 
-/* Collection Card Title */
-.collection-card-title {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  line-height: 1.1;
-}
+  /* Collection Card Title */
+  .collection-card-title {
+    @apply font-display uppercase;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
 
 /* Collection Underline */
 .collection-underline {

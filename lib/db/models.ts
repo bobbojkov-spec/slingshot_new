@@ -139,15 +139,27 @@ export interface PageSection {
 export interface Page {
     id: number;
     title: string;
+    title_bg?: string;
     slug: string;
     status: 'draft' | 'published' | 'archived';
     seo_title: string | null;
     seo_description: string | null;
+    seo_keywords?: string | null;
+    og_title?: string | null;
+    og_description?: string | null;
+    canonical_url?: string | null;
     created_at: Date;
     updated_at: Date;
     show_header?: boolean;
     show_dropdown?: boolean;
-    footer_column?: number | null;
+    show_footer?: boolean;
+    footer_column?: number | null; // Kept for legacy or specific ordering if needed, but UI will use show_footer
+    content?: string | null;
+    content_bg?: string | null;
+    hero_image_url?: string | null;
+    hero_video_url?: string | null;
+    subtitle_en?: string | null;
+    subtitle_bg?: string | null;
 }
 
 export interface PageBlock {
@@ -253,4 +265,16 @@ export interface MenuGroupCollection {
     collection_id: string;
     sort_order: number;
     created_at: Date;
+}
+
+export interface FaqItem {
+    id: number;
+    question_en: string;
+    question_bg?: string;
+    answer_en: string;
+    answer_bg?: string;
+    sort_order: number;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
 }

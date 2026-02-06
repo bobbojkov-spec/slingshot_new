@@ -85,7 +85,7 @@ export default function ShopByKeywords() {
                 </div>
 
                 {/* Keywords Grid - Desktop: 3 rows of ~7, Mobile: 6 rows */}
-                <div className="flex flex-wrap justify-center gap-4 lg:gap-4">
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4">
                     {displayKeywords.map((keyword) => {
                         const displayName = language === "bg" && keyword.name_bg
                             ? keyword.name_bg

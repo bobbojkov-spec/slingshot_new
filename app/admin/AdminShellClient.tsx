@@ -14,6 +14,7 @@ import {
   TeamOutlined,
   BgColorsOutlined,
   GlobalOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, Space, Typography } from "antd";
 import Link from "next/link";
@@ -55,8 +56,8 @@ const ADMIN_MENU: AdminMenuNode[] = [
   },
 
   { key: "inquiries", icon: <ShoppingCartOutlined />, labelText: "Inquiries", href: "/admin/inquiries" },
-
   { key: "pages-new", icon: <FileProtectOutlined />, labelText: "Pages", href: "/admin/pages-new" },
+  { key: "faq", icon: <QuestionCircleOutlined />, labelText: "FAQ Module", href: "/admin/faq" },
   {
     key: "users",
     icon: <TeamOutlined />,

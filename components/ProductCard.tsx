@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface Product {
   id: string;
@@ -25,6 +26,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const { addItem } = useCart();
+  const { language } = useLanguage();
   const [isHovered, setIsHovered] = useState(false);
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -75,6 +77,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <img
                 src={product.image}
                 alt={`${product.name} - ${product.category}`}
+                loading="lazy"
                 className={`product-card-image ${hasSecondaryImage ? (isHovered ? 'opacity-0' : 'opacity-100') : ''}`}
               />
               {/* Secondary Image (shown on hover) */}
@@ -82,13 +85,14 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
                 <img
                   src={product.secondaryImage}
                   alt={`${product.name} - ${product.category} alternate view`}
+                  loading="lazy"
                   className={`product-card-image product-card-image-secondary ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                 />
               )}
             </>
           ) : (
             <div className="product-card-image-placeholder">
-              <span>No Image</span>
+              <span>{language === "bg" ? "Няма снимка" : "No Image"}</span>
             </div>
           )}
 

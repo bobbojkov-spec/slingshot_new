@@ -37,8 +37,8 @@ const CategoryGrid = () => {
     <section className="section-padding bg-background">
       <div className="section-container">
         <div className="text-center mb-12">
-          <span className="text-section-title block mb-4">{t("categories.browseLabel")}</span>
-          <h2 className="h2 text-foreground">{t("categories.sectionTitle")}</h2>
+          <span className="text-sm md:text-base font-hero font-medium uppercase tracking-wider text-muted-foreground block mb-3">{t("categories.browseLabel")}</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-hero font-semibold text-foreground uppercase tracking-tight">{t("categories.sectionTitle")}</h2>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">

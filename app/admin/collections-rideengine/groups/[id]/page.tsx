@@ -22,7 +22,13 @@ async function getData(groupId: string, source: string) {
 
     // 3. Get ALL Collections for this source (Available)
     const allRes = await query(
-        'SELECT id, title, slug, source FROM collections WHERE source = $1 ORDER BY title ASC',
+        `SELECT c.id, c.title, c.slug, c.source 
+         FROM collections c 
+         JOIN collection_products cp ON c.id = cp.collection_id 
+         WHERE c.source = $1 
+         GROUP BY c.id 
+         HAVING COUNT(cp.product_id) > 0 
+         ORDER BY c.title ASC`,
         [source]
     );
 

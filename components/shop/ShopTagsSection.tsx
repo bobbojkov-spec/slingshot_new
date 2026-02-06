@@ -52,7 +52,7 @@ export function ShopTagsSection({ title, keywords, getKeywordHref }: ShopTagsSec
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-                <h3 className="text-lg md:text-xl font-display font-bold text-white/90 mb-6 tracking-wide uppercase">
+                <h3 className="text-lg md:text-xl font-heading font-semibold text-white/90 mb-6 tracking-wide uppercase">
                     {title}
                 </h3>
                 <div className="flex flex-wrap gap-3">

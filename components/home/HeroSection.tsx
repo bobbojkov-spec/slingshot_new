@@ -23,16 +23,16 @@ const HeroSection = () => {
 
       <div className="relative z-10 section-container">
         <div className="max-w-2xl animate-fade-in-up">
-          <span className="text-section-title text-accent mb-4 block">
+          <span className="text-section-title text-white mb-4 block">
             {t("hero.badge")}
           </span>
-          <h1 className="h1 text-white mb-6 uppercase">
+          <h1 className="h1 font-hero text-white mb-6 uppercase">
             {t("hero.title.line1")}
             <br />
             <span className="text-accent">{t("hero.title.accent")}</span>
           </h1>
           <p className="text-subhero text-white/80 mb-8 max-w-lg">{t("hero.description")}</p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Link href="/slingshot-collections" className="btn-primary group">
               {t("hero.cta.s-collection")}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />

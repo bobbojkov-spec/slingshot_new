@@ -61,11 +61,11 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
                 <div className="relative z-20 h-full flex items-center">
                     <div className="section-container text-white">
                         <div className="max-w-4xl">
-                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-logo font-bold uppercase tracking-tighter mb-6">
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-hero font-bold uppercase tracking-tighter mb-6">
                                 {title}
                             </h1>
                             {subtitle && (
-                                <p className="text-xl md:text-2xl text-white/90 font-medium max-w-2xl leading-relaxed">
+                                <p className="text-xl md:text-2xl text-white/90 font-body font-medium max-w-2xl leading-relaxed">
                                     {subtitle}
                                 </p>
                             )}
@@ -93,11 +93,11 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
                 <div className="relative z-20 h-full flex items-center">
                     <div className="section-container text-white">
                         <div className="max-w-4xl">
-                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-logo font-bold uppercase tracking-tighter mb-6">
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-hero font-bold uppercase tracking-tighter mb-6">
                                 {title}
                             </h1>
                             {subtitle && (
-                                <p className="text-xl md:text-2xl text-white/90 font-medium max-w-2xl leading-relaxed">
+                                <p className="text-xl md:text-2xl text-white/90 font-body font-medium max-w-2xl leading-relaxed">
                                     {subtitle}
                                 </p>
                             )}
@@ -114,11 +114,11 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
         <div className="relative hero-shadow bg-deep-navy pt-32 pb-16">
             <div className="section-container">
                 <div className="max-w-4xl">
-                    <h1 className="text-4xl md:text-5xl font-logo font-bold text-white mb-6 uppercase tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-hero font-bold text-white mb-6 uppercase tracking-tight">
                         {title}
                     </h1>
                     {subtitle && (
-                        <p className="text-lg md:text-xl text-white/70 max-w-2xl">
+                        <p className="text-lg md:text-xl text-white/70 max-w-2xl font-body">
                             {subtitle}
                         </p>
                     )}

@@ -112,6 +112,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
   // Handles: "14 / Green", "XS- black", "7 Meter", "XS -green"
   const parseVariantTitle = (title: string) => {
     if (!title) return '';
+    if (title.toLowerCase() === 'default title') return 'DEFAULT';
     // Match size at start: numbers (5, 5.5, 7, 12) OR standard sizes (XS, S, M, L, XL, XXL)
     const match = title.match(/^(\d+(?:\.\d+)?|XXL|XL|L|M|S|XS)\s*(?:[\/\-\s]+)?/i);
     return match ? match[1].toUpperCase() : title;
@@ -427,12 +428,12 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           {/* Details */}
           <div className="flex flex-col animate-fade-in" style={{ animationDelay: "100ms" }}>
             <span className="text-xs md:text-sm font-bold tracking-xxl text-accent mb-2 md:mb-2 uppercase">{product.category_name}</span>
-            <h1 className="font-heading text-3xl md:text-5xl font-bold uppercase tracking-tighter mb-2 md:mb-2">
+            <h1 className="font-hero text-3xl md:text-5xl font-bold uppercase tracking-tighter mb-2 md:mb-2">
               {language === 'bg' ? (product.name_bg || product.title || product.name) : (product.title || product.name)}
             </h1>
 
             {product.subtitle && (
-              <h3 className="h3 font-bold uppercase tracking-wide mb-2 text-black leading-tight">
+              <h3 className="h3 font-heading font-bold uppercase tracking-wide mb-2 text-black leading-tight">
                 {language === 'bg' ? (product.subtitle_bg || product.subtitle) : product.subtitle}
               </h3>
             )}
@@ -564,12 +565,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {/* Sizes/Variants */}
             {(product.variants && product.variants.length > 0) && (
-              <div className="mb-6 md:mb-8">
+              <div className={`mb-6 md:mb-8 ${sizeOptions.length === 1 && (sizeOptions[0].numericSize === 'DEFAULT' || sizeOptions[0].displayLabel.toLowerCase() === 'default title') ? 'hidden' : ''}`}>
                 <span className="font-bold text-xs uppercase tracking-wide text-gray-900 mb-4 block">{t("size")}</span>
                 <div className="flex gap-2 flex-wrap">
                   {(() => {
-                    const sizeOptions = getUniqueSizeOptions();
-
                     if (sizeOptions.length === 0) {
                       return <span className="text-sm text-gray-500 italic">{t("product.noSizesAvailable")}</span>;
                     }

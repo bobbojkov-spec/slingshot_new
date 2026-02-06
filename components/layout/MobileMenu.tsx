@@ -79,11 +79,14 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
 
                                     return (
                                         <div key={group.id}>
-                                            <div className="w-full flex items-center justify-between text-sm py-2 text-white/70 uppercase tracking-wider">
+                                            <button
+                                                onClick={() => toggleGroup(group.id)}
+                                                className="w-full flex items-center justify-between text-sm py-2 text-white/70 uppercase tracking-wider hover:text-white transition-colors active:scale-95"
+                                            >
                                                 {groupTitle}
                                                 {isGroupExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                            </div>
-                                            <div className={`pl-4 flex flex-col gap-2 mt-2 border-l border-white/10 ${isGroupExpanded ? 'block' : 'hidden'}`}>
+                                            </button>
+                                            <div className={`pl-4 flex flex-col gap-2 mt-2 border-l border-white/10 overflow-hidden transition-all duration-300 ${isGroupExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                                 {collections.map(col => (
                                                     <Link
                                                         key={col.id}
@@ -100,7 +103,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                 })}
                                 {sportGroups.length === 0 && (
                                     <Link href={`/category/${sport.slug}`} onClick={onClose} className="text-white/50 text-sm italic active:scale-95 active:bg-white/10">
-                                        View all {sport.name}
+                                        {language === "bg" ? `Виж всички ${sport.name}` : `View all ${sport.name}`}
                                     </Link>
                                 )}
                             </div>
@@ -143,19 +146,6 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                         })}
                     </div>
                 </div>
-
-                {/* Custom Pages */}
-                {navigation?.customPages?.filter((p: any) => p.show_header).sort((a: any, b: any) => (a.header_order || 0) - (b.header_order || 0)).map((page: any) => (
-                    <div key={page.id} className="border-b border-white/5 last:border-0 pb-2">
-                        <Link
-                            href={`/p/${page.slug}`}
-                            className="w-full block text-lg py-2 text-white font-bold uppercase tracking-wide hover:text-accent transition-colors active:scale-95 active:bg-white/10"
-                            onClick={onClose}
-                        >
-                            {page.title}
-                        </Link>
-                    </div>
-                ))}
 
                 {/* Language Selector */}
                 <div className="pt-4 mt-2 mb-safe text-left">
