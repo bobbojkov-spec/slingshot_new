@@ -28,6 +28,7 @@ export type InquiryRecord = {
   customer_message: string | null;
   status: string;
   created_at: string;
+  updated_at?: string;
 };
 
 const TABLE_SQL = `
@@ -38,6 +39,7 @@ const TABLE_SQL = `
     customer_phone TEXT NOT NULL,
     customer_message TEXT,
     status TEXT NOT NULL DEFAULT 'new',
+    is_archived BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   );
@@ -56,6 +58,8 @@ const TABLE_SQL = `
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   );
   CREATE INDEX IF NOT EXISTS inquiry_items_inquiry_id_idx ON inquiry_items(inquiry_id);
+  CREATE INDEX IF NOT EXISTS inquiries_status_idx ON inquiries(status);
+  CREATE INDEX IF NOT EXISTS inquiries_archived_idx ON inquiries(is_archived);
 `;
 
 export async function ensureInquiriesTables() {
@@ -106,16 +110,49 @@ export async function createInquiry(payload: InquiryInput): Promise<InquiryRecor
   return inquiry;
 }
 
-export async function listInquiries(limit = 50) {
+export async function listInquiries(limit = 50, includeArchived = false) {
   await ensureInquiriesTables();
   const { rows } = await query(
-    `SELECT id, customer_name, customer_email, customer_phone, customer_message, status, created_at
+    `SELECT id, customer_name, customer_email, customer_phone, customer_message, status, created_at, updated_at
      FROM inquiries
+     WHERE ($2::boolean IS TRUE OR is_archived = false)
      ORDER BY created_at DESC
      LIMIT $1`,
-    [limit]
+    [limit, includeArchived]
   );
   return rows as InquiryRecord[];
+}
+
+export async function getInquiry(inquiryId: string) {
+  const { rows } = await query(
+    `SELECT id, customer_name, customer_email, customer_phone, customer_message, status, created_at, updated_at, is_archived
+     FROM inquiries
+     WHERE id = $1`,
+    [inquiryId]
+  );
+  return rows[0] as InquiryRecord & { is_archived: boolean } | undefined;
+}
+
+export async function updateInquiryStatus(inquiryId: string, status: string) {
+  await query(
+    `UPDATE inquiries
+     SET status = $1, updated_at = now()
+     WHERE id = $2`,
+    [status, inquiryId]
+  );
+}
+
+export async function setInquiryArchived(inquiryId: string, isArchived: boolean) {
+  await query(
+    `UPDATE inquiries
+     SET is_archived = $1, updated_at = now()
+     WHERE id = $2`,
+    [isArchived, inquiryId]
+  );
+}
+
+export async function deleteInquiry(inquiryId: string) {
+  await query('DELETE FROM inquiries WHERE id = $1', [inquiryId]);
 }
 
 export async function getInquiryItems(inquiryId: string) {

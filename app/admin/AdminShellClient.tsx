@@ -241,7 +241,7 @@ export default function AdminShellClient({
           />
           <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <Typography.Text type="secondary" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
-              v 1.7.8
+              v 1.7.9
             </Typography.Text>
           </div>
         </div>
