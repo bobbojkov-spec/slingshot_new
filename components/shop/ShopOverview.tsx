@@ -195,7 +195,6 @@ export default function ShopOverview() {
                 viewAllText={t.viewAll}
                 columns={4}
                 className="space-y-6 pt-12"
-                wrapContainer={false}
             />
         </div>
     );
