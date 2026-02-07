@@ -1,5 +1,6 @@
 
 import { Metadata } from 'next';
+import { query } from "@/lib/db";
 import { ShopClient } from '@/components/shop/ShopClient';
 import { buildCanonicalUrl, resolveBaseUrl } from '@/lib/seo/url-server';
 import { buildHreflangLinks } from '@/lib/seo/hreflang';
@@ -59,14 +60,46 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       : `Shop official ${brandName} equipment. Kites, boards, foils, and accessories.`;
   }
 
+  let facetCollections: string[] = [];
+  let facetTags: string[] = [];
+
+  if (brand) {
+    try {
+      const facetQuery = `
+        SELECT
+          ARRAY_REMOVE(ARRAY_AGG(DISTINCT COALESCE(ct.title, col.title)), NULL) AS collections,
+          ARRAY_REMOVE(ARRAY_AGG(DISTINCT tg.name), NULL) AS tags
+        FROM products p
+        JOIN collection_products cp ON cp.product_id = p.id
+        JOIN collections col ON col.id = cp.collection_id
+        LEFT JOIN collection_translations ct ON ct.collection_id = col.id AND ct.language_code = $1
+        LEFT JOIN LATERAL unnest(COALESCE(p.tags, '{}')) as t(tag) ON true
+        LEFT JOIN tags tg ON LOWER(tg.name_en) = LOWER(t.tag) OR LOWER(tg.name_bg) = LOWER(t.tag)
+        WHERE p.status = 'active'
+          AND LOWER(REPLACE(p.brand, ' ', '-')) = $2
+      `;
+      const facetResult = await query(facetQuery, [language === "bg" ? "bg" : "en", brand.toLowerCase()]);
+      facetCollections = facetResult.rows?.[0]?.collections || [];
+      facetTags = facetResult.rows?.[0]?.tags || [];
+    } catch (error) {
+      console.warn("[shop metadata] Failed to load facets", error);
+    }
+  }
+
+  const descriptionWithFacets = facetCollections.length || facetTags.length
+    ? `${description} ${[...facetCollections.slice(0, 6), ...facetTags.slice(0, 6)].join(', ')}.`
+    : description;
+
   const seo = generateListingSEO({
     language: language === "bg" ? "bg" : "en",
     heroTitle: title,
-    heroSubtitle: description,
+    heroSubtitle: descriptionWithFacets,
     categoryNames: category ? [category] : [],
+    collectionNames: facetCollections,
+    tags: facetTags,
     brand: brand === 'ride-engine' ? 'Ride Engine' : brand === 'slingshot' ? 'Slingshot' : undefined,
     fallbackTitle: title,
-    fallbackDescription: description,
+    fallbackDescription: descriptionWithFacets,
   });
 
   // Construct canonical URL with query params sorted for consistency
