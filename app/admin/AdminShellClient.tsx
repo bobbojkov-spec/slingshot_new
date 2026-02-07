@@ -15,6 +15,7 @@ import {
   BgColorsOutlined,
   GlobalOutlined,
   QuestionCircleOutlined,
+  ThunderboltOutlined,
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, Space, Typography } from "antd";
 import Link from "next/link";
@@ -51,6 +52,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
       { key: "catalog-shop-by-cat", icon: <AppstoreOutlined />, labelText: "Shop by CAT", href: "/admin/homepage-categories" },
       { key: "catalog-shop-by-kw", icon: <TagsOutlined />, labelText: "Shop by KW", href: "/admin/homepage-keywords" },
+      { key: "catalog-research", icon: <ThunderboltOutlined />, labelText: "SEO Research", href: "/admin/research" },
       { key: "catalog-shop-settings", icon: <SettingOutlined />, labelText: "Shop Settings", href: "/admin/shop-settings" },
     ],
   },
