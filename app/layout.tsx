@@ -97,10 +97,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Oswald:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="canonical" href={canonicalUrl} />
-        <link rel="alternate" hrefLang="en" href={`${baseUrl}/?lang=en`} />
-        <link rel="alternate" hrefLang="bg" href={`${baseUrl}/?lang=bg`} />
-        <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/`} />
         <meta property="og:image" content={ogImage} />
         <meta name="twitter:image" content={ogImage} />
         <script

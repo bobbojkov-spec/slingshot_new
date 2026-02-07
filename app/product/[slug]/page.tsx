@@ -15,6 +15,7 @@ import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
 import { buildCanonicalUrlClient } from "@/lib/seo/url";
 import { generateDynamicSEO } from "@/lib/seo/generate-dynamic-seo";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
 
 interface Product {
   id: string;
@@ -292,7 +293,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     { label: language === "bg" ? (product.name_bg || product.name) : product.name }
   ];
 
-  const canonicalUrl = buildCanonicalUrlClient(`/product/${product.slug}`);
+  const canonicalPath = `/product/${product.slug}`;
+  const canonicalUrl = buildCanonicalUrlClient(canonicalPath);
+  const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
   const baseUrl = canonicalUrl.replace(/\/.+$/, "");
   const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
   const productSchema = {
@@ -363,7 +366,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         <meta name="twitter:title" content={seo.ogTitle} />
         <meta name="twitter:description" content={seo.ogDescription} />
         {seo.ogImage && <meta name="twitter:image" content={seo.ogImage} />}
-        <link rel="canonical" href={seo.canonicalUrl} />
+        <link rel="canonical" href={hreflangLinks.canonical} />
+        <link rel="alternate" hrefLang="en" href={hreflangLinks.alternates.languages.en} />
+        <link rel="alternate" hrefLang="bg-BG" href={hreflangLinks.alternates.languages["bg-BG"]} />
+        <link rel="alternate" hrefLang="x-default" href={hreflangLinks.alternates.languages["x-default"]} />
       </Head>
       <SchemaJsonLd data={breadcrumbSchema} defer />
       <SchemaJsonLd data={productSchema} defer />

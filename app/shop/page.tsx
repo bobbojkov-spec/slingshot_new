@@ -15,6 +15,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import SchemaJsonLd from '@/components/seo/SchemaJsonLd';
 import { buildBreadcrumbSchema } from '@/lib/seo/business';
 import { buildCanonicalUrlClient } from '@/lib/seo/url';
+import { buildHreflangLinks } from '@/lib/seo/hreflang';
 
 
 
@@ -138,7 +139,9 @@ function ShopContent() {
     ...(searchParams.get('category') ? [{ label: searchParams.get('category')!.toUpperCase() }] : []),
   ];
 
-  const canonicalUrl = buildCanonicalUrlClient(`/shop${searchParams.toString() ? `?${searchParams.toString()}` : ''}`);
+  const canonicalPath = `/shop${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const canonicalUrl = buildCanonicalUrlClient(canonicalPath);
+  const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
   const baseUrl = canonicalUrl.replace(/\/.+$/, "");
   const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
   const pageSchema = {
@@ -172,7 +175,10 @@ function ShopContent() {
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         <meta name="twitter:image" content={baseOgImage} />
-        <link rel="canonical" href={canonicalUrl} />
+        <link rel="canonical" href={hreflangLinks.canonical} />
+        <link rel="alternate" hrefLang="en" href={hreflangLinks.alternates.languages.en} />
+        <link rel="alternate" hrefLang="bg-BG" href={hreflangLinks.alternates.languages["bg-BG"]} />
+        <link rel="alternate" hrefLang="x-default" href={hreflangLinks.alternates.languages["x-default"]} />
       </Head>
       <SchemaJsonLd data={breadcrumbSchema} defer />
       <SchemaJsonLd data={pageSchema} defer />

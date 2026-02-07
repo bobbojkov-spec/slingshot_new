@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
 import { buildCanonicalUrlClient } from "@/lib/seo/url";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -80,7 +81,9 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
     language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
   const description =
     language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
-  const canonicalUrl = buildCanonicalUrlClient(`/category/${category}`);
+  const canonicalPath = `/category/${category}`;
+  const canonicalUrl = buildCanonicalUrlClient(canonicalPath);
+  const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
 
   const breadcrumbItems = [
     { label: language === "bg" ? "Начало" : "Home", href: "/" },
@@ -113,7 +116,10 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
-        <link rel="canonical" href={canonicalUrl} />
+        <link rel="canonical" href={hreflangLinks.canonical} />
+        <link rel="alternate" hrefLang="en" href={hreflangLinks.alternates.languages.en} />
+        <link rel="alternate" hrefLang="bg-BG" href={hreflangLinks.alternates.languages["bg-BG"]} />
+        <link rel="alternate" hrefLang="x-default" href={hreflangLinks.alternates.languages["x-default"]} />
       </Head>
       <SchemaJsonLd data={breadcrumbSchema} defer />
       <SchemaJsonLd data={pageSchema} defer />

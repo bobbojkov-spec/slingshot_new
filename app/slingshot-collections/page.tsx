@@ -3,6 +3,8 @@ import { getCollectionsByBrand, getCollectionBySlug } from "@/services/collectio
 import { BrandCollectionsClient } from "@/components/collections/BrandCollectionsClient";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
+import { buildCanonicalUrl } from "@/lib/seo/url-server";
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +12,21 @@ export const metadata: Metadata = {
     title: 'Slingshot Collections | Slingshot Sports',
     description: 'Discover all Slingshot high-performance gear collections.',
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+    const canonicalPath = '/slingshot-collections';
+    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
+    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+
+    return {
+        title: 'Slingshot Collections | Slingshot Sports',
+        description: 'Discover all Slingshot high-performance gear collections.',
+        alternates: {
+            canonical: hreflangLinks.canonical,
+            languages: hreflangLinks.alternates.languages,
+        },
+    };
+}
 
 export default async function SlingshotCollectionsPage() {
     const cookieStore = await cookies();

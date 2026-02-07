@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { businessInfo } from "@/lib/seo/business";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import HeroSection from "@/components/home/HeroSection";
 import NewProductsFromCollection from "@/components/home/NewProductsFromCollection";
 import ShopByCategories from "@/components/home/ShopByCategories";
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
   title: "Slingshot Bulgaria | Premium Kites, Boards & Wings",
   description:
     "Shop Slingshot and Ride Engine gear in Bulgaria. Premium kites, boards, wings, and accessories with expert support.",
+  alternates: {
+    canonical: buildHreflangLinks(businessInfo.url, "/").canonical,
+    languages: buildHreflangLinks(businessInfo.url, "/").alternates.languages,
+  },
   openGraph: {
     title: "Slingshot Bulgaria | Premium Kites, Boards & Wings",
     description:

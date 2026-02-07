@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SearchClient from "@/app/search/SearchClient";
 import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
 
 type SearchParams = {
     q?: string;
@@ -45,13 +46,16 @@ export async function generateMetadata({
             : "Search results.";
 
     const canonicalQuery = buildSearchParams(searchParams);
-    const canonicalUrl = await buildCanonicalUrl(`/search${canonicalQuery ? `?${canonicalQuery}` : ""}`);
+    const canonicalPath = `/search${canonicalQuery ? `?${canonicalQuery}` : ""}`;
+    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
+    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
 
     return {
         title: pageTitle,
         description: searchLabel,
         alternates: {
-            canonical: canonicalUrl,
+            canonical: hreflangLinks.canonical,
+            languages: hreflangLinks.alternates.languages,
         },
         robots: {
             index: false,

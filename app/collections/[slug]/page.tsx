@@ -4,12 +4,29 @@ import { getCollectionBySlug } from "@/services/collections";
 import { CollectionShopClient } from "@/components/collections/CollectionShopClient";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
+import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import type { Metadata } from "next";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
 import { cookies } from "next/headers";
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const canonicalPath = `/collections/${slug}`;
+    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
+    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+
+    return {
+        alternates: {
+            canonical: hreflangLinks.canonical,
+            languages: hreflangLinks.alternates.languages,
+        },
+    };
+}
 
 export default async function CollectionPage({ params }: PageProps) {
     const { slug } = await params;
