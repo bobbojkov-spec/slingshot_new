@@ -51,8 +51,16 @@ export function LanguageProvider({
   const setLanguage = (lang: Language, reload = false) => {
     document.cookie = `lang=${lang}; path=/; max-age=31536000`;
     setLanguageState(lang);
-    if (reload) {
-      window.location.reload();
+
+    if (reload && typeof window !== "undefined") {
+      const { pathname, search } = window.location;
+      const isBgPath = pathname === "/bg" || pathname.startsWith("/bg/");
+      const basePath = isBgPath ? pathname.replace("/bg", "") || "/" : pathname;
+      const targetPath = lang === "bg"
+        ? `/bg${basePath === "/" ? "" : basePath}`
+        : basePath;
+
+      window.location.assign(`${targetPath}${search}`);
     }
   };
 

@@ -3,13 +3,18 @@ const normalizePath = (path = "") => {
     return path.startsWith("/") ? path : `/${path}`;
 };
 
+const stripLocalePrefix = (path: string) => {
+    return path.startsWith("/bg") ? path.replace("/bg", "") || "/" : path;
+};
+
 export const buildHreflangLinks = (baseUrl: string, path = "/") => {
     const safeBase = baseUrl.replace(/\/$/, "");
     const normalizedPath = normalizePath(path);
+    const basePath = stripLocalePrefix(normalizedPath);
 
-    const enUrl = `${safeBase}${normalizedPath}${normalizedPath.includes("?") ? "&" : "?"}lang=en`;
-    const bgUrl = `${safeBase}${normalizedPath}${normalizedPath.includes("?") ? "&" : "?"}lang=bg`;
-    const defaultUrl = `${safeBase}${normalizedPath}`;
+    const enUrl = `${safeBase}${basePath}`;
+    const bgUrl = `${safeBase}/bg${basePath === "/" ? "" : basePath}`;
+    const defaultUrl = enUrl;
 
     return {
         canonical: defaultUrl,

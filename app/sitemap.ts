@@ -2,56 +2,68 @@ import type { MetadataRoute } from "next";
 import { query } from "@/lib/db";
 import { resolveBaseUrl } from "@/lib/seo/url-server";
 
-const buildStaticEntries = (baseUrl: string): MetadataRoute.Sitemap => [
-    {
-        url: `${baseUrl}/`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 1,
-    },
-    {
-        url: `${baseUrl}/shop`,
-        lastModified: new Date(),
-        changeFrequency: "daily",
-        priority: 0.9,
-    },
-    {
-        url: `${baseUrl}/search`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.6,
-    },
-    {
-        url: `${baseUrl}/inquiry/summary`,
-        lastModified: new Date(),
-        changeFrequency: "monthly",
-        priority: 0.3,
-    },
-    {
-        url: `${baseUrl}/inquiry/contact`,
-        lastModified: new Date(),
-        changeFrequency: "monthly",
-        priority: 0.3,
-    },
-    {
-        url: `${baseUrl}/inquiry/success`,
-        lastModified: new Date(),
-        changeFrequency: "monthly",
-        priority: 0.2,
-    },
-    {
-        url: `${baseUrl}/slingshot-collections`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-    },
-    {
-        url: `${baseUrl}/rideengine-collections`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-    },
-];
+const withBg = (baseUrl: string, path: string) => `${baseUrl}/bg${path === "/" ? "" : path}`;
+
+const buildStaticEntries = (baseUrl: string): MetadataRoute.Sitemap => {
+    const entries = [
+        {
+            url: `${baseUrl}/`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 1,
+        },
+        {
+            url: `${baseUrl}/shop`,
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/search`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.6,
+        },
+        {
+            url: `${baseUrl}/inquiry/summary`,
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.3,
+        },
+        {
+            url: `${baseUrl}/inquiry/contact`,
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.3,
+        },
+        {
+            url: `${baseUrl}/inquiry/success`,
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.2,
+        },
+        {
+            url: `${baseUrl}/slingshot-collections`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/rideengine-collections`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.7,
+        },
+    ];
+
+    return [
+        ...entries,
+        ...entries.map((entry) => ({
+            ...entry,
+            url: withBg(baseUrl, entry.url.replace(baseUrl, "")),
+        })),
+    ];
+};
 
 const fetchProductEntries = async (baseUrl: string): Promise<MetadataRoute.Sitemap> => {
     try {
@@ -62,7 +74,7 @@ const fetchProductEntries = async (baseUrl: string): Promise<MetadataRoute.Sitem
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(productsSql);
-        return result.rows
+        const entries = result.rows
             .filter((row: { slug?: string | null }) => Boolean(row.slug))
             .map((row: { slug: string; updated_at?: string | Date | null }) => ({
                 url: `${baseUrl}/product/${row.slug}`,
@@ -70,6 +82,14 @@ const fetchProductEntries = async (baseUrl: string): Promise<MetadataRoute.Sitem
                 changeFrequency: "weekly",
                 priority: 0.8,
             }));
+
+        return [
+            ...entries,
+            ...entries.map((entry) => ({
+                ...entry,
+                url: withBg(baseUrl, entry.url.replace(baseUrl, "")),
+            })),
+        ];
     } catch (error) {
         console.warn("[sitemap] Failed to load product URLs", error);
         return [];
@@ -85,12 +105,20 @@ const fetchCategoryEntries = async (baseUrl: string): Promise<MetadataRoute.Site
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(categorySql);
-        return result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
+        const entries = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
             url: `${baseUrl}/category/${row.slug}`,
             lastModified: row.updated_at ? new Date(row.updated_at) : new Date(),
             changeFrequency: "weekly",
             priority: 0.7,
         }));
+
+        return [
+            ...entries,
+            ...entries.map((entry) => ({
+                ...entry,
+                url: withBg(baseUrl, entry.url.replace(baseUrl, "")),
+            })),
+        ];
     } catch (error) {
         console.warn("[sitemap] Failed to load category URLs", error);
         return [];
@@ -106,12 +134,20 @@ const fetchCollectionEntries = async (baseUrl: string): Promise<MetadataRoute.Si
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(collectionsSql);
-        return result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
+        const entries = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
             url: `${baseUrl}/collections/${row.slug}`,
             lastModified: row.updated_at ? new Date(row.updated_at) : new Date(),
             changeFrequency: "weekly",
             priority: 0.7,
         }));
+
+        return [
+            ...entries,
+            ...entries.map((entry) => ({
+                ...entry,
+                url: withBg(baseUrl, entry.url.replace(baseUrl, "")),
+            })),
+        ];
     } catch (error) {
         console.warn("[sitemap] Failed to load collection URLs", error);
         return [];

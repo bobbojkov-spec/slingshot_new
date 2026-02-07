@@ -3,5 +3,8 @@ export const buildCanonicalUrlClient = (path = "") => {
         (typeof window !== "undefined" ? window.location.origin : "");
     if (!baseUrl) return path || "";
     const normalized = path.startsWith("/") ? path : `/${path}`;
-    return `${baseUrl.replace(/\/$/, "")}${normalized}`;
+    const normalizedPath = normalized.startsWith("/bg")
+        ? normalized.replace("/bg", "") || "/"
+        : normalized;
+    return `${baseUrl.replace(/\/$/, "")}${normalizedPath}`;
 };
