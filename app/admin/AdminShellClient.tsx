@@ -2,6 +2,7 @@
 
 import {
   AppstoreOutlined,
+  AreaChartOutlined,
   BarChartOutlined,
   FileProtectOutlined,
   HomeOutlined,
@@ -53,6 +54,7 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-shop-by-cat", icon: <AppstoreOutlined />, labelText: "Shop by CAT", href: "/admin/homepage-categories" },
       { key: "catalog-shop-by-kw", icon: <TagsOutlined />, labelText: "Shop by KW", href: "/admin/homepage-keywords" },
       { key: "catalog-research", icon: <ThunderboltOutlined />, labelText: "SEO Research", href: "/admin/research" },
+      { key: "catalog-audit", icon: <AreaChartOutlined />, labelText: "Visual Audit", href: "/admin/audit" },
       { key: "catalog-shop-settings", icon: <SettingOutlined />, labelText: "Shop Settings", href: "/admin/shop-settings" },
     ],
   },
