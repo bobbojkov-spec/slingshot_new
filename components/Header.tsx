@@ -395,10 +395,12 @@ const Header = () => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t("header.searchPlaceholder")}
+                aria-label={t("header.searchPlaceholder")}
                 className="w-full bg-white/10 border border-white/20 rounded px-4 py-4 pr-12 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
               />
               <button
                 type="submit"
+                aria-label={t("search.submit", "Submit search")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-accent transition-colors"
                 disabled={isSearchLoading}
               >
