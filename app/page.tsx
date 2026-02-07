@@ -22,6 +22,14 @@ export const metadata: Metadata = {
       "Shop Slingshot and Ride Engine gear in Bulgaria. Premium kites, boards, wings, and accessories with expert support.",
     url: businessInfo.url,
     siteName: "Slingshot Bulgaria",
+    images: [
+      {
+        url: "/images/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Slingshot Bulgaria",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -29,6 +37,7 @@ export const metadata: Metadata = {
     title: "Slingshot Bulgaria | Premium Kites, Boards & Wings",
     description:
       "Shop Slingshot and Ride Engine gear in Bulgaria. Premium kites, boards, wings, and accessories with expert support.",
+    images: ["/images/og-default.jpg"],
   },
 };
 

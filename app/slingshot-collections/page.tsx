@@ -13,9 +13,32 @@ export async function generateMetadata(): Promise<Metadata> {
     const canonicalUrl = await buildCanonicalUrl(canonicalPath);
     const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
 
+    const title = 'Slingshot Collections | Slingshot Sports';
+    const description = 'Discover all Slingshot high-performance gear collections. Kites, boards, foils, and wake.';
+
     return {
-        title: 'Slingshot Collections | Slingshot Sports',
-        description: 'Discover all Slingshot high-performance gear collections.',
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: canonicalUrl,
+            type: 'website',
+            images: [
+                {
+                    url: '/images/og-default.jpg',
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ['/images/og-default.jpg'],
+        },
         alternates: {
             canonical: hreflangLinks.canonical,
             languages: hreflangLinks.alternates.languages,

@@ -16,11 +16,44 @@ import { cookies } from "next/headers";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
+    const cookieStore = await cookies();
+    const lang = cookieStore.get("lang")?.value || "en";
+    const collection = await getCollectionBySlug(slug, lang);
+
     const canonicalPath = `/collections/${slug}`;
     const canonicalUrl = await buildCanonicalUrl(canonicalPath);
     const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
 
+    if (!collection) {
+        return {
+            title: 'Collection Not Found | Slingshot Sports',
+            alternates: {
+                canonical: hreflangLinks.canonical,
+                languages: hreflangLinks.alternates.languages,
+            },
+        };
+    }
+
+    const title = `${collection.title} | Slingshot Sports`;
+    const description = collection.description?.slice(0, 160) || `Discover our ${collection.title} collection at Slingshot Sports. High-performance gear for your next adventure.`;
+    const images = collection.image_url ? [{ url: collection.image_url, width: 1200, height: 630, alt: collection.title }] : [];
+
     return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: canonicalUrl,
+            images,
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images,
+        },
         alternates: {
             canonical: hreflangLinks.canonical,
             languages: hreflangLinks.alternates.languages,
