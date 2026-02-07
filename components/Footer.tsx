@@ -5,6 +5,7 @@ import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useNavigationContext } from "@/contexts/NavigationContext";
 import { usePathname } from "next/navigation";
+import { buildLocalePath } from "@/lib/i18n/locale-links";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -30,7 +31,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-12 lg:gap-8">
           {/* Column 1: Brand + Social + Language (40%) */}
           <div>
-            <Link href="/" className="flex items-center gap-4 mb-6">
+            <Link href={buildLocalePath("/", language)} className="flex items-center gap-4 mb-6">
               <img
                 alt="Slingshot"
                 className="h-8 w-auto object-contain"
@@ -102,22 +103,22 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/shop?brand=slingshot" className="footer-link font-body text-sm">
+                <Link href={buildLocalePath("/shop?brand=slingshot", language)} className="footer-link font-body text-sm">
                   {language === "bg" ? "Slingshot продукти" : "Slingshot Products"}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?brand=ride-engine" className="footer-link font-body text-sm">
+                <Link href={buildLocalePath("/shop?brand=ride-engine", language)} className="footer-link font-body text-sm">
                   {language === "bg" ? "Ride Engine продукти" : "Ride Engine Products"}
                 </Link>
               </li>
               <li>
-                <Link href="/collections/featured-products" className="footer-link font-body text-sm">
+                <Link href={buildLocalePath("/collections/featured-products", language)} className="footer-link font-body text-sm">
                   {language === "bg" ? "Нови продукти" : "New Products"}
                 </Link>
               </li>
               <li>
-                <Link href="/collections/best-sellers" className="footer-link font-body text-sm">
+                <Link href={buildLocalePath("/collections/best-sellers", language)} className="footer-link font-body text-sm">
                   {language === "bg" ? "Най-продавани" : "Best Sellers"}
                 </Link>
               </li>
@@ -132,7 +133,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerPages.map(page => (
                 <li key={page.id}>
-                  <Link href={`/${page.slug}`} className="footer-link font-body text-sm">
+                  <Link href={buildLocalePath(`/${page.slug}`, language)} className="footer-link font-body text-sm">
                     {language === 'bg' ? (page.title_bg || page.title) : page.title}
                   </Link>
                 </li>

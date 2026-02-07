@@ -6,24 +6,42 @@ import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
 
-import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
 import { buildHreflangLinks } from "@/lib/seo/hreflang";
+import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
 
 export async function generateMetadata(): Promise<Metadata> {
     const canonicalPath = '/rideengine-collections';
-    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
-    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+    const baseUrl = await resolveBaseUrl();
+    const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
 
-    const title = 'Ride Engine Collections | Slingshot Sports';
-    const description = 'Explore our complete range of Ride Engine gear collections. Harnesses, wetsuits, and travel gear.';
+    const cookieStore = await cookies();
+    const lang = cookieStore.get("lang")?.value || "en";
+
+    const title = lang === "bg"
+        ? 'Колекции Ride Engine | Slingshot България'
+        : 'Ride Engine Collections | Slingshot Sports';
+    const description = lang === "bg"
+        ? 'Разгледайте пълната гама Ride Engine колекции. Трапези, неопрен и пътна екипировка.'
+        : 'Explore our complete range of Ride Engine gear collections. Harnesses, wetsuits, and travel gear.';
+
+    const seo = generateListingSEO({
+        language: lang === "bg" ? "bg" : "en",
+        heroTitle: title,
+        heroSubtitle: description,
+        collectionNames: ['Ride Engine'],
+        brand: 'Ride Engine',
+        fallbackTitle: title,
+        fallbackDescription: description,
+    });
 
     return {
-        title,
-        description,
+        title: seo.title,
+        description: seo.description,
         openGraph: {
-            title,
-            description,
-            url: canonicalUrl,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
+            url: hreflangLinks.canonical,
             type: 'website',
             images: [
                 {
@@ -36,8 +54,8 @@ export async function generateMetadata(): Promise<Metadata> {
         },
         twitter: {
             card: 'summary_large_image',
-            title,
-            description,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
             images: ['/images/og-default.jpg'],
         },
         alternates: {

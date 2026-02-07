@@ -5,6 +5,7 @@ import { Check, Search, ArrowUpDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { FilterDropdown } from './FilterDropdown';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { buildLocalePath } from '@/lib/i18n/locale-links';
 
 interface FacetItem {
     slug: string;
@@ -42,7 +43,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
     const updateFilterPlain = (key: string, value: string | null) => {
         // NAVIGATOR LOGIC: If on a collection page (basePath != /shop), changing Category should redirect to Shop
         if (basePath !== '/shop' && key === 'category' && value) {
-            router.push(`/shop?category=${value}`);
+            router.push(buildLocalePath(`/shop?category=${value}`, language));
             return;
         }
 
@@ -63,7 +64,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
             params.delete('tag');
         }
 
-        router.push(`${basePath}?${params.toString()}`);
+        router.push(buildLocalePath(`${basePath}?${params.toString()}`, language));
     };
 
     const updateFilterMulti = (key: string, values: string[]) => {
@@ -98,7 +99,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
         params.set('page', '1');
         params.delete(key);
         values.forEach(val => params.append(key, val));
-        router.push(`${basePath}?${params.toString()}`);
+        router.push(buildLocalePath(`${basePath}?${params.toString()}`, language));
     };
 
 
@@ -111,7 +112,7 @@ export function ShopToolbar({ facets, totalProducts, basePath = '/shop' }: ShopT
         if (e.key === 'Enter') {
             // Global Search - Always redirect to Shop with query, resetting other context
             // User requested: "KEYword search is Always GLOBAL. not a filter."
-            router.push(`/shop?q=${encodeURIComponent(searchTerm)}`);
+            router.push(buildLocalePath(`/shop?q=${encodeURIComponent(searchTerm)}`, language));
         }
     };
 

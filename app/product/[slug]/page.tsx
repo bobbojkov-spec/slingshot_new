@@ -4,7 +4,7 @@ import { getProductBySlug } from "@/services/products";
 import { ProductDetailsClient } from "@/components/products/ProductDetailsClient";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
-import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
 import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const result = await getProductBySlug(slug);
 
   const canonicalPath = `/product/${slug}`;
-  const canonicalUrl = await buildCanonicalUrl(canonicalPath);
-  const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+  const baseUrl = await resolveBaseUrl();
+  const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
 
   if (!result || !result.product) {
     return {
@@ -35,7 +35,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { product } = result;
   const title = `${product.title || product.name} | Slingshot Sports`;
-  const description = (product.description_bg && lang === 'bg' ? product.description_bg : product.description) || `Check out ${product.name} at Slingshot Bulgaria.`;
+  const description = (product.description_bg && lang === 'bg' ? product.description_bg : product.description)
+    || (lang === 'bg' ? `Разгледайте ${product.name} в Slingshot Bulgaria.` : `Check out ${product.name} at Slingshot Bulgaria.`);
   const cleanDescription = description.replace(/<[^>]*>?/gm, '').slice(0, 160);
   const images = product.image ? [{ url: product.image, width: 1200, height: 630, alt: product.title }] : [];
 
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description: cleanDescription,
-      url: canonicalUrl,
+      url: hreflangLinks.canonical,
       images,
       type: 'website',
       siteName: 'Slingshot Bulgaria',

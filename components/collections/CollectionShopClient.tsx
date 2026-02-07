@@ -12,6 +12,7 @@ import { Collection } from '@/services/collections';
 import Link from 'next/link';
 
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { buildLocalePath } from "@/lib/i18n/locale-links";
 
 interface BreadcrumbItem {
     label: string;
@@ -78,7 +79,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
         if (newPage < 1 || newPage > pagination.totalPages) return;
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', newPage.toString());
-        router.push(`/collections/${slug}?${params.toString()}`);
+        router.push(buildLocalePath(`/collections/${slug}?${params.toString()}`, language));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -100,7 +101,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                         {initialCollection.child_collections.map((child: any) => (
                             <Link
                                 key={child.id}
-                                href={`/collections/${child.slug}`}
+                                href={buildLocalePath(`/collections/${child.slug}`, language)}
                                 className="group relative aspect-[16/9] overflow-hidden rounded bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                             >
                                 {child.image_url ? (
@@ -135,7 +136,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                 <ShopToolbar
                     facets={{ ...facets, collections: [] }}
                     totalProducts={pagination.total}
-                    basePath={`/collections/${slug}`}
+                    basePath={buildLocalePath(`/collections/${slug}`, language)}
                 />
             )}
 

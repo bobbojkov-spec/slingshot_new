@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { buildLocalePath } from "@/lib/i18n/locale-links";
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -90,7 +91,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                                 {collections.map(col => (
                                                     <Link
                                                         key={col.id}
-                                                        href={`/collections/${col.slug}`}
+                                                        href={buildLocalePath(`/collections/${col.slug}`, language)}
                                                         className="text-white/60 hover:text-accent text-sm py-2 transition-colors active:scale-95 active:bg-white/10"
                                                         onClick={onClose}
                                                     >
@@ -102,7 +103,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                     );
                                 })}
                                 {sportGroups.length === 0 && (
-                                    <Link href={`/category/${sport.slug}`} onClick={onClose} className="text-white/50 text-sm italic active:scale-95 active:bg-white/10">
+                                    <Link href={buildLocalePath(`/category/${sport.slug}`, language)} onClick={onClose} className="text-white/50 text-sm italic active:scale-95 active:bg-white/10">
                                         {language === "bg" ? `Виж всички ${sport.name}` : `View all ${sport.name}`}
                                     </Link>
                                 )}
@@ -133,7 +134,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                                         {group.collections.map(col => (
                                             <Link
                                                 key={col.id}
-                                                href={`/collections/${col.slug}`}
+                                                href={buildLocalePath(`/collections/${col.slug}`, language)}
                                                 className="text-white/60 hover:text-white text-sm py-2 active:scale-95 active:bg-white/10"
                                                 onClick={onClose}
                                             >

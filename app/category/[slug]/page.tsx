@@ -1,17 +1,11 @@
-"use client";
-
-import { use } from "react";
-import Link from "next/link";
-import Head from "next/head";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { cookies } from "next/headers";
+import { Metadata } from "next";
+import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
-import { buildCanonicalUrlClient } from "@/lib/seo/url";
-import { buildHreflangLinks } from "@/lib/seo/hreflang";
-import ProductCard from "@/components/ProductCard";
-import { ChevronRight } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { CategoryClient } from "@/components/shop/CategoryClient";
+import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
 
 interface Product {
   id: string;
@@ -71,19 +65,82 @@ const categoryNames: Record<string, { en: string; bg: string }> = {
   accessories: { en: "Accessories", bg: "Аксесоари" }
 };
 
-export default function Page({ params }: { params: Promise<{ slug?: string }> }) {
-  const resolvedParams = use(params);
+interface PageProps {
+  params: Promise<{ slug?: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
   const category = resolvedParams?.slug || "kites";
-  const { language, t } = useLanguage();
+  const cookieStore = await cookies();
+  const language = cookieStore.get("lang")?.value || "en";
+
+  const categoryInfo = categoryData[category] || categoryData.kites;
+  const categoryName = language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
+  const description = language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
+
+  const canonicalPath = `/category/${category}`;
+  const baseUrl = await resolveBaseUrl();
+  const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
+
+  const seo = generateListingSEO({
+    language: language === "bg" ? "bg" : "en",
+    heroTitle: categoryName,
+    heroSubtitle: description,
+    categoryNames: [categoryName],
+    tags: [],
+    productTypes: [],
+    productNames: [],
+    brand: "Slingshot",
+    fallbackTitle: `${categoryName} | Slingshot Bulgaria`,
+    fallbackDescription: description,
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    openGraph: {
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+      url: hreflangLinks.canonical,
+      siteName: "Slingshot Bulgaria",
+      type: "website",
+      images: [
+        {
+          url: categoryInfo.heroImage,
+          width: 1200,
+          height: 630,
+          alt: categoryName,
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+      images: [categoryInfo.heroImage],
+    },
+    alternates: {
+      canonical: hreflangLinks.canonical,
+      languages: hreflangLinks.alternates.languages,
+    },
+  };
+}
+
+export default async function Page({ params }: PageProps) {
+  const resolvedParams = await params;
+  const category = resolvedParams?.slug || "kites";
+  const cookieStore = await cookies();
+  const language = (cookieStore.get("lang")?.value || "en") as "en" | "bg";
+
   const categoryInfo = categoryData[category] || categoryData.kites;
   const products = allProducts.filter((product) => product.category === category);
-  const categoryName =
-    language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
-  const description =
-    language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
+  const categoryName = language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
+  const description = language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
+
   const canonicalPath = `/category/${category}`;
-  const canonicalUrl = buildCanonicalUrlClient(canonicalPath);
-  const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+  const baseUrl = await resolveBaseUrl();
+  const canonicalUrl = `${baseUrl}${canonicalPath}`;
 
   const breadcrumbItems = [
     { label: language === "bg" ? "Начало" : "Home", href: "/" },
@@ -91,7 +148,7 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
     { label: categoryName }
   ];
 
-  const breadcrumbSchema = buildBreadcrumbSchema(canonicalUrl.replace(/\/.+$/, ""), breadcrumbItems);
+  const breadcrumbSchema = buildBreadcrumbSchema(baseUrl, breadcrumbItems);
   const pageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -100,110 +157,18 @@ export default function Page({ params }: { params: Promise<{ slug?: string }> })
     description,
   };
 
-  const pageTitle = `${categoryName} | Slingshot Bulgaria`;
-  const pageDescription = description;
-
   return (
-    <div className="min-h-screen product-listing-bg">
-      <Head>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:site_name" content="Slingshot Bulgaria" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <link rel="canonical" href={hreflangLinks.canonical} />
-        <link rel="alternate" hrefLang="en" href={hreflangLinks.alternates.languages.en} />
-        <link rel="alternate" hrefLang="bg-BG" href={hreflangLinks.alternates.languages["bg-BG"]} />
-        <link rel="alternate" hrefLang="x-default" href={hreflangLinks.alternates.languages["x-default"]} />
-      </Head>
-      <SchemaJsonLd data={breadcrumbSchema} defer />
-      <SchemaJsonLd data={pageSchema} defer />
-      <Header />
-      <main className="pt-20">
-        <section className="category-hero relative">
-          <img src={categoryInfo.heroImage} alt={categoryName} className="image-cover" />
-          <div className="hero-overlay" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="section-container">
-              <nav className="flex items-center gap-2 text-white/60 text-sm mb-6">
-                <Link href="/" className="hover:text-white transition-colors">
-                  {language === "bg" ? "Начало" : "Home"}
-                </Link>
-                <ChevronRight className="w-4 h-4" />
-                <Link href="/shop" className="hover:text-white transition-colors">
-                  {language === "bg" ? "Магазин" : "Shop"}
-                </Link>
-                <ChevronRight className="w-4 h-4" />
-                <span className="text-white">{categoryName}</span>
-              </nav>
-              <h1 className="text-hero text-white mb-4">{categoryName.toUpperCase()}</h1>
-              <p className="text-subhero text-white/80 max-w-2xl">{description}</p>
-            </div>
-          </div>
-        </section>
-
-        {products.some((product) => product.badge === "New") && (
-          <section className="section-container section-padding-sm border-b border-border">
-            <h2 className="text-section-title mb-8">{t("category.new_arrivals")}</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              {products
-                .filter((product) => product.badge === "New")
-                .map((product, index) => (
-                  <ProductCard key={product.id} product={product} index={index} />
-                ))}
-            </div>
-          </section>
-        )}
-
-        <section className="section-container section-padding">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-section-title">{t("category.all_products")}</h2>
-            <span className="font-body text-sm text-muted-foreground">
-              {products.length} {t("shop.products")}
-            </span>
-          </div>
-
-          {products.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              {products.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="font-body text-muted-foreground">{t("shop.no_results")}</p>
-            </div>
-          )}
-        </section>
-
-        <section className="bg-secondary/30 section-padding">
-          <div className="section-container">
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-background rounded p-6">
-                <h3 className="font-heading font-medium mb-2">Free Shipping</h3>
-                <p className="font-body text-sm text-muted-foreground">On all orders over 200 BGN</p>
-              </div>
-              <div className="bg-background rounded p-6">
-                <h3 className="font-heading font-medium mb-2">Expert Advice</h3>
-                <p className="font-body text-sm text-muted-foreground">
-                  Our team of experienced riders will help you
-                </p>
-              </div>
-              <div className="bg-background rounded p-6">
-                <h3 className="font-heading font-medium mb-2">2 Year Warranty</h3>
-                <p className="font-body text-sm text-muted-foreground">On all Slingshot products</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+    <>
+      <SchemaJsonLd data={breadcrumbSchema} />
+      <SchemaJsonLd data={pageSchema} />
+      <CategoryClient
+        category={category}
+        categoryName={categoryName}
+        description={description}
+        heroImage={categoryInfo.heroImage}
+        products={products}
+      />
+    </>
   );
 }
 

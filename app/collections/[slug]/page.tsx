@@ -5,7 +5,8 @@ import { CollectionShopClient } from "@/components/collections/CollectionShopCli
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
 import { buildHreflangLinks } from "@/lib/seo/hreflang";
-import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { resolveBaseUrl, buildCanonicalUrl } from "@/lib/seo/url-server";
+import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -21,8 +22,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const collection = await getCollectionBySlug(slug, lang);
 
     const canonicalPath = `/collections/${slug}`;
-    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
-    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+    const baseUrl = await resolveBaseUrl();
+    const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
 
     if (!collection) {
         return {
@@ -34,24 +35,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const title = `${collection.title} | Slingshot Sports`;
-    const description = collection.description?.slice(0, 160) || `Discover our ${collection.title} collection at Slingshot Sports. High-performance gear for your next adventure.`;
+    const fallbackDesc = lang === 'bg'
+        ? `Разгледайте нашата колекция ${collection.title} в Slingshot Sports. Висококачествена екипировка за следващото ви приключение.`
+        : `Discover our ${collection.title} collection at Slingshot Sports. High-performance gear for your next adventure.`;
+    const seo = generateListingSEO({
+        language: lang === "bg" ? "bg" : "en",
+        heroTitle: collection.title,
+        heroSubtitle: collection.subtitle || undefined,
+        collectionNames: [collection.title],
+        tags: [],
+        productTypes: [],
+        productNames: [],
+        brand: collection.source === "rideengine" ? "Ride Engine" : "Slingshot",
+        fallbackTitle: `${collection.title} | Slingshot Sports`,
+        fallbackDescription: fallbackDesc,
+    });
     const images = collection.image_url ? [{ url: collection.image_url, width: 1200, height: 630, alt: collection.title }] : [];
 
     return {
-        title,
-        description,
+        title: seo.title,
+        description: seo.description,
         openGraph: {
-            title,
-            description,
-            url: canonicalUrl,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
+            url: hreflangLinks.canonical,
             images,
             type: 'website',
         },
         twitter: {
             card: 'summary_large_image',
-            title,
-            description,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
             images,
         },
         alternates: {

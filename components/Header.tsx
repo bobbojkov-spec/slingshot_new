@@ -6,6 +6,7 @@ import { Menu, X, Search, ShoppingBag } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { buildLocalePath } from "@/lib/i18n/locale-links";
 import { useNavigationContext } from "@/contexts/NavigationContext";
 import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
 import { MobileMenu } from "./layout/MobileMenu";
@@ -158,7 +159,8 @@ const Header = () => {
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}&lang=${language}`;
+      const targetPath = buildLocalePath(`/search?q=${encodeURIComponent(searchQuery.trim())}`, language);
+      window.location.href = targetPath;
     }
     setIsSearchOpen(false);
     setSearchQuery("");
@@ -183,7 +185,7 @@ const Header = () => {
     <header className={headerClass}>
       <div className="section-container">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-4 shrink-0">
+            <Link href={buildLocalePath("/", language)} className="flex items-center gap-4 shrink-0">
             <img
               alt="Slingshot Bulgaria Official Logo"
               className="h-10 w-auto"
@@ -280,7 +282,7 @@ const Header = () => {
                             {filteredCollections.map((col: MenuCollection) => (
                               <Link
                                 key={col.id}
-                                href={`/collections/${col.slug}`}
+                                href={buildLocalePath(`/collections/${col.slug}`, language)}
                                 className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-base"
                                 onClick={() => setIsMegaOpen(false)}
                               >
@@ -313,7 +315,7 @@ const Header = () => {
                             {group.collections?.map((col: MenuCollection) => (
                               <Link
                                 key={col.id}
-                                href={`/collections/${col.slug}`}
+                                href={buildLocalePath(`/collections/${col.slug}`, language)}
                                 className="text-white/80 hover:text-accent hover:translate-x-1 transition-all text-sm"
                                 onClick={() => setIsMegaOpen(false)}
                               >
@@ -424,7 +426,7 @@ const Header = () => {
                           {suggestions.tags.map((tag: any) => (
                             <Link
                               key={tag.name}
-                              href={`/search?tag=${encodeURIComponent(tag.name)}&lang=${language}`}
+                              href={buildLocalePath(`/search?tag=${encodeURIComponent(tag.name)}`, language)}
                               onClick={() => setIsSearchOpen(false)}
                               className="px-4 py-2 bg-white/10 hover:bg-accent hover:text-white rounded-full text-base font-bold text-white/90 transition-all border border-white/15 hover:scale-105 active:scale-95"
                             >
@@ -444,7 +446,7 @@ const Header = () => {
                             {suggestions.collections.map((col: any) => (
                               <Link
                                 key={col.slug}
-                                href={`/collections/${col.slug}`}
+                                href={buildLocalePath(`/collections/${col.slug}`, language)}
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center group py-2"
                               >
@@ -465,7 +467,7 @@ const Header = () => {
                             {suggestions.products.map((prod: any) => (
                               <Link
                                 key={prod.slug}
-                                href={`/product/${prod.slug}`}
+                                href={buildLocalePath(`/product/${prod.slug}`, language)}
                                 onClick={() => setIsSearchOpen(false)}
                                 className="flex items-center gap-4 group"
                               >
@@ -496,7 +498,7 @@ const Header = () => {
                     {/* View full results link if matching results exist */}
                     <div className="border-t border-white/10 pt-4 px-6 flex justify-center">
                       <Link
-                        href={`/search?q=${encodeURIComponent(searchQuery)}&lang=${language}`}
+                        href={buildLocalePath(`/search?q=${encodeURIComponent(searchQuery)}`, language)}
                         onClick={() => setIsSearchOpen(false)}
                         className="text-sm font-bold text-accent hover:text-orange-600 transition-colors uppercase tracking-widest flex items-center gap-2"
                       >

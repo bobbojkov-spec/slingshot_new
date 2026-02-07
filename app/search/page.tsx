@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import SearchClient from "@/app/search/SearchClient";
-import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
 import { buildHreflangLinks } from "@/lib/seo/hreflang";
+import { cookies } from "next/headers";
+import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
 
 type SearchParams = {
     q?: string;
@@ -33,44 +35,62 @@ export async function generateMetadata({
     const query = searchParams?.q ?? "";
     const tag = normalizeTagLabel(searchParams?.tag);
 
-    const pageTitle = query
-        ? `Search "${query}" | Slingshot Bulgaria`
-        : tag
-            ? `Tag: ${tag} | Slingshot Bulgaria`
-            : "Search | Slingshot Bulgaria";
+    const cookieStore = await cookies();
+    const lang = searchParams?.lang || cookieStore.get("lang")?.value || "en";
 
-    const searchLabel = query
-        ? `Search for "${query}".`
-        : tag
-            ? `Tag: ${tag}.`
-            : "Search results.";
+    // Original canonicalQuery and canonicalPath logic is replaced
+    const canonicalPath = `/search?q=${encodeURIComponent(query)}`;
+    const baseUrl = await resolveBaseUrl();
+    const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
 
-    const canonicalQuery = buildSearchParams(searchParams);
-    const canonicalPath = `/search${canonicalQuery ? `?${canonicalQuery}` : ""}`;
-    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
-    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+    // New title and description logic with localization
+    const title = lang === "bg"
+        ? `Резултати за "${query}" | Slingshot България`
+        : `Search Results for "${query}" | Slingshot Bulgaria`;
+    const description = lang === 'bg'
+        ? `Резултати от търсенето за "${query}" в Slingshot Bulgaria.`
+        : `Search results for "${query}" at Slingshot Bulgaria.`;
+
+    const seo = generateListingSEO({
+        language: lang === "bg" ? "bg" : "en",
+        heroTitle: title,
+        heroSubtitle: description,
+        tags: tag ? [tag] : [],
+        fallbackTitle: title,
+        fallbackDescription: description,
+    });
 
     return {
-        title: pageTitle,
-        description: searchLabel,
-        alternates: {
-            canonical: hreflangLinks.canonical,
-            languages: hreflangLinks.alternates.languages,
-        },
+        title: seo.title,
+        description: seo.description,
         robots: {
-            index: false,
+            index: false, // Keep robots index: false as per original
             follow: true,
         },
         openGraph: {
-            title: pageTitle,
-            description: searchLabel,
-            url: canonicalUrl,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
+            url: hreflangLinks.canonical, // Use canonical from hreflangLinks
+            siteName: "Slingshot Bulgaria", // Added siteName
             type: "website",
+            images: [ // Added images
+                {
+                    url: "/images/og-default.jpg",
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                },
+            ],
         },
         twitter: {
             card: "summary_large_image",
-            title: pageTitle,
-            description: searchLabel,
+            title: seo.ogTitle,
+            description: seo.ogDescription,
+            images: ["/images/og-default.jpg"], // Added images
+        },
+        alternates: {
+            canonical: hreflangLinks.canonical,
+            languages: hreflangLinks.alternates.languages,
         },
     };
 }
