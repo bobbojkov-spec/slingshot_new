@@ -5,53 +5,53 @@ import { resolveBaseUrl } from "@/lib/seo/url-server";
 const withBg = (baseUrl: string, path: string) => `${baseUrl}/bg${path === "/" ? "" : path}`;
 
 const buildStaticEntries = (baseUrl: string): MetadataRoute.Sitemap => {
-    const entries = [
+    const entries: MetadataRoute.Sitemap = [
         {
             url: `${baseUrl}/`,
             lastModified: new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 1,
         },
         {
             url: `${baseUrl}/shop`,
             lastModified: new Date(),
-            changeFrequency: "daily",
+            changeFrequency: "daily" as const,
             priority: 0.9,
         },
         {
             url: `${baseUrl}/search`,
             lastModified: new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 0.6,
         },
         {
             url: `${baseUrl}/inquiry/summary`,
             lastModified: new Date(),
-            changeFrequency: "monthly",
+            changeFrequency: "monthly" as const,
             priority: 0.3,
         },
         {
             url: `${baseUrl}/inquiry/contact`,
             lastModified: new Date(),
-            changeFrequency: "monthly",
+            changeFrequency: "monthly" as const,
             priority: 0.3,
         },
         {
             url: `${baseUrl}/inquiry/success`,
             lastModified: new Date(),
-            changeFrequency: "monthly",
+            changeFrequency: "monthly" as const,
             priority: 0.2,
         },
         {
             url: `${baseUrl}/slingshot-collections`,
             lastModified: new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 0.7,
         },
         {
             url: `${baseUrl}/rideengine-collections`,
             lastModified: new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 0.7,
         },
     ];
@@ -74,12 +74,12 @@ const fetchProductEntries = async (baseUrl: string): Promise<MetadataRoute.Sitem
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(productsSql);
-        const entries = result.rows
+        const entries: MetadataRoute.Sitemap = result.rows
             .filter((row: { slug?: string | null }) => Boolean(row.slug))
             .map((row: { slug: string; updated_at?: string | Date | null }) => ({
                 url: `${baseUrl}/product/${row.slug}`,
                 lastModified: row.updated_at ? new Date(row.updated_at) : new Date(),
-                changeFrequency: "weekly",
+                changeFrequency: "weekly" as const,
                 priority: 0.8,
             }));
 
@@ -105,10 +105,10 @@ const fetchCategoryEntries = async (baseUrl: string): Promise<MetadataRoute.Site
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(categorySql);
-        const entries = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
+        const entries: MetadataRoute.Sitemap = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
             url: `${baseUrl}/category/${row.slug}`,
             lastModified: row.updated_at ? new Date(row.updated_at) : new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 0.7,
         }));
 
@@ -134,10 +134,10 @@ const fetchCollectionEntries = async (baseUrl: string): Promise<MetadataRoute.Si
       ORDER BY updated_at DESC NULLS LAST
     `;
         const result = await query(collectionsSql);
-        const entries = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
+        const entries: MetadataRoute.Sitemap = result.rows.map((row: { slug: string; updated_at?: string | Date | null }) => ({
             url: `${baseUrl}/collections/${row.slug}`,
             lastModified: row.updated_at ? new Date(row.updated_at) : new Date(),
-            changeFrequency: "weekly",
+            changeFrequency: "weekly" as const,
             priority: 0.7,
         }));
 

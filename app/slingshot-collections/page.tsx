@@ -8,11 +8,6 @@ import { buildCanonicalUrl } from "@/lib/seo/url-server";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: 'Slingshot Collections | Slingshot Sports',
-    description: 'Discover all Slingshot high-performance gear collections.',
-};
-
 export async function generateMetadata(): Promise<Metadata> {
     const canonicalPath = '/slingshot-collections';
     const canonicalUrl = await buildCanonicalUrl(canonicalPath);

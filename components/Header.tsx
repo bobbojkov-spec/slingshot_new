@@ -400,7 +400,7 @@ const Header = () => {
               />
               <button
                 type="submit"
-                aria-label={t("search.submit", "Submit search")}
+                aria-label={t("search.submit")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-accent transition-colors"
                 disabled={isSearchLoading}
               >

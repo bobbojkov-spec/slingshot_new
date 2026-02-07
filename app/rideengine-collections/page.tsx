@@ -6,10 +6,23 @@ import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: 'Ride Engine Collections | Slingshot Sports',
-    description: 'Explore our complete range of Ride Engine gear collections.',
-};
+import { buildCanonicalUrl } from "@/lib/seo/url-server";
+import { buildHreflangLinks } from "@/lib/seo/hreflang";
+
+export async function generateMetadata(): Promise<Metadata> {
+    const canonicalPath = '/rideengine-collections';
+    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
+    const hreflangLinks = buildHreflangLinks(canonicalUrl.replace(/\/.+$/, ""), canonicalPath);
+
+    return {
+        title: 'Ride Engine Collections | Slingshot Sports',
+        description: 'Explore our complete range of Ride Engine gear collections.',
+        alternates: {
+            canonical: hreflangLinks.canonical,
+            languages: hreflangLinks.alternates.languages,
+        },
+    };
+}
 
 export default async function RideEngineCollectionsPage() {
     const cookieStore = await cookies();
