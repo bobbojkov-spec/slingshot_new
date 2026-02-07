@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
@@ -28,6 +28,8 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
     const { addItem } = useCart();
     const { language, t } = useLanguage();
     const [origin, setOrigin] = useState<string>(process.env.NEXT_PUBLIC_SITE_URL || "");
+    const [showStickyBar, setShowStickyBar] = useState(false);
+    const addToCartRef = useRef<HTMLDivElement>(null); // renamed from mainButtonRef for clarity
 
     useEffect(() => {
         if (!origin && typeof window !== "undefined") {
@@ -37,6 +39,22 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
         if (product.colors && product.colors.length > 0 && !selectedColorId) {
             setSelectedColorId(product.colors[0].id);
         }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // Show sticky bar when main button is NOT intersecting (scrolled past)
+                // We check boundingClientRect to ensure we are below it, not above
+                const isBelow = entry.boundingClientRect.top < 0;
+                setShowStickyBar(!entry.isIntersecting && isBelow);
+            },
+            { threshold: 0 }
+        );
+
+        if (addToCartRef.current) {
+            observer.observe(addToCartRef.current);
+        }
+
+        return () => observer.disconnect();
     }, [product, origin, selectedColorId]);
 
     // Parse variant title to extract size
@@ -453,16 +471,18 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                     <Plus className="w-5 h-5 md:w-4 md:h-4" />
                                 </button>
                             </div>
-                            <button
-                                onClick={handleAddToInquiry}
-                                disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
-                                className={`flex-1 font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
-                                    }`}
-                            >
-                                <ShoppingBag className="w-5 h-5" /> {t("product.addToInquiry")}
-                            </button>
+                            <div ref={addToCartRef}>
+                                <button
+                                    onClick={handleAddToInquiry}
+                                    disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
+                                    className={`w-full font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
+                                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                        : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
+                                        }`}
+                                >
+                                    <ShoppingBag className="w-5 h-5" /> {t("product.addToInquiry")}
+                                </button>
+                            </div>
                         </div>
 
                     </div>
@@ -514,6 +534,41 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                     />
                 )
             }
+
+            {/* Mobile Sticky Bottom Bar */}
+            <div
+                className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 p-4 pb-safe-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 md:hidden ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
+                    }`}
+            >
+                <div className="flex gap-3">
+                    <div className="flex items-center border border-gray-300 rounded overflow-hidden w-24 shrink-0 justify-center">
+                        <button
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                        >
+                            <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="font-medium text-sm w-6 text-center">{quantity}</span>
+                        <button
+                            onClick={() => setQuantity(quantity + 1)}
+                            className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                    <button
+                        onClick={handleAddToInquiry}
+                        disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
+                        className={`flex-1 font-bold uppercase tracking-widest py-3 px-4 transition-colors flex items-center justify-center gap-2 rounded text-sm ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
+                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
+                            }`}
+                    >
+                        <ShoppingBag className="w-4 h-4" />
+                        {language === 'bg' ? 'Купи' : 'Add'}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

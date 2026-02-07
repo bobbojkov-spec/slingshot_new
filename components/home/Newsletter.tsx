@@ -19,6 +19,7 @@ const Newsletter = () => {
             type="email"
             placeholder={t("newsletter.placeholder")}
             aria-label="Email address"
+            inputMode="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="flex-1 px-4 py-4 rounded bg-white/10 border border-white/20 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent"

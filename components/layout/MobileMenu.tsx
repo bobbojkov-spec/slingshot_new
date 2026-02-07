@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NavigationSport, MenuGroup, MenuCollection } from "@/hooks/useNavigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -25,6 +25,18 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
     const [expandedSports, setExpandedSports] = useState<Record<string, boolean>>({});
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
+    // Prevent body scroll when menu is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const toggleSport = (slug: string) => {
         setExpandedSports(prev => ({
             ...prev,
@@ -44,10 +56,10 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
 
     return (
         <div
-            className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 ${isOpen ? "max-h-[80vh] opacity-100 overflow-y-auto" : "max-h-0 opacity-0"
+            className={`lg:hidden overflow-hidden transition-all duration-300 ease-out bg-deep-navy border-t border-white/10 flex flex-col ${isOpen ? "h-[calc(100vh-80px)] opacity-100" : "h-0 opacity-0"
                 }`}
         >
-            <nav className="section-container py-6 flex flex-col gap-4">
+            <nav className="section-container py-6 flex flex-col gap-4 overflow-y-auto flex-1 pb-safe-bottom">
 
                 {/* Slingshot Sports Accordion */}
                 {slingshotSports.map((sport: NavigationSport) => {

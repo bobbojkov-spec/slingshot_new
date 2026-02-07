@@ -1,7 +1,5 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -27,7 +25,6 @@ interface ProductCardProps {
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const { addItem } = useCart();
   const { language } = useLanguage();
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -65,29 +62,35 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
     <div
       className="product-card group"
       style={{ animationDelay: `${index * 50}ms` }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/product/${product.slug}`} className="block">
+      <Link href={`/product/${product.slug}`} className="block h-full flex flex-col">
         {/* Image Container */}
-        <div className="product-card-image-container">
+        <div className="product-card-image-container aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
           {product.image ? (
             <>
               {/* Primary Image */}
-              <img
-                src={product.image}
-                alt={`${product.name} - ${product.category}`}
-                loading="lazy"
-                className={`product-card-image ${hasSecondaryImage ? (isHovered ? 'opacity-0' : 'opacity-100') : ''}`}
-              />
-              {/* Secondary Image (shown on hover) */}
-              {hasSecondaryImage && (
-                <img
-                  src={product.secondaryImage}
-                  alt={`${product.name} - ${product.category} alternate view`}
-                  loading="lazy"
-                  className={`product-card-image product-card-image-secondary ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+              <div className={`absolute inset-0 transition-opacity duration-300 ${hasSecondaryImage ? 'group-hover:opacity-0' : ''}`}>
+                <Image
+                  src={product.image}
+                  alt={`${product.name} - ${product.category}`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
+                  priority={index < 4}
                 />
+              </div>
+
+              {/* Secondary Image (shown on hover only on devices that support hover) */}
+              {hasSecondaryImage && (
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Image
+                    src={product.secondaryImage!}
+                    alt={`${product.name} - ${product.category} alternate view`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
               )}
             </>
           ) : (
@@ -117,14 +120,14 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </div>
 
         {/* Product Info */}
-        <div className="product-card-info">
+        <div className="product-card-info flex-1 flex flex-col">
           <span className="product-card-category">
             {product.category}
           </span>
-          <h3 className="product-card-title">
+          <h3 className="product-card-title group-hover:text-accent transition-colors">
             {product.name}
           </h3>
-          <div className="product-card-price">
+          <div className="product-card-price mt-auto pt-2">
             <span className="product-card-price-current">
               €{Math.round(parseFloat(product.price.toString())).toLocaleString('de-DE')}
             </span>

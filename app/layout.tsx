@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Providers } from "./providers";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import CartDrawer from "@/components/CartDrawer";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -36,6 +36,13 @@ export const metadata: Metadata = {
     ]
   },
   manifest: '/manifest.json'
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#ffffff',
 };
 
 const COOKIE_NAME = "lang";

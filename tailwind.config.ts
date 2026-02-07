@@ -155,6 +155,9 @@ export default {
       boxShadow: {
         card: "var(--card-shadow)",
         "card-hover": "var(--card-shadow-hover)"
+      },
+      spacing: {
+        'safe-bottom': 'env(safe-area-inset-bottom)',
       }
     }
   },

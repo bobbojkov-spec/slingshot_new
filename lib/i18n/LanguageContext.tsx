@@ -55,12 +55,17 @@ export function LanguageProvider({
     if (reload && typeof window !== "undefined") {
       const { pathname, search } = window.location;
       const isBgPath = pathname === "/bg" || pathname.startsWith("/bg/");
-      const basePath = isBgPath ? pathname.replace("/bg", "") || "/" : pathname;
+      const basePath = isBgPath ? (pathname.replace("/bg", "") || "/") : pathname;
+
+      // If switching to EN, ensure we append lang=en query to bypass BG cookie redirect in middleware during transition
+      // Or simply let the middleware handle it once the cookie is updated.
+      // Better to navigate to the exact intended URL.
+      const targetQuery = lang === "en" ? (search ? `${search}&lang=en` : "?lang=en") : search;
       const targetPath = lang === "bg"
         ? `/bg${basePath === "/" ? "" : basePath}`
-        : basePath;
+        : (basePath === "/" ? "/" : basePath);
 
-      window.location.assign(`${targetPath}${search}`);
+      window.location.assign(`${targetPath}${targetQuery}`);
     }
   };
 

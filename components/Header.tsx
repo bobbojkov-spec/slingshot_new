@@ -185,7 +185,7 @@ const Header = () => {
     <header className={headerClass}>
       <div className="section-container">
         <div className="flex items-center justify-between h-20">
-            <Link href={buildLocalePath("/", language)} className="flex items-center gap-4 shrink-0">
+          <Link href={buildLocalePath("/", language)} className="flex items-center gap-4 shrink-0">
             <img
               alt="Slingshot Bulgaria Official Logo"
               className="h-10 w-auto"
@@ -398,6 +398,7 @@ const Header = () => {
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t("header.searchPlaceholder")}
                 aria-label={t("header.searchPlaceholder")}
+                inputMode="search"
                 className="w-full bg-white/10 border border-white/20 rounded px-4 py-4 pr-12 text-white placeholder:text-white/50 font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
               />
               <button
