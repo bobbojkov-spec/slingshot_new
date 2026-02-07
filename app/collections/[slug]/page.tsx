@@ -49,10 +49,25 @@ export default async function CollectionPage({ params }: PageProps) {
         breadcrumbs
     );
 
+    const canonicalPath = `/collections/${slug}`;
+    const canonicalUrl = await buildCanonicalUrl(canonicalPath);
+
+    const pageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: collection.title,
+        description: collection.description || undefined,
+        url: canonicalUrl,
+        image: collection.image_url || undefined,
+    };
+
     return (
         <>
             {process.env.NEXT_PUBLIC_SITE_URL && (
-                <SchemaJsonLd data={breadcrumbSchema} />
+                <>
+                    <SchemaJsonLd data={breadcrumbSchema} />
+                    <SchemaJsonLd data={pageSchema} />
+                </>
             )}
             <CollectionShopClient
                 initialCollection={collection}
