@@ -20,6 +20,7 @@ export function FloatingWarning() {
                 <button
                     onClick={() => setIsVisible(false)}
                     className="text-white/50 hover:text-white transition-colors"
+                    aria-label="Dismiss"
                 >
                     <X className="w-5 h-5" />
                 </button>
