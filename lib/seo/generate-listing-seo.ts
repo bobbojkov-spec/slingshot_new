@@ -4,6 +4,7 @@ export interface ListingSEOInput {
   language: Language;
   heroTitle?: string;
   heroSubtitle?: string;
+  weightedTokens?: Array<{ value: string; score: number }>;
   collectionNames?: string[];
   categoryNames?: string[];
   menuGroupNames?: string[];
@@ -43,6 +44,11 @@ const scoreWeightedTokens = (input: ListingSEOInput) => {
 
   if (input.heroTitle) weighted.push({ value: cleanToken(input.heroTitle), score: 9 });
   if (input.heroSubtitle) weighted.push({ value: cleanToken(input.heroSubtitle), score: 8 });
+  if (input.weightedTokens) {
+    input.weightedTokens
+      .filter((item) => item.value)
+      .forEach((item) => weighted.push({ value: cleanToken(item.value), score: item.score }));
+  }
   pushTokens(input.collectionNames, 9);
   pushTokens(input.categoryNames, 9);
   pushTokens(input.menuGroupNames, 7);
