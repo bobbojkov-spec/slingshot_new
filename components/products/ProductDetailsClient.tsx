@@ -459,6 +459,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                             <div className="flex items-center border border-gray-300 rounded overflow-hidden w-full sm:w-fit justify-center">
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    aria-label={t("quantity.decrease")}
                                     className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
                                 >
                                     <Minus className="w-5 h-5 md:w-4 md:h-4" />
@@ -466,6 +467,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                 <span className="font-medium w-16 md:w-12 text-center text-lg md:text-base">{quantity}</span>
                                 <button
                                     onClick={() => setQuantity(quantity + 1)}
+                                    aria-label={t("quantity.increase")}
                                     className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
                                 >
                                     <Plus className="w-5 h-5 md:w-4 md:h-4" />
@@ -544,6 +546,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                     <div className="flex items-center border border-gray-300 rounded overflow-hidden w-24 shrink-0 justify-center">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            aria-label={t("quantity.decrease")}
                             className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
                         >
                             <Minus className="w-4 h-4" />
@@ -551,6 +554,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                         <span className="font-medium text-sm w-6 text-center">{quantity}</span>
                         <button
                             onClick={() => setQuantity(quantity + 1)}
+                            aria-label={t("quantity.increase")}
                             className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
                         >
                             <Plus className="w-4 h-4" />

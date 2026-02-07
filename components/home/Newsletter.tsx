@@ -18,7 +18,7 @@ const Newsletter = () => {
           <input
             type="email"
             placeholder={t("newsletter.placeholder")}
-            aria-label="Email address"
+            aria-label={t("newsletter.emailLabel")}
             inputMode="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
