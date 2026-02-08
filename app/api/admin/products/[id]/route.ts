@@ -346,4 +346,38 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
   }
 }
 
+export async function DELETE(_: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const productId = params?.id;
 
+  if (!productId) {
+    return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+  }
+
+  try {
+    // Safety check: only allow deleting archived products
+    const { rows } = await query('SELECT status FROM products WHERE id = $1', [productId]);
+    if (!rows[0]) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+    if (rows[0].status !== 'archived') {
+      return NextResponse.json({ error: 'Only archived products can be deleted' }, { status: 400 });
+    }
+
+    // Delete related data first (foreign key dependencies)
+    await query('DELETE FROM product_variant_availability WHERE variant_id IN (SELECT id FROM product_variants WHERE product_id = $1)', [productId]);
+    await query('DELETE FROM product_variants WHERE product_id = $1', [productId]);
+    await query('DELETE FROM product_images WHERE product_id = $1', [productId]);
+    await query('DELETE FROM product_images_railway WHERE product_id = $1', [productId]);
+    await query('DELETE FROM product_colors WHERE product_id = $1', [productId]);
+    await query('DELETE FROM product_translations WHERE product_id = $1', [productId]);
+    await query('DELETE FROM collection_products WHERE product_id = $1', [productId]);
+    await query('DELETE FROM product_activity_categories WHERE product_id = $1', [productId]);
+    await query('DELETE FROM products WHERE id = $1', [productId]);
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Failed to delete product', error);
+    return NextResponse.json({ error: error?.message || 'Failed to delete product' }, { status: 500 });
+  }
+}

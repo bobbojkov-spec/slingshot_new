@@ -539,8 +539,9 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
 
             {/* Mobile Sticky Bottom Bar */}
             <div
-                className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 p-4 pb-safe-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 md:hidden ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
+                className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 md:hidden ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
                     }`}
+                style={{ padding: '16px 16px calc(16px + env(safe-area-inset-bottom, 0px))' }}
             >
                 <div className="flex gap-3">
                     <div className="flex items-center border border-gray-300 rounded overflow-hidden w-24 shrink-0 justify-center">

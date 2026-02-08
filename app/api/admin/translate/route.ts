@@ -28,7 +28,14 @@ export async function POST(req: Request) {
                ${text}`;
 
         const result = await model.generateContent(prompt);
-        const translated = result.response.text().trim() || '';
+        let translated = result.response.text().trim() || '';
+
+        // Strip markdown code blocks if present (Gemini 2.0 Flash tends to add them)
+        if (translated.startsWith('```')) {
+            translated = translated.replace(/^```(?:html)?\s*/i, '').replace(/\s*```$/, '');
+        }
+
+        translated = translated.trim();
 
         return NextResponse.json({ translated });
     } catch (error: any) {

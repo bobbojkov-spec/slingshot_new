@@ -6,14 +6,16 @@ import {
   Input,
   Select,
   Space,
+  Switch,
   Table,
   Typography,
   Card,
   Divider,
   Tag,
+  Popconfirm,
   message,
 } from 'antd';
-import { EditOutlined, PictureOutlined, SearchOutlined, GlobalOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PictureOutlined, SearchOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useMemo, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -206,6 +208,38 @@ export default function ProductsListClient({ products }: { products: Product[] }
       ),
     },
     {
+      title: <span style={{ fontSize: 11, fontWeight: 600 }}>Active</span>,
+      dataIndex: 'status',
+      width: 70,
+      render: (_: any, record: Product) => {
+        const isActive = record.status !== 'archived';
+        return (
+          <Switch
+            size="small"
+            checked={isActive}
+            onClick={(_, e) => e.stopPropagation()}
+            onChange={async (checked) => {
+              const newStatus = checked ? 'active' : 'archived';
+              const prev = rows;
+              setRows(rows.map(p => p.id === record.id ? { ...p, status: newStatus } : p));
+              try {
+                const res = await fetch('/api/admin/products/update', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ product: { id: record.id, info: { status: newStatus } } }),
+                });
+                if (!res.ok) throw new Error();
+                message.success(checked ? 'Product activated' : 'Product archived');
+              } catch {
+                setRows(prev);
+                message.error('Failed to update status');
+              }
+            }}
+          />
+        );
+      },
+    },
+    {
       title: <span style={{ fontSize: 11, fontWeight: 600 }}>Brand</span>,
       dataIndex: 'brand',
       width: 140,
@@ -366,7 +400,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
     {
       title: '',
       dataIndex: 'edit',
-      width: 90,
+      width: 120,
       fixed: 'right' as const,
       render: (_: any, record: Product) => (
         <Space size={4}>
@@ -386,6 +420,35 @@ export default function ProductsListClient({ products }: { products: Product[] }
               goToEditPage(record.id);
             }}
           />
+          {record.status === 'archived' && (
+            <Popconfirm
+              title="Delete this product?"
+              description="This will permanently remove the product and all its data."
+              onConfirm={async (e) => {
+                e?.stopPropagation();
+                const prev = rows;
+                setRows(rows.filter(p => p.id !== record.id));
+                try {
+                  const res = await fetch(`/api/admin/products/${record.id}`, { method: 'DELETE' });
+                  if (!res.ok) throw new Error();
+                  message.success('Product deleted');
+                } catch {
+                  setRows(prev);
+                  message.error('Failed to delete product');
+                }
+              }}
+              onCancel={(e) => e?.stopPropagation()}
+              okText="Delete"
+              okType="danger"
+            >
+              <Button
+                type="link"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Popconfirm>
+          )}
         </Space>
       ),
     },

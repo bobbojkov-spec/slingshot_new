@@ -166,8 +166,8 @@ export async function translateMissingSpecs() {
       p.specs_html
     FROM products p
     LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = 'bg'
-    WHERE p.specs_html IS NOT NULL AND p.specs_html != ''
-    AND (pt.specs_html IS NULL OR pt.specs_html = '')
+    WHERE p.specs_html IS NOT NULL AND LENGTH(p.specs_html) > 5
+    AND (pt.specs_html IS NULL OR LENGTH(TRIM(pt.specs_html)) < 5)
     LIMIT 20
   `);
 
@@ -181,7 +181,8 @@ export async function translateMissingSpecs() {
       Translate the following HTML content from English to Bulgarian.
       Preserve all HTML tags, attributes, and structure. Only translate the text content.
       Preserve technical terms and measurements (e.g., cm, kg, m2).
-      Return ONLY the translated HTML string. Do not wrap in markdown code blocks.
+      IMPORTANT: Return ONLY the translated HTML string. Do NOT wrap it in markdown code blocks like \`\`\`html.
+      Do NOT add any introductory or concluding text.
 
       English HTML:
       ${product.specs_html}
@@ -200,8 +201,18 @@ export async function translateMissingSpecs() {
       const result = await model.generateContent(basePrompt);
       const translatedHtml = result.response.text().trim();
 
-      // Clean up markdown code blocks if Gemini adds them despite instructions
-      const cleanHtml = translatedHtml.replace(/^```html/, '').replace(/^```/, '').replace(/```$/, '').trim();
+      // Aggressively clean up markdown code blocks
+      let cleanHtml = translatedHtml;
+      // Remove opening ```html or ```
+      if (cleanHtml.startsWith('```')) {
+        cleanHtml = cleanHtml.replace(/^```(?:html)?\s*/i, '');
+      }
+      // Remove closing ```
+      if (cleanHtml.endsWith('```')) {
+        cleanHtml = cleanHtml.replace(/\s*```$/, '');
+      }
+
+      cleanHtml = cleanHtml.trim();
 
       await query(
         `
