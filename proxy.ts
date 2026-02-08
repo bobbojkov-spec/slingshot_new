@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 const BG_PREFIX = "/bg";
 
 const isPublicFile = (pathname: string) => {
+  if (pathname.endsWith("/llms.txt") || pathname.endsWith("/llms-full.txt")) return false;
   return pathname.includes(".") || pathname.startsWith("/_next");
 };
 
