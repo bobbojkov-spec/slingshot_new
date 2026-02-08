@@ -7,7 +7,7 @@ const isPublicFile = (pathname: string) => {
   return pathname.includes(".") || pathname.startsWith("/_next");
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
   if (isPublicFile(pathname)) {

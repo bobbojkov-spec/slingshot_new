@@ -12,6 +12,8 @@ const pool = new Pool({
     process.env.NODE_ENV === 'production'
     ? { rejectUnauthorized: false }
     : undefined,
+  // Limit connections during build to prevent exhaustion with many workers
+  max: process.env.NEXT_PHASE === 'phase-production-build' ? 2 : 10,
 });
 
 // Helper function to execute queries
