@@ -1,6 +1,8 @@
+import { businessInfo } from "@/lib/seo/business";
+
 export const aiVisibilityConfig = {
     siteName: "Slingshot Bulgaria",
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://slingshot-bg.com",
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || businessInfo.url.replace(/\/$/, ""),
     defaultLocale: "bg",
     locales: ["bg", "en"],
     logoUrl: "https://slingshot-bg.com/logo.png", // Update if you have a specific logo URL
