@@ -109,7 +109,7 @@ function CategoryCard({ collection, index }: CategoryCardProps) {
 
                     {/* Subtitle */}
                     {collection.subtitle && (
-                        <p className="text-sm text-white/70 font-body line-clamp-2 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                        <p className="text-sm text-white/70 font-body line-clamp-2 opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 transition-all duration-500 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
                             {collection.subtitle}
                         </p>
                     )}

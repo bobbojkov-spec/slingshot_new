@@ -30,9 +30,9 @@ const ColorSelector = ({ colors, selectedColor, onColorSelect }: ColorSelectorPr
           <button
             key={color.value}
             onClick={() => onColorSelect(color.value)}
-            className={`relative w-10 h-10 rounded transition-all ${color.bgClass} ${
-              selectedColor === color.value 
-                ? "ring-2 ring-offset-2 ring-foreground scale-110" 
+            className={`relative w-11 h-11 rounded transition-all ${color.bgClass} ${
+              selectedColor === color.value
+                ? "ring-2 ring-offset-2 ring-foreground scale-110"
                 : "hover:scale-105"
             }`}
             title={color.name}

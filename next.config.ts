@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'slingshotnewimages-hw-tht.storage.railway.app',
       },
+      {
+        protocol: 'https',
+        hostname: 'slingshotnewimages-hw-tht.t3.storageapi.dev',
+      },
     ],
   },
   webpack(config) {

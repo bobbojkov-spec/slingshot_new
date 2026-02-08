@@ -142,6 +142,8 @@ export default function ContactPage() {
                 {t("inquiry.contactPage.labels.phone")} *
               </label>
               <Input
+                type="tel"
+                inputMode="tel"
                 placeholder={t("inquiry.contactPage.placeholders.phone")}
                 className="bg-card"
                 value={formValues.phone}

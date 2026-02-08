@@ -120,7 +120,7 @@ export function CollectionShopClient({ initialCollection, slug, breadcrumbs }: C
                                         {child.title}
                                     </h3>
                                     {child.subtitle && (
-                                        <p className="text-sm text-gray-300 line-clamp-2 max-w-[80%] opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                                        <p className="text-sm text-gray-300 line-clamp-2 max-w-[80%] opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-500">
                                             {child.subtitle}
                                         </p>
                                     )}

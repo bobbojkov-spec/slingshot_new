@@ -64,7 +64,7 @@ export default function ContactForm() {
             <div className="space-y-6">
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{txt.name}</label>
-                    <input type="text" name="name" id="name" required className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-black focus:border-black" />
+                    <input type="text" name="name" id="name" inputMode="text" required className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-black focus:border-black" />
                 </div>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{txt.email}</label>

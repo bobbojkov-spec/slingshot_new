@@ -289,13 +289,20 @@
 
   .product-card-quick-add {
     @apply absolute bottom-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md;
-    @apply opacity-0 translate-y-2 transition-all duration-300;
+    @apply opacity-100 translate-y-0 transition-all duration-300;
     @apply hover:bg-accent hover:text-white;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply active:scale-95;
   }
 
-  .product-card:hover .product-card-quick-add {
-    @apply opacity-100 translate-y-0;
+  /* Desktop: hide by default, show on hover */
+  @media (min-width: 1024px) {
+    .product-card-quick-add {
+      @apply opacity-0 translate-y-2;
+    }
+    .product-card:hover .product-card-quick-add {
+      @apply opacity-100 translate-y-0;
+    }
   }
 
   .product-card-info {
