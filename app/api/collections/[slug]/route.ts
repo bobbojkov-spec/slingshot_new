@@ -3,6 +3,7 @@ import { query } from '@/lib/db';
 import { getPresignedUrl } from '@/lib/railway/storage';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // GET - Fetch collection by slug with its products
 export async function GET(
@@ -126,6 +127,10 @@ export async function GET(
                 source: collection.source,
             },
             products,
+        }, {
+            headers: {
+                'Cache-Control': 'no-store, max-age=0',
+            },
         });
     } catch (error: any) {
         console.error('Error fetching collection:', error);

@@ -14,8 +14,8 @@ export const translations = {
     "hero.badge": "Official Slingshot Distributor",
     "hero.cta.r-collection": "View Ride Engine Collections",
     "hero.cta.s-collection": "View Slingshot Collections",
-    "hero.title.line1": "Slingshot Sports: Leading Innovation",
-    "hero.title.accent": "in Hydrofoil and Kiteboarding",
+    "hero.title.line1": "Slingshot Sports:",
+    "hero.title.accent": "Foil & Kite Innovation",
     "hero.description":
       "High-performance gear engineered for the ride since 1999. Explore the 2026 collection and the award-winning, screwless One-Lock system.",
     "hero.cta.shopNow": "Shop Now",
@@ -154,8 +154,8 @@ export const translations = {
     "header.languageSwitch": "BG / EN",
     "header.searchPlaceholder": "Търси екипировка",
     "hero.badge": "Официален дистрибутор на Slingshot",
-    "hero.title.line1": "Slingshot Sports: Световният лидер",
-    "hero.title.accent": "в кайтбординг и хидрофойл иновациите",
+    "hero.title.line1": "Slingshot Sports:",
+    "hero.title.accent": "Кайт и фойл иновации",
     "hero.description":
       "Професионална екипировка, създадена от райдъри за райдъри. Разгледай новата колекция 2026 и революционната безболтова система One-Lock.",
     "hero.cta.shopNow": "Пазарувай сега",
