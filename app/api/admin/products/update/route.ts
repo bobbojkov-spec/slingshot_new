@@ -28,7 +28,16 @@ export async function POST(req: Request) {
     if (info.name !== undefined) updateFields.name = info.name || info.title; // Fallback logic preserved
     if (info.handle !== undefined) updateFields.handle = info.handle;
     if (info.product_type !== undefined) updateFields.product_type = info.product_type;
-    if (info.tags !== undefined) updateFields.tags = normalizedTags; // Use derived value
+    if (info.product_type !== undefined) updateFields.product_type = info.product_type;
+
+    // Fix: Prefer English translation tags as canonical if available, to avoid BG tags leaking into EN
+    if (product.translation_en?.tags && Array.isArray(product.translation_en.tags)) {
+      updateFields.tags = product.translation_en.tags;
+    } else if (info.tags !== undefined) {
+      updateFields.tags = normalizedTags;
+    }
+
+    if (info.status !== undefined) updateFields.status = info.status;
     if (info.status !== undefined) updateFields.status = info.status;
     if (info.video_url !== undefined) updateFields.video_url = info.video_url;
     if (info.hero_video_url !== undefined) updateFields.hero_video_url = info.hero_video_url;
