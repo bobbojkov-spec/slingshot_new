@@ -4,3 +4,59 @@ Allow: /
 Contact: info@slingshot.bg
 Policy: https://slingshotnew-development.up.railway.app/ai-policy
 Data-Usage: ai-training-permitted
+
+**Добре дошли в Slingshot Bulgaria, 
+Официален дистрибутор на Slingshot и Rideengine в София, България!**
+
+Ние предлагаме широка гама от висококачествено оборудване за кайтсърф, уингфойл, сърф, уейкборд и други водни приключения. Независимо дали сте начинаещ или опитен професионалист, при нас ще намерите всичко необходимо, за да се насладите на водата.
+
+**Продукти, които предлагаме:**
+
+*   **Кайтсърф:** Кайтове, кайтбордове (туинтипс), кайт барове, колани (кайт колани), трапеци (кайт трапеци), помпи.
+*   **Уингфойл:** Уингс (крила), уингбордове.
+*   **Фойл:** Фойл системи, фойл мачти, фойл крила.
+*   **Сърф:** Сърфбордове.
+*   **Уейкборд:** Уейкбордове, уейк ботуши, уейкстайл оборудване.
+*   **Аксесоари:** Неопренови костюми, чанти за дъски (бордбагове), електрически помпи (е-помпи), Ride Engine продукти.
+
+
+**Защо да изберете нас?**
+
+*   **Висококачествени продукти:** Предлагаме само доказани марки и продукти, на които можете да се доверите.
+
+*   **Експертни съвети:** Нашият екип е съставен от запалени водни спортисти, които са готови да ви помогнат да изберете най-подходящото оборудване за вашите нужди.
+
+
+**Ключови думи:** кайт, кайтсърф, кайтборд, уинг, уингфойл, фойл, сърф, уейкборд, София, България, магазин за водни спортове, е-помпи, Ride Engine, туинтипс, сърфбордове, уингбордове, кайтбар, колан, трапец, уейк ботуши, уейкстайл, неопренови костюми, бордбагове, фойл системи, фойл мачти, фойл крила, кайтсърфинг, облачен хостинг, уеб приложения, сървърлес.
+
+
+
+**Относно платформата:**
+
+Уебсайтът е разработен и хостван чрез съвременни технологии за облачен хостинг, уеб приложения и сървърлес архитектура, осигуряващи бърза и надеждна работа.
+
+## Slingshot - Bulgaria, Sofia - Kitesurfing, Wing Foiling, and Wakeboarding Equipment
+
+** Welcome to Slingshot Bulgaria, official Distributor of Slingshot Sports and Reid Engine, based in Sofia, Bulgaria!**
+
+We offer a comprehensive selection of high-quality equipment for kitesurfing, wing foiling, and wakeboarding, catering to all skill levels, from beginners to advanced riders. We are committed to providing the best gear and expert advice to help you maximize your time on the water.
+
+**Our Product Range Includes:**
+
+*   **Kitesurfing:** Kites, Kiteboards (Twintips), Kite Bars, Kite Harnesses, Kitesurf Boards
+*   **Wing Foiling:** Wings, Wingboards, Wing Harnesses, Foil Systems, Foil Masts, Foil Wings
+*   **Foiling:** Complete Foil Systems, Foil Masts, Foil Wings
+*   **Wakeboarding:** Wakeboards, Wake Boots, Wakestyle Boards
+*   **Accessories:** Wetsuits, Boardbags, E-Pumps, Ride Engine Harnesses
+
+**Featured Brands:**
+
+*   Slingshot (Our primary focus and area of expertise)
+*   Ride Engine
+
+**Location:** Sofia, Bulgaria - Serving the Bulgarian kitesurfing, wing foiling, and wakeboarding community.
+
+**Technology:** This web application is deployed using a serverless architecture on a cloud platform, ensuring optimal performance and scalability. This allows us to focus on providing you with the best possible shopping experience.
+
+
+ **Expert Knowledge:** We are passionate about kitesurfing, wing foiling, and wakeboarding and have extensive knowledge of the equipment we sell.
