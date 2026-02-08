@@ -80,30 +80,52 @@ export async function getInventory(options?: { forceRefresh?: boolean }): Promis
 
     // 2. Products
     try {
-        const productsResult = await query("SELECT title, name, slug, description, tags, product_type, updated_at FROM products WHERE status = 'active'");
+        const productsResult = await query(`
+            SELECT 
+                p.title, p.name, p.slug, p.description, p.tags, p.product_type, p.updated_at, p.brand, p.subtitle,
+                c.name as category_name
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.status = 'active'
+        `);
         for (const p of productsResult.rows) {
+            const rawTitle = p.title || p.name;
+            const brand = p.brand || "Slingshot";
+            const category = p.category_name || p.product_type || "";
+
+            // "Brand Category Name"
+            const enrichedTitle = `${brand} ${category} ${rawTitle}`.replace(/\s+/g, " ").trim();
+
+            // "Buy Brand Category Name - Subtitle"
+            let enrichedDescription = `Buy ${enrichedTitle}`;
+            if (p.subtitle) {
+                enrichedDescription += ` - ${p.subtitle}`;
+            } else if (p.description) {
+                enrichedDescription += ` - ${p.description.slice(0, 160)}`;
+            }
+
             pages.push({
                 url: `${baseUrl}/product/${p.slug}`,
                 path: `/product/${p.slug}`,
                 type: "product",
-                title: p.title || p.name,
-                description: p.description?.slice(0, 200) || `Buy ${p.title || p.name}`,
+                title: enrichedTitle,
+                description: enrichedDescription,
                 locale: null,
                 updatedAt: p.updated_at ? new Date(p.updated_at) : new Date(),
                 priority: 0.9,
-                tags: p.tags ? [p.product_type, ...p.tags].filter(Boolean) : [p.product_type].filter(Boolean),
+                tags: p.tags ? [p.product_type, brand, ...p.tags].filter(Boolean) : [p.product_type, brand].filter(Boolean),
             });
             // Add BG version
             pages.push({
                 url: `${baseUrl}/bg/product/${p.slug}`,
                 path: `/bg/product/${p.slug}`,
                 type: "product",
-                title: p.title || p.name,
-                description: p.description?.slice(0, 200) || `Buy ${p.title || p.name}`,
+                title: enrichedTitle,
+                description: enrichedDescription,
                 locale: "bg",
                 updatedAt: p.updated_at ? new Date(p.updated_at) : new Date(),
                 priority: 0.9,
-                tags: p.tags ? [p.product_type, ...p.tags].filter(Boolean) : [p.product_type].filter(Boolean),
+                tags: p.tags ? [p.product_type, brand, ...p.tags].filter(Boolean) : [p.product_type, brand].filter(Boolean),
             });
         }
     } catch (e) {
