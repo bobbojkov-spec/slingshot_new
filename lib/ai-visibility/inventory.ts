@@ -134,8 +134,21 @@ export async function getInventory(options?: { forceRefresh?: boolean }): Promis
 
     // 3. Collections
     try {
-        const collectionsResult = await query("SELECT title, slug, description, updated_at FROM collections WHERE visible = true");
+        const collectionsResult = await query(`
+            SELECT DISTINCT c.title, c.slug, c.description, c.updated_at,
+                   (SELECT count(*) FROM collection_products cp 
+                    JOIN products p ON cp.product_id = p.id 
+                    JOIN product_variants pv ON pv.product_id = p.id
+                    WHERE cp.collection_id = c.id AND p.status = 'active' AND pv.inventory_quantity > 0) as stock_count
+            FROM collections c
+            INNER JOIN menu_group_collections mgc ON c.id = mgc.collection_id
+            WHERE c.visible = true
+            GROUP BY c.id
+        `);
         for (const c of collectionsResult.rows) {
+            const stockCount = Number(c.stock_count || 0);
+            if (stockCount === 0) continue; // Skip empty/inactive collections
+
             pages.push({
                 url: `${baseUrl}/collections/${c.slug}`,
                 path: `/collections/${c.slug}`,
