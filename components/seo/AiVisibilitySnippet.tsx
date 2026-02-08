@@ -27,7 +27,11 @@ export default function AiVisibilitySnippet({ page, data, style }: AiVisibilityS
 
     return (
         <>
-            <SchemaJsonLd data={schema} />
+            {Array.isArray(schema) ? (
+                schema.map((s, i) => <SchemaJsonLd key={i} data={s as any} />)
+            ) : (
+                <SchemaJsonLd data={schema as any} />
+            )}
             <div
                 dangerouslySetInnerHTML={{ __html: html }}
                 className="print:hidden"
