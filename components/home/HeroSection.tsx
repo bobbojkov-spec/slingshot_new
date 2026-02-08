@@ -26,7 +26,7 @@ const HeroSection = () => {
           <span className="text-section-title text-white mb-4 block">
             {t("hero.badge")}
           </span>
-          <h1 className="h1 font-hero text-white mb-6 uppercase">
+          <h1 className="h1 font-hero text-white mb-6">
             {t("hero.title.line1")}
             <br />
             <span className="text-accent">{t("hero.title.accent")}</span>
