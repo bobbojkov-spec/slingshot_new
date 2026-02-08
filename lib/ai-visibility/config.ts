@@ -7,6 +7,8 @@ export const aiVisibilityConfig = {
     socialProfiles: [
         "https://www.facebook.com/slingshotkiteboardingbulgaria",
         "https://www.instagram.com/slingshotbg/",
+        "https://www.youtube.com/user/slingshotsports",
+        "https://twitter.com/slingshot_gear",
     ],
     contactUrl: "https://slingshot-bg.com/inquiry/contact",
     aboutUrl: "https://slingshot-bg.com/about", // Update if exists

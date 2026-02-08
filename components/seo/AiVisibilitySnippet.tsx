@@ -1,13 +1,15 @@
 import { generateAiSnippet } from "@/lib/ai-visibility/snippet";
 import { InventoryPage } from "@/lib/ai-visibility/inventory";
+import { generateJsonLd } from "@/lib/ai-visibility/schema";
+import SchemaJsonLd from "./SchemaJsonLd";
 
 interface AiVisibilitySnippetProps {
     page: Partial<InventoryPage>;
+    data?: any; // Extra data for schema (like price, sku)
     style?: "minimal" | "boxed";
 }
 
-export default function AiVisibilitySnippet({ page, style }: AiVisibilitySnippetProps) {
-    // Construct a safe partial inventory page object
+export default function AiVisibilitySnippet({ page, data, style }: AiVisibilitySnippetProps) {
     const inventoryPage: InventoryPage = {
         url: page.url || "",
         path: page.path || "",
@@ -21,11 +23,15 @@ export default function AiVisibilitySnippet({ page, style }: AiVisibilitySnippet
     };
 
     const html = generateAiSnippet(inventoryPage, style);
+    const schema = generateJsonLd(inventoryPage, data);
 
     return (
-        <div
-            dangerouslySetInnerHTML={{ __html: html }}
-            className="print:hidden" // Optional: hide when printing if desired
-        />
+        <>
+            <SchemaJsonLd data={schema} />
+            <div
+                dangerouslySetInnerHTML={{ __html: html }}
+                className="print:hidden"
+            />
+        </>
     );
 }

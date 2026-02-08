@@ -19,9 +19,10 @@ export const businessInfo = {
     },
     areaServed: ["Bulgaria", "Sofia"],
     sameAs: [
-        "https://www.instagram.com/slingshotsports",
-        "https://www.facebook.com/slingshotsports",
-        "https://www.youtube.com/@slingshotsports"
+        "https://www.facebook.com/slingshotkiteboardingbulgaria",
+        "https://www.instagram.com/slingshotbg/",
+        "https://www.youtube.com/user/slingshotsports",
+        "https://twitter.com/slingshot_gear"
     ]
 };
 
