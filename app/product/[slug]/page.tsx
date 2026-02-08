@@ -8,6 +8,7 @@ import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
 import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import AiVisibilitySnippet from "@/components/seo/AiVisibilitySnippet";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -116,6 +117,16 @@ export default async function ProductPage({ params }: PageProps) {
     <>
       <SchemaJsonLd data={breadcrumbSchema} />
       <SchemaJsonLd data={productSchema} />
+      <div className="container mx-auto px-4 py-2">
+        <AiVisibilitySnippet
+          page={{
+            title: product.title || product.name,
+            description: product.description,
+            type: "product",
+            tags: [product.product_type || "gear", product.brand || "slingshot"]
+          }}
+        />
+      </div>
       <ProductDetailsClient product={product} related={related} />
     </>
   );
