@@ -45,7 +45,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 min-w-0">
         {/* Main Image */}
         <div
           className="relative bg-secondary/30 rounded flex items-center justify-center cursor-zoom-in group overflow-hidden"
@@ -66,12 +66,12 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
 
         {/* Thumbnails */}
         {images.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 flex-wrap max-w-full pb-2">
             {images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedIndex(index)}
-                className={`relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
+                className={`relative w-14 h-14 md:w-20 md:h-20 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
                   ? "border-accent ring-2 ring-accent/30"
                   : "border-border hover:border-primary"
                   }`}
@@ -137,7 +137,7 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
 
             {/* Thumbnail strip at bottom */}
             {images.length > 1 && (
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2 py-1">
                 {images.map((image, index) => (
                   <button
                     key={index}

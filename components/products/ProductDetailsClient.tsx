@@ -213,9 +213,9 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
     const requiresColor = (product.colors?.length || 0) > 0;
 
     return (
-        <div className="min-h-screen bg-white relative pt-16 md:pt-20">
+        <div className="min-h-screen bg-white relative pt-20">
             {/* Breadcrumb Strip */}
-            <div className="bg-white border-b border-gray-100 sticky top-16 md:top-20 z-20">
+            <div className="bg-white border-b border-gray-100 sticky top-20 z-20">
                 <div className="section-container">
                     <div className="flex items-center gap-2 md:gap-2 text-[10px] md:text-xs font-medium uppercase tracking-wider text-gray-500 py-2 md:py-4 overflow-x-auto">
                         <Link href="/" className="hover:text-black transition-colors text-black/60 whitespace-nowrap">{t("breadcrumbs.home")}</Link>
@@ -265,7 +265,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                 <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-16">
 
                     {/* Gallery */}
-                    <div className="animate-fade-in">
+                    <div className="animate-fade-in min-w-0">
                         <ProductGallery
                             images={product.images}
                             productName={product.name}

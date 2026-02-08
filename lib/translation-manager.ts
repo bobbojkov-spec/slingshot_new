@@ -155,5 +155,75 @@ async function translateProductMeta() {
 
 export async function runAllTranslations() {
   await translateProductMeta();
+  await translateMissingSpecs();
+}
+
+export async function translateMissingSpecs() {
+  // Find products with missing specs_html in BG
+  const { rows: products } = await query(`
+    SELECT 
+      p.id, 
+      p.specs_html
+    FROM products p
+    LEFT JOIN product_translations pt ON p.id = pt.product_id AND pt.language_code = 'bg'
+    WHERE p.specs_html IS NOT NULL AND p.specs_html != ''
+    AND (pt.specs_html IS NULL OR pt.specs_html = '')
+    LIMIT 20
+  `);
+
+  console.log(`Found ${products.length} products needing Specs HTML translation.`);
+
+  for (const product of products) {
+    if (!product.specs_html) continue;
+
+    const basePrompt = `
+      You are a professional translator.
+      Translate the following HTML content from English to Bulgarian.
+      Preserve all HTML tags, attributes, and structure. Only translate the text content.
+      Preserve technical terms and measurements (e.g., cm, kg, m2).
+      Return ONLY the translated HTML string. Do not wrap in markdown code blocks.
+
+      English HTML:
+      ${product.specs_html}
+    `;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn('GEMINI_API_KEY not found.');
+      return;
+    }
+
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+      const result = await model.generateContent(basePrompt);
+      const translatedHtml = result.response.text().trim();
+
+      // Clean up markdown code blocks if Gemini adds them despite instructions
+      const cleanHtml = translatedHtml.replace(/^```html/, '').replace(/^```/, '').replace(/```$/, '').trim();
+
+      await query(
+        `
+          INSERT INTO product_translations (
+            product_id, 
+            language_code, 
+            specs_html,
+            updated_at
+          ) VALUES ($1, 'bg', $2, NOW())
+          ON CONFLICT (product_id, language_code) DO UPDATE SET
+            specs_html = EXCLUDED.specs_html,
+            updated_at = NOW()
+        `,
+        [product.id, cleanHtml]
+      );
+
+      console.log(`Translated specs for product ${product.id}`);
+      await sleep(SLEEP_MS);
+
+    } catch (e) {
+      console.error(`Failed to translate specs for product ${product.id}:`, e);
+    }
+  }
 }
 

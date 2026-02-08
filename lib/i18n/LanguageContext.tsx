@@ -30,6 +30,9 @@ export function LanguageProvider({
 
     if (saved) {
       setLanguageState(saved);
+    } else if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
+      // Admin pages default to EN, skip IP detection
+      setLanguageState("en");
     } else {
       // No cookie? Check IP.
       fetch('https://ipapi.co/json/')
@@ -54,12 +57,16 @@ export function LanguageProvider({
 
     if (reload && typeof window !== "undefined") {
       const { pathname, search } = window.location;
+
+      // Skip /bg/ locale routing for admin pages — just update the cookie
+      if (pathname.startsWith("/admin")) {
+        window.location.reload();
+        return;
+      }
+
       const isBgPath = pathname === "/bg" || pathname.startsWith("/bg/");
       const basePath = isBgPath ? (pathname.replace("/bg", "") || "/") : pathname;
 
-      // If switching to EN, ensure we append lang=en query to bypass BG cookie redirect in middleware during transition
-      // Or simply let the middleware handle it once the cookie is updated.
-      // Better to navigate to the exact intended URL.
       const targetQuery = lang === "en" ? (search ? `${search}&lang=en` : "?lang=en") : search;
       const targetPath = lang === "bg"
         ? `/bg${basePath === "/" ? "" : basePath}`

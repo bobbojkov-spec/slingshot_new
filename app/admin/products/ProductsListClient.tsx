@@ -13,7 +13,7 @@ import {
   Tag,
   message,
 } from 'antd';
-import { EditOutlined, PictureOutlined, SearchOutlined } from '@ant-design/icons';
+import { EditOutlined, PictureOutlined, SearchOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useMemo, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -77,6 +77,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
   const [brand, setBrand] = useState<string | undefined>(searchParams.get('brand') || undefined);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | undefined>(searchParams.get('collection') || undefined);
   const [collectionsList, setCollectionsList] = useState<{ id: string, title: string }[]>([]);
+  const [translating, setTranslating] = useState(false);
 
   useEffect(() => {
     setRows(products);
@@ -401,9 +402,34 @@ export default function ProductsListClient({ products }: { products: Product[] }
 
   return (
     <Space orientation="vertical" size={16} style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        Products Manager
-      </Typography.Title>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Products Manager
+        </Typography.Title>
+        <Button
+          icon={<GlobalOutlined />}
+          loading={translating}
+          onClick={async () => {
+            try {
+              setTranslating(true);
+              const res = await fetch('/api/admin/translate/missing-specs');
+              const data = await res.json();
+              if (data.success) {
+                message.success('Translation batch complete!');
+              } else {
+                message.error('Translation failed: ' + (data.error || 'Unknown error'));
+              }
+            } catch (error) {
+              console.error(error);
+              message.error('Failed to translate specs');
+            } finally {
+              setTranslating(false);
+            }
+          }}
+        >
+          Translate Specs (BG)
+        </Button>
+      </div>
 
       <Card styles={{ body: { padding: 16 } }}>
         <Space wrap size={[16, 16]}>

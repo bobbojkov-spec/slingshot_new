@@ -1,9 +1,7 @@
 import "./globals.css";
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from "next";
-import CartDrawer from "@/components/CartDrawer";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import LayoutShell from "@/components/LayoutShell";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import GA4RouteTracker from "@/components/GA4RouteTracker";
 import { headers } from "next/headers";
@@ -119,14 +117,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <GoogleAnalytics />
         <Providers initialLanguage={initialLanguage} initialNavigation={initialNavigation}>
           <GA4RouteTracker />
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <CartDrawer />
+          <LayoutShell>
+            {children}
+          </LayoutShell>
           <Toaster
             position="bottom-right"
             toastOptions={{

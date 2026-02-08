@@ -56,7 +56,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
     return "badge-default";
   };
 
-  const hasSecondaryImage = product.secondaryImage && product.secondaryImage !== product.image;
+  const hasSecondaryImage = false; // Disabled by user request: product.secondaryImage && product.secondaryImage !== product.image;
 
   return (
     <div
@@ -69,7 +69,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           {product.image ? (
             <>
               {/* Primary Image */}
-              <div className={`absolute inset-0 transition-opacity duration-300 ${hasSecondaryImage ? 'group-hover:opacity-0' : ''}`}>
+              <div className="absolute inset-0 transition-opacity duration-300">
                 <Image
                   src={product.image}
                   alt={`${product.name} - ${product.category}`}
@@ -80,18 +80,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
                 />
               </div>
 
-              {/* Secondary Image (shown on hover only on devices that support hover) */}
-              {hasSecondaryImage && (
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Image
-                    src={product.secondaryImage!}
-                    alt={`${product.name} - ${product.category} alternate view`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
+
             </>
           ) : (
             <div className="product-card-image-placeholder">
