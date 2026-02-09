@@ -21,11 +21,11 @@ export async function GET(request: NextRequest) {
       FROM homepage_featured_keywords hfk
       LEFT JOIN tags t ON lower(t.name_en) = lower(hfk.tag_name_en)
       WHERE 1 = 1
-      ${brandFilter ? `AND EXISTS (
+      AND EXISTS (
         SELECT 1
         FROM products p
         WHERE p.status = 'active'
-          AND LOWER(REPLACE(p.brand, ' ', '-')) = $1
+          ${brandFilter ? `AND LOWER(REPLACE(p.brand, ' ', '-')) = $1` : ''}
           AND (
             p.tags && ARRAY[hfk.tag_name_en]::text[]
             OR EXISTS (
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
                 AND pt.tags && ARRAY[hfk.tag_name_en]::text[]
             )
           )
-      )` : ''}
+      )
       ORDER BY hfk.sort_order ASC
       LIMIT 20
     `, brandFilter ? [brandFilter] : []);

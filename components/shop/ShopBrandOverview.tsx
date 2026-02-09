@@ -69,7 +69,8 @@ export default function ShopBrandOverview({ brandSlug, brandLabel }: ShopBrandOv
 
                 if (keywordsRes.ok) {
                     const data = await keywordsRes.json();
-                    setKeywords(data.keywords || []);
+                    const filteredKeywords = (data.keywords || []).filter((k: any) => (k.product_count ?? 0) > 0 || (k.count ?? 0) > 0);
+                    setKeywords(filteredKeywords);
                 }
 
                 if (featuredRes.ok) {

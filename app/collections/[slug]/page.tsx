@@ -81,7 +81,7 @@ export default async function CollectionPage({ params }: PageProps) {
     const lang = cookieStore.get("lang")?.value || "en";
     const collection = await getCollectionBySlug(slug, lang);
 
-    if (!collection) {
+    if (!collection || (collection.products.length === 0 && (!collection.child_collections || collection.child_collections.length === 0))) {
         notFound();
     }
 

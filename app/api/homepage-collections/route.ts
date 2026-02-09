@@ -70,6 +70,7 @@ export async function GET(request: NextRequest) {
         JOIN collections c ON c.id = hfc.collection_id
         LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
         WHERE c.visible = true
+        AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
         ORDER BY hfc.sort_order ASC
         LIMIT 12
       `, [lang]);
@@ -95,6 +96,7 @@ export async function GET(request: NextRequest) {
         FROM collections c
         LEFT JOIN collection_translations ct ON ct.collection_id = c.id AND ct.language_code = $1
         WHERE c.visible = true
+        AND EXISTS (SELECT 1 FROM collection_products cp WHERE cp.collection_id = c.id)
         ${featuredIds.length > 0 ? `AND c.id NOT IN (${featuredIds.join(',')})` : ''}
         ORDER BY c.created_at DESC
         LIMIT $2
