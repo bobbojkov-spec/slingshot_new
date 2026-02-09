@@ -13,7 +13,7 @@ const Footer = () => {
   const { data: navigation } = useNavigationContext();
   const rightsText = t("footer.rights").replace("{year}", new Date().getFullYear().toString());
 
-  if (pathname?.startsWith('/admin')) return null;
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/bg/admin')) return null;
 
   const customPages = navigation?.customPages || [];
 

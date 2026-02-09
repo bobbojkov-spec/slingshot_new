@@ -14,7 +14,7 @@ import { MobileMenu } from "./layout/MobileMenu";
 const Header = () => {
   const pathname = usePathname();
   // Hide header on admin pages (must be inside component)
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/bg/admin')) {
     return null;
   }
 

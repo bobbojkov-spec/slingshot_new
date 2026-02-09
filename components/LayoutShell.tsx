@@ -7,7 +7,7 @@ import CartDrawer from '@/components/CartDrawer';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
+  const isAdmin = pathname?.startsWith('/admin') || pathname?.startsWith('/bg/admin');
 
   if (isAdmin) {
     return <>{children}</>;
