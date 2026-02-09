@@ -12,7 +12,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 export default function SuccessPage() {
   const { t } = useLanguage();
   const canonicalUrl = buildCanonicalUrlClient("/inquiry/success");
-  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
+  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/og?type=inquiry&slug=success`;
   const pageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",

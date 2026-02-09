@@ -6,63 +6,11 @@ import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
 
-import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
-import { buildHreflangLinks } from "@/lib/seo/hreflang";
-import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
+import { buildMetadataFromSeo, resolvePageSEO } from "@/lib/seo/metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const canonicalPath = '/rideengine-collections';
-    const baseUrl = await resolveBaseUrl();
-    const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
-
-    const cookieStore = await cookies();
-    const lang = cookieStore.get("lang")?.value || "en";
-
-    const title = lang === "bg"
-        ? 'Колекции Ride Engine | Slingshot България'
-        : 'Ride Engine Collections | Slingshot Sports';
-    const description = lang === "bg"
-        ? 'Разгледайте пълната гама Ride Engine колекции. Трапези, неопрен и пътна екипировка.'
-        : 'Explore our complete range of Ride Engine gear collections. Harnesses, wetsuits, and travel gear.';
-
-    const seo = generateListingSEO({
-        language: lang === "bg" ? "bg" : "en",
-        heroTitle: title,
-        heroSubtitle: description,
-        collectionNames: ['Ride Engine'],
-        brand: 'Ride Engine',
-        fallbackTitle: title,
-        fallbackDescription: description,
-    });
-
-    return {
-        title: seo.title,
-        description: seo.description,
-        openGraph: {
-            title: seo.ogTitle,
-            description: seo.ogDescription,
-            url: hreflangLinks.canonical,
-            type: 'website',
-            images: [
-                {
-                    url: '/images/og-default.jpg',
-                    width: 1200,
-                    height: 630,
-                    alt: title,
-                },
-            ],
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: seo.ogTitle,
-            description: seo.ogDescription,
-            images: ['/images/og-default.jpg'],
-        },
-        alternates: {
-            canonical: hreflangLinks.canonical,
-            languages: hreflangLinks.alternates.languages,
-        },
-    };
+    const seo = await resolvePageSEO({ type: "brandCollections", slug: "rideengine", path: "/rideengine-collections" });
+    return buildMetadataFromSeo(seo);
 }
 
 export default async function RideEngineCollectionsPage() {

@@ -15,7 +15,7 @@ import { useCart } from "@/lib/cart/CartContext";
 export default function ContactPage() {
   const { t } = useLanguage();
   const canonicalUrl = buildCanonicalUrlClient("/inquiry/contact");
-  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
+  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/og?type=inquiry&slug=contact`;
 
   const [formValues, setFormValues] = useState({
     name: "",

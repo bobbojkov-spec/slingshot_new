@@ -15,7 +15,7 @@ export default function SummaryPage() {
   const { items, updateQuantity, removeItem } = useCart();
   const { t } = useLanguage();
   const canonicalUrl = buildCanonicalUrlClient("/inquiry/summary");
-  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/images/og-default.jpg`;
+  const baseOgImage = `${canonicalUrl.replace(/\/.+$/, "")}/og?type=inquiry&slug=summary`;
   const pageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",

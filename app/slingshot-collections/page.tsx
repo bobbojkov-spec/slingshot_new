@@ -3,65 +3,13 @@ import { getCollectionsByBrand, getCollectionBySlug } from "@/services/collectio
 import { BrandCollectionsClient } from "@/components/collections/BrandCollectionsClient";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
-import { buildHreflangLinks } from "@/lib/seo/hreflang";
-import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
-import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
+import { buildMetadataFromSeo, resolvePageSEO } from "@/lib/seo/metadata";
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-    const canonicalPath = '/slingshot-collections';
-    const baseUrl = await resolveBaseUrl();
-    const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
-
-    const cookieStore = await cookies();
-    const lang = cookieStore.get("lang")?.value || "en";
-
-    const title = lang === "bg"
-        ? 'Колекции Slingshot | Slingshot България'
-        : 'Slingshot Collections | Slingshot Sports';
-    const description = lang === "bg"
-        ? 'Разгледайте всички високопроизводителни Slingshot колекции. Кайтове, дъски, фойлове и уейк.'
-        : 'Discover all Slingshot high-performance gear collections. Kites, boards, foils, and wake.';
-
-    const seo = generateListingSEO({
-        language: lang === "bg" ? "bg" : "en",
-        heroTitle: title,
-        heroSubtitle: description,
-        collectionNames: ['Slingshot'],
-        brand: 'Slingshot',
-        fallbackTitle: title,
-        fallbackDescription: description,
-    });
-
-    return {
-        title: seo.title,
-        description: seo.description,
-        openGraph: {
-            title: seo.ogTitle,
-            description: seo.ogDescription,
-            url: hreflangLinks.canonical,
-            type: 'website',
-            images: [
-                {
-                    url: '/images/og-default.jpg',
-                    width: 1200,
-                    height: 630,
-                    alt: title,
-                },
-            ],
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: seo.ogTitle,
-            description: seo.ogDescription,
-            images: ['/images/og-default.jpg'],
-        },
-        alternates: {
-            canonical: hreflangLinks.canonical,
-            languages: hreflangLinks.alternates.languages,
-        },
-    };
+    const seo = await resolvePageSEO({ type: "brandCollections", slug: "slingshot", path: "/slingshot-collections" });
+    return buildMetadataFromSeo(seo);
 }
 
 export default async function SlingshotCollectionsPage() {

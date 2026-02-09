@@ -89,7 +89,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   const canonicalUrl = await buildCanonicalUrl();
   const baseUrl = canonicalUrl.replace(/\/$/, "");
-  const ogImage = `${baseUrl}/images/og-default.jpg`;
+  const ogImage = `${baseUrl}/og?type=home`;
 
   const webSiteSchema = buildWebSiteSchema(canonicalUrl);
   const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);

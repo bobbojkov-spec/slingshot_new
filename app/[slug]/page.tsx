@@ -4,19 +4,12 @@ import { getPageBySlug, getPageBlocks } from '@/lib/db/repositories/pages';
 import { getFaqItems } from '@/lib/db/repositories/faq';
 import DynamicPageContent from '@/components/DynamicPageContent';
 import { Metadata } from 'next';
+import { buildMetadataFromSeo, resolvePageSEO } from '@/lib/seo/metadata';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const page = await getPageBySlug(slug);
-    if (!page || page.status !== 'published') return {};
-
-    return {
-        title: page.seo_title || page.title,
-        description: page.seo_description,
-        alternates: {
-            canonical: page.canonical_url || `/${slug}`,
-        }
-    };
+    const seo = await resolvePageSEO({ type: "page", slug, path: `/${slug}` });
+    return buildMetadataFromSeo(seo);
 }
 
 export default async function DynamicPage({ params }: { params: Promise<{ slug: string }> }) {

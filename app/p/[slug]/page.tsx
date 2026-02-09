@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { query } from '@/lib/db';
+import { buildMetadataFromSeo, resolvePageSEO } from '@/lib/seo/metadata';
 import {
     HeroBlock,
     TextBlock,
@@ -32,23 +33,8 @@ async function getPageBlocks(pageId: number) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const page = await getPageData(slug);
-    if (!page) return {};
-
-    return {
-        title: page.seo_title || page.title,
-        description: page.seo_description,
-        keywords: page.seo_keywords,
-        alternates: {
-            canonical: page.canonical_url,
-        },
-        openGraph: {
-            title: page.og_title || page.seo_title || page.title,
-            description: page.og_description || page.seo_description,
-            type: 'website',
-            images: page.og_image_id ? [`/api/media/${page.og_image_id}`] : [],
-        },
-    };
+    const seo = await resolvePageSEO({ type: "page", slug, path: `/p/${slug}` });
+    return buildMetadataFromSeo(seo);
 }
 
 export default async function CustomPage({ params }: PageProps) {

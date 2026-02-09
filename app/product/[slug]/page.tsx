@@ -2,12 +2,11 @@
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/services/products";
 import { ProductDetailsClient } from "@/components/products/ProductDetailsClient";
-import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
-import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
-import { buildHreflangLinks } from "@/lib/seo/hreflang";
+import { buildCanonicalUrl } from "@/lib/seo/url-server";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { buildMetadataFromSeo, resolvePageSEO } from "@/lib/seo/metadata";
+import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import AiVisibilitySnippet from "@/components/seo/AiVisibilitySnippet";
 
 interface PageProps {
@@ -16,53 +15,8 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const lang = cookieStore.get("lang")?.value || "en";
-  const result = await getProductBySlug(slug);
-
-  const canonicalPath = `/product/${slug}`;
-  const baseUrl = await resolveBaseUrl();
-  const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
-
-  if (!result || !result.product) {
-    return {
-      title: 'Product Not Found | Slingshot Sports',
-      alternates: {
-        canonical: hreflangLinks.canonical,
-        languages: hreflangLinks.alternates.languages,
-      },
-    };
-  }
-
-  const { product } = result;
-  const title = `${product.title || product.name} | Slingshot Sports`;
-  const description = (product.description_bg && lang === 'bg' ? product.description_bg : product.description)
-    || (lang === 'bg' ? `Разгледайте ${product.name} в Slingshot Bulgaria.` : `Check out ${product.name} at Slingshot Bulgaria.`);
-  const cleanDescription = description.replace(/<[^>]*>?/gm, '').slice(0, 160);
-  const images = product.image ? [{ url: product.image, width: 1200, height: 630, alt: product.title }] : [];
-
-  return {
-    title,
-    description: cleanDescription,
-    openGraph: {
-      title,
-      description: cleanDescription,
-      url: hreflangLinks.canonical,
-      images,
-      type: 'website',
-      siteName: 'Slingshot Bulgaria',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description: cleanDescription,
-      images,
-    },
-    alternates: {
-      canonical: hreflangLinks.canonical,
-      languages: hreflangLinks.alternates.languages,
-    },
-  };
+  const seo = await resolvePageSEO({ type: "product", slug, path: `/product/${slug}` });
+  return buildMetadataFromSeo(seo);
 }
 
 export default async function ProductPage({ params }: PageProps) {

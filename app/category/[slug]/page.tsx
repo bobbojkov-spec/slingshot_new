@@ -1,11 +1,10 @@
 import { cookies } from "next/headers";
 import { Metadata } from "next";
 import { buildCanonicalUrl, resolveBaseUrl } from "@/lib/seo/url-server";
-import { buildHreflangLinks } from "@/lib/seo/hreflang";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema } from "@/lib/seo/business";
 import { CategoryClient } from "@/components/shop/CategoryClient";
-import { generateListingSEO } from "@/lib/seo/generate-listing-seo";
+import { buildMetadataFromSeo, resolvePageSEO } from "@/lib/seo/metadata";
 
 interface Product {
   id: string;
@@ -72,59 +71,8 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const category = resolvedParams?.slug || "kites";
-  const cookieStore = await cookies();
-  const language = cookieStore.get("lang")?.value || "en";
-
-  const categoryInfo = categoryData[category] || categoryData.kites;
-  const categoryName = language === "bg" ? categoryNames[category]?.bg ?? category : categoryNames[category]?.en ?? category;
-  const description = language === "bg" ? categoryInfo.descriptionBg : categoryInfo.descriptionEn;
-
-  const canonicalPath = `/category/${category}`;
-  const baseUrl = await resolveBaseUrl();
-  const hreflangLinks = buildHreflangLinks(baseUrl, canonicalPath);
-
-  const seo = generateListingSEO({
-    language: language === "bg" ? "bg" : "en",
-    heroTitle: categoryName,
-    heroSubtitle: description,
-    categoryNames: [categoryName],
-    tags: [],
-    productTypes: [],
-    productNames: [],
-    brand: "Slingshot",
-    fallbackTitle: `${categoryName} | Slingshot Bulgaria`,
-    fallbackDescription: description,
-  });
-
-  return {
-    title: seo.title,
-    description: seo.description,
-    openGraph: {
-      title: seo.ogTitle,
-      description: seo.ogDescription,
-      url: hreflangLinks.canonical,
-      siteName: "Slingshot Bulgaria",
-      type: "website",
-      images: [
-        {
-          url: categoryInfo.heroImage,
-          width: 1200,
-          height: 630,
-          alt: categoryName,
-        }
-      ]
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: seo.ogTitle,
-      description: seo.ogDescription,
-      images: [categoryInfo.heroImage],
-    },
-    alternates: {
-      canonical: hreflangLinks.canonical,
-      languages: hreflangLinks.alternates.languages,
-    },
-  };
+  const seo = await resolvePageSEO({ type: "category", slug: category, path: `/category/${category}` });
+  return buildMetadataFromSeo(seo);
 }
 
 export default async function Page({ params }: PageProps) {
