@@ -159,9 +159,6 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
           ))}
         </div>
       )}
-    </div >
-        </DialogContent >
-      </Dialog >
     </>
   );
 };
