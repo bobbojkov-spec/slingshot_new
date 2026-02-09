@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -79,17 +77,17 @@ export default function NewProductsFromCollection() {
 
     if (loading) {
         return (
-            <section className="section-padding bg-slate-950 relative">
+            <section className="section-padding bg-slate-800/90 relative">
                 <div className="section-container">
                     <div className="mb-12">
-                        <div className="h-7 w-28 bg-slate-800/50 rounded-full animate-pulse mb-4" />
-                        <div className="h-10 w-60 bg-slate-800/30 rounded-lg animate-pulse" />
+                        <div className="h-7 w-28 bg-slate-700/50 rounded-full animate-pulse mb-4" />
+                        <div className="h-10 w-60 bg-slate-700/30 rounded-lg animate-pulse" />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-5">
-                        <div className="aspect-square bg-slate-900/40 rounded-[24px] animate-pulse" />
+                        <div className="aspect-square bg-slate-700/40 rounded-[24px] animate-pulse" />
                         <div className="grid grid-cols-2 gap-4 lg:gap-5">
                             {[...Array(4)].map((_, i) => (
-                                <div key={i} className="aspect-square bg-slate-900/40 rounded-[20px] animate-pulse" />
+                                <div key={i} className="aspect-square bg-slate-700/40 rounded-[20px] animate-pulse" />
                             ))}
                         </div>
                     </div>
@@ -107,14 +105,18 @@ export default function NewProductsFromCollection() {
     const gridProducts = displayProducts.slice(1, 5);
 
     return (
-        <section className="section-padding bg-slate-950 relative overflow-hidden">
+        <section className="section-padding relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, hsl(215 25% 18%) 0%, hsl(220 30% 12%) 50%, hsl(215 35% 10%) 100%)' }}>
             {/* Texture Overlay */}
-            <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{
+                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                    backgroundSize: '80px 80px',
+                }} />
 
-            {/* Ambient background glow - Cinematic tones for dark background */}
-            <div className="absolute -top-48 -right-48 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[180px] pointer-events-none" />
-            <div className="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[200px] pointer-events-none" />
+            {/* Ambient background glow */}
+            <div className="absolute -top-48 -right-48 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[180px] pointer-events-none" />
+            <div className="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none" />
 
             <div className="section-container relative z-10">
                 {/* Section Header */}
@@ -131,7 +133,7 @@ export default function NewProductsFromCollection() {
 
                     <Link
                         href="/collections/featured-products"
-                        className="group inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white/50 font-semibold hover:border-neon-lime/40 hover:text-neon-lime hover:bg-white/5 transition-all duration-300"
+                        className="group inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white/70 font-semibold hover:border-neon-lime/40 hover:text-neon-lime hover:bg-white/5 transition-all duration-300"
                     >
                         <span>{language === "bg" ? "Виж всички" : "View all"}</span>
                         <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
@@ -139,111 +141,126 @@ export default function NewProductsFromCollection() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-5">
+                    {/* Hero Card */}
+                    {heroProduct && <Product3DCard product={heroProduct} isHero={true} language={language} />}
 
-                    {/* ═══ Hero Card (left) ═══ */}
-                    {heroProduct && (
-                        <Link
-                            href={`/product/${heroProduct.slug}`}
-                            className="group relative overflow-hidden rounded-[24px] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-700 hover:ring-neon-lime/40 hover:-translate-y-2 block bg-slate-900"
-                        >
-                            <img
-                                src={heroProduct.image}
-                                alt={heroProduct.name}
-                                loading="lazy"
-                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] cubic-bezier(0.16, 1, 0.3, 1) group-hover:scale-110"
-                            />
-                            {/* Layered cinematic gradients */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                            {/* GLASS EFFECT OVERLAY (HOVER) */}
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 backdrop-blur-[2px] bg-white/[0.02]" />
-
-                            {/* NEW badge with intense glow */}
-                            <div className="absolute top-6 left-6 z-10">
-                                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-lime text-[11px] font-black uppercase tracking-widest text-black shadow-[0_0_20px_rgba(204,255,0,0.4)]">
-                                    <Sparkles className="w-3.5 h-3.5" />
-                                    {language === "bg" ? "Ново" : "New"}
-                                </span>
-                            </div>
-
-                            {/* Content overlay */}
-                            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10 z-20">
-                                <span className="text-[12px] font-bold uppercase tracking-[0.3em] text-neon-lime/70 block mb-3 animate-pulse">
-                                    {heroProduct.category}
-                                </span>
-                                <h3 className="text-2xl sm:text-3xl lg:text-[2.75rem] font-heading font-black text-white leading-[1.05] mb-4 tracking-tighter drop-shadow-lg">
-                                    {heroProduct.name}
-                                </h3>
-                                <div className="flex items-end justify-between gap-6">
-                                    <div className="flex items-baseline gap-4">
-                                        <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter shadow-black drop-shadow-md">
-                                            €{heroProduct.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
-                                        </span>
-                                        {heroProduct.originalPrice && heroProduct.originalPrice > heroProduct.price && (
-                                            <span className="text-lg sm:text-xl text-white/30 line-through decoration-neon-lime/40">
-                                                €{heroProduct.originalPrice.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="hidden sm:inline-flex items-center gap-2 py-2 px-4 rounded-full bg-white/5 border border-white/10 text-sm text-white font-bold group-hover:bg-neon-lime group-hover:text-black transition-all duration-500 shadow-lg">
-                                        {language === "bg" ? "Детайли" : "See Details"}
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
-                                    </span>
-                                </div>
-                            </div>
-                        </Link>
-                    )}
-
-                    {/* ═══ 2×2 Grid (right) ═══ */}
+                    {/* 2x2 Grid */}
                     <div className="grid grid-cols-2 gap-4 lg:gap-5">
                         {gridProducts.map((product) => (
-                            <Link
-                                key={product.id}
-                                href={`/product/${product.slug}`}
-                                className="group relative overflow-hidden rounded-[20px] shadow-xl shadow-black ring-1 ring-white/5 hover:ring-neon-lime/30 transition-all duration-500 hover:-translate-y-2 aspect-square block bg-slate-900"
-                            >
-                                <div className="absolute inset-0">
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        loading="lazy"
-                                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-115"
-                                    />
-                                </div>
-
-                                {/* Cinematic Overlays */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent group-hover:from-black/95 transition-all duration-500" />
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[1px] bg-white/[0.01]" />
-
-                                {/* NEW badge */}
-                                <div className="absolute top-4 left-4 z-10">
-                                    <span className="inline-block px-3 py-1 rounded-full bg-neon-lime text-[10px] font-black uppercase tracking-wider text-black shadow-lg">
-                                        {language === "bg" ? "Ново" : "New"}
-                                    </span>
-                                </div>
-
-                                {/* Content */}
-                                <div className="absolute bottom-0 left-0 right-0 p-5 z-20">
-                                    <h3 className="text-sm sm:text-base font-extrabold text-white leading-tight line-clamp-2 mb-2 tracking-tight font-heading drop-shadow-md">
-                                        {product.name}
-                                    </h3>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-xl font-black text-white tracking-tighter">
-                                                €{product.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
-                                            </span>
-                                        </div>
-                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white ring-1 ring-white/20 group-hover:bg-neon-lime group-hover:text-black group-hover:ring-neon-lime transition-all duration-500">
-                                            <ArrowRight className="w-4 h-4" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
+                            <Product3DCard key={product.id} product={product} language={language} />
                         ))}
                     </div>
                 </div>
             </div>
         </section>
+    );
+}
+
+function Product3DCard({ product, isHero = false, language }: { product: Product; isHero?: boolean; language: string }) {
+    const cardRef = useRef<HTMLAnchorElement>(null);
+    const [transform, setTransform] = useState("rotateX(0deg) rotateY(0deg)");
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!cardRef.current) return;
+        const card = cardRef.current;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -5;
+        const rotateY = ((x - centerX) / centerX) * 5;
+        setTransform(`rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+        setIsHovered(false);
+    }, []);
+
+    return (
+        <Link
+            ref={cardRef}
+            href={`/product/${product.slug}`}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            onMouseEnter={() => setIsHovered(true)}
+            className={`group relative overflow-hidden flex flex-col transition-all duration-200 ease-out 
+                ${isHero ? 'rounded-[24px] shadow-2xl min-h-[500px]' : 'rounded-[20px] shadow-xl aspect-square'} 
+                bg-slate-900 ring-1 ring-white/10 hover:ring-neon-lime/40`}
+            style={{
+                transform: transform,
+                transformStyle: "preserve-3d",
+                perspective: "1000px"
+            }}
+        >
+            <img
+                src={product.image}
+                alt={product.name}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                style={{ transform: "translateZ(0)" }}
+            />
+
+            {/* Cinematic Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
+
+            {/* Shine Sweep Effect */}
+            <div
+                className={`absolute inset-0 z-20 pointer-events-none overflow-hidden`}
+                style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s pb-bezier(0.4, 0, 0.2, 1)' }}
+            >
+                <div className="absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-25 animate-shine"
+                    style={{ animation: isHovered ? 'shine 0.8s ease-in-out' : 'none' }} />
+            </div>
+
+            {/* NEW badge */}
+            <div className="absolute top-6 left-6 z-30 transform translate-z-20">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-lime text-[11px] font-black uppercase tracking-widest text-black shadow-lg">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {language === "bg" ? "Ново" : "New"}
+                </span>
+            </div>
+
+            {/* Content overlay */}
+            <div className={`absolute bottom-0 left-0 right-0 z-40 transform translate-z-30 
+                ${isHero ? 'p-8 lg:p-10' : 'p-5'}`}>
+                {isHero && (
+                    <span className="text-[12px] font-bold uppercase tracking-[0.3em] text-neon-lime/80 block mb-3">
+                        {product.category}
+                    </span>
+                )}
+                <h3 className={`${isHero ? 'text-2xl sm:text-3xl lg:text-[2.75rem] mb-4' : 'text-sm sm:text-base mb-2'} 
+                    font-heading font-black text-white leading-[1.1] tracking-tight drop-shadow-md line-clamp-2`}>
+                    {product.name}
+                </h3>
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-baseline gap-3">
+                        <span className={`${isHero ? 'text-3xl sm:text-4xl lg:text-5xl' : 'text-xl'} font-black text-white tracking-tighter`}>
+                            €{product.price.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
+                        </span>
+                        {product.originalPrice && product.originalPrice > product.price && (
+                            <span className={`${isHero ? 'text-lg sm:text-xl' : 'text-sm'} text-white/30 line-through decoration-neon-lime/40`}>
+                                €{product.originalPrice.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
+                            </span>
+                        )}
+                    </div>
+                    <div className={`${isHero ? 'hidden sm:flex py-2 px-5' : 'w-8 h-8'} items-center justify-center rounded-full bg-white/5 border border-white/10 text-white font-bold group-hover:bg-neon-lime group-hover:text-black transition-all duration-300`}>
+                        {isHero && <span className="mr-2 text-sm">{language === "bg" ? "Виж" : "Details"}</span>}
+                        <ArrowRight className="w-4 h-4" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Hover Border Glow */}
+            <div
+                className="absolute inset-0 rounded-inherit border-2 border-transparent transition-all duration-300 pointer-events-none z-50"
+                style={{
+                    borderColor: isHovered ? "rgba(204, 255, 0, 0.3)" : "transparent",
+                    boxShadow: isHovered ? "0 0 30px rgba(204, 255, 0, 0.1)" : "none"
+                }}
+            />
+        </Link>
     );
 }
