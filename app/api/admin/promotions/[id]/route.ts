@@ -3,10 +3,11 @@ import { promotionsRepository } from '@/lib/db/repositories/promotions';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const promotion = await promotionsRepository.getById(params.id);
+        const { id } = await params;
+        const promotion = await promotionsRepository.getById(id);
         if (!promotion) {
             return NextResponse.json({ error: 'Promotion not found' }, { status: 404 });
         }
@@ -19,11 +20,12 @@ export async function GET(
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const body = await request.json();
-        const promotion = await promotionsRepository.update(params.id, body);
+        const promotion = await promotionsRepository.update(id, body);
         if (!promotion) {
             return NextResponse.json({ error: 'Promotion not found' }, { status: 404 });
         }
@@ -36,10 +38,11 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const success = await promotionsRepository.delete(params.id);
+        const { id } = await params;
+        const success = await promotionsRepository.delete(id);
         if (!success) {
             return NextResponse.json({ error: 'Promotion not found' }, { status: 404 });
         }
