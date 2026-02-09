@@ -90,33 +90,33 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
       {/* Zoom Modal - Desktop/Tablet only */}
       <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
         <DialogContent
-          className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 bg-black/95 border-none"
+          className="max-w-screen max-h-screen w-screen h-screen p-0 bg-black/95 border-none overflow-hidden"
           onKeyDown={handleKeyDown}
         >
           <DialogTitle className="sr-only">Product Image Zoom</DialogTitle>
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
             {/* Close button */}
             <button
               onClick={() => setIsZoomOpen(false)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              className="absolute top-6 right-6 z-[110] w-14 h-14 flex items-center justify-center bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full transition-all border border-white/20 shadow-2xl group"
             >
-              <X className="w-6 h-6 text-white" />
+              <X className="w-8 h-8 text-white transition-transform group-hover:scale-110" />
             </button>
 
             {/* Navigation arrows */}
-            {images.length > 1 && (
+            {images.length > 0 && (
               <>
                 <button
                   onClick={goToPrevious}
-                  className="absolute left-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+                  className="absolute left-6 z-[100] w-14 h-14 flex items-center justify-center bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full transition-all border border-white/10 group"
                 >
-                  <ChevronLeft className="w-8 h-8 text-white" />
+                  <ChevronLeft className="w-9 h-9 text-white transition-transform group-hover:scale-110" />
                 </button>
                 <button
                   onClick={goToNext}
-                  className="absolute right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+                  className="absolute right-6 z-[100] w-14 h-14 flex items-center justify-center bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full transition-all border border-white/10 group"
                 >
-                  <ChevronRight className="w-8 h-8 text-white" />
+                  <ChevronRight className="w-9 h-9 text-white transition-transform group-hover:scale-110" />
                 </button>
               </>
             )}
@@ -125,40 +125,43 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
             <img
               src={images[selectedIndex]}
               alt={`${productName} - Slingshot Bulgaria Full View Image ${selectedIndex + 1}`}
-              className="max-w-full max-h-full object-contain p-8"
+              className="w-full h-full object-contain p-4 md:p-12 lg:p-24 selec-none pointer-events-none"
             />
 
             {/* Image counter */}
             {images.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md border border-white/10 px-6 py-2 rounded-full text-white text-sm font-bold z-[100]">
                 {selectedIndex + 1} / {images.length}
-              </div>
-            )}
-
-            {/* Thumbnail strip at bottom */}
-            {images.length > 1 && (
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2 py-1">
-                {images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedIndex(index)}
-                    className={`w-12 h-12 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
-                      ? "border-white opacity-100"
-                      : "border-transparent opacity-50 hover:opacity-75"
-                      }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${productName} - Slingshot Bulgaria Preview ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
               </div>
             )}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Thumbnail strip at bottom */}
+      {images.length > 1 && (
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2 py-1">
+          {images.map((image, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedIndex(index)}
+              className={`w-12 h-12 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
+                ? "border-white opacity-100"
+                : "border-transparent opacity-50 hover:opacity-75"
+                }`}
+            >
+              <img
+                src={image}
+                alt={`${productName} - Slingshot Bulgaria Preview ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div >
+        </DialogContent >
+      </Dialog >
     </>
   );
 };

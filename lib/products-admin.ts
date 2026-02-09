@@ -5,6 +5,8 @@ export async function getAdminProductsList() {
     const { rows: productRows = [] } = await query(`
     SELECT
       p.*,
+      pt.title as title_bg,
+      pt.tags as tags_bg,
       jsonb_build_object(
         'id', c.id,
         'name', c.name,
@@ -20,6 +22,7 @@ export async function getAdminProductsList() {
       ) as collections
     FROM products p
     LEFT JOIN categories c ON c.id = p.category_id
+    LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.language_code = 'bg'
     ORDER BY p.created_at DESC
     LIMIT 500
   `);

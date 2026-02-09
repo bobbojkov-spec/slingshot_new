@@ -14,6 +14,7 @@ import {
   Tag,
   Popconfirm,
   message,
+  Tooltip,
 } from 'antd';
 import { DeleteOutlined, EditOutlined, PictureOutlined, SearchOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useMemo, useState, useEffect } from 'react';
@@ -49,6 +50,8 @@ type Product = {
     tags?: string[] | string;
   };
   product_colors?: Array<{ id: string; url: string; name?: string; image_path?: string }>;
+  title_bg?: string;
+  tags_bg?: string[];
   [key: string]: any;
 };
 
@@ -118,10 +121,15 @@ export default function ProductsListClient({ products }: { products: Product[] }
       // Search in name, title, and tags
       const searchLower = (search || '').toLowerCase();
       const name = (p.title || p.name || '').toLowerCase();
+      const nameBg = (p.title_bg || '').toLowerCase();
       const tags = Array.isArray(p.tags) ? p.tags : [];
+      const tagsBg = Array.isArray(p.tags_bg) ? p.tags_bg : [];
+
       const matchesSearch = !search ||
         name.includes(searchLower) ||
-        tags.some(t => t && typeof t === 'string' && t.toLowerCase().includes(searchLower));
+        nameBg.includes(searchLower) ||
+        tags.some(t => t && typeof t === 'string' && t.toLowerCase().includes(searchLower)) ||
+        tagsBg.some(t => t && typeof t === 'string' && t.toLowerCase().includes(searchLower));
 
       // Filter by Brand
       const matchesBrand = !brand || p.brand === brand;
@@ -199,12 +207,19 @@ export default function ProductsListClient({ products }: { products: Product[] }
       title: <span style={{ fontSize: 11, fontWeight: 600 }}>Name</span>,
       dataIndex: 'title',
       render: (_: any, record: Product) => (
-        <Typography.Link style={{ fontSize: 13, fontWeight: 500 }} onClick={() => goToEditPage(record.id)}>
-          {record.title || record.name || 'Untitled'}
-          {record.brand && (
-            <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>{record.brand}</div>
-          )}
-        </Typography.Link>
+        <Tooltip
+          title={record.title_bg ? `БГ: ${record.title_bg}` : null}
+          placement="topLeft"
+          color="#1e293b"
+          overlayInnerStyle={{ fontSize: '11px', fontWeight: 500 }}
+        >
+          <Typography.Link style={{ fontSize: 13, fontWeight: 500 }} onClick={() => goToEditPage(record.id)}>
+            {record.title || record.name || 'Untitled'}
+            {record.brand && (
+              <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>{record.brand}</div>
+            )}
+          </Typography.Link>
+        </Tooltip>
       ),
     },
     {

@@ -10,6 +10,7 @@ import { getFullNavigation } from "@/lib/railway/navigation-server";
 import { buildLocalBusinessSchema, buildWebSiteSchema } from "@/lib/seo/business";
 import { buildCanonicalUrl } from "@/lib/seo/url-server";
 import { Toaster } from "sonner";
+import PromotionPopup from "@/components/modules/PromotionPopup";
 
 export const metadata: Metadata = {
   title: "Slingshot Bulgaria",
@@ -131,6 +132,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               className: 'font-body',
             }}
           />
+          <PromotionPopup />
         </Providers>
       </body>
     </html>

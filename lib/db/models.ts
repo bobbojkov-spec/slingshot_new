@@ -278,3 +278,16 @@ export interface FaqItem {
     created_at: Date;
     updated_at: Date;
 }
+export interface Promotion {
+    id: string; // UUID
+    title: string;
+    content: string | null;
+    image_url: string | null;
+    display_type: 'small' | 'big';
+    placement: 'homepage' | 'everywhere' | 'product';
+    valid_from: Date | null;
+    valid_to: Date | null;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+}

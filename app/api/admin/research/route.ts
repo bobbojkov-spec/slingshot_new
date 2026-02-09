@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const runtime = 'nodejs';
 
@@ -33,35 +29,32 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!process.env.OPENAI_API_KEY) {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
             return NextResponse.json(
-                { error: 'OpenAI API Key is missing' },
+                { error: 'GEMINI_API_KEY is missing' },
                 { status: 500 }
             );
         }
 
         const languageName = LANUGAGE_NAMES[lang] || 'English';
-        let systemPrompt = '';
         let userPrompt = '';
 
         if (type === 'keywords') {
-            systemPrompt = `You are an SEO expert specializing in the ${languageName} market. Generate high-value, relevant keywords based on the user's input. Return strictly JSON format.`;
-            userPrompt = `Generate a list of 10-15 high-value SEO keywords related to "${term}" specifically for the ${languageName} market/language.
-            Return a JSON object with a key "results" which is an array of objects. Each object should have:
+            userPrompt = `You are an SEO expert specializing in the ${languageName} market. Generate a list of 10-15 high-value SEO keywords related to "${term}" specifically for the ${languageName} market.
+            Return ONLY a JSON object with a key "results" which is an array of objects. Each object must have:
             - "keyword": the keyword string in ${languageName}
             - "volume": estimated monthly search volume (e.g. "High", "Medium", "Low")
             - "difficulty": estimated difficulty (e.g. "Hard", "Medium", "Easy")
             - "intent": search intent (e.g. "Informational", "Transactional", "Navigational")`;
         } else if (type === 'questions') {
-            systemPrompt = `You are a content strategist specializing in the ${languageName} market. Generate user questions based on the user's input. Return strictly JSON format.`;
-            userPrompt = `Generate a list of 10 common questions users ask about "${term}" in ${languageName}.
-            Return a JSON object with a key "results" which is an array of objects. Each object should have:
+            userPrompt = `You are a content strategist specializing in the ${languageName} market. Generate a list of 10 common questions users ask about "${term}" in ${languageName}.
+            Return ONLY a JSON object with a key "results" which is an array of objects. Each object must have:
             - "question": the question string in ${languageName}
             - "intent": the underlying need (e.g. "Learning", "Buying", "Troubleshooting")`;
         } else if (type === 'competitors') {
-            systemPrompt = `You are a market researcher specializing in the ${languageName} market. Identify top competitors based on the user's input. Return strictly JSON format.`;
-            userPrompt = `Identify 5-7 top online competitors or relevant websites for "${term}" in the ${languageName} market.
-            Return a JSON object with a key "results" which is an array of objects. Each object should have:
+            userPrompt = `You are a market researcher specializing in the ${languageName} market. Identify 5-7 top online competitors or relevant websites for "${term}" in the ${languageName} market.
+            Return ONLY a JSON object with a key "results" which is an array of objects. Each object must have:
             - "name": the competitor's name
             - "url": their website URL
             - "strength": their key strength or market positioning`;
@@ -72,19 +65,17 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const completion = await openai.chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-            ],
-            model: "gpt-4o-mini",
-            response_format: { type: "json_object" },
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({
+            model: 'gemini-2.0-flash',
+            generationConfig: { responseMimeType: 'application/json' }
         });
 
-        const content = completion.choices[0].message.content;
+        const result = await model.generateContent(userPrompt);
+        const content = result.response.text();
 
         if (!content) {
-            throw new Error('No content received from OpenAI');
+            throw new Error('No content received from Gemini');
         }
 
         const data = JSON.parse(content);
