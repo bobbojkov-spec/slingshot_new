@@ -558,7 +558,7 @@ export const buildMetadataFromSeo = (seo: SeoResolved): Metadata => {
       title: seo.title,
       description: seo.description,
       url: seo.canonical,
-      type: seo.ogType,
+      type: seo.ogType as any,
       siteName: businessInfo.name,
       images,
     },

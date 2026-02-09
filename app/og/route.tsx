@@ -6,7 +6,7 @@ import { getCollectionBySlug, getCollectionsByBrand } from "@/services/collectio
 import { getPageBySlug } from "@/lib/db/repositories/pages";
 import { translations } from "@/lib/i18n/translations";
 
-export const runtime = "edge";
+
 
 const size = {
   width: 1200,
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
     if (page) {
       title = locale === "bg" && page.title_bg ? page.title_bg : page.title;
       subtitle = page.subtitle_bg && locale === "bg" ? page.subtitle_bg : page.subtitle_en || subtitle;
-      imageUrl = page.signed_hero_image_url || page.hero_image_url || null;
+      imageUrl = page.hero_image_url || null;
     }
   }
 
@@ -149,7 +149,7 @@ export async function GET(request: Request) {
       >
         {imageBuffer ? (
           <img
-            src={imageBuffer ? imageBuffer : undefined}
+            src={imageBuffer ? (imageBuffer as any) : undefined}
             alt=""
             style={{
               position: "absolute",
