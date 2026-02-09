@@ -139,11 +139,11 @@ export async function getCollectionBySlug(slug: string, lang: string = 'en'): Pr
             image_url: signedUrl
         };
     }));
-
+    return {
         ...collection,
         products: products.filter(p => !p.draft), // Safety filter
-            child_collections: child_collections.filter(c => (c.product_count ?? 1) > 0) // Ensure children have products
-};
+        child_collections: child_collections.filter(c => (c.product_count ?? 1) > 0) // Ensure children have products
+    };
 }
 
 export async function getCollectionsByBrand(brand: string, lang: string = 'en'): Promise<Collection[]> {
