@@ -23,9 +23,11 @@ const HeroSection = () => {
 
       <div className="relative z-10 section-container">
         <div className="max-w-2xl animate-fade-in-up">
-          <span className="text-section-title text-white mb-4 block">
-            {t("hero.badge")}
-          </span>
+          <div className="inline-block mb-6 px-4 py-2.5 rounded backdrop-blur-md bg-navy-900/25 border border-white/10 shadow-lg">
+            <span className="text-[10px] font-bold text-white uppercase tracking-[0.3em]">
+              Официален дистрибутор на Slingshot
+            </span>
+          </div>
           <h1 className="h1 font-hero text-white mb-6">
             {t("hero.title.line1")}
             <br />

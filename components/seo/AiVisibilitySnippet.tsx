@@ -34,7 +34,7 @@ export default function AiVisibilitySnippet({ page, data, style }: AiVisibilityS
             )}
             <div
                 dangerouslySetInnerHTML={{ __html: html }}
-                className="print:hidden"
+                className="sr-only print:hidden"
             />
         </>
     );
