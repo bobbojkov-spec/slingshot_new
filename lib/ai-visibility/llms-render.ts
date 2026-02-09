@@ -21,26 +21,47 @@ export async function renderLlmsShort(): Promise<string> {
     lines.push("");
 
     // Key Content (top products/collections)
-    // Simple heuristic: take top priority items, limited count
     lines.push("## Key Content");
 
-    // Sort by priority desc, then date desc
-    const sortedPages = [...pages].sort((a, b) => {
-        const pCurrent = (b.priority || 0.5) - (a.priority || 0.5);
-        if (pCurrent !== 0) return pCurrent;
+    const keyContentLimit = aiVisibilityConfig.llmsShortMaxLinks;
+
+    // 1. Filter out primary links and home
+    let filtered = pages.filter(p => p.type !== "home" && !important.primary.includes(p.url));
+
+    // 2. De-duplicate by base path (normalize /bg/)
+    // We want only one version in the short summary
+    const seenBasePaths = new Set<string>();
+    const deduplicated: typeof pages = [];
+
+    for (const p of filtered) {
+        const basePath = p.path.replace(/^\/bg(\/|$)/, "/");
+        if (seenBasePaths.has(basePath)) continue;
+
+        // Prefer English (locale === null) if possible, but first come first served works too
+        // Since we sort by priority desc next, it's safer to check existence
+        deduplicated.push(p);
+        seenBasePaths.add(basePath);
+    }
+
+    // 3. Sort by: Type (Category first) desc, isFeatured desc, priority desc, date desc
+    const sortedPages = deduplicated.sort((a, b) => {
+        // Absolute top: Categories
+        if (a.type === "category" && b.type !== "category") return -1;
+        if (a.type !== "category" && b.type === "category") return 1;
+
+        // Next: isFeatured
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+
+        const pDelta = (b.priority || 0.5) - (a.priority || 0.5);
+        if (pDelta !== 0) return pDelta;
+
         return (b.updatedAt?.getTime() || 0) - (a.updatedAt?.getTime() || 0);
     });
 
-    const keyContentLimit = aiVisibilityConfig.llmsShortMaxLinks;
     let count = 0;
-
     for (const page of sortedPages) {
-        // Skip home and primary links to avoid dupe, broadly speaking
-        if (page.type === "home") continue;
-        if (important.primary.includes(page.url)) continue;
-
         if (count >= keyContentLimit) break;
-
         lines.push(`- [${page.title}](${page.url}) ${page.description ? `- ${page.description}` : ""}`);
         count++;
     }
