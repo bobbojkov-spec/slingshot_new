@@ -141,6 +141,32 @@ export default function PageBuilderPage() {
         }
     };
 
+    // Manual URL Signing logic
+    useEffect(() => {
+        if (!heroImageUrl) {
+            setHeroDisplayUrl('');
+            return;
+        }
+
+        // Only fetch if it's a relative path and doesn't match current displayUrl
+        if (!heroImageUrl.startsWith('http') && !heroImageUrl.startsWith('/')) {
+            const timer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/api/admin/sign-url?path=${encodeURIComponent(heroImageUrl)}`);
+                    if (res.ok) {
+                        const { url } = await res.json();
+                        setHeroDisplayUrl(url);
+                    }
+                } catch (err) {
+                    console.error('Failed to sign manual URL', err);
+                }
+            }, 500); // 500ms debounce
+            return () => clearTimeout(timer);
+        } else {
+            setHeroDisplayUrl(heroImageUrl);
+        }
+    }, [heroImageUrl]);
+
     const fetchPage = async () => {
         if (!hasValidPageId) { setLoading(false); return; }
         setLoading(true);
@@ -235,6 +261,29 @@ export default function PageBuilderPage() {
         } catch (e) { message.error('Failed to create block'); }
     };
 
+    const handleDeleteBlock = (blockId: number) => {
+        Modal.confirm({
+            title: 'Delete Block',
+            content: 'Are you sure you want to delete this block? This action cannot be undone.',
+            okText: 'Delete',
+            okType: 'danger',
+            cancelText: 'Cancel',
+            onOk: async () => {
+                try {
+                    const response = await fetch(`/api/pages-new/blocks/${blockId}`, {
+                        method: 'DELETE',
+                    });
+                    const data = await response.json();
+                    if (!data.ok) throw new Error(data.error);
+                    message.success('Block deleted');
+                    loadBlocks();
+                } catch (e: any) {
+                    message.error(e.message || 'Failed to delete block');
+                }
+            }
+        });
+    };
+
     const handleSeoSave = async (values: SeoFormValues) => {
         setSeoSaving(true);
         try {
@@ -327,67 +376,139 @@ export default function PageBuilderPage() {
                                 </div>
                             </Card>
 
-                            {/* 2. Hero Section (Replicated from Collections) */}
-                            <Card title="Hero Banner (Optional)" className="shadow-sm">
-                                <div className="flex flex-col md:flex-row gap-8">
-                                    <div className="w-full md:w-[320px] flex-shrink-0">
-                                        <div className="relative aspect-video w-full rounded overflow-hidden bg-gray-50 border border-gray-100 group">
-                                            {heroDisplayUrl && !heroImageError ? (
-                                                <img
-                                                    src={heroDisplayUrl}
-                                                    alt="Hero"
-                                                    className="w-full h-full object-cover"
-                                                    onError={() => setHeroImageError(true)}
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-2">
-                                                    <UploadOutlined style={{ fontSize: 24 }} />
-                                                    <span className="text-xs uppercase font-bold">No Image</span>
-                                                </div>
-                                            )}
-                                            {uploading && (
-                                                <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                                                    <Spin tip="Uploading..." />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 space-y-4">
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Upload Media</label>
-                                            <label className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700 w-fit">
-                                                <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
-                                                <UploadOutlined className="mr-2" /> {uploading ? 'Processing...' : 'Upload Hero Image'}
-                                            </label>
-                                            <p className="text-xs text-gray-500">Auto-generates 300px, 1000px, 1900px variants.</p>
-                                        </div>
-                                        <Form.Item label="Image URL (Manual)" name="hero_image_url">
-                                            <Input onChange={e => { setHeroImageUrl(e.target.value); setHeroDisplayUrl(e.target.value); }} />
-                                        </Form.Item>
-
-                                        <Divider />
-
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Video</label>
-                                            <div className="flex gap-2">
-                                                <Form.Item name="hero_video_url" noStyle><Input placeholder="Video URL" /></Form.Item>
-                                                <label className="inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded cursor-pointer hover:bg-gray-200 border border-gray-300">
-                                                    <input type="file" className="hidden" accept="video/*" onChange={handleVideoFileChange} disabled={videoUploading} />
-                                                    {videoUploading ? <Spin size="small" /> : 'Upload MP4'}
-                                                </label>
+                            {/* 2. Hero Section (Premium UI alignment) */}
+                            <div className="mb-8">
+                                <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                                    Hero Presentation
+                                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-4 py-0.5 rounded-full">Optimized Variants</span>
+                                </h2>
+                                <div className="bg-white rounded border border-gray-200 p-6 shadow-sm">
+                                    <div className="flex flex-col md:flex-row gap-8">
+                                        {/* Left: Image Preview (300px) */}
+                                        <div className="w-full md:w-[320px] flex-shrink-0">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Desktop Preview (1900px)</label>
+                                            <div className="relative aspect-video w-full rounded overflow-hidden bg-gray-50 border border-gray-100 group">
+                                                {heroDisplayUrl && !heroImageError ? (
+                                                    <>
+                                                        <img
+                                                            src={heroDisplayUrl}
+                                                            alt="Hero"
+                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            onError={() => setHeroImageError(true)}
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                            <p className="text-white text-xs font-medium">Hero Image Preview</p>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-2 bg-gradient-to-br from-gray-50 to-gray-100">
+                                                        <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
+                                                            <UploadOutlined style={{ fontSize: 24 }} />
+                                                        </div>
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider mt-2">{heroImageError && heroDisplayUrl ? 'Image Error' : 'No hero image'}</span>
+                                                    </div>
+                                                )}
+                                                {uploading && (
+                                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+                                                        <div className="w-8 h-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+                                                        <span className="text-sm font-medium text-gray-900">Processing Variants...</span>
+                                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">300 • 1000 • 1900</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
-                                        <BilingualInput
-                                            label="Hero Subtitle"
-                                            enValue={settingsForm.getFieldValue('subtitle_en')}
-                                            bgValue={settingsForm.getFieldValue('subtitle_bg')}
-                                            onEnChange={(v) => settingsForm.setFieldValue('subtitle_en', v)}
-                                            onBgChange={(v) => settingsForm.setFieldValue('subtitle_bg', v)}
-                                        />
+                                        {/* Right: Upload Button & URL Input */}
+                                        <div className="flex-1 space-y-6">
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Upload Media</label>
+                                                <label className="relative inline-flex items-center justify-center px-6 py-4 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-all cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 group overflow-hidden">
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={handleFileChange}
+                                                        disabled={uploading}
+                                                    />
+                                                    <div className="flex items-center gap-2">
+                                                        {uploading ? (
+                                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                        ) : (
+                                                            <UploadOutlined />
+                                                        )}
+                                                        {uploading ? 'Processing...' : 'Upload Hero Image'}
+                                                    </div>
+                                                </label>
+                                                <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+                                                    Upload a high-resolution image. We will automatically generate <br />
+                                                    <b>300px</b>, <b>1000px</b>, and <b>1900px</b> variants for optimal performance.
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                                    Image URL (Manual Override)
+                                                </label>
+                                                <Form.Item name="hero_image_url" noStyle>
+                                                    <Input
+                                                        placeholder="https://storage.railway.app/..."
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            settingsForm.setFieldValue('hero_image_url', val);
+                                                            setHeroImageUrl(val);
+                                                        }}
+                                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                                    />
+                                                </Form.Item>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                                    Video URL (YouTube or MP4)
+                                                </label>
+                                                <div className="flex flex-col gap-2">
+                                                    <Form.Item name="hero_video_url" noStyle>
+                                                        <Input
+                                                            placeholder="https://www.youtube.com/watch?v=... or .mp4"
+                                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                                        />
+                                                    </Form.Item>
+                                                    <div className="mt-2">
+                                                        <label className="relative inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 transition-all cursor-pointer border border-gray-200">
+                                                            <input
+                                                                type="file"
+                                                                className="hidden"
+                                                                accept="video/*"
+                                                                onChange={handleVideoFileChange}
+                                                                disabled={videoUploading}
+                                                            />
+                                                            <div className="flex items-center gap-2">
+                                                                {videoUploading ? (
+                                                                    <div className="w-3 h-3 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
+                                                                ) : (
+                                                                    <UploadOutlined />
+                                                                )}
+                                                                {videoUploading ? 'Uploading Video...' : 'Upload Video File'}
+                                                            </div>
+                                                        </label>
+                                                        <p className="mt-2 text-[10px] text-gray-500">
+                                                            Uploads MP4/WebM to storage and fills the URL field. Supported max size: 500MB (Railway Limit).
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <BilingualInput
+                                                label="Hero Subtitle"
+                                                enValue={settingsForm.getFieldValue('subtitle_en')}
+                                                bgValue={settingsForm.getFieldValue('subtitle_bg')}
+                                                onEnChange={(v) => settingsForm.setFieldValue('subtitle_en', v)}
+                                                onBgChange={(v) => settingsForm.setFieldValue('subtitle_bg', v)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
 
                             {/* 3. Main Page Content (Tiptap) */}
                             <Card title="Main Content" className="shadow-sm">
@@ -433,7 +554,7 @@ export default function PageBuilderPage() {
                                                 <Link href={`/admin/pages-new/${pageId}/blocks/${block.id}`}>
                                                     <Button size="small">Edit</Button>
                                                 </Link>
-                                                <Button size="small" danger icon={<DeleteOutlined />} onClick={() => {/* Handle delete logic */ }} />
+                                                <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDeleteBlock(block.id)} />
                                             </Space>
                                         </div>
                                     ))}
