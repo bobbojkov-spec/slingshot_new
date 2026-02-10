@@ -71,71 +71,80 @@ const detectCountryCode = (getHeaderValue: (name: string) => string | null) => {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headersList = await headers();
-  const getHeaderValue = (name: string) => {
-    if (typeof (headersList as { get?: (name: string) => string | null }).get === "function") {
-      return (headersList as { get: (name: string) => string | null }).get(name);
-    }
+  try {
+    const headersList = await headers();
+    const getHeaderValue = (name: string) => {
+      if (typeof (headersList as { get?: (name: string) => string | null }).get === "function") {
+        return (headersList as { get: (name: string) => string | null }).get(name);
+      }
 
-    return null;
-  };
+      return null;
+    };
 
-  const cookieLanguage = parseLangCookie(getHeaderValue("cookie"));
-  const countryCode = detectCountryCode(getHeaderValue);
-  const initialLanguage: Language = cookieLanguage ?? (countryCode === "BG" ? "bg" : "en");
+    const cookieLanguage = parseLangCookie(getHeaderValue("cookie"));
+    const countryCode = detectCountryCode(getHeaderValue);
+    const initialLanguage: Language = cookieLanguage ?? (countryCode === "BG" ? "bg" : "en");
 
-  // Fetch navigation data server-side to prevent layout shifts
-  const initialNavigation = await getFullNavigation(initialLanguage);
+    // Fetch navigation data server-side to prevent layout shifts
+    const initialNavigation = await getFullNavigation(initialLanguage);
 
-  const canonicalUrl = await buildCanonicalUrl();
-  const baseUrl = canonicalUrl.replace(/\/$/, "");
-  const ogImage = `${baseUrl}/og?type=home`;
+    const canonicalUrl = await buildCanonicalUrl();
+    const baseUrl = canonicalUrl.replace(/\/$/, "");
+    const ogImage = `${baseUrl}/og?type=home`;
 
-  const webSiteSchema = buildWebSiteSchema(canonicalUrl);
-  const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);
+    const webSiteSchema = buildWebSiteSchema(canonicalUrl);
+    const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);
 
-  return (
-    <html lang={initialLanguage}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Oswald:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <meta property="og:image" content={ogImage} />
-        <meta name="twitter:image" content={ogImage} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-        />
-      </head>
-      <body>
-        <GoogleAnalytics />
-        <Providers initialLanguage={initialLanguage} initialNavigation={initialNavigation}>
-          <GA4RouteTracker />
-          <LayoutShell>
-            {children}
-          </LayoutShell>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: 'hsl(207 72% 11%)',
-                color: 'white',
-                border: 'none',
-              },
-              className: 'font-body',
-            }}
+    return (
+      <html lang={initialLanguage}>
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Oswald:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+            rel="stylesheet"
           />
-          <PromotionPopup />
-        </Providers>
-      </body>
-    </html>
-  );
+          <meta property="og:image" content={ogImage} />
+          <meta name="twitter:image" content={ogImage} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          />
+        </head>
+        <body>
+          <GoogleAnalytics />
+          <Providers initialLanguage={initialLanguage} initialNavigation={initialNavigation}>
+            <GA4RouteTracker />
+            <LayoutShell>
+              {children}
+            </LayoutShell>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: 'hsl(207 72% 11%)',
+                  color: 'white',
+                  border: 'none',
+                },
+                className: 'font-body',
+              }}
+            />
+            <PromotionPopup />
+          </Providers>
+        </body>
+      </html>
+    );
+  } catch (error: any) {
+    console.error("CRITICAL: RootLayout Server Render Error:", {
+      message: error?.message,
+      stack: error?.stack?.split('\n').slice(0, 5).join('\n')
+    });
+    // Re-throw to let Next.js handle it, but we've logged it now
+    throw error;
+  }
 }
 

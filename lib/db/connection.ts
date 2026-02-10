@@ -71,11 +71,13 @@ export async function query<T = any>(
 
         return rows as T[];
     } catch (error: any) {
-        console.error('Query error:', {
-            originalSql: sqlQuery.substring(0, 100),
-            paramsCount: params?.length || 0,
+        console.error('❌ Database Query Error:', {
             message: error?.message,
             code: error?.code,
+            sql: sqlQuery.slice(0, 200) + (sqlQuery.length > 200 ? '...' : ''),
+            paramCount: params?.length || 0,
+            pgParamsCount: pgParams?.length || 0,
+            stack: error?.stack?.split('\n').slice(0, 3).join('\n') // Just top of stack
         });
         throw error;
     }

@@ -38,7 +38,7 @@ export interface SeoResolved {
   description: string;
   canonical: string;
   ogImageUrl: string;
-  ogType: "website" | "product";
+  ogType: "website" | "article";
   robots?: Metadata["robots"];
   alternates?: Metadata["alternates"];
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
@@ -268,7 +268,7 @@ export async function resolvePageSEO(input: SeoInput): Promise<SeoResolved> {
       description,
       canonical: hreflang.canonical,
       ogImageUrl,
-      ogType: "product",
+      ogType: "website",
       alternates: {
         canonical: hreflang.canonical,
         languages: hreflang.alternates.languages,

@@ -85,11 +85,20 @@ export async function getPageBlocks(pageId: number): Promise<PageBlock[]> {
     );
 
     // Parse JSON data field
-    return blocks.map((block: any) => ({
-        ...block,
-        data: typeof block.data === 'string' ? JSON.parse(block.data) : block.data,
-        enabled: Boolean(block.enabled),
-    })) as PageBlock[];
+    return blocks.map((block: any) => {
+        let parsedData = {};
+        try {
+            parsedData = typeof block.data === 'string' ? JSON.parse(block.data) : (block.data || {});
+        } catch (e) {
+            console.error(`Failed to parse block data for block ${block.id}:`, e);
+        }
+
+        return {
+            ...block,
+            data: parsedData,
+            enabled: Boolean(block.enabled),
+        };
+    }) as PageBlock[];
 }
 
 // Create page block
