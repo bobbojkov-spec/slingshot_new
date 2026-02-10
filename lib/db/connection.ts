@@ -50,8 +50,13 @@ export async function query<T = any>(
     sqlQuery: string,
     params?: any[]
 ): Promise<T[]> {
+    let pgSQL = "";
+    let pgParams: any[] = [];
+
     try {
-        const { query: pgSQL, pgParams } = convertMySQLToPostgreSQL(sqlQuery, params);
+        const converted = convertMySQLToPostgreSQL(sqlQuery, params);
+        pgSQL = converted.query;
+        pgParams = converted.pgParams;
 
         // Execute query using the pool from dbPg
         const { rows } = await pgQuery(pgSQL, pgParams);
@@ -105,7 +110,13 @@ export async function insertAndGetId(
             insertQuery = insertQuery.replace(/;?\s*$/i, '') + ' RETURNING id';
         }
 
-        const { query: pgSQL, pgParams } = convertMySQLToPostgreSQL(insertQuery, params);
+        let pgSQL = "";
+        let pgParams: any[] = [];
+
+        const converted = convertMySQLToPostgreSQL(insertQuery, params);
+        pgSQL = converted.query;
+        pgParams = converted.pgParams;
+
         const { rows } = await pgQuery(pgSQL.trim(), pgParams);
 
         if (rows && rows.length > 0) {

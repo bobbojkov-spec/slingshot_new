@@ -107,11 +107,7 @@ const buildDefaultResolved = async (
 ): Promise<SeoResolved> => {
   const baseUrl = await resolveBaseUrl();
   const hreflang = buildHreflangLinks(baseUrl, path);
-  const ogImageUrl = buildOgUrl(baseUrl, {
-    type: "page",
-    slug: path.replace(/^\//, "") || "home",
-    locale,
-  });
+  const ogImageUrl = `${baseUrl.replace(/\/$/, "")}${FALLBACK_OG_PATH}`;
 
   return {
     title,
