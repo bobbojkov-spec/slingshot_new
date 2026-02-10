@@ -79,17 +79,17 @@ export default function NewProductsFromCollection() {
 
     if (loading) {
         return (
-            <section className="section-padding bg-slate-800/90 relative">
+            <section className="section-padding relative" style={{ background: 'linear-gradient(180deg, #9EA5AC 0%, #7E8892 100%)' }}>
                 <div className="section-container">
                     <div className="mb-12">
-                        <div className="h-7 w-28 bg-slate-700/50 rounded-full animate-pulse mb-4" />
-                        <div className="h-10 w-60 bg-slate-700/30 rounded-lg animate-pulse" />
+                        <div className="h-7 w-28 bg-white/30 rounded-full animate-pulse mb-4" />
+                        <div className="h-10 w-60 bg-white/20 rounded-lg animate-pulse" />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-4 lg:gap-5">
-                        <div className="aspect-square bg-slate-700/40 rounded-[24px] animate-pulse" />
+                        <div className="aspect-square bg-white/20 rounded-[24px] animate-pulse" />
                         <div className="grid grid-cols-2 gap-4 lg:gap-5">
                             {[...Array(4)].map((_, i) => (
-                                <div key={i} className="aspect-square bg-slate-700/40 rounded-[20px] animate-pulse" />
+                                <div key={i} className="aspect-square bg-white/20 rounded-[20px] animate-pulse" />
                             ))}
                         </div>
                     </div>
@@ -108,7 +108,7 @@ export default function NewProductsFromCollection() {
 
     return (
         <section className="section-padding relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, hsl(215 25% 18%) 0%, hsl(220 30% 12%) 50%, hsl(215 35% 10%) 100%)' }}>
+            style={{ background: 'linear-gradient(180deg, #9EA5AC 0%, #7E8892 100%)' }}>
             {/* Texture Overlay */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                 style={{
@@ -188,8 +188,8 @@ function Product3DCard({ product, isHero = false, language }: { product: Product
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onMouseEnter={() => setIsHovered(true)}
-            className={`group relative overflow-hidden flex flex-col transition-all duration-200 ease-out 
-                ${isHero ? 'rounded-[24px] shadow-2xl min-h-[500px]' : 'rounded-[20px] shadow-xl aspect-square'} 
+            className={`group relative overflow-hidden flex flex-col transition-all duration-200 ease-out
+                ${isHero ? 'rounded-[24px] shadow-2xl min-h-[500px]' : 'rounded-[20px] shadow-xl aspect-square'}
                 bg-slate-900 ring-1 ring-white/10 hover:ring-neon-lime/40`}
             style={{
                 transform: transform,
@@ -197,25 +197,27 @@ function Product3DCard({ product, isHero = false, language }: { product: Product
                 perspective: "1000px"
             }}
         >
+            {/* Image with zoom effect */}
             <img
                 src={product.image}
                 alt={product.name}
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 ease-out group-hover:scale-[1.15]"
                 style={{ transform: "translateZ(0)" }}
             />
 
             {/* Cinematic Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10 transition-all duration-500 group-hover:from-black/95 group-hover:via-black/40" />
 
-            {/* Shine Sweep Effect */}
+            {/* Shine Sweep Effect - Glossy Flare */}
             <div
-                className={`absolute inset-0 z-20 pointer-events-none overflow-hidden`}
-                style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s pb-bezier(0.4, 0, 0.2, 1)' }}
-            >
-                <div className="absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-25 animate-shine"
-                    style={{ animation: isHovered ? 'shine 0.8s ease-in-out' : 'none' }} />
-            </div>
+                className="absolute inset-0 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                    background: 'linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%)',
+                    transform: 'translateX(-100%) skewX(-15deg)',
+                    animation: isHovered ? 'shine-sweep 0.8s ease-out' : 'none'
+                }}
+            />
 
             {/* NEW badge */}
             <div className="absolute top-6 left-6 z-30 transform translate-z-20">
