@@ -114,7 +114,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
         <div className="relative hero-shadow bg-deep-navy pt-32 pb-16">
             <div className="section-container">
                 <div className="max-w-4xl">
-                    <h1 className="text-4xl md:text-5xl font-hero font-bold text-white mb-6 uppercase tracking-tight">
+                    <h1 className="text-3xl md:text-4xl font-hero font-bold text-white mb-6 uppercase tracking-tight">
                         {title}
                     </h1>
                     {subtitle && (
