@@ -95,7 +95,7 @@ const validateApi = async () => {
 const runBuild = () => {
     console.log('--- 🏗️ Running Production Build ---');
     try {
-        execSync('npm run build', { stdio: 'inherit', cwd: rootDir });
+        execSync('npx next build', { stdio: 'inherit', cwd: rootDir });
         console.log('✅ Build passed');
     } catch (err) {
         console.error('❌ Build Failed');
