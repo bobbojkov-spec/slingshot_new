@@ -1,10 +1,28 @@
 import { query } from '@/lib/db';
 import { getPresignedUrl } from '@/lib/railway/storage';
-import { NavigationData, NavigationSport, MenuGroup, MenuCollection } from '@/hooks/useNavigation';
+import { NavigationData } from '@/hooks/useNavigation';
+import { unstable_cache } from 'next/cache';
 
-// Simple memory cache
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const navCache: Record<string, { data: NavigationData, expires: number }> = {};
+// Hard timeout for DB operations to prevent RootLayout hangs
+const DB_TIMEOUT_MS = 4000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+    let timeoutId: NodeJS.Timeout;
+    const timeoutPromise = new Promise<T>((resolve) => {
+        timeoutId = setTimeout(() => {
+            console.error(`[NAV SERVER] Timeout reached (${timeoutMs}ms). Returning fallback.`);
+            resolve(fallback);
+        }, timeoutMs);
+    });
+
+    return Promise.race([
+        promise.then((result) => {
+            clearTimeout(timeoutId);
+            return result;
+        }),
+        timeoutPromise
+    ]);
+}
 
 export async function getNavigationData(lang: string = 'en') {
     const { rows: sportsRows } = await query(
@@ -224,45 +242,25 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
     }));
 }
 
-export async function getFullNavigation(lang: string = 'en'): Promise<NavigationData> {
+// Internal base fetcher
+async function fetchFullNavigationData(lang: string = 'en'): Promise<NavigationData> {
+    const fetchStart = Date.now();
     try {
-        const now = Date.now();
-        if (navCache[lang] && navCache[lang].expires > now) {
-            return navCache[lang].data;
-        }
-
         const [nav, slingshot, rideEngine] = await Promise.all([
-            getNavigationData(lang).catch(err => {
-                console.error(`[NAV SERVER] getNavigationData failed for ${lang}:`, err.message);
-                return { sports: [], activityCategories: [], rideEngineHandles: [], customPages: [] };
-            }),
-            getMenuStructure('slingshot', lang).catch(err => {
-                console.error(`[NAV SERVER] getMenuStructure(slingshot) failed for ${lang}:`, err.message);
-                return [];
-            }),
-            getMenuStructure('rideengine', lang).catch(err => {
-                console.error(`[NAV SERVER] getMenuStructure(rideengine) failed for ${lang}:`, err.message);
-                return [];
-            })
+            getNavigationData(lang),
+            getMenuStructure('slingshot', lang),
+            getMenuStructure('rideengine', lang)
         ]);
 
-        const data = {
+        console.log(`[NAV SERVER] Navigation data fetched in ${Date.now() - fetchStart}ms`);
+        return {
             ...nav,
             slingshotMenuGroups: slingshot,
             rideEngineMenuGroups: rideEngine,
             language: lang,
         } as NavigationData;
-
-        // Update cache
-        navCache[lang] = {
-            data,
-            expires: now + CACHE_DURATION
-        };
-
-        return data;
     } catch (error: any) {
-        console.error('[NAV SERVER] Critical getFullNavigation failure:', error.message);
-        // Return a minimal valid navigation structure to prevent 500 errors
+        console.error('[NAV SERVER] fetchFullNavigationData failed:', error.message);
         return {
             language: lang,
             sports: [],
@@ -274,3 +272,27 @@ export async function getFullNavigation(lang: string = 'en'): Promise<Navigation
         } as NavigationData;
     }
 }
+
+// Cached version for public use
+export const getFullNavigation = async (lang: string = 'en'): Promise<NavigationData> => {
+    // Wrap with Next.js caching
+    const cachedFetch = unstable_cache(
+        async (l: string) => fetchFullNavigationData(l),
+        [`navigation-${lang}`],
+        { revalidate: 300, tags: ['navigation'] }
+    );
+
+    // Hard fallback structure
+    const fallback: NavigationData = {
+        language: lang,
+        sports: [],
+        activityCategories: [],
+        rideEngineHandles: [],
+        customPages: [],
+        slingshotMenuGroups: [],
+        rideEngineMenuGroups: [],
+    };
+
+    // Apply hard timeout to the cached fetch
+    return withTimeout(cachedFetch(lang), DB_TIMEOUT_MS, fallback);
+};
