@@ -71,7 +71,6 @@ const detectCountryCode = (getHeaderValue: (name: string) => string | null) => {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  console.log('[REQUEST] RootLayout rendering...');
   try {
     const headersList = await headers();
     const getHeaderValue = (name: string) => {

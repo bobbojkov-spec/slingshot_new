@@ -9,17 +9,10 @@ if (process.env.NODE_ENV !== 'production') {
 const dbUrl = process.env.DATABASE_URL || '';
 const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
 
-console.log('[DB DIAGNOSTICS] Environment check:', {
-  hasDatabaseUrl: !!dbUrl,
-  databaseUrlLength: dbUrl.length,
-  nodeEnv: process.env.NODE_ENV,
-  nextPhase: process.env.NEXT_PHASE,
-  isRailwayUrl: dbUrl.includes('railway') || dbUrl.includes('rlwy.net'),
-  connectionString: maskedUrl,
-});
+const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
 
 if (!dbUrl) {
-  console.error('[DB DIAGNOSTICS] CRITICAL: DATABASE_URL is not defined!');
+  console.error('CRITICAL: DATABASE_URL is not defined!');
 }
 
 // Create a connection pool
@@ -47,10 +40,9 @@ pool.on('error', (err) => {
 // Helper function to execute queries
 export async function query(text: string, params?: any[]) {
   const start = Date.now();
-  console.log('[DB] Started query:', text.trim().split('\n')[0].slice(0, 50) + '...');
   const res = await pool.query(text, params);
   const duration = Date.now() - start;
-  console.log('[DB] Executed query', { duration, rows: res.rowCount });
+  console.log('Executed query', { duration, rows: res.rowCount });
   return res;
 }
 
