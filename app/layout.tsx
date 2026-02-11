@@ -139,18 +139,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </html>
     );
   } catch (error: any) {
-    console.error("CRITICAL: RootLayout Server Render Error:", {
-      message: error?.message,
+    const errorDetails = {
+      message: error?.message || "Unknown error",
       code: error?.code,
       digest: error?.digest,
-      stack: error?.stack?.split('\n').slice(0, 8).join('\n'),
       envCheck: {
         hasDatabaseUrl: !!process.env.DATABASE_URL,
         nodeEnv: process.env.NODE_ENV,
         nextPhase: process.env.NEXT_PHASE,
       }
-    });
-    // Re-throw to let Next.js handle it, but we've logged it now
+    };
+
+    console.error("CRITICAL: RootLayout Server Render Error:", errorDetails);
+
+    // In production, we still throw to show the generic Next.js error page,
+    // but we've logged the details to the server console.
     throw error;
   }
 }

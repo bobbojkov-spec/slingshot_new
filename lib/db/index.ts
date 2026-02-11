@@ -4,27 +4,28 @@ import { ensureEnv } from '@/lib/env';
 ensureEnv();
 
 // Diagnostic logging for deployment debugging
-const dbUrl = process.env.DATABASE_URL;
+const dbUrl = process.env.DATABASE_URL || '';
+const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
+
 console.log('[DB DIAGNOSTICS] Environment check:', {
   hasDatabaseUrl: !!dbUrl,
-  databaseUrlLength: dbUrl?.length ?? 0,
+  databaseUrlLength: dbUrl.length,
   nodeEnv: process.env.NODE_ENV,
   nextPhase: process.env.NEXT_PHASE,
-  isRailwayUrl: dbUrl?.includes('railway') || dbUrl?.includes('rlwy.net'),
-  connectionStringPrefix: dbUrl ? dbUrl.split('@')[0].replace(/:[^:]*@/, ':***@') : 'NOT_SET',
+  isRailwayUrl: dbUrl.includes('railway') || dbUrl.includes('rlwy.net'),
+  connectionString: maskedUrl,
 });
 
 if (!dbUrl) {
   console.error('[DB DIAGNOSTICS] CRITICAL: DATABASE_URL is not defined!');
-  console.error('[DB DIAGNOSTICS] Available env vars:', Object.keys(process.env).filter(k => !k.includes('KEY') && !k.includes('SECRET') && !k.includes('PASSWORD')));
 }
 
 // Create a connection pool
 const pool = new Pool({
   connectionString: dbUrl,
   // Railway PostgreSQL requires SSL
-  ssl: dbUrl?.includes('railway') ||
-    dbUrl?.includes('rlwy.net') ||
+  ssl: dbUrl.includes('railway') ||
+    dbUrl.includes('rlwy.net') ||
     process.env.NODE_ENV === 'production'
     ? { rejectUnauthorized: false }
     : undefined,

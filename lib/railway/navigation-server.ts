@@ -225,28 +225,52 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
 }
 
 export async function getFullNavigation(lang: string = 'en'): Promise<NavigationData> {
-    const now = Date.now();
-    if (navCache[lang] && navCache[lang].expires > now) {
-        return navCache[lang].data;
+    try {
+        const now = Date.now();
+        if (navCache[lang] && navCache[lang].expires > now) {
+            return navCache[lang].data;
+        }
+
+        const [nav, slingshot, rideEngine] = await Promise.all([
+            getNavigationData(lang).catch(err => {
+                console.error(`[NAV SERVER] getNavigationData failed for ${lang}:`, err.message);
+                return { sports: [], activityCategories: [], rideEngineHandles: [], customPages: [] };
+            }),
+            getMenuStructure('slingshot', lang).catch(err => {
+                console.error(`[NAV SERVER] getMenuStructure(slingshot) failed for ${lang}:`, err.message);
+                return [];
+            }),
+            getMenuStructure('rideengine', lang).catch(err => {
+                console.error(`[NAV SERVER] getMenuStructure(rideengine) failed for ${lang}:`, err.message);
+                return [];
+            })
+        ]);
+
+        const data = {
+            ...nav,
+            slingshotMenuGroups: slingshot,
+            rideEngineMenuGroups: rideEngine,
+            language: lang,
+        } as NavigationData;
+
+        // Update cache
+        navCache[lang] = {
+            data,
+            expires: now + CACHE_DURATION
+        };
+
+        return data;
+    } catch (error: any) {
+        console.error('[NAV SERVER] Critical getFullNavigation failure:', error.message);
+        // Return a minimal valid navigation structure to prevent 500 errors
+        return {
+            language: lang,
+            sports: [],
+            activityCategories: [],
+            rideEngineHandles: [],
+            customPages: [],
+            slingshotMenuGroups: [],
+            rideEngineMenuGroups: [],
+        } as NavigationData;
     }
-
-    const [nav, slingshot, rideEngine] = await Promise.all([
-        getNavigationData(lang),
-        getMenuStructure('slingshot', lang),
-        getMenuStructure('rideengine', lang)
-    ]);
-
-    const data = {
-        ...nav,
-        slingshotMenuGroups: slingshot,
-        rideEngineMenuGroups: rideEngine,
-    } as NavigationData;
-
-    // Update cache
-    navCache[lang] = {
-        data,
-        expires: now + CACHE_DURATION
-    };
-
-    return data;
 }
