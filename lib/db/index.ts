@@ -35,6 +35,8 @@ const pool = new Pool({
   max: process.env.NEXT_PHASE === 'phase-production-build' ? 2 : 10,
 });
 
+console.log('[DB DIAGNOSTICS] Pool initialized');
+
 // Add pool error handling for debugging
 pool.on('error', (err) => {
   console.error('[DB DIAGNOSTICS] Unexpected pool error:', err.message);
