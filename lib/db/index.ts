@@ -1,7 +1,9 @@
 import { Pool } from 'pg';
 import { ensureEnv } from '@/lib/env';
 
-ensureEnv();
+if (process.env.NODE_ENV !== 'production') {
+  ensureEnv();
+}
 
 // Diagnostic logging for deployment debugging
 const dbUrl = process.env.DATABASE_URL || '';
