@@ -1,9 +1,8 @@
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
-import dotenv from 'dotenv';
+import { ensureEnv } from '@/lib/env';
 
-// Ensure .env.local is loaded even if Next dev didn't pick it up
-dotenv.config();
+ensureEnv();
 
 // Resend sandbox defaults — no custom domain/DNS required.
 const resendApiKey = process.env.RESEND_API_KEY;

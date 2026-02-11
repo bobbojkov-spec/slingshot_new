@@ -16,6 +16,7 @@ const { ensureEnv } = require('../../lib/env');
 
 ensureEnv();
 
+
 function inferSsl(connectionString) {
   if (!connectionString) return undefined;
   const isLocal = /localhost|127\.0\.0\.1/i.test(connectionString);
