@@ -15,7 +15,7 @@ const { Client } = require('pg');
 const { ensureEnv } = require('../../lib/env');
 
 ensureEnv();
-console.log('[SQL] apply-sql-file.js starting...');
+
 
 function inferSsl(connectionString) {
   if (!connectionString) return undefined;

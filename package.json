@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "start": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
     "lint": "next lint",
     "db:apply:admin-login-codes": "node scripts/db/apply-sql-file.js sql/admin_login_codes.sql",
     "db:copy:to-railway": "bash scripts/db/copy-postgres-to-railway.sh",
@@ -18,7 +18,7 @@
     "storage:migrate:to-railway": "node scripts/migration/migrate-storage-to-railway.js",
     "storage:migrate:supabase-product": "node scripts/migrate-supabase-product-images.js",
     "migration:update-urls": "node scripts/migration/update-database-urls.js",
-    "railway:start": "node .next/standalone/server.js",
+    "railway:start": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
     "preflight": "node scripts/railway-preflight.mjs"
   },
   "dependencies": {

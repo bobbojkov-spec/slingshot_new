@@ -1,8 +1,8 @@
 import { Resend } from 'resend';
-import dotenv from 'dotenv';
+import { ensureEnv } from '@/lib/env';
 import type { InquiryItemInput } from '@/lib/inquiries';
 
-dotenv.config();
+ensureEnv();
 
 const ADMIN_INQUIRY_EMAIL = 'bob.bojkov@gmail.com';
 
