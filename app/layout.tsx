@@ -141,7 +141,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   } catch (error: any) {
     console.error("CRITICAL: RootLayout Server Render Error:", {
       message: error?.message,
-      stack: error?.stack?.split('\n').slice(0, 5).join('\n')
+      code: error?.code,
+      digest: error?.digest,
+      stack: error?.stack?.split('\n').slice(0, 8).join('\n'),
+      envCheck: {
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        nodeEnv: process.env.NODE_ENV,
+        nextPhase: process.env.NEXT_PHASE,
+      }
     });
     // Re-throw to let Next.js handle it, but we've logged it now
     throw error;
