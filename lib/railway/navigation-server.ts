@@ -231,8 +231,6 @@ export async function getFullNavigation(lang: string = 'en'): Promise<Navigation
             return navCache[lang].data;
         }
 
-        console.log('[NAV SERVER] Fetching navigation data components...');
-        const fetchStart = Date.now();
         const [nav, slingshot, rideEngine] = await Promise.all([
             getNavigationData(lang).catch(err => {
                 console.error(`[NAV SERVER] getNavigationData failed for ${lang}:`, err.message);
@@ -247,7 +245,6 @@ export async function getFullNavigation(lang: string = 'en'): Promise<Navigation
                 return [];
             })
         ]);
-        console.log(`[NAV SERVER] Navigation data fetched in ${Date.now() - fetchStart}ms`);
 
         const data = {
             ...nav,
