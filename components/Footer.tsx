@@ -35,7 +35,7 @@ const Footer = () => {
               <img
                 alt="Slingshot"
                 className="h-8 w-auto object-contain"
-                src="/lovable-uploads/36257ddf-c3a4-46fd-b0bb-ded5427dcfac.png"
+                src="/uploads/36257ddf-c3a4-46fd-b0bb-ded5427dcfac.png"
               />
               <span className="font-logo font-bold text-white text-lg tracking-tight">BG</span>
             </Link>
