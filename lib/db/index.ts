@@ -25,13 +25,14 @@ if (!dbUrl) {
 // Create a connection pool
 const pool = new Pool({
   connectionString: dbUrl,
-  // Railway PostgreSQL requires SSL
-  ssl: dbUrl.includes('railway') ||
-    dbUrl.includes('rlwy.net') ||
-    process.env.NODE_ENV === 'production'
+  // Railway PostgreSQL requires SSL for external, but internal is faster/safer without or with permissive
+  ssl: (dbUrl.includes('railway') || dbUrl.includes('rlwy.net') || process.env.NODE_ENV === 'production')
     ? { rejectUnauthorized: false }
     : undefined,
-  // Limit connections during build to prevent exhaustion with many workers
+  // Safety timeouts to prevent infinite hangs
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
+  // Limit connections during build
   max: process.env.NEXT_PHASE === 'phase-production-build' ? 2 : 10,
 });
 
@@ -45,9 +46,10 @@ pool.on('error', (err) => {
 // Helper function to execute queries
 export async function query(text: string, params?: any[]) {
   const start = Date.now();
+  console.log('[DB] Started query:', text.trim().split('\n')[0].slice(0, 50) + '...');
   const res = await pool.query(text, params);
   const duration = Date.now() - start;
-  console.log('Executed query', { text, duration, rows: res.rowCount });
+  console.log('[DB] Executed query', { duration, rows: res.rowCount });
   return res;
 }
 

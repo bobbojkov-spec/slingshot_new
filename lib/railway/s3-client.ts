@@ -4,13 +4,10 @@
  */
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { config } from 'dotenv';
-import { resolve } from 'path';
+import { ensureEnv } from '@/lib/env';
 
-// Load .env.local
-if (typeof window === 'undefined') {
-    config({ path: resolve(process.cwd(), '.env.local') });
-}
+// Ensure environment is loaded (skips in production)
+ensureEnv();
 
 // Storage bucket names (matching our structure)
 export const STORAGE_BUCKETS = {
