@@ -14,7 +14,7 @@ import PromotionPopup from "@/components/modules/PromotionPopup";
 
 export const metadata: Metadata = {
   title: "Slingshot Bulgaria",
-  description: "Official Slingshot distributor inspired by the Lovable source of truth.",
+  description: "Official Slingshot distributor in Bulgaria.",
   icons: {
     icon: [
       { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

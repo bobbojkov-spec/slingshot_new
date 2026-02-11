@@ -11,7 +11,7 @@ const products = [
     name: "RPX V2",
     category: "Kite",
     price: 1899,
-    image: "/lovable-uploads/rpx-kite.jpg",
+    image: "/uploads/rpx-kite.jpg",
     badge: "New",
     slug: "rpx-v2"
   },
@@ -21,7 +21,7 @@ const products = [
     category: "Kite",
     price: 1799,
     originalPrice: 1999,
-    image: "/lovable-uploads/ghost-kite.jpg",
+    image: "/uploads/ghost-kite.jpg",
     badge: "Sale",
     slug: "ghost-v3"
   },
@@ -30,7 +30,7 @@ const products = [
     name: "SlingWing V4",
     category: "Wing",
     price: 899,
-    image: "/lovable-uploads/slingwing-v4.jpg",
+    image: "/uploads/slingwing-v4.jpg",
     badge: "New",
     slug: "slingwing-v4"
   },
@@ -39,7 +39,7 @@ const products = [
     name: "Formula V3",
     category: "Board",
     price: 749,
-    image: "/lovable-uploads/formula-board.jpg",
+    image: "/uploads/formula-board.jpg",
     slug: "formula-v3"
   }
 ];

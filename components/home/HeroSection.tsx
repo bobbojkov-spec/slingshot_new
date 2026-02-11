@@ -13,7 +13,7 @@ const HeroSection = () => {
     <section className="hero-section" ref={containerRef}>
       <div className="absolute inset-0 overflow-hidden">
         <img
-          src="/lovable-uploads/hero-wave.jpg"
+          src="/uploads/hero-wave.jpg"
           alt="Slingshot Bulgaria - Premium Kitesurfing Action"
           className="image-cover"
           style={imageStyle}

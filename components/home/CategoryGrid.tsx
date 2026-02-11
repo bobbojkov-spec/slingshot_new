@@ -6,27 +6,27 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 const categories = [
   {
     key: "kites",
-    image: "/lovable-uploads/machine.jpg",
+    image: "/uploads/machine.jpg",
     href: "/shop?category=kites"
   },
   {
     key: "boards",
-    image: "/lovable-uploads/kitefoil.jpg",
+    image: "/uploads/kitefoil.jpg",
     href: "/shop?category=boards"
   },
   {
     key: "wings",
-    image: "/lovable-uploads/quickflite.jpg",
+    image: "/uploads/quickflite.jpg",
     href: "/shop?category=wings"
   },
   {
     key: "foils",
-    image: "/lovable-uploads/wavemastery.jpg",
+    image: "/uploads/wavemastery.jpg",
     href: "/shop?category=foils"
   },
   {
     key: "accessories",
-    image: "/lovable-uploads/wavemastery.jpg",
+    image: "/uploads/wavemastery.jpg",
     href: "/shop?category=accessories"
   }
 ];

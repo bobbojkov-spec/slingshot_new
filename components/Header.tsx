@@ -189,7 +189,7 @@ const Header = () => {
             <img
               alt="Slingshot Bulgaria Official Logo"
               className="h-10 w-auto"
-              src="/lovable-uploads/68abe593-9323-4aea-8896-0637030766a0.png"
+              src="/uploads/68abe593-9323-4aea-8896-0637030766a0.png"
               width={160}
               height={40}
             />
