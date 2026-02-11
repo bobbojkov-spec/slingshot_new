@@ -25,8 +25,9 @@ if (!dbUrl) {
 // Create a connection pool
 const pool = new Pool({
   connectionString: dbUrl,
-  // Railway PostgreSQL requires SSL for external, but internal is faster/safer without or with permissive
-  ssl: (dbUrl.includes('railway') || dbUrl.includes('rlwy.net') || process.env.NODE_ENV === 'production')
+  // Railway PostgreSQL requires SSL for external, but internal is faster/safer without
+  // Crucially, internal .internal URLs often reject TLS handshakes.
+  ssl: (dbUrl.includes('railway') || dbUrl.includes('rlwy.net') || process.env.NODE_ENV === 'production') && !dbUrl.includes('.internal')
     ? { rejectUnauthorized: false }
     : undefined,
   // Safety timeouts to prevent infinite hangs
