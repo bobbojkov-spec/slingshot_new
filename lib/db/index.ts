@@ -5,36 +5,40 @@ if (process.env.NODE_ENV !== 'production') {
   ensureEnv();
 }
 
-// Diagnostic logging for deployment debugging
 const dbUrl = process.env.DATABASE_URL || '';
-const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
 
-const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
+// Singleton pattern for the database pool
+declare global {
+  var _pgPool: Pool | undefined;
+}
 
 if (!dbUrl) {
   console.error('CRITICAL: DATABASE_URL is not defined!');
 }
 
-// Create a connection pool
-const pool = new Pool({
+// Create or reuse pool
+const pool = globalThis._pgPool || new Pool({
   connectionString: dbUrl,
-  // Railway PostgreSQL requires SSL for external, but internal is faster/safer without
-  // Crucially, internal .internal URLs often reject TLS handshakes.
-  ssl: (dbUrl.includes('railway') || dbUrl.includes('rlwy.net') || process.env.NODE_ENV === 'production') && !dbUrl.includes('.internal')
+  // Railway standard: Disable SSL for internal (.internal) hosts, enable for others in production
+  ssl: (process.env.NODE_ENV === 'production' && !dbUrl.includes('.internal'))
     ? { rejectUnauthorized: false }
     : undefined,
   // Safety timeouts to prevent infinite hangs
-  connectionTimeoutMillis: 10000,
+  connectionTimeoutMillis: 5000,
   idleTimeoutMillis: 30000,
   // Limit connections during build
   max: process.env.NEXT_PHASE === 'phase-production-build' ? 2 : 10,
 });
 
-console.log('[DB DIAGNOSTICS] Pool initialized');
+if (!globalThis._pgPool) {
+  const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@');
+  console.log('[DB] Pool initialized (Singleton created) for:', maskedUrl);
+  globalThis._pgPool = pool;
+}
 
-// Add pool error handling for debugging
+// Add pool error handling
 pool.on('error', (err) => {
-  console.error('[DB DIAGNOSTICS] Unexpected pool error:', err.message);
+  console.error('Unexpected pool error:', err.message);
 });
 
 // Helper function to execute queries
@@ -91,4 +95,3 @@ export const products = {
 };
 
 export default pool;
-
