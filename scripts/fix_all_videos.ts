@@ -1,5 +1,4 @@
 
-import puppeteer from 'puppeteer';
 import { query } from '../lib/db';
 
 async function main() {
@@ -16,6 +15,7 @@ async function main() {
 
     console.log(`Found ${targets.length} targets to scan.`);
 
+    const puppeteer = await import('puppeteer').then(m => m.default);
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-font-subpixel-positioning'] // optimization

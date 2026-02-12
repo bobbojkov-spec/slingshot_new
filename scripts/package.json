@@ -1,0 +1,24 @@
+{
+  "name": "slingshot-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scraping and migration scripts with Puppeteer dependencies",
+  "scripts": {
+    "scrape:rideengine": "tsx scrape_rideengine_v2.ts",
+    "scrape:sku": "tsx scrape_sku_subtitle.ts",
+    "scrape:specs": "tsx scrape_specs.ts",
+    "scrape:heroes": "tsx scrape_mp4_heroes.ts",
+    "scrape:metadata": "tsx crawl_metadata.ts",
+    "fix:videos": "tsx fix_all_videos.ts",
+    "find:videos": "tsx find_real_video.ts"
+  },
+  "dependencies": {
+    "puppeteer": "^24.35.0",
+    "pg": "^8.16.3",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  }
+}

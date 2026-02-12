@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import puppeteer from 'puppeteer';
 
 // URLs to sitemaps
 const SITEMAP_ROOT = 'https://slingshotsports.com/sitemap.xml';
@@ -71,6 +70,7 @@ async function main() {
     const results: ProductMetadata[] = [];
 
     // 2. Crawl with Puppeteer
+    const puppeteer = await import('puppeteer').then(m => m.default);
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']

@@ -138,27 +138,6 @@ const ProductGallery = ({ images, productName, activeIndex = 0 }: ProductGallery
         </DialogContent>
       </Dialog>
 
-      {/* Thumbnail strip at bottom */}
-      {images.length > 1 && (
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2 py-1">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedIndex(index)}
-              className={`w-12 h-12 rounded overflow-hidden border-2 transition-all ${selectedIndex === index
-                ? "border-white opacity-100"
-                : "border-transparent opacity-50 hover:opacity-75"
-                }`}
-            >
-              <img
-                src={image}
-                alt={`${productName} - Slingshot Bulgaria Preview ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
-        </div>
-      )}
     </>
   );
 };

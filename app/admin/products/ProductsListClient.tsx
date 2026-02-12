@@ -211,7 +211,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
           title={record.title_bg ? `БГ: ${record.title_bg}` : null}
           placement="topLeft"
           color="#1e293b"
-          overlayInnerStyle={{ fontSize: '11px', fontWeight: 500 }}
+          styles={{ container: { fontSize: '11px', fontWeight: 500 } }}
         >
           <Typography.Link style={{ fontSize: 13, fontWeight: 500 }} onClick={() => goToEditPage(record.id)}>
             {record.title || record.name || 'Untitled'}
@@ -569,7 +569,7 @@ export default function ProductsListClient({ products }: { products: Product[] }
         rowKey={(row) => row.id}
         dataSource={filtered}
         columns={columns}
-        pagination={{ pageSize: 15, size: 'default' }}
+        pagination={{ pageSize: 15 }}
         size="middle"
         onRow={(record) => ({
           onClick: () => goToEditPage(record.id),

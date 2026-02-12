@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
             await query('COMMIT');
 
             // Revalidate navigation cache to reflect changes immediately
-            revalidateTag('navigation');
+            revalidateTag('navigation', {});
 
             return NextResponse.json({ success: true });
 
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         await query('DELETE FROM menu_groups WHERE id = $1', [id]);
 
         // Revalidate navigation cache to reflect changes immediately
-        revalidateTag('navigation');
+        revalidateTag('navigation', {});
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

@@ -59,7 +59,7 @@ export async function PUT(
         }
 
         // Revalidate navigation cache to reflect changes immediately
-        revalidateTag('navigation');
+        revalidateTag('navigation', {});
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
@@ -112,7 +112,7 @@ export async function DELETE(
         await query('DELETE FROM collections WHERE id = $1', [id]);
 
         // Revalidate navigation cache to reflect changes immediately
-        revalidateTag('navigation');
+        revalidateTag('navigation', {});
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

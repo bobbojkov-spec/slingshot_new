@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { Pool } from 'pg';
-import puppeteer from 'puppeteer';
 
 dotenv.config({ path: '.env.local' });
 
@@ -20,6 +19,7 @@ async function main() {
         const products = res.rows;
         console.log(`Found ${products.length} products to check.`);
 
+        const puppeteer = await import('puppeteer').then(m => m.default);
         browser = await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox']

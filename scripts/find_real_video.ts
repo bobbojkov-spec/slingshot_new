@@ -1,6 +1,4 @@
 
-import puppeteer from 'puppeteer';
-
 const TARGET_URLS = [
     'https://slingshotsports.com/en-eu/collections/wake-foil-quick-start',
     'https://slingshotsports.com/en-eu/products/crisis-v8', // Positive control
@@ -8,6 +6,7 @@ const TARGET_URLS = [
 ];
 
 async function main() {
+    const puppeteer = await import('puppeteer').then(m => m.default);
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']

@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         );
 
         // Revalidate navigation cache to reflect changes immediately
-        revalidateTag('navigation');
+        revalidateTag('navigation', {});
 
         return NextResponse.json({ collection: rows[0] });
 

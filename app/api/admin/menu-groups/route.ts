@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Revalidate navigation cache to reflect changes immediately
-    revalidateTag('navigation');
+    revalidateTag('navigation', {});
 
     return NextResponse.json({ group: result.rows[0] });
   } catch (error: any) {

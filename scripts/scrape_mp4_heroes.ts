@@ -1,5 +1,4 @@
 
-import puppeteer from 'puppeteer';
 import { query } from '../lib/db';
 import fs from 'fs';
 import path from 'path';
@@ -52,6 +51,7 @@ async function main() {
         manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     }
 
+    const puppeteer = await import('puppeteer').then(m => m.default);
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']

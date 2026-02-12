@@ -1,7 +1,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import puppeteer from 'puppeteer';
 import { query } from '../lib/db';
 
 const SCRAPED_DIR = path.join(process.cwd(), 'scraped_data', 'specs');
@@ -154,8 +153,12 @@ async function scrapeProduct(browser: any, slug: string, url: string) {
 
 async function main() {
     let browser: any;
+    let puppeteer: any;
 
     const launch = async () => {
+        if (!puppeteer) {
+            puppeteer = await import('puppeteer').then(m => m.default);
+        }
         if (browser) await browser.close();
         browser = await puppeteer.launch({
             headless: true,

@@ -59,7 +59,7 @@ export function useUrlFilters<T extends Record<string, FilterValue>>(
 
       for (const [key, value] of Object.entries(filters)) {
         if (value === undefined || value === null || value === '') continue;
-        if (value === defaults[key as keyof T]) continue; // Skip defaults
+        if (value === (defaults as Record<string, unknown>)[key]) continue; // Skip defaults
 
         if (Array.isArray(value)) {
           value.forEach(v => params.append(key, String(v)));
@@ -102,7 +102,7 @@ export function useUrlFilters<T extends Record<string, FilterValue>>(
       setFiltersState(prev => {
         const next = { ...prev };
         keys.forEach(key => {
-          next[key] = defaults[key] as T[keyof T];
+          next[key] = (defaults as Record<string, unknown>)[key as string] as T[keyof T];
         });
         return next;
       });
@@ -119,7 +119,7 @@ export function useUrlFilters<T extends Record<string, FilterValue>>(
   // Check if any filters are active (different from defaults)
   const hasActiveFilters = useCallback((): boolean => {
     return Object.entries(filters).some(([key, value]) => {
-      const defaultValue = defaults[key as keyof T];
+      const defaultValue = (defaults as Record<string, unknown>)[key];
       if (Array.isArray(value) && Array.isArray(defaultValue)) {
         return JSON.stringify(value) !== JSON.stringify(defaultValue);
       }
