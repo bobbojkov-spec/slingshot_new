@@ -289,7 +289,6 @@ export function getKeyFromUrl(url: string | null | undefined): string | null {
   const prefixesToRemove = [
     publicBucket || "",
     "slingshotnewimages-hw-tht",
-    "product-images",
   ].filter(Boolean);
 
   const cleanCandidate = (candidate: string): string | null => {
