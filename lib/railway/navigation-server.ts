@@ -4,13 +4,16 @@ import { NavigationData } from '@/hooks/useNavigation';
 import { unstable_cache } from 'next/cache';
 
 // Hard timeout for DB operations to prevent RootLayout hangs
-const DB_TIMEOUT_MS = 4000;
+// Increased to 10s to handle cold starts and complex multi-query operations
+const DB_TIMEOUT_MS = 10000;
 
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T, operationName: string = 'navigation'): Promise<T> {
+    const startTime = Date.now();
     let timeoutId: NodeJS.Timeout;
     const timeoutPromise = new Promise<T>((resolve) => {
         timeoutId = setTimeout(() => {
-            console.error(`[NAV SERVER] Timeout reached (${timeoutMs}ms). Returning fallback.`);
+            const elapsed = Date.now() - startTime;
+            console.error(`[NAV SERVER] Timeout reached for "${operationName}" after ${elapsed}ms (limit: ${timeoutMs}ms). Returning fallback.`);
             resolve(fallback);
         }, timeoutMs);
     });
@@ -18,6 +21,10 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Pr
     return Promise.race([
         promise.then((result) => {
             clearTimeout(timeoutId);
+            const elapsed = Date.now() - startTime;
+            if (elapsed > 2000) {
+                console.warn(`[NAV SERVER] Slow "${operationName}" operation completed in ${elapsed}ms`);
+            }
             return result;
         }),
         timeoutPromise
@@ -25,6 +32,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Pr
 }
 
 export async function getNavigationData(lang: string = 'en') {
+    const operationStart = Date.now();
     const { rows: sportsRows } = await query(
         `
     SELECT
@@ -157,7 +165,7 @@ export async function getNavigationData(lang: string = 'en') {
         `
     );
 
-    return {
+    const result = {
         language: lang,
         sports: sportsRows.map((row: any) => sportMap.get(row.slug)).filter(Boolean),
         activityCategories: activitiesResult,
@@ -177,9 +185,17 @@ export async function getNavigationData(lang: string = 'en') {
             footer_order: p.footer_order ? Number(p.footer_order) : null,
         })),
     };
+    
+    const duration = Date.now() - operationStart;
+    if (duration > 1000) {
+        console.warn(`[NAV SERVER] getNavigationData took ${duration}ms for lang=${lang}`);
+    }
+    
+    return result;
 }
 
 export async function getMenuStructure(source: string, lang: string = 'en') {
+    const operationStart = Date.now();
     const { rows: groups } = await query(
         `SELECT id, title, title_bg, slug, sort_order FROM menu_groups WHERE source = $1 ORDER BY sort_order ASC`,
         [source]
@@ -233,13 +249,20 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
         });
     }
 
-    return groups.map((g: any) => ({
+    const result = groups.map((g: any) => ({
         id: g.id,
         title: g.title,
         title_bg: g.title_bg,
         slug: g.slug,
         collections: collectionsByGroup.get(g.id) || []
     }));
+    
+    const duration = Date.now() - operationStart;
+    if (duration > 1000) {
+        console.warn(`[NAV SERVER] getMenuStructure("${source}") took ${duration}ms for lang=${lang}`);
+    }
+    
+    return result;
 }
 
 // Internal base fetcher
@@ -252,7 +275,8 @@ async function fetchFullNavigationData(lang: string = 'en'): Promise<NavigationD
             getMenuStructure('rideengine', lang)
         ]);
 
-        console.log(`[NAV SERVER] Navigation data fetched in ${Date.now() - fetchStart}ms`);
+        const duration = Date.now() - fetchStart;
+        console.log(`[NAV SERVER] Navigation data fetched in ${duration}ms for lang=${lang}`);
         return {
             ...nav,
             slingshotMenuGroups: slingshot,
@@ -294,5 +318,5 @@ export const getFullNavigation = async (lang: string = 'en'): Promise<Navigation
     };
 
     // Apply hard timeout to the cached fetch
-    return withTimeout(cachedFetch(lang), DB_TIMEOUT_MS, fallback);
+    return withTimeout(cachedFetch(lang), DB_TIMEOUT_MS, fallback, `navigation-${lang}`);
 };
