@@ -89,6 +89,23 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
         return match?.id || null;
     };
 
+    // Check if all variants are out of stock (inventory 0 or inactive)
+    const isAllVariantsOutOfStock = () => {
+        if (!product.variants || product.variants.length === 0) return false;
+        if (!product.availability || product.availability.length === 0) return false;
+        
+        return product.variants.every(variant => {
+            // Find availability entries for this variant
+            const entries = product.availability?.filter(entry => entry.variant_id === variant.id) || [];
+            // If no availability entries, consider it out of stock
+            if (entries.length === 0) return true;
+            // Check if all entries for this variant are out of stock
+            return entries.every(entry => !entry.is_active || entry.stock_qty <= 0);
+        });
+    };
+
+    const allOutOfStock = isAllVariantsOutOfStock();
+
     const getUniqueSizeOptions = () => {
         if (!product.variants) return [];
         const sizeGroups = new Map<string, string>();
@@ -456,19 +473,21 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
 
                         {/* Add to Cart */}
                         <div className="flex flex-col sm:flex-row gap-4 md:gap-4 mt-auto pt-6 md:pt-8 border-t border-gray-100">
-                            <div className="flex items-center border border-gray-300 rounded overflow-hidden w-full sm:w-fit justify-center">
+                            <div className={`flex items-center border rounded overflow-hidden w-full sm:w-fit justify-center ${allOutOfStock ? 'border-gray-200 bg-gray-50' : 'border-gray-300'}`}>
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                     aria-label={t("quantity.decrease")}
-                                    className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                                    disabled={allOutOfStock}
+                                    className={`px-6 md:px-4 py-4 transition-colors ${allOutOfStock ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 active:bg-gray-200'}`}
                                 >
                                     <Minus className="w-5 h-5 md:w-4 md:h-4" />
                                 </button>
-                                <span className="font-medium w-16 md:w-12 text-center text-lg md:text-base">{quantity}</span>
+                                <span className={`font-medium w-16 md:w-12 text-center text-lg md:text-base ${allOutOfStock ? 'text-gray-400' : ''}`}>{quantity}</span>
                                 <button
                                     onClick={() => setQuantity(quantity + 1)}
                                     aria-label={t("quantity.increase")}
-                                    className="px-6 md:px-4 py-4 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                                    disabled={allOutOfStock}
+                                    className={`px-6 md:px-4 py-4 transition-colors ${allOutOfStock ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 active:bg-gray-200'}`}
                                 >
                                     <Plus className="w-5 h-5 md:w-4 md:h-4" />
                                 </button>
@@ -476,8 +495,8 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                             <div ref={addToCartRef}>
                                 <button
                                     onClick={handleAddToInquiry}
-                                    disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
-                                    className={`w-full font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
+                                    disabled={allOutOfStock || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
+                                    className={`w-full font-bold uppercase tracking-widest py-4 md:py-4 px-8 transition-colors flex items-center justify-center gap-2 rounded text-sm md:text-base ${allOutOfStock || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
                                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                         : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
                                         }`}
@@ -486,6 +505,15 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                 </button>
                             </div>
                         </div>
+                        
+                        {/* Out of Stock Message */}
+                        {allOutOfStock && (
+                            <div className="mt-4 text-center">
+                                <span className="text-red-600 font-medium text-sm">
+                                    {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
+                                </span>
+                            </div>
+                        )}
 
                     </div>
                 </div>
@@ -544,27 +572,29 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                 style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))', paddingTop: '16px', paddingLeft: '16px', paddingRight: '16px' }}
             >
                 <div className="flex gap-3">
-                    <div className="flex items-center border border-gray-300 rounded overflow-hidden w-24 shrink-0 justify-center">
+                    <div className={`flex items-center border rounded overflow-hidden w-24 shrink-0 justify-center ${allOutOfStock ? 'border-gray-200 bg-gray-50' : 'border-gray-300'}`}>
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
                             aria-label={t("quantity.decrease")}
-                            className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                            disabled={allOutOfStock}
+                            className={`px-3 py-3 transition-colors ${allOutOfStock ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 active:bg-gray-200'}`}
                         >
                             <Minus className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-sm w-6 text-center">{quantity}</span>
+                        <span className={`font-medium text-sm w-6 text-center ${allOutOfStock ? 'text-gray-400' : ''}`}>{quantity}</span>
                         <button
                             onClick={() => setQuantity(quantity + 1)}
                             aria-label={t("quantity.increase")}
-                            className="px-3 py-3 hover:bg-gray-100 transition-colors active:bg-gray-200"
+                            disabled={allOutOfStock}
+                            className={`px-3 py-3 transition-colors ${allOutOfStock ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 active:bg-gray-200'}`}
                         >
                             <Plus className="w-4 h-4" />
                         </button>
                     </div>
                     <button
                         onClick={handleAddToInquiry}
-                        disabled={(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
-                        className={`flex-1 font-bold uppercase tracking-widest py-3 px-4 transition-colors flex items-center justify-center gap-2 rounded text-sm ${(requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
+                        disabled={allOutOfStock || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)}
+                        className={`flex-1 font-bold uppercase tracking-widest py-3 px-4 transition-colors flex items-center justify-center gap-2 rounded text-sm ${allOutOfStock || (requiresSize && !effectiveSize) || (requiresColor && !selectedColorId)
                             ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                             : 'bg-black text-white hover:bg-gray-900 active:bg-gray-800'
                             }`}
@@ -573,6 +603,15 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                         {language === 'bg' ? 'Купи' : 'Add'}
                     </button>
                 </div>
+                
+                {/* Out of Stock Message for Mobile */}
+                {allOutOfStock && (
+                    <div className="mt-3 text-center">
+                        <span className="text-red-600 font-medium text-sm">
+                            {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );
