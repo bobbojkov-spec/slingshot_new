@@ -113,7 +113,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href={buildLocalePath("/collections/featured-products", language)} className="footer-link font-body text-sm">
+                <Link href={buildLocalePath("/collections/new-products", language)} className="footer-link font-body text-sm">
                   {language === "bg" ? "Нови продукти" : "New Products"}
                 </Link>
               </li>

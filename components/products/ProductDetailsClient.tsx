@@ -438,33 +438,46 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                                 parseVariantTitle(v.title) === numericSize
                                             ) || [];
 
+                                            // Check if this specific size is available
                                             let isAvailable = sizeVariants.length > 0;
+                                            
                                             if (allOutOfStock) {
                                                 isAvailable = false;
-                                            } else if (selectedColorId) {
-                                                isAvailable = sizeVariants.some((v) => {
-                                                    const variantColorId = getVariantColorId(v);
-                                                    if (variantColorId !== selectedColorId) return false;
-                                                    const availabilityEntry = getAvailabilityEntry(v.id, selectedColorId);
-                                                    return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
-                                                });
+                                            } else {
+                                                // Check availability for this size
+                                                if (selectedColorId) {
+                                                    // With color selected: check if any variant of this size has the selected color in stock
+                                                    isAvailable = sizeVariants.some((v) => {
+                                                        const variantColorId = getVariantColorId(v);
+                                                        if (variantColorId !== selectedColorId) return false;
+                                                        const availabilityEntry = getAvailabilityEntry(v.id, selectedColorId);
+                                                        return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
+                                                    });
+                                                } else {
+                                                    // No color selected: check if any variant of this size is in stock
+                                                    isAvailable = sizeVariants.some((v) => {
+                                                        const availabilityEntry = getAvailabilityEntry(v.id, null);
+                                                        return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
+                                                    });
+                                                }
                                             }
-                                            const isSelected = !allOutOfStock && selectedSize === numericSize;
+                                            
+                                            const isSelected = !allOutOfStock && selectedSize === numericSize && isAvailable;
 
                                             return (
                                                 <button
                                                     key={`${numericSize}-${idx}`}
                                                     onClick={() => isAvailable && setSelectedSize(numericSize)}
                                                     disabled={!isAvailable}
+                                                    title={!isAvailable ? (language === 'bg' ? 'Изчерпано' : 'Out of stock') : displayLabel}
                                                     className={`px-4 md:px-4 py-2 md:py-2 rounded border text-sm font-medium transition-all min-w-[60px] md:min-w-0 ${isSelected
                                                         ? "border-black bg-black text-white"
                                                         : isAvailable
                                                             ? "border-gray-200 hover:border-black text-gray-700"
-                                                            : "border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                                            : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed opacity-60"
                                                         }`}
                                                 >
                                                     {displayLabel}
-                                                    {!isAvailable && <span className="sr-only"> ({language === 'bg' ? 'изчерпано' : 'out of stock'})</span>}
                                                 </button>
                                             );
                                         });
@@ -512,7 +525,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                         {allOutOfStock && (
                             <div className="product-unavailable mt-4 text-center">
                                 <span className="product-unavailable-message text-red-600 font-semibold text-sm">
-                                    {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
+                                    {t("product.notAvailable")}
                                 </span>
                             </div>
                         )}
@@ -599,7 +612,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                 {allOutOfStock && (
                     <div className="product-unavailable mt-3 text-center">
                         <span className="product-unavailable-message text-red-600 font-semibold text-sm">
-                            {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
+                            {t("product.notAvailable")}
                         </span>
                     </div>
                 )}

@@ -25,7 +25,7 @@ export default function NewProductsFromCollection() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const res = await fetch(`/api/collections/featured-products?lang=${language}`);
+                const res = await fetch(`/api/collections/new-products?lang=${language}`);
                 if (res.ok) {
                     const data = await res.json();
                     const fetchedProducts = data.products || [];
@@ -135,7 +135,7 @@ export default function NewProductsFromCollection() {
                     </div>
 
                     <Link
-                        href="/collections/featured-products"
+                        href="/collections/new-products"
                         className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-300 text-gray-500 font-semibold text-sm hover:border-gray-900 hover:text-gray-900 hover:bg-white transition-all duration-300"
                     >
                         <span>{language === "bg" ? "Виж всички" : "View all"}</span>
