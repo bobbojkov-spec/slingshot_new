@@ -33,16 +33,14 @@ export default async function Page() {
         )
       ) : null}
       <HeroSection />
-      <div className="container mx-auto px-4 py-2">
-        <AiVisibilitySnippet
-          page={{
-            title: dictionary["hero.title.line1"] + " " + dictionary["hero.title.accent"],
-            description: dictionary["hero.description"],
-            type: "home",
-            tags: ["home", "slingshot", "kiteboarding", "bulgaria"]
-          }}
-        />
-      </div>
+      <AiVisibilitySnippet
+        page={{
+          title: dictionary["hero.title.line1"] + " " + dictionary["hero.title.accent"],
+          description: dictionary["hero.description"],
+          type: "home",
+          tags: ["home", "slingshot", "kiteboarding", "bulgaria"]
+        }}
+      />
       <NewProductsFromCollection />
       <ShopByCategories />
       <BestSellersFromCollection />

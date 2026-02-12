@@ -39,7 +39,7 @@ const HeroSection = () => {
               {t("hero.cta.s-collection")}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link href="/rideengine-collections" className="btn-secondary">
+            <Link href="/rideengine-collections" className="inline-flex items-center justify-center px-6 py-3 bg-black/20 backdrop-blur-md border border-white/15 text-white font-heading font-semibold uppercase tracking-wider text-sm rounded transition-all duration-200 hover:bg-black/30 hover:border-white/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]" style={{ minHeight: '44px' }}>
               {t("hero.cta.r-collection")}
             </Link>
           </div>
