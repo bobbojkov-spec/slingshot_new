@@ -8,7 +8,6 @@ import PriceNote from "@/components/PriceNote";
 import { useCart } from "@/lib/cart/CartContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { ProductSection } from "@/components/products/ProductSection";
 import BackgroundVideoPlayer from "@/components/ui/BackgroundVideoPlayer";
 import SchemaJsonLd from "@/components/seo/SchemaJsonLd";
 import { buildBreadcrumbSchema, businessInfo } from "@/lib/seo/business";
@@ -440,7 +439,9 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                             ) || [];
 
                                             let isAvailable = sizeVariants.length > 0;
-                                            if (selectedColorId) {
+                                            if (allOutOfStock) {
+                                                isAvailable = false;
+                                            } else if (selectedColorId) {
                                                 isAvailable = sizeVariants.some((v) => {
                                                     const variantColorId = getVariantColorId(v);
                                                     if (variantColorId !== selectedColorId) return false;
@@ -448,7 +449,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                                                     return availabilityEntry ? availabilityEntry.is_active && availabilityEntry.stock_qty > 0 : true;
                                                 });
                                             }
-                                            const isSelected = selectedSize === numericSize;
+                                            const isSelected = !allOutOfStock && selectedSize === numericSize;
 
                                             return (
                                                 <button
@@ -509,8 +510,8 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                         
                         {/* Out of Stock Message */}
                         {allOutOfStock && (
-                            <div className="mt-4 text-center">
-                                <span className="text-red-600 font-medium text-sm">
+                            <div className="product-unavailable mt-4 text-center">
+                                <span className="product-unavailable-message text-red-600 font-semibold text-sm">
                                     {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
                                 </span>
                             </div>
@@ -555,17 +556,6 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                 </div>
             )}
 
-            {/* Related Products */}
-            {
-                related.length > 0 && (
-                    <ProductSection
-                        title={language === 'bg' ? "Свързани продукти" : "Related products"}
-                        products={related}
-                        className="product-listing-bg section-padding border-t border-gray-100"
-                    />
-                )
-            }
-
             {/* Mobile Sticky Bottom Bar */}
             <div
                 className={`fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] transition-transform duration-300 md:hidden ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
@@ -607,8 +597,8 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
                 
                 {/* Out of Stock Message for Mobile */}
                 {allOutOfStock && (
-                    <div className="mt-3 text-center">
-                        <span className="text-red-600 font-medium text-sm">
+                    <div className="product-unavailable mt-3 text-center">
+                        <span className="product-unavailable-message text-red-600 font-semibold text-sm">
                             {language === 'bg' ? 'Този продукт не е наличен' : 'This product is not available'}
                         </span>
                     </div>
