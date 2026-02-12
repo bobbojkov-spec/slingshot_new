@@ -95,8 +95,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const webSiteSchema = buildWebSiteSchema(canonicalUrl);
     const localBusinessSchema = buildLocalBusinessSchema(canonicalUrl);
 
+    const isDevEnvironment = process.env.NODE_ENV === "development";
+
     return (
-      <html lang={initialLanguage}>
+      <html lang={initialLanguage} data-peer-injected={isDevEnvironment ? "true" : undefined}>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
