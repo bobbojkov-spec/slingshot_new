@@ -68,6 +68,7 @@ export default function ContactPage() {
           product_slug: item.slug || null,
           product_image: item.image || null,
           variant_id: item.id,
+          variant_title: item.variantTitle || null,
           size: item.size || null,
           color: item.color || null,
           quantity: item.qty,

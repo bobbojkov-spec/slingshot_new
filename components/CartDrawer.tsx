@@ -9,13 +9,6 @@ const CartDrawer = () => {
   const { items, removeItem, updateQuantity, clear, isOpen, close, getCount } = useCart();
   const { t } = useLanguage();
 
-  const formatSize = (size?: string) => {
-    if (!size) return '';
-    const isNumeric = /^\d+(?:\.\d+)?$/.test(size);
-    if (!isNumeric) return size;
-    return `${size} ${t("product.sizeMeter")}`;
-  };
-
   return (
     <div
       aria-hidden={!isOpen}
@@ -61,9 +54,11 @@ const CartDrawer = () => {
                     <Link href={`/product/${item.slug}`} className="text-sm font-heading font-medium text-foreground block hover:text-accent">
                       {item.name}
                     </Link>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {[formatSize(item.size), item.color].filter(Boolean).join(" ")}
-                    </p>
+                    {item.variantTitle && (
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {item.variantTitle}
+                      </p>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <button

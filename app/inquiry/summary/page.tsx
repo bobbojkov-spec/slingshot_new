@@ -25,12 +25,6 @@ export default function SummaryPage() {
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0);
-  const formatSize = (size?: string) => {
-    if (!size) return '';
-    const isNumeric = /^\d+(?:\.\d+)?$/.test(size);
-    if (!isNumeric) return size;
-    return `${size} ${t("product.sizeMeter")}`;
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -80,9 +74,11 @@ export default function SummaryPage() {
                 )}
                 <div>
                   <p className="font-heading text-lg line-clamp-1">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {[formatSize(item.size), item.color].filter(Boolean).join(" ")}
-                  </p>
+                  {item.variantTitle && (
+                    <p className="text-sm text-muted-foreground">
+                      {item.variantTitle}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-1 items-center justify-between gap-4 text-sm text-muted-foreground">

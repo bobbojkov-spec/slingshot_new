@@ -6,6 +6,7 @@ export interface CartItem {
   qty: number;
   size?: string;
   color?: string;
+  variantTitle?: string;
   category?: string;
   slug?: string;
 }

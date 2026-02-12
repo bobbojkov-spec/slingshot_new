@@ -178,6 +178,7 @@ export function ProductDetailsClient({ product, related }: ProductDetailsClientP
             image: itemImage,
             size: effectiveSize || selectedSize,
             color: colorId ? product.colors?.find(c => c.id === colorId)?.name : undefined,
+            variantTitle: variant.title || undefined,
             category: product.category,
             slug: product.slug,
             qty: quantity
