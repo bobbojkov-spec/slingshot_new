@@ -204,7 +204,8 @@ export default function AdminShellClient({
   }
 
   // Show nothing while checking auth (prevents flash)
-  if (!authChecked || !userEmail) {
+  // Don't block login page - let it render even if auth hasn't been checked
+  if (!isLoginPage && (!authChecked || !userEmail)) {
     return (
       <Layout style={{ minHeight: "100vh", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography.Text type="secondary">Loading...</Typography.Text>
