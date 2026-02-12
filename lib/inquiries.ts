@@ -31,6 +31,11 @@ export type InquiryRecord = {
   updated_at?: string;
 };
 
+export type InquiryWithItems = InquiryRecord & {
+  is_archived: boolean;
+  items: InquiryItemInput[];
+};
+
 const TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS inquiries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -121,6 +126,36 @@ export async function listInquiries(limit = 50, includeArchived = false) {
     [limit, includeArchived]
   );
   return rows as InquiryRecord[];
+}
+
+export async function listInquiriesWithItems(limit = 50, includeArchived = false): Promise<InquiryWithItems[]> {
+  await ensureInquiriesTables();
+  const { rows } = await query(
+    `SELECT i.id, i.customer_name, i.customer_email, i.customer_phone, i.customer_message,
+            i.status, i.created_at, i.updated_at, i.is_archived,
+            COALESCE(json_agg(json_build_object(
+              'product_id', ii.product_id,
+              'product_name', ii.product_name,
+              'product_slug', ii.product_slug,
+              'product_image', ii.product_image,
+              'variant_id', ii.variant_id,
+              'size', ii.size,
+              'color', ii.color,
+              'quantity', ii.quantity,
+              'price', ii.price
+            )) FILTER (WHERE ii.id IS NOT NULL), '[]') as items
+     FROM inquiries i
+     LEFT JOIN inquiry_items ii ON ii.inquiry_id = i.id
+     WHERE ($2::boolean IS TRUE OR i.is_archived = false)
+     GROUP BY i.id
+     ORDER BY i.created_at DESC
+     LIMIT $1`,
+    [limit, includeArchived]
+  );
+  return rows.map((r: any) => ({
+    ...r,
+    items: typeof r.items === 'string' ? JSON.parse(r.items) : r.items,
+  })) as InquiryWithItems[];
 }
 
 export async function getInquiry(inquiryId: string) {

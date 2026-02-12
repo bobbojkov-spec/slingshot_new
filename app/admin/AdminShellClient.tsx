@@ -9,7 +9,6 @@ import {
   MenuOutlined,
   SettingOutlined,
   ShoppingCartOutlined,
-  SearchOutlined,
   SolutionOutlined,
   TableOutlined,
   TagsOutlined,
@@ -17,8 +16,6 @@ import {
   BgColorsOutlined,
   GlobalOutlined,
   QuestionCircleOutlined,
-  ThunderboltOutlined,
-  BulbOutlined,
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, Space, Typography } from "antd";
 import Link from "next/link";
@@ -55,15 +52,13 @@ const ADMIN_MENU: AdminMenuNode[] = [
       { key: "catalog-tags", icon: <GlobalOutlined />, labelText: "Tags", href: "/admin/tags" },
       { key: "catalog-shop-by-cat", icon: <AppstoreOutlined />, labelText: "Shop by CAT", href: "/admin/homepage-categories" },
       { key: "catalog-shop-by-kw", icon: <TagsOutlined />, labelText: "Shop by KW", href: "/admin/homepage-keywords" },
-      { key: "catalog-research", icon: <ThunderboltOutlined />, labelText: "SEO Research", href: "/admin/research" },
+
       { key: "catalog-audit", icon: <AreaChartOutlined />, labelText: "Visual Audit", href: "/admin/audit" },
       { key: "catalog-shop-settings", icon: <SettingOutlined />, labelText: "Shop Settings", href: "/admin/shop-settings" },
     ],
   },
 
   { key: "inquiries", icon: <ShoppingCartOutlined />, labelText: "Inquiries", href: "/admin/inquiries" },
-  { key: "promotions", icon: <BulbOutlined />, labelText: "Notifications", href: "/admin/promotions" },
-  { key: "research", icon: <SearchOutlined />, labelText: "SEO Research", href: "/admin/research" },
   { key: "pages-new", icon: <FileProtectOutlined />, labelText: "Pages", href: "/admin/pages-new" },
   { key: "faq", icon: <QuestionCircleOutlined />, labelText: "FAQ Module", href: "/admin/faq" },
   {
@@ -104,13 +99,22 @@ function useSelectedKey() {
   const pathname = usePathname();
   return useMemo(() => {
     if (!pathname) return "dashboard";
-    if (pathname === "/admin/products" || pathname.startsWith("/admin/products/")) {
+    // Handle locale-prefixed paths like /bg/admin/products
+    const normalizedPath = pathname.replace(/^\/(bg|en)\//, "/");
+    if (normalizedPath === "/admin/products" || normalizedPath.startsWith("/admin/products/")) {
       return "catalog-products-new";
     }
-    const parts = pathname.split("/").filter(Boolean); // e.g. ['admin','catalog','products']
+    const parts = normalizedPath.split("/").filter(Boolean); // e.g. ['admin','catalog','products']
     if (parts.length <= 1) return "dashboard";
     return parts.slice(1).join("-");
   }, [pathname]);
+}
+
+// Helper to detect locale from pathname
+function getLocaleFromPathname(pathname: string | null): string {
+  if (!pathname) return "";
+  const match = pathname.match(/^\/(bg|en)(?:\/|$)/);
+  return match ? match[1] : "";
 }
 
 function initialOpenKeysForSelectedKey(selectedKey: string) {
@@ -132,7 +136,8 @@ export default function AdminShellClient({
   const [authChecked, setAuthChecked] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const isLoginPage = pathname?.startsWith("/admin/login");
+  const locale = getLocaleFromPathname(pathname);
+  const isLoginPage = pathname?.replace(/^\/(bg|en)\//, "/").startsWith("/admin/login");
   const siderLabelCh = useMemo(() => maxLabelChars(ADMIN_MENU), []);
   const adminShellStyle = useMemo(
     () =>
@@ -178,21 +183,22 @@ export default function AdminShellClient({
       setAuthChecked(true);
       return;
     }
+    const loginUrl = locale ? `/${locale}/admin/login` : '/admin/login';
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated && data.user) {
           setUserEmail(data.user.email);
         } else {
-          router.replace('/admin/login');
+          router.replace(loginUrl);
         }
         setAuthChecked(true);
       })
       .catch(() => {
-        router.replace('/admin/login');
+        router.replace(loginUrl);
         setAuthChecked(true);
       });
-  }, [isLoginPage, router]);
+  }, [isLoginPage, router, locale]);
 
   // Login page renders without sidebar/header
   if (isLoginPage) {
@@ -283,10 +289,11 @@ export default function AdminShellClient({
               <Button
                 size="small"
                 onClick={() => {
+                  const loginUrl = locale ? `/${locale}/admin/login` : '/admin/login';
                   fetch('/api/auth/logout', { method: 'POST' })
                     .then(() => {
                       setUserEmail(null);
-                      router.replace('/admin/login');
+                      router.replace(loginUrl);
                     });
                 }}
               >
@@ -294,7 +301,7 @@ export default function AdminShellClient({
               </Button>
             </Space>
           ) : (
-            <Link href="/admin/login">
+            <Link href={locale ? `/${locale}/admin/login` : '/admin/login'}>
               <Button type="primary" size="small">
                 Login
               </Button>

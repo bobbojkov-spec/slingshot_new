@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search, ArrowLeft, ArrowRight, Check, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 
 type Collection = {
@@ -22,10 +22,22 @@ export default function HomepageCategoriesClient({
   initialSelectedIds,
 }: HomepageCategoriesClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'slingshot' | 'rideengine'>('all');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'slingshot' | 'rideengine'>((searchParams.get('source') as any) || 'all');
   const [saving, setSaving] = useState(false);
+
+  const updateUrl = (newParams: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(newParams).forEach(([key, val]) => {
+      if (val) params.set(key, val);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const filteredCollections = allCollections.filter((c) => {
     const matchesSearch =
@@ -190,7 +202,7 @@ export default function HomepageCategoriesClient({
               {(['all', 'slingshot', 'rideengine'] as const).map((filter) => (
                 <button
                   key={filter}
-                  onClick={() => setSourceFilter(filter)}
+                  onClick={() => { setSourceFilter(filter); updateUrl({ source: filter === 'all' ? undefined : filter }); }}
                   className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${sourceFilter === filter
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -214,7 +226,7 @@ export default function HomepageCategoriesClient({
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); updateUrl({ q: e.target.value || undefined }); }}
                 placeholder="Search collections..."
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"
               />

@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { revalidateTag } from 'next/cache';
 
 export async function PUT(
     req: Request,
@@ -57,6 +58,9 @@ export async function PUT(
             );
         }
 
+        // Revalidate navigation cache to reflect changes immediately
+        revalidateTag('navigation');
+
         return NextResponse.json({ success: true });
     } catch (error: any) {
         console.error('Update collection error:', error);
@@ -88,8 +92,27 @@ export async function DELETE(
             );
         }
 
+        // Check for child collections (collections that have this one as parent)
+        const childRes = await query(
+            'SELECT id, title FROM collections WHERE parent_id = $1',
+            [id]
+        );
+
+        if (childRes.rows.length > 0) {
+            return NextResponse.json(
+                {
+                    error: `Cannot delete collection because it has ${childRes.rows.length} child collection(s). Delete child collections first or remove their parent.`,
+                    childCollections: childRes.rows
+                },
+                { status: 400 }
+            );
+        }
+
         // Delete
         await query('DELETE FROM collections WHERE id = $1', [id]);
+
+        // Revalidate navigation cache to reflect changes immediately
+        revalidateTag('navigation');
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

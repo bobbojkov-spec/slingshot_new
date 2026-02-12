@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import CollectionCard from './CollectionCard';
 import AddCollectionModal from './AddCollectionModal';
@@ -30,9 +31,22 @@ export default function CollectionsListClient({
     sourceTitle,
     sourceColor
 }: CollectionsListClientProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
     const [collections, setCollections] = useState(initialCollections);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [viewLang, setViewLang] = useState<'en' | 'bg'>('en');
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+    const [viewLang, setViewLang] = useState<'en' | 'bg'>((searchParams.get('lang') as 'en' | 'bg') || 'en');
+
+    const updateUrl = (newParams: Record<string, string | undefined>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(newParams).forEach(([key, val]) => {
+            if (val) params.set(key, val);
+            else params.delete(key);
+        });
+        router.replace(`${pathname}?${params.toString()}`);
+    };
 
     const filteredCollections = collections.filter(c => {
         const searchLower = searchTerm.toLowerCase().trim();
@@ -84,7 +98,7 @@ export default function CollectionsListClient({
                         <input
                             type="text"
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => { setSearchTerm(e.target.value); updateUrl({ q: e.target.value || undefined }); }}
                             placeholder="Filter collections..."
                             className="w-full pl-10 pr-4 py-4 bg-white border border-gray-200 rounded focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
                         />
@@ -96,7 +110,7 @@ export default function CollectionsListClient({
                     {/* Language Switcher */}
                     <div className="bg-white border border-gray-200 rounded p-2 flex items-center shadow-sm">
                         <button
-                            onClick={() => setViewLang('en')}
+                            onClick={() => { setViewLang('en'); updateUrl({ lang: undefined }); }}
                             className={`px-4 py-2 text-sm font-medium rounded transition-all ${viewLang === 'en'
                                 ? 'bg-gray-900 text-white shadow-sm'
                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
@@ -105,7 +119,7 @@ export default function CollectionsListClient({
                             EN
                         </button>
                         <button
-                            onClick={() => setViewLang('bg')}
+                            onClick={() => { setViewLang('bg'); updateUrl({ lang: 'bg' }); }}
                             className={`px-4 py-2 text-sm font-medium rounded transition-all ${viewLang === 'bg'
                                 ? 'bg-orange-500 text-white shadow-sm'
                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
@@ -147,7 +161,7 @@ export default function CollectionsListClient({
                         Try a different keyword
                     </p>
                     <button
-                        onClick={() => setSearchTerm('')}
+                        onClick={() => { setSearchTerm(''); updateUrl({ q: undefined }); }}
                         className="mt-4 text-blue-600 font-medium hover:underline"
                     >
                         Clear search

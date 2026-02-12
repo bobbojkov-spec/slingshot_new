@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   Button,
   Table,
@@ -55,8 +56,36 @@ export default function CategoriesListClient({
 }: {
   categories: Category[];
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [searchText, setSearchText] = useState(searchParams.get('q') || '');
   const [editingKey, setEditingKey] = useState<string>('');
+
+  // Update URL when search changes
+  const updateSearchUrl = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set('q', value);
+    } else {
+      params.delete('q');
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Filter categories based on search
+  const filteredCategories = useMemo(() => {
+    if (!searchText) return categories;
+    const searchLower = searchText.toLowerCase();
+    return categories.filter(cat =>
+      cat.name?.toLowerCase().includes(searchLower) ||
+      cat.slug?.toLowerCase().includes(searchLower) ||
+      cat.translation_en?.name?.toLowerCase().includes(searchLower) ||
+      cat.translation_bg?.name?.toLowerCase().includes(searchLower)
+    );
+  }, [categories, searchText]);
   const [editForm, setEditForm] = useState<{
     slug?: string;
     custom_link?: string;
@@ -552,7 +581,7 @@ export default function CategoriesListClient({
                 Categories
               </Typography.Title>
               <Typography.Text type="secondary">
-                {categories.length} {categories.length === 1 ? 'category' : 'categories'}
+                {filteredCategories.length} of {categories.length} {categories.length === 1 ? 'category' : 'categories'}
               </Typography.Text>
             </div>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsAddModalOpen(true)}>
@@ -565,10 +594,25 @@ export default function CategoriesListClient({
           Manage product categories. Click Edit to see bilingual fields. Delete is only available for inactive categories with no products.
         </Typography.Text>
 
+        {/* Search Filter */}
+        <div style={{ marginBottom: 16 }}>
+          <Input.Search
+            placeholder="Search categories by name..."
+            allowClear
+            value={searchText}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchText(value);
+              updateSearchUrl(value);
+            }}
+            style={{ maxWidth: 400 }}
+          />
+        </div>
+
         <Table<Category>
           size="middle"
           rowKey="id"
-          dataSource={categories}
+          dataSource={filteredCategories}
           columns={columns}
           expandable={{
             expandedRowRender,

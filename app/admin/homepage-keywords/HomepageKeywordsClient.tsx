@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search, ArrowLeft, Check, ArrowUp, ArrowDown } from 'lucide-react';
 
 type Tag = {
@@ -21,9 +21,21 @@ export default function HomepageKeywordsClient({
   initialSelectedNames,
 }: HomepageKeywordsClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [selectedNames, setSelectedNames] = useState<string[]>(initialSelectedNames);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [saving, setSaving] = useState(false);
+
+  const updateUrl = (newParams: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(newParams).forEach(([key, val]) => {
+      if (val) params.set(key, val);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const filteredTags = allTags.filter(
     (t) =>
@@ -191,7 +203,7 @@ export default function HomepageKeywordsClient({
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); updateUrl({ q: e.target.value || undefined }); }}
                 placeholder="Search keywords..."
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 outline-none text-sm"
               />

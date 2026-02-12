@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/dbPg';
+import { revalidateTag } from 'next/cache';
 
 // GET /api/admin/menu-groups?source=slingshot
 export async function GET(request: NextRequest) {
@@ -49,6 +50,9 @@ export async function POST(request: NextRequest) {
              RETURNING *`,
       [title, title_bg, slug, source, sort_order || 0]
     );
+
+    // Revalidate navigation cache to reflect changes immediately
+    revalidateTag('navigation');
 
     return NextResponse.json({ group: result.rows[0] });
   } catch (error: any) {

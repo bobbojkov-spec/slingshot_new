@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Table, Input, Button, message, Space, Card, Typography, Badge, Tooltip, Modal, Select } from 'antd';
 import { SaveOutlined, SearchOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, SyncOutlined, MergeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import TagProductSelector from '@/components/admin/TagProductSelector';
@@ -22,10 +23,23 @@ interface TagStats {
 }
 
 export default function TagsClient() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const updateUrl = (newParams: Record<string, string | undefined>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(newParams).forEach(([key, val]) => {
+            if (val) params.set(key, val);
+            else params.delete(key);
+        });
+        router.replace(`${pathname}?${params.toString()}`);
+    };
+
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TagData[]>([]);
     const [stats, setStats] = useState<TagStats | null>(null);
-    const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState(searchParams.get('q') || '');
     const [savingKey, setSavingKey] = useState<string | null>(null);
     const [manageTag, setManageTag] = useState<string | null>(null);
     const [newTagName, setNewTagName] = useState('');
@@ -401,7 +415,7 @@ export default function TagsClient() {
                     placeholder="Search tags..."
                     prefix={<SearchOutlined />}
                     style={{ maxWidth: 400 }}
-                    onChange={e => setSearchText(e.target.value)}
+                    onChange={e => { setSearchText(e.target.value); updateUrl({ q: e.target.value || undefined }); }}
                 />
                 <Space>
                     <Input

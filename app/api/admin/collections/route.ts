@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { revalidateTag } from 'next/cache';
 
 function slugify(text: string): string {
     return text
@@ -56,6 +57,9 @@ export async function POST(req: Request) {
               `,
             [title, slug, slug, source, nextOrder, true] // Default visible=true
         );
+
+        // Revalidate navigation cache to reflect changes immediately
+        revalidateTag('navigation');
 
         return NextResponse.json({ collection: rows[0] });
 

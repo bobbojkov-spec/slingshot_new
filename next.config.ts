@@ -49,6 +49,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      // Rewrite locale-prefixed admin routes to non-prefixed admin routes
+      {
+        source: '/bg/admin/:path*',
+        destination: '/admin/:path*',
+      },
+      {
+        source: '/en/admin/:path*',
+        destination: '/admin/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {

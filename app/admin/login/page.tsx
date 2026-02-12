@@ -1,8 +1,15 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Button, Card, Divider, Form, Input, Typography, message } from 'antd';
+
+// Helper to detect locale from pathname
+function getLocaleFromPathname(pathname: string | null): string {
+  if (!pathname) return '';
+  const match = pathname.match(/^\/(bg|en)(?:\/|$)/);
+  return match ? match[1] : '';
+}
 
 const { Title, Text } = Typography;
 
@@ -26,6 +33,9 @@ function loadGoogleScript(clientId: string) {
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname);
+  const adminBaseUrl = locale ? `/${locale}/admin` : '/admin';
   const [loading, setLoading] = useState(false);
   const [gisReady, setGisReady] = useState(false);
   const [gisError, setGisError] = useState<string | null>(null);
@@ -52,7 +62,7 @@ export default function AdminLoginPage() {
 
       if (res.ok && data.success) {
         message.success('Logged in!');
-        router.replace('/admin');
+        router.replace(adminBaseUrl);
       } else {
         message.error(data.error || 'Login failed');
       }
@@ -109,7 +119,7 @@ export default function AdminLoginPage() {
                 const data = await res.json();
                 if (res.ok && data.success) {
                   message.success('Logged in with Google');
-                  router.replace('/admin');
+                  router.replace(adminBaseUrl);
                 } else {
                   message.error(data.error || 'Google login failed');
                 }
@@ -134,7 +144,7 @@ export default function AdminLoginPage() {
     }, 200);
 
     return () => window.clearInterval(interval);
-  }, [clientId, deviceId, router]);
+  }, [clientId, deviceId, router, adminBaseUrl]);
 
   return (
     <div style={{ maxWidth: 400, margin: '60px auto', padding: '0 16px' }}>

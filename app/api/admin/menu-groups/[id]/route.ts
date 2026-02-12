@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/dbPg';
+import { revalidateTag } from 'next/cache';
 
 type RouteContext = {
     params: Promise<{ id: string }>;
@@ -79,6 +80,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
             }
 
             await query('COMMIT');
+
+            // Revalidate navigation cache to reflect changes immediately
+            revalidateTag('navigation');
+
             return NextResponse.json({ success: true });
 
         } catch (err) {
@@ -101,6 +106,9 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         const { id } = await context.params;
 
         await query('DELETE FROM menu_groups WHERE id = $1', [id]);
+
+        // Revalidate navigation cache to reflect changes immediately
+        revalidateTag('navigation');
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
