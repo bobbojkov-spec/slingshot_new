@@ -14,6 +14,11 @@ const s3 = new S3Client({
 });
 
 const BUCKET = process.env.RAILWAY_STORAGE_BUCKET_PUBLIC || 'slingshotnewimages-hw-tht';
+const KNOWN_HOSTS = [
+    'slingshotnewimages-hw-tht.storage.railway.app',
+    'slingshotnewimages-hw-tht.t3.storageapi.dev',
+    'storage.railway.app',
+];
 
 async function checkFile(key) {
     try {
@@ -28,29 +33,72 @@ async function checkFile(key) {
     }
 }
 
-function getKeyFromUrl(url) {
-    if (!url) return null;
-    let key = url;
-    if (key.startsWith('http')) {
-        // SAFEGUARD: Only check files in our bucket
-        if (!key.includes('storage.railway.app') && !key.includes('slingshotnewimages')) {
-            // External URL (Shopify, etc) - Skip check
-            return null;
+function getKeyFromUrl(value) {
+    if (!value) return null;
+
+    if (!value.startsWith('http')) {
+        const stripped = value.replace(/^\/+/, '');
+        return stripped || null;
+    }
+
+    if (!KNOWN_HOSTS.some(host => value.includes(host))) {
+        return null;
+    }
+
+    try {
+        const { pathname } = new URL(value);
+        const cleaned = pathname.replace(/^\//, '');
+        if (!cleaned) return null;
+
+        const segments = cleaned.split('/');
+        const bucketIndex = segments.findIndex(segment => segment === BUCKET || segment === 'product-images');
+        if (bucketIndex > 0) {
+            return segments.slice(bucketIndex).join('/');
         }
 
-        try {
-            const urlObj = new URL(key);
-            const pathParts = urlObj.pathname.split('/');
-            const keyIndex = pathParts.indexOf('product-images');
-            if (keyIndex !== -1) {
-                key = pathParts.slice(keyIndex).join('/');
-            } else if (pathParts.length > 2) {
-                // Fallback: assume bucket is first segment
-                key = pathParts.slice(2).join('/');
-            }
-        } catch (e) { return null; }
+        return cleaned;
+    } catch (e) {
+        return null;
     }
-    return key;
+}
+
+const columnTargets = [
+    { table: 'products', idColumn: 'id', column: 'hero_image_url' },
+    { table: 'products', idColumn: 'id', column: 'og_image_url' },
+    { table: 'collections', idColumn: 'id', column: 'image_url' },
+    { table: 'product_colors', idColumn: 'id', column: 'image_path' },
+    { table: 'promotions', idColumn: 'id', column: 'image_url' },
+];
+
+async function cleanupAdditionalColumns(client) {
+    let total = 0;
+
+    for (const target of columnTargets) {
+        const { table, idColumn, column } = target;
+        console.log(`Checking ${table}.${column}...`);
+        const res = await client.query(
+            `SELECT ${idColumn}, ${column} FROM ${table} WHERE ${column} IS NOT NULL AND ${column} <> ''`
+        );
+
+        for (const row of res.rows) {
+            const imageValue = row[column];
+            const key = getKeyFromUrl(imageValue);
+            if (!key) continue;
+
+            const exists = await checkFile(key);
+            if (!exists) {
+                console.log(`Clearing ${table}.${column} for ${idColumn}=${row[idColumn]} (missing ${key})`);
+                await client.query(
+                    `UPDATE ${table} SET ${column} = NULL WHERE ${idColumn} = $1`,
+                    [row[idColumn]]
+                );
+                total++;
+            }
+        }
+        console.log(`   -> Done checking ${table}.${column}`);
+    }
+
+    console.log(`Finished column cleanup. Cleared ${total} broken references.`);
 }
 
 async function run() {
@@ -97,6 +145,8 @@ async function run() {
         }
     }
     console.log(`Finished table 2. Deleted ${deleted2} broken images.`);
+
+    await cleanupAdditionalColumns(pool);
 
     pool.end();
 }

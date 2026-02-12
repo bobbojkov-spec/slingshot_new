@@ -275,38 +275,29 @@ export async function fileExists(filePath: string, bucket: string = STORAGE_BUCK
 export function getKeyFromUrl(url: string | null | undefined): string | null {
   if (!url) return null;
 
-  try {
-    const u = new URL(url);
-    let key = "";
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) return null;
 
-    const publicBucket = STORAGE_BUCKETS.PUBLIC;
-    const currentEndpoint = storageEndpoint;
-    const currentUrlBase = publicUrlBase ? `${publicUrlBase}/${publicBucket}` : (currentEndpoint ? `${currentEndpoint}/${publicBucket}` : null);
+  const publicBucket = STORAGE_BUCKETS.PUBLIC;
+  const currentEndpoint = storageEndpoint;
+  const currentUrlBase = publicUrlBase
+    ? `${publicUrlBase}/${publicBucket}`
+    : currentEndpoint
+    ? `${currentEndpoint}/${publicBucket}`
+    : null;
 
-    // 1. Check if it matches our public URL base
-    if (currentUrlBase && url.startsWith(currentUrlBase)) {
-      key = url.slice(currentUrlBase.length + 1);
-    } else {
-      // 2. Check standard S3 patterns
-      const pathname = u.pathname;
-      const parts = pathname.split('/');
+  const prefixesToRemove = [
+    publicBucket || "",
+    "slingshotnewimages-hw-tht",
+    "product-images",
+  ].filter(Boolean);
 
-      // Path style: /bucket/key or /key
-      if (parts.length >= 3 && parts[1] === publicBucket) {
-        key = parts.slice(2).join('/');
-      } else {
-        key = pathname.startsWith('/') ? pathname.slice(1) : pathname;
-      }
-    }
+  const cleanCandidate = (candidate: string): string | null => {
+    const normalized = candidate.trim();
+    if (!normalized) return null;
 
+    let key = normalized.startsWith('/') ? normalized.slice(1) : normalized;
     if (!key) return null;
-
-    // Remove common prefixes that shouldn't be in the final S3 key
-    const prefixesToRemove = [
-      publicBucket || "",
-      "slingshotnewimages-hw-tht",
-      "product-images",
-    ].filter(Boolean);
 
     let cleaning = true;
     while (cleaning) {
@@ -320,10 +311,36 @@ export function getKeyFromUrl(url: string | null | undefined): string | null {
       }
     }
 
-    return key;
+    return key || null;
+  };
+
+  const isAbsoluteUrl = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmedUrl);
+
+  if (!isAbsoluteUrl) {
+    return cleanCandidate(trimmedUrl);
+  }
+
+  try {
+    const u = new URL(trimmedUrl);
+    let candidate = "";
+
+    if (currentUrlBase && trimmedUrl.startsWith(currentUrlBase)) {
+      candidate = trimmedUrl.substring(currentUrlBase.length);
+    } else {
+      const pathname = u.pathname;
+      const parts = pathname.split('/');
+      if (parts.length >= 3 && parts[1] === publicBucket) {
+        candidate = parts.slice(2).join('/');
+      } else {
+        candidate = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+      }
+    }
+
+    candidate = candidate.split(/[?#]/)[0];
+    return cleanCandidate(candidate);
   } catch (e) {
     console.error('Error parsing URL key:', e);
-    // If it's not a URL, it might already be a key
-    return url.startsWith('/') ? url.slice(1) : url;
+    const candidate = trimmedUrl.split(/[?#]/)[0];
+    return cleanCandidate(candidate);
   }
 }
