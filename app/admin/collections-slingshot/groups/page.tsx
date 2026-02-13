@@ -11,7 +11,7 @@ const SLINGSHOT_SPORTS = [
     { key: 'wake', label: 'WAKE', labelBg: 'Уейк', color: '#00B4D8', icon: '🏄' },
     { key: 'wing', label: 'Wing', labelBg: 'Уинг', color: '#9B59B6', icon: '🪽' },
     { key: 'foil', label: 'Foil', labelBg: 'Фойл', color: '#27AE60', icon: '🏄‍♂️' },
-] as const;
+];
 
 async function getMenuGroupsBySport() {
     // Fetch all menu groups for slingshot, organized by sport
@@ -100,7 +100,7 @@ export default async function SlingshotSportsMenuPage() {
                 </div>
             </div>
 
-            <SlingshotSportsMenuClient 
+            <SlingshotSportsMenuClient
                 sports={SLINGSHOT_SPORTS}
                 initialGroupsBySport={groupsBySport}
                 availableCollections={collections}
