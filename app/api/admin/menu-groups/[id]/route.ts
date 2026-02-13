@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     try {
         const { id } = await context.params;
         const body = await request.json();
-        const { title, sort_order, collectionIds } = body; // collectionIds is array of string
+        const { title, title_bg, sport, sort_order, collectionIds } = body; // collectionIds is array of string
 
         // Start transaction
         await query('BEGIN');
@@ -58,10 +58,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         try {
             // Update group basic info
             await query(
-                `UPDATE menu_groups 
-                 SET title = $1, sort_order = $2, updated_at = NOW()
-                 WHERE id = $3`,
-                [title, sort_order || 0, id]
+                `UPDATE menu_groups
+                 SET title = $1, title_bg = $2, sport = $3, sort_order = $4, updated_at = NOW()
+                 WHERE id = $5`,
+                [title, title_bg || null, sport || null, sort_order || 0, id]
             );
 
             // Update collections if provided

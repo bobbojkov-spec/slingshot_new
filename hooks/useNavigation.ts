@@ -44,6 +44,7 @@ export interface MenuGroup {
   title: string;
   title_bg?: string;
   slug?: string;
+  sport?: string;
   collections: MenuCollection[];
 }
 
@@ -61,13 +62,24 @@ export interface NavigationPage {
   footer_order: number | null;
 }
 
+// Sport-specific menu groups for Slingshot
+export interface SlingshotSportMenuGroups {
+  kite: MenuGroup[];
+  wake: MenuGroup[];
+  wing: MenuGroup[];
+  foil: MenuGroup[];
+}
+
 export interface NavigationData {
   sports: NavigationSport[];
   activityCategories: NavigationActivityCategory[];
   language: string;
   rideEngineHandles?: string[];
+  // Legacy - for backward compatibility
   slingshotMenuGroups?: MenuGroup[];
   rideEngineMenuGroups?: MenuGroup[];
+  // New sport-specific structure
+  slingshotBySport?: SlingshotSportMenuGroups;
   customPages?: NavigationPage[];
 }
 
@@ -75,4 +87,3 @@ export function useNavigation() {
   const { data, loading, error } = useNavigationContext();
   return { data, loading, error };
 }
-

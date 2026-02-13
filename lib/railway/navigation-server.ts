@@ -194,12 +194,21 @@ export async function getNavigationData(lang: string = 'en') {
     return result;
 }
 
-export async function getMenuStructure(source: string, lang: string = 'en') {
+export async function getMenuStructure(source: string, lang: string = 'en', sport?: string) {
     const operationStart = Date.now();
-    const { rows: groups } = await query(
-        `SELECT id, title, title_bg, slug, sort_order FROM menu_groups WHERE source = $1 ORDER BY sort_order ASC`,
-        [source]
-    );
+    
+    // Build query based on whether sport is specified
+    let groupsQuery = `SELECT id, title, title_bg, slug, sort_order, sport FROM menu_groups WHERE source = $1`;
+    const queryParams: any[] = [source];
+    
+    if (sport) {
+        groupsQuery += ` AND sport = $2`;
+        queryParams.push(sport);
+    }
+    
+    groupsQuery += ` ORDER BY sort_order ASC`;
+    
+    const { rows: groups } = await query(groupsQuery, queryParams);
     if (!groups.length) return [];
 
     const { rows: collectionsRows } = await query(
@@ -269,18 +278,37 @@ export async function getMenuStructure(source: string, lang: string = 'en') {
 async function fetchFullNavigationData(lang: string = 'en'): Promise<NavigationData> {
     const fetchStart = Date.now();
     try {
-        const [nav, slingshot, rideEngine] = await Promise.all([
+        // Fetch all menu structures in parallel
+        const [nav, slingshotKite, slingshotWake, slingshotWing, slingshotFoil, rideEngine] = await Promise.all([
             getNavigationData(lang),
-            getMenuStructure('slingshot', lang),
+            getMenuStructure('slingshot', lang, 'kite'),
+            getMenuStructure('slingshot', lang, 'wake'),
+            getMenuStructure('slingshot', lang, 'wing'),
+            getMenuStructure('slingshot', lang, 'foil'),
             getMenuStructure('rideengine', lang)
         ]);
 
         const duration = Date.now() - fetchStart;
         console.log(`[NAV SERVER] Navigation data fetched in ${duration}ms for lang=${lang}`);
+        
+        // Combine all slingshot menu groups for backward compatibility
+        const allSlingshotGroups = [
+            ...slingshotKite,
+            ...slingshotWake,
+            ...slingshotWing,
+            ...slingshotFoil
+        ];
+        
         return {
             ...nav,
-            slingshotMenuGroups: slingshot,
+            slingshotMenuGroups: allSlingshotGroups,
             rideEngineMenuGroups: rideEngine,
+            slingshotBySport: {
+                kite: slingshotKite,
+                wake: slingshotWake,
+                wing: slingshotWing,
+                foil: slingshotFoil
+            },
             language: lang,
         } as NavigationData;
     } catch (error: any) {
@@ -293,6 +321,12 @@ async function fetchFullNavigationData(lang: string = 'en'): Promise<NavigationD
             customPages: [],
             slingshotMenuGroups: [],
             rideEngineMenuGroups: [],
+            slingshotBySport: {
+                kite: [],
+                wake: [],
+                wing: [],
+                foil: []
+            }
         } as NavigationData;
     }
 }
@@ -315,6 +349,12 @@ export const getFullNavigation = async (lang: string = 'en'): Promise<Navigation
         customPages: [],
         slingshotMenuGroups: [],
         rideEngineMenuGroups: [],
+        slingshotBySport: {
+            kite: [],
+            wake: [],
+            wing: [],
+            foil: []
+        }
     };
 
     // Apply hard timeout to the cached fetch

@@ -12,11 +12,12 @@ function getUrl(path: string | null) {
     return path;
 }
 
-// GET /api/navigation/menu-structure?source=slingshot
+// GET /api/navigation/menu-structure?source=slingshot&sport=kite
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const source = searchParams.get('source');
+        const sport = searchParams.get('sport');
 
         const lang = (searchParams.get('lang') || 'en').toLowerCase() === 'bg' ? 'bg' : 'en';
 
@@ -24,14 +25,20 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Source is required' }, { status: 400 });
         }
 
-        // 1. Fetch Groups
-        const groupsRes = await query(
-            `SELECT id, title, title_bg, slug, sort_order 
-             FROM menu_groups 
-             WHERE source = $1 
-             ORDER BY sort_order ASC`,
-            [source]
-        );
+        // 1. Fetch Groups (with optional sport filter)
+        let groupsQuery = `SELECT id, title, title_bg, slug, sort_order, sport
+             FROM menu_groups
+             WHERE source = $1`;
+        const queryParams: any[] = [source];
+        
+        if (sport) {
+            groupsQuery += ` AND sport = $2`;
+            queryParams.push(sport);
+        }
+        
+        groupsQuery += ` ORDER BY sort_order ASC`;
+        
+        const groupsRes = await query(groupsQuery, queryParams);
         const groups = groupsRes.rows;
 
         if (groups.length === 0) {
